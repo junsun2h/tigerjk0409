@@ -1,5 +1,4 @@
-
 = Introduction =
 
-OS: vista
-IDE: visual studio 2008
+ * OS: vista
+ * IDE: visual studio 2008
