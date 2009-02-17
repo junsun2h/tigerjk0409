@@ -1,33 +1,12 @@
 #include "Socket.h"
+#include <process.h>
 
 #pragma comment (lib, "common.lib") 
 
-int main()
+
+unsigned __stdcall PrintWord(void* arg)
 {
-	SocketMgr socketMgr;
-	socketMgr.Init();
-
-	SOCKET serverSocket = socket( AF_INET, SOCK_STREAM, 0);
-	
-	SOCKADDR_IN  serverAdd;
-	socketMgr.SetAddress( htons( INADDR_ANY ), htons( SERVER_PORT ), serverAdd );
-	
-	if( bind(serverSocket, (SOCKADDR * )&serverAdd, sizeof( serverAdd )) == SOCKET_ERROR )
-	{
-		printf("error : socket binding");
-		return false;
-	}
-
-	listen( serverSocket, SOMAXCONN );
-
-	SOCKET clientSocket;
-	if( (clientSocket = accept( serverSocket, NULL, NULL) ) == INVALID_SOCKET)
-	{
-		printf( "error : accept socket");
-		return false;
-	}
-
-	printf("connected to client\n");
+	SOCKET clientSocket = (SOCKET)arg;
 
 	char data[BUFFER_SIZE+1];
 	while(1)
@@ -51,6 +30,38 @@ int main()
 	}
 	
 	closesocket(clientSocket);
+	
+	return true;
+}
+
+
+int main()
+{
+	SocketMgr socketMgr;
+	socketMgr.Init();
+
+	SOCKET serverSocket = socket( AF_INET, SOCK_STREAM, 0);
+	
+	SOCKADDR_IN  serverAdd;
+	socketMgr.SetAddress( htons( INADDR_ANY ), htons( SERVER_PORT ), serverAdd );
+	
+	if( bind(serverSocket, (SOCKADDR * )&serverAdd, sizeof( serverAdd )) == SOCKET_ERROR )
+	{
+		printf("error : socket binding");
+		return false;
+	}
+
+	listen( serverSocket, SOMAXCONN );
+
+	while(1)
+	{
+		SOCKET clientSocket = accept( serverSocket, NULL, NULL);
+		unsigned threadID;
+		printf("client join\n");
+
+		ULONG hTread = _beginthreadex(NULL, 0, PrintWord, (void*)clientSocket, 0, &threadID); 
+	}
+
 	WSACleanup();
 
 	return true;
