@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="MultiThreadLoader.cpp" />
+    <ClCompile Include="EEngine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="MultiThreadLoader">
+      <UniqueIdentifier>{4be06937-04b2-40eb-bd91-2f918e2c5d03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MultiThreadLoader.h" />
+    <ClInclude Include="MultiThreadLoadUnit.h" />
+    <ClInclude Include="EEngine.h" />
+  </ItemGroup>
+</Project>
