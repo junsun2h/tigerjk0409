@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="CThreadSafeQueue.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CTimer.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngine.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CThread.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="CGrowableArray.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CStack.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CDefine.h" />
+    <ClInclude Include="IRenderer.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="xnamath.h">
+      <Filter>3rdParty\xnamath</Filter>
+    </ClInclude>
+    <ClInclude Include="CMathType.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DataStructure">
+      <UniqueIdentifier>{ccf5d848-30a0-4ed3-80be-93a79aa124bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{40f2e0fe-0064-4696-8ae4-f665846136be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{2d81bcfa-4e57-4f35-b616-9357d77c6321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParty">
+      <UniqueIdentifier>{f54b609a-b5c7-43aa-a37f-fd4813f7c6bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParty\xnamath">
+      <UniqueIdentifier>{67b9e097-a762-422f-979a-30a1af10ddc7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xnamathconvert.inl">
+      <Filter>3rdParty\xnamath</Filter>
+    </None>
+    <None Include="xnamathmatrix.inl">
+      <Filter>3rdParty\xnamath</Filter>
+    </None>
+    <None Include="xnamathmisc.inl">
+      <Filter>3rdParty\xnamath</Filter>
+    </None>
+    <None Include="xnamathvector.inl">
+      <Filter>3rdParty\xnamath</Filter>
+    </None>
+    <None Include="CMatrix.inl">
+      <Filter>DataStructure</Filter>
+    </None>
+    <None Include="CQuat.inl">
+      <Filter>DataStructure</Filter>
+    </None>
+    <None Include="CVector.inl">
+      <Filter>DataStructure</Filter>
+    </None>
+  </ItemGroup>
+</Project>
