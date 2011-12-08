@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCommon", "TCommon\TCommon.vcxproj", "{EAF1D190-B88D-4E90-BC3E-5A6999D271E0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCore", "TCore\TCore.vcxproj", "{98DF32FC-A327-45E9-983A-2E7553E7E4A6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TRenderer", "TRenderer\TRenderer.vcxproj", "{C6E1E28C-486F-4FE5-9071-AC6A5C47D1ED}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Viewer", "Viewer\Viewer.vcxproj", "{E237E7F3-AEDC-4BD6-A3F7-AEA2819E87F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAF1D190-B88D-4E90-BC3E-5A6999D271E0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EAF1D190-B88D-4E90-BC3E-5A6999D271E0}.Debug|Win32.Build.0 = Debug|Win32
+		{EAF1D190-B88D-4E90-BC3E-5A6999D271E0}.Release|Win32.ActiveCfg = Release|Win32
+		{EAF1D190-B88D-4E90-BC3E-5A6999D271E0}.Release|Win32.Build.0 = Release|Win32
+		{98DF32FC-A327-45E9-983A-2E7553E7E4A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{98DF32FC-A327-45E9-983A-2E7553E7E4A6}.Debug|Win32.Build.0 = Debug|Win32
+		{98DF32FC-A327-45E9-983A-2E7553E7E4A6}.Release|Win32.ActiveCfg = Release|Win32
+		{98DF32FC-A327-45E9-983A-2E7553E7E4A6}.Release|Win32.Build.0 = Release|Win32
+		{C6E1E28C-486F-4FE5-9071-AC6A5C47D1ED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C6E1E28C-486F-4FE5-9071-AC6A5C47D1ED}.Debug|Win32.Build.0 = Debug|Win32
+		{C6E1E28C-486F-4FE5-9071-AC6A5C47D1ED}.Release|Win32.ActiveCfg = Release|Win32
+		{C6E1E28C-486F-4FE5-9071-AC6A5C47D1ED}.Release|Win32.Build.0 = Release|Win32
+		{E237E7F3-AEDC-4BD6-A3F7-AEA2819E87F0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E237E7F3-AEDC-4BD6-A3F7-AEA2819E87F0}.Debug|Win32.Build.0 = Debug|Win32
+		{E237E7F3-AEDC-4BD6-A3F7-AEA2819E87F0}.Release|Win32.ActiveCfg = Release|Win32
+		{E237E7F3-AEDC-4BD6-A3F7-AEA2819E87F0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
