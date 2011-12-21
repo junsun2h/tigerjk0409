@@ -7,9 +7,6 @@
     <ClInclude Include="CTimer.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="IEngine.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
     <ClInclude Include="CThread.h">
       <Filter>Util</Filter>
     </ClInclude>
@@ -20,14 +17,23 @@
       <Filter>DataStructure</Filter>
     </ClInclude>
     <ClInclude Include="CDefine.h" />
-    <ClInclude Include="IRenderer.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
     <ClInclude Include="xnamath.h">
       <Filter>3rdParty\xnamath</Filter>
     </ClInclude>
     <ClInclude Include="CMathType.h">
       <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="IRDevice.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngine.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IResource.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IAsyncLoader.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

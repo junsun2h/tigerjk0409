@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CDefine.h"
-#include "IRenderer.h"
+#include "IRDevice.h"
 
-struct IRenderer;
+struct IRDevice;
 
 struct CENGINE_INIT_PARAM
 {
@@ -32,5 +32,5 @@ struct IEngine
 	virtual bool		StartUp(const CENGINE_INIT_PARAM &param) = 0;
 	virtual bool		ShutDown() = 0;
 
-	virtual	IRenderer*	GetRenderer() = 0;
+	virtual	IRDevice*	GetRenderer() = 0;
 };

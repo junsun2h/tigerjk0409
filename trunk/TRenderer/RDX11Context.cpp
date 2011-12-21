@@ -56,9 +56,11 @@ void RDX11Context::SetDefaultState(RDX11StateRepository* pStateRepository)
 
 void RDX11Context::SetTarget(RDX11Window* pWindow)
 {
-	RDX11RenderTexture* pRenderTarget = pWindow->m_pRenderTarget;
-	RDX11RenderTexture* pDepthStencil = pWindow->m_pDepthStencil;
+	m_pContext->OMSetRenderTargets( 1, &pWindow->pRTV, pWindow->pDSV );
+	m_pContext->ClearRenderTargetView( pWindow->pRTV, (float*)CVector4(0.25f, 0.25f, 0.55f, 1.0f) );
+}
 
-	m_pContext->OMSetRenderTargets( 1, &pRenderTarget->m_pRTV, pDepthStencil->m_pDSV );
-	m_pContext->ClearRenderTargetView( pRenderTarget->m_pRTV, (float*)CVector4(0.25f, 0.25f, 0.55f, 1.0f) );
+void RDX11Context::Destroy()
+{
+	m_pContext->Release();
 }

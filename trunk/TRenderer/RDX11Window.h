@@ -1,6 +1,7 @@
 #pragma once
 
-#include "RDX11Texture.h"
+#include "RDefine.h"
+
 
 
 struct RDX11Window
@@ -8,13 +9,14 @@ struct RDX11Window
 	RDX11Window();
 	~RDX11Window();
 
-	IDXGISwapChain*			m_pSwapChain;
-	RDX11RenderTexture*		m_pRenderTarget;
-	RDX11RenderTexture*		m_pDepthStencil;
+	IDXGISwapChain*				pSwapChain;
+	ID3D11ShaderResourceView*	pSRV;
+	ID3D11Texture2D*			pRT;
+	ID3D11RenderTargetView*		pRTV;
+	ID3D11DepthStencilView*		pDSV;
 
 	bool	Create(ID3D11Device* pD3Device);
-	void	Release();
+	void	ReleaseTexture();
 	bool	Resize(ID3D11Device* pD3Device, int cx, int cy, bool bFullScreen);
 	void	Present();
 };
-

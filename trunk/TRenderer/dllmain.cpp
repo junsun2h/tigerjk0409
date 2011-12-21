@@ -23,7 +23,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 extern "C"
 {
-	DLL_EXPORT IRenderer* CreateDX11Renderer()
+	DLL_EXPORT IRDevice* CreateDX11Renderer()
 	{
 		return new RDX11Device;
 	}
