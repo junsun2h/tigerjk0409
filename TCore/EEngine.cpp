@@ -1,4 +1,6 @@
 #include "EEngine.h"
+#include "IRDevice.h"
+
 #include <windows.h>
 
 EEngine* s_pEngine = NULL;
@@ -33,7 +35,7 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	}
 
 	// make renderer
-	typedef IRenderer *(*CREATE_RENDERER)();
+	typedef IRDevice *(*CREATE_RENDERER)();
 	CREATE_RENDERER FuncCreateRenderer = (CREATE_RENDERER)::GetProcAddress( renderDll, "CreateDX11Renderer" );
 
 	if( FuncCreateRenderer == NULL )
@@ -47,10 +49,13 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 
 bool EEngine::ShutDown()
 {
+	m_pRenderer->ShutDown();
+	SAFE_DELETE(m_pRenderer);
+
 	return false;
 }
 
-IRenderer* EEngine::GetRenderer()
+IRDevice* EEngine::GetRenderer()
 {
 	return m_pRenderer;
 }

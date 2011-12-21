@@ -2,17 +2,62 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MultiThreadLoader.cpp" />
     <ClCompile Include="EEngine.cpp" />
+    <ClCompile Include="EAsyncLoader.cpp">
+      <Filter>Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="EAssetMgr.cpp">
+      <Filter>Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="EWinFileLoader.cpp">
+      <Filter>Asset\ResourceFileLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="ETextureDataProcessor.cpp">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="EActorDataProcessor.cpp">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="EMeshDataProcessor.cpp">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="MultiThreadLoader">
+    <Filter Include="Asset">
       <UniqueIdentifier>{4be06937-04b2-40eb-bd91-2f918e2c5d03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Asset\ResourceFileLoader">
+      <UniqueIdentifier>{ca5047ab-c18d-43d3-a84a-7deb44c0f795}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Asset\ResourceDataProcessor">
+      <UniqueIdentifier>{ca07cc05-6db3-4247-8263-797bb4fdd57c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MultiThreadLoader.h" />
-    <ClInclude Include="MultiThreadLoadUnit.h" />
     <ClInclude Include="EEngine.h" />
+    <ClInclude Include="EAsyncLoader.h">
+      <Filter>Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="EAssetMgr.h">
+      <Filter>Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="EWinFileLoader.h">
+      <Filter>Asset\ResourceFileLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="ETextureDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="EMtrlDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="EMotionDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="EActorDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="EMeshDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

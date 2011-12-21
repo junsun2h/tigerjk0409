@@ -29,12 +29,12 @@ inline XMVECTOR	CQuat::Slerp(const CQuat& q1, const CQuat& q2, float t)
 	return XMQuaternionSlerp( q1.m128, q2.m128, t);  
 }
 
-inline XMVECTOR	CQuat::GetDotProduct(const CQuat& q1, const CQuat& q2)		
+inline XMVECTOR	CQuat::DotProduct(const CQuat& q1, const CQuat& q2)		
 { 
 	return XMQuaternionDot( q1.m128, q2.m128);  
 }
 
-inline XMVECTOR	CQuat::GetInverse(const CQuat& q)					
+inline XMVECTOR	CQuat::Inverse(const CQuat& q)					
 { 
 	return XMQuaternionInverse( q.m128);  
 }

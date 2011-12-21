@@ -2,6 +2,7 @@
 #include "IEngine.h"
 
 
+
 #define WIN_WIDTH 800
 #define WIN_HEIGHT 600
 
@@ -143,6 +144,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR lpcmdline,
 	//		return FALSE;
 
 	MainLoop();
+
+	gEng->ShutDown();
 
 	return 0;
 }

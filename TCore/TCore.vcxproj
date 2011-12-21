@@ -78,13 +78,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="EActorDataProcessor.cpp" />
+    <ClCompile Include="EAssetMgr.cpp" />
+    <ClCompile Include="EAsyncLoader.cpp" />
     <ClCompile Include="EEngine.cpp" />
-    <ClCompile Include="MultiThreadLoader.cpp" />
+    <ClCompile Include="EMeshDataProcessor.cpp" />
+    <ClCompile Include="ETextureDataProcessor.cpp" />
+    <ClCompile Include="EWinFileLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EActorDataProcessor.h" />
+    <ClInclude Include="EAssetMgr.h" />
+    <ClInclude Include="EAsyncLoader.h" />
     <ClInclude Include="EEngine.h" />
-    <ClInclude Include="MultiThreadLoader.h" />
-    <ClInclude Include="MultiThreadLoadUnit.h" />
+    <ClInclude Include="EMeshDataProcessor.h" />
+    <ClInclude Include="EMotionDataProcessor.h" />
+    <ClInclude Include="EMtrlDataProcessor.h" />
+    <ClInclude Include="EWinFileLoader.h" />
+    <ClInclude Include="ETextureDataProcessor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

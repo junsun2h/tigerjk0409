@@ -42,8 +42,8 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
+//		D3D_FEATURE_LEVEL_11_0,
+//		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
 	};
 	UINT numFeatureLevels = ARRAYSIZE( featureLevels );
@@ -56,7 +56,7 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 	{
 		m_pDeviceSetting.m_DriverType = driverTypes[driverTypeIndex];
 		hr = D3D11CreateDeviceAndSwapChain( NULL, m_pDeviceSetting.m_DriverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-			D3D11_SDK_VERSION, &swapChainDesc, &m_MainWindow.m_pSwapChain, &m_pD3Device, &m_pDeviceSetting.m_FeatureLevel, &m_pImmediateContext.m_pContext );
+			D3D11_SDK_VERSION, &swapChainDesc, &m_MainWindow.pSwapChain, &m_pD3Device, &m_pDeviceSetting.m_FeatureLevel, m_pImmediateContext.GetContextP() );
 		if( SUCCEEDED( hr ) )
 			break;
 	}
@@ -72,7 +72,10 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 
 void RDX11Device::ShutDown()
 {
-
+	m_MainWindow.ReleaseTexture();
+	m_StateRepository.Destroy();
+	m_pImmediateContext.Destroy();
+	m_pD3Device->Release();
 }
 
 void RDX11Device::Render(uint32 index)
@@ -85,4 +88,41 @@ void RDX11Device::Render(uint32 index)
 bool RDX11Device::Resize(const CENGINE_INIT_PARAM &param)
 {
 	return m_MainWindow.Resize(m_pD3Device, param.width, param.height, param.bFullScreen);
+}
+
+void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource)
+{
+	switch( type )
+	{
+	case DP_RESOURCE_VERTEX:		TS_CreateVB(pBuf, size, pResource); break;
+	case DP_RESOURCE_VERTEX_OUT:	TS_CreateVBOut(pBuf, size, pResource);	break;
+	case DP_RESOURCE_INDEX:			TS_CreateIB(pBuf, size, pResource);	break;
+	case DP_RESOURCE_TEXTURE:		TS_CreateTexture(pBuf, size, pResource);	break;
+	case DP_RESOURCE_SHADER:		TS_CreateShader(pBuf, size, pResource);	break;
+	}
+}
+
+void RDX11Device::TS_CreateVB(void* pBuf ,int size, IResource* pResource)
+{
+
+}
+
+void RDX11Device::TS_CreateVBOut(void* pBuf ,int size, IResource* pResource)
+{
+
+}
+
+void RDX11Device::TS_CreateIB(void* pBuf ,int size, IResource* pResource)
+{
+
+}
+
+void RDX11Device::TS_CreateTexture(void* pBuf ,int size, IResource* pResource)
+{
+
+}
+
+void RDX11Device::TS_CreateShader(void* pBuf ,int size, IResource* pResource)
+{
+
 }

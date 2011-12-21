@@ -5,38 +5,16 @@
     <ClCompile Include="RDX11Device.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
     <ClCompile Include="RDX11Context.cpp" />
-    <ClCompile Include="RDX11Texture.cpp">
-      <Filter>Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="RDX11TextureCache.cpp">
-      <Filter>Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="RDX11Window.cpp">
-      <Filter>Texture</Filter>
-    </ClCompile>
     <ClCompile Include="RDX11StateRepository.cpp" />
+    <ClCompile Include="RDX11Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RDefine.h" />
     <ClInclude Include="RDX11Device.h" />
-    <ClInclude Include="RDX11Font.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />
     <ClInclude Include="RDX11Context.h" />
-    <ClInclude Include="RDX11Texture.h">
-      <Filter>Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="RDX11Resource.h" />
-    <ClInclude Include="RDX11TextureCache.h">
-      <Filter>Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="RDX11Window.h">
-      <Filter>Texture</Filter>
-    </ClInclude>
     <ClInclude Include="RDX11StateRepository.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Texture">
-      <UniqueIdentifier>{57ba4ac2-7e44-4f23-b11a-5de47108f7ba}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="RDX11Window.h" />
+    <ClInclude Include="RDX11DDS.h" />
   </ItemGroup>
 </Project>

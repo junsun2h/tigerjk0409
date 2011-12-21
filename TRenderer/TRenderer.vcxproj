@@ -83,17 +83,14 @@
     <ClCompile Include="RDX11Device.cpp" />
     <ClCompile Include="RDX11Window.cpp" />
     <ClCompile Include="RDX11StateRepository.cpp" />
-    <ClCompile Include="RDX11TextureCache.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
-    <ClCompile Include="RDX11Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RDX11Context.h" />
+    <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Device.h" />
     <ClInclude Include="RDX11Window.h" />
     <ClInclude Include="RDX11StateRepository.h" />
-    <ClInclude Include="RDX11Texture.h" />
-    <ClInclude Include="RDX11TextureCache.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />
     <ClInclude Include="RDefine.h" />
   </ItemGroup>

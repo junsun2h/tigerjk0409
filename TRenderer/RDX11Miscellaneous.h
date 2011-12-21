@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RDefine.h"
-
+#include "RDX11DDS.h"
 
 //--------------------------------------------------------------------------------------
 // Takes a screen shot of a 32bit D3D11 back buffer and saves the images to a BMP file
@@ -98,3 +98,7 @@ HMONITOR WINAPI DXUTMonitorFromRect( LPCRECT lprcScreenCoords, DWORD dwFlags );
 BOOL WINAPI DXUTGetMonitorInfo( HMONITOR hMonitor, LPMONITORINFO lpMonitorInfo );
 
 UINT WINAPI DXUTGetDXGIColorChannelBits( DXGI_FORMAT fmt );
+DXGI_FORMAT MAKE_SRGB( DXGI_FORMAT format );
+DXGI_FORMAT GetDXGIFormat( const DDS_PIXELFORMAT& ddpf );
+void GetSurfaceInfo( UINT width, UINT height, DXGI_FORMAT fmt, UINT* pNumBytes, UINT* pRowBytes, UINT* pNumRows );
+

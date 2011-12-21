@@ -12,6 +12,7 @@
 #include <crtdbg.h>
 #endif
 
+#define ENUMSTR(a) (#a) 
 
 //Unsigned types.
 typedef unsigned __int64	uint64;

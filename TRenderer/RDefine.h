@@ -24,6 +24,8 @@
 #define DXUT_MIN_WINDOW_SIZE_X 200
 #define DXUT_MIN_WINDOW_SIZE_Y 200
 #define DXUT_COUNTER_STAT_LENGTH 2048
+#define USE_D3D11_STAGING_RESOURCES 1
+
 
 #include <windows.h>
 #include <initguid.h>
@@ -42,8 +44,6 @@
 #include <d3dx11.h>
 // HRESULT translation for Direct3D and other APIs 
 #include <dxerr.h>
-
-#include <d3dx9math.h>  // TODO: Change to xnamath
 
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -97,6 +97,27 @@ inline void DXUT_SetDebugName( ID3D11DeviceChild* pObj, const CHAR* pstrName )
 #else
 #define DXUT_SetDebugName( pObj, pstrName )
 #endif
+
+
+//--------------------------------------------------------------------------------------
+// Hard Defines for the various structures
+//--------------------------------------------------------------------------------------
+#define SDKMESH_FILE_VERSION 101
+#define MAX_VERTEX_ELEMENTS 32
+#define MAX_VERTEX_STREAMS 16
+#define MAX_FRAME_NAME 100
+#define MAX_MESH_NAME 100
+#define MAX_SUBSET_NAME 100
+#define MAX_MATERIAL_NAME 100
+#define MAX_TEXTURE_NAME MAX_PATH
+#define MAX_MATERIAL_PATH MAX_PATH
+#define INVALID_FRAME ((UINT)-1)
+#define INVALID_MESH ((UINT)-1)
+#define INVALID_MATERIAL ((UINT)-1)
+#define INVALID_SUBSET ((UINT)-1)
+#define INVALID_ANIMATION_DATA ((UINT)-1)
+#define ERROR_RESOURCE_VALUE 1
+#define INVALID_SAMPLER_SLOT ((UINT)-1)
 
 
 

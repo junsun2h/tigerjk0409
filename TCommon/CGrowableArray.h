@@ -1,5 +1,6 @@
 #pragma once
 
+#include <new.h>      // for placement new
 
 //--------------------------------------------------------------------------------------
 // A growable array

@@ -31,6 +31,7 @@ struct CQuat
 
 	static XMVECTOR		Conjugate(const CQuat& q);
 	static XMVECTOR		Normalise(const CQuat& q);
+	static XMVECTOR		Identity()		{ return XMQuaternionIdentity(); }
 
 	static XMVECTOR		Ratate(const CVector3& axis, float angle);
 
@@ -39,10 +40,12 @@ struct CQuat
 	static XMVECTOR		RatateDegree(float Pitch, float Yaw, float Roll);
 
 	static XMVECTOR		Slerp(const CQuat& q1, const CQuat& q2, float t);
-	static XMVECTOR		GetDotProduct(const CQuat& q1, const CQuat& q2);
-	static XMVECTOR		GetInverse(const CQuat& q);
+	static XMVECTOR		DotProduct(const CQuat& q1, const CQuat& q2);
+	static XMVECTOR		Inverse(const CQuat& q);
 	static void			ToAxisAngle(const CQuat& q1, CVector3* pAxis, float* pAnlge);
 
+
+	
 	// assignment operators
 	CQuat operator *= ( const CQuat& q)			{ m128 = XMQuaternionMultiply(m128, q.m128);  return *this; }
 	XMVECTOR operator * ( const CQuat& q)		{ return XMQuaternionMultiply(m128, q.m128);}
