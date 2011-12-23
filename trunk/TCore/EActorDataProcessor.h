@@ -10,7 +10,6 @@ public:
 	EActorDataProcessor();
 	~EActorDataProcessor();
 
-	virtual bool			MT_Complete(IAssetMgr* pAssetMgr) override;
-	virtual bool			MT_Destroy() override;
+	virtual bool			PopData(IAssetMgr* pAssetMgr) override;
 	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) override;
 };

@@ -7,20 +7,10 @@
 struct CENGINE_INIT_PARAM;
 
 
-enum RENDER_OBJ_TYPE
-{
-	RENDER_OBJ_LAMBERT,
-	RENDER_OBJ_NORMALMAP,
-	RENDER_OBJ_ALPHA_BLEND,
-	RENDER_OBJ_LINE,
-	RENDER_OBJ_SKIN_MESH,
-	RO_LIGHT_DIRECTIONAL,
-	RO_LIGHT_OUTSIDE_OF_CAMERA,
-	RO_LIGHT_INSIDE_OF_CAMERA,
-	RO_LIGHT_SPOT_SHADOW,
-	RENDER_OBJ_2D,
 
-	NUM_RENDER_OBJ_TYPE,
+enum RENDER_COMMAND
+{
+	RC_RESET_DEVICE,
 };
 
 
@@ -36,4 +26,5 @@ struct IRDevice
 
 	// Device Dependent Resources ( ex: Texture, VB, IB, Shader )
 	virtual void		TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource) = 0;
+	virtual HWND		GetHWND() = 0;
 };

@@ -18,7 +18,6 @@ public:
 	EMeshDataProcessor( IRDevice* pRDevice, std::string name );
 	~EMeshDataProcessor();
 
-	virtual bool			MT_Complete(IAssetMgr* pAssetMgr) override;
-	virtual bool			MT_Destroy() override;
+	virtual bool			PopData(IAssetMgr* pAssetMgr) override;
 	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) override;
 };

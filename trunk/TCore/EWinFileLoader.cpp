@@ -1,4 +1,6 @@
 #include "EWinFileLoader.h"
+#include "EAsyncLoader.h"
+
 
 EWinFileLoader::EWinFileLoader( char* szFileName  )
 {
@@ -7,7 +9,8 @@ EWinFileLoader::EWinFileLoader( char* szFileName  )
 
 EWinFileLoader::~EWinFileLoader()
 {
-	MT_Destroy();
+	SAFE_DELETE_ARRAY( m_pData );
+	m_cBytes = 0;
 }
 
 bool EWinFileLoader::PT_Decompress( void** ppData, SIZE_T* pcBytes )
@@ -17,16 +20,11 @@ bool EWinFileLoader::PT_Decompress( void** ppData, SIZE_T* pcBytes )
 	return false;
 }
 
-bool EWinFileLoader::MT_Destroy()
-{
-	SAFE_DELETE_ARRAY( m_pData );
-	m_cBytes = 0;
-
-	return true;
-}
 
 bool EWinFileLoader::IOT_Load()
 {
+	assert ( EAsyncLoader::IsIOThread() );
+
     // Open the file
 	m_hFile = CreateFileA( m_szFileName, 
 							GENERIC_READ, 

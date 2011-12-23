@@ -3,6 +3,9 @@
 #include <process.h>
 
 
+
+
+
 //--------------------------------------------------------------------------------------
 unsigned int WINAPI _FileIOThreadProc( LPVOID lpParameter )
 {
@@ -15,6 +18,11 @@ unsigned int WINAPI _ProcessingThreadProc( LPVOID lpParameter )
 	return ( ( EAsyncLoader* )lpParameter )->PT_ProcessingThreadProc();
 }
 
+UINT EAsyncLoader::m_IOThreadID = 0;
+UINT EAsyncLoader::m_ProcessThreadID[MAX_DATA_PROC_THREAD] = {0};
+UINT EAsyncLoader::m_NumProcessingThreads = 0;
+
+
 //--------------------------------------------------------------------------------------
 EAsyncLoader::EAsyncLoader( UINT NumProcessingThreads ) : m_bDone( false ),
 	m_bProcessThreadDone( false ),
@@ -22,23 +30,21 @@ EAsyncLoader::EAsyncLoader( UINT NumProcessingThreads ) : m_bDone( false ),
 	m_NumOustandingResources( 0 ),
 	m_hIOQueueSemaphore( 0 ),
 	m_hProcessQueueSemaphore( 0 ),
-	m_hIOThread( 0 ),
-	m_NumProcessingThreads( 0 ),
-	m_phProcessThreads( NULL )
+	m_hIOThread( 0 )
 {
-	MT_InitAsyncLoadingThreadObjects( NumProcessingThreads );
+	InitAsyncLoadingThreadObjects( NumProcessingThreads );
 }
 
 //--------------------------------------------------------------------------------------
 EAsyncLoader::~EAsyncLoader()
 {
-	MT_DestroyAsyncLoadingThreadObjects();
+	DestroyAsyncLoadingThreadObjects();
 }
 
 //--------------------------------------------------------------------------------------
 // Add a work item to the queue of work items
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::MT_AddWorkItem( RESOURCE_REQUEST resourceRequest )
+void EAsyncLoader::AddWorkItem( RESOURCE_REQUEST resourceRequest )
 {
 	if( !resourceRequest.pDataLoader || !resourceRequest.pDataProcessor )
 	{
@@ -61,9 +67,9 @@ void EAsyncLoader::MT_AddWorkItem( RESOURCE_REQUEST resourceRequest )
 //--------------------------------------------------------------------------------------
 // Wait for all work in the queues to finish
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::MT_WaitForAllItems( IAssetMgr* pAssetMgr)
+void EAsyncLoader::WaitForAllItems( IAssetMgr* pAssetMgr)
 {
-	MT_CompleteWork( UINT_MAX, pAssetMgr );
+	CompleteWork( UINT_MAX, pAssetMgr );
 
 	for(; ; )
 	{
@@ -72,7 +78,7 @@ void EAsyncLoader::MT_WaitForAllItems( IAssetMgr* pAssetMgr)
 			return;
 
 		// Service Queues
-		MT_CompleteWork( UINT_MAX, pAssetMgr );
+		CompleteWork( UINT_MAX, pAssetMgr );
 		Sleep( 100 );
 	}
 }
@@ -125,7 +131,6 @@ unsigned int EAsyncLoader::IOT_FileIOThreadProc()
 unsigned int EAsyncLoader::PT_ProcessingThreadProc()
 {
 	WCHAR szMessage[MAX_PATH];
-
 	HRESULT hr = S_OK;
 	m_bProcessThreadDone = false;
 	while( !m_bDone )
@@ -167,8 +172,11 @@ unsigned int EAsyncLoader::PT_ProcessingThreadProc()
 }
 
 //--------------------------------------------------------------------------------------
-bool EAsyncLoader::MT_InitAsyncLoadingThreadObjects( UINT NumProcessingThreads )
+bool EAsyncLoader::InitAsyncLoadingThreadObjects( UINT NumProcessingThreads )
 {
+	if( NumProcessingThreads > MAX_DATA_PROC_THREAD )
+		NumProcessingThreads =  MAX_DATA_PROC_THREAD;
+
 	LONG MaxSemaphoreCount = LONG_MAX;
 
 	// Create 2 semaphores
@@ -182,19 +190,18 @@ bool EAsyncLoader::MT_InitAsyncLoadingThreadObjects( UINT NumProcessingThreads )
 
 	// Create the Processing threads
 	m_NumProcessingThreads = NumProcessingThreads;
-	m_phProcessThreads = new HANDLE[ m_NumProcessingThreads ];
 	if( !m_phProcessThreads )
 		return false;
 	for( UINT i = 0; i < m_NumProcessingThreads; i++ )
 	{
 		m_phProcessThreads[i] = ( HANDLE )_beginthreadex( NULL, 0, _ProcessingThreadProc, ( LPVOID )this,
-			CREATE_SUSPENDED, NULL );
+			CREATE_SUSPENDED, &m_ProcessThreadID[i] );
 		// we would set thread affinity here if we wanted to lock this thread to a processor
 		ResumeThread( m_phProcessThreads[i] );
 	}
 
 	// Create the IO thread
-	m_hIOThread = ( HANDLE )_beginthreadex( NULL, 0, _FileIOThreadProc, ( LPVOID )this, CREATE_SUSPENDED, NULL );
+	m_hIOThread = ( HANDLE )_beginthreadex( NULL, 0, _FileIOThreadProc, ( LPVOID )this, CREATE_SUSPENDED, &m_IOThreadID );
 	// we would set thread affinity here if we wanted to lock this thread to a processor
 	ResumeThread( m_hIOThread );
 
@@ -202,7 +209,7 @@ bool EAsyncLoader::MT_InitAsyncLoadingThreadObjects( UINT NumProcessingThreads )
 }
 
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::MT_DestroyAsyncLoadingThreadObjects()
+void EAsyncLoader::DestroyAsyncLoadingThreadObjects()
 {
 	m_bDone = true;
 
@@ -228,7 +235,7 @@ void EAsyncLoader::MT_DestroyAsyncLoadingThreadObjects()
 }
 
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::MT_CompleteWork( UINT CurrentNumResourcesToService , IAssetMgr* pAssetMgr)
+void EAsyncLoader::CompleteWork( UINT CurrentNumResourcesToService , IAssetMgr* pAssetMgr)
 {
 	HRESULT hr = S_OK;
 
@@ -243,7 +250,7 @@ void EAsyncLoader::MT_CompleteWork( UINT CurrentNumResourcesToService , IAssetMg
 		m_MainThreadQueue.Remove( 0 );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 
-		ResourceRequest.pDataProcessor->MT_Complete(pAssetMgr);
+		ResourceRequest.pDataProcessor->PopData(pAssetMgr);
 		
 		if( ResourceRequest.pCallBackComplete != NULL )
 			ResourceRequest.pCallBackComplete();
@@ -254,4 +261,23 @@ void EAsyncLoader::MT_CompleteWork( UINT CurrentNumResourcesToService , IAssetMg
 		// Decrement num oustanding resources
 		m_NumOustandingResources --;
 	}
+}
+
+bool EAsyncLoader::IsIOThread()
+{
+	if (::GetCurrentThreadId() == m_IOThreadID )
+		return true;
+	return false;
+}
+
+bool EAsyncLoader::IsDataProcThread()
+{
+	UINT currentID = ::GetCurrentThreadId();
+
+	for( UINT i= 0; i < m_NumProcessingThreads; ++i)
+	{
+		if( currentID == m_ProcessThreadID[i] )
+			return true;
+	}
+	return false;
 }

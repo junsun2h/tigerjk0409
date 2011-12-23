@@ -5,6 +5,8 @@
 
 class EAssetMgr;
 
+#define MAX_DATA_PROC_THREAD	3
+
 class EAsyncLoader : public IAsyncLoader
 {
 private:
@@ -17,8 +19,11 @@ private:
 	HANDLE	m_hIOQueueSemaphore;
 	HANDLE	m_hProcessQueueSemaphore;
 	HANDLE	m_hIOThread;
-	UINT	m_NumProcessingThreads;
-	HANDLE* m_phProcessThreads;
+	HANDLE	 m_phProcessThreads[MAX_DATA_PROC_THREAD];
+	
+	static UINT	m_IOThreadID;
+	static UINT	m_ProcessThreadID[MAX_DATA_PROC_THREAD];
+	static UINT	m_NumProcessingThreads;
 
 	CGrowableArray <RESOURCE_REQUEST> m_IOQueue;
 	CGrowableArray <RESOURCE_REQUEST> m_ProcessQueue;
@@ -30,17 +35,21 @@ private:
 private:
 	unsigned int                IOT_FileIOThreadProc();
 	unsigned int                PT_ProcessingThreadProc();
-	bool                        MT_InitAsyncLoadingThreadObjects( UINT NumProcessingThreads );
-	void                        MT_DestroyAsyncLoadingThreadObjects();
+	bool                        InitAsyncLoadingThreadObjects( UINT NumProcessingThreads );
+	void                        DestroyAsyncLoadingThreadObjects();
 
 public:
+	static	bool				IsIOThread();
+	static	bool				IsDataProcThread();
+
+
 	friend unsigned int WINAPI  _FileIOThreadProc( LPVOID lpParameter );
 	friend unsigned int WINAPI  _ProcessingThreadProc( LPVOID lpParameter );
 
 	EAsyncLoader( UINT NumProcessingThreads );
 	virtual ~EAsyncLoader();
 
-	virtual void	MT_AddWorkItem( RESOURCE_REQUEST resourceRequest) override;
-	virtual void    MT_WaitForAllItems(IAssetMgr* pAssetMgr) override;
-	virtual void    MT_CompleteWork( UINT CurrentNumResourcesToService, IAssetMgr* pAssetMgr ) override;
+	virtual void	AddWorkItem( RESOURCE_REQUEST resourceRequest) override;
+	virtual void    WaitForAllItems(IAssetMgr* pAssetMgr) override;
+	virtual void    CompleteWork( UINT CurrentNumResourcesToService, IAssetMgr* pAssetMgr ) override;
 };
