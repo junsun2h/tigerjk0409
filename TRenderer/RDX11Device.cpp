@@ -13,6 +13,8 @@ RDX11Device::~RDX11Device()
 
 bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 {
+	m_HWND = (HWND)param.hWnd;
+
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 
 	ZeroMemory( &swapChainDesc, sizeof( swapChainDesc ) );

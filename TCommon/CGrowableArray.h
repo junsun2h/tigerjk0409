@@ -17,6 +17,7 @@ public:
 
 	CGrowableArray& operator=( const CGrowableArray<TYPE>& a ) { if( this == &a ) return *this; RemoveAll(); for( int i=0; i < a.m_nSize; i++ ) Add( a.m_pData[i] ); return *this; }
 
+	TYPE*	GrowSize( int nSize );
 	HRESULT SetSize( int nNewMaxSize );
 	HRESULT Add( const TYPE& value );
 	HRESULT Insert( int nIndex, const TYPE& value );
@@ -98,6 +99,15 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSizeInternal( int nNew
 	return S_OK;
 }
 
+//--------------------------------------------------------------------------------------
+template<typename TYPE> TYPE* CGrowableArray <TYPE>::GrowSize( int nSize )
+{
+	int nStart = m_nSize;
+
+	SetSizeInternal( m_nSize + nSize );
+
+	return &m_pData[nStart];
+}
 
 //--------------------------------------------------------------------------------------
 template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSize( int nNewMaxSize )

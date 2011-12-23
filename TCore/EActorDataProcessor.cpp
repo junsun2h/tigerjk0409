@@ -26,12 +26,7 @@ EActorDataProcessor::~EActorDataProcessor()
 
 }
 
-bool EActorDataProcessor::MT_Complete(IAssetMgr* pAssetMgr)
-{
-	return true;
-}
-
-bool EActorDataProcessor::MT_Destroy()
+bool EActorDataProcessor::PopData(IAssetMgr* pAssetMgr)
 {
 	return true;
 }

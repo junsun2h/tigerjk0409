@@ -3,7 +3,8 @@
 #include "RDefine.h"
 #include "RDX11StateRepository.h"
 #include "CThread.h"
-
+#include "CGrowableArray.h"
+#include <IRDevice.h>
 
 class RDX11Device;
 struct RDX11Window;

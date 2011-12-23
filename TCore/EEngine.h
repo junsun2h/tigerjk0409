@@ -3,6 +3,8 @@
 #include "IEngine.h"
 
 
+
+
 class EEngine : public IEngine
 {
 public:
@@ -12,12 +14,10 @@ public:
 	virtual bool StartUp(const CENGINE_INIT_PARAM &param);
 	virtual bool ShutDown();
 
-	//////////////////////////////////////////////////////////////////////////
-	// IEngine
-	//////////////////////////////////////////////////////////////////////////
+public:
 	virtual IRDevice* GetRenderer() override;
 
 private:
-	IRDevice*	m_pRenderer;
+	IRDevice*		m_pRenderer;
 };
 

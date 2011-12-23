@@ -19,7 +19,6 @@ struct IDataLoader
 {
 	virtual ~IDataLoader(){}
 	virtual bool PT_Decompress( void** ppData, SIZE_T* pcBytes ) = 0;
-	virtual bool MT_Destroy() = 0;
 	virtual bool IOT_Load() = 0;
 };
 
@@ -28,8 +27,7 @@ struct IDataLoader
 struct IDataProcessor
 {
 	virtual ~IDataProcessor()	{}
-	virtual bool			MT_Complete(IAssetMgr* pAssetMgr) = 0;
-	virtual bool			MT_Destroy() = 0;
+	virtual bool			PopData(IAssetMgr* pAssetMgr) = 0;
 	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) = 0;
 };
 
@@ -47,7 +45,7 @@ struct RESOURCE_REQUEST
 struct IAsyncLoader
 {
 	virtual ~IAsyncLoader(){}
-	virtual void	MT_AddWorkItem( RESOURCE_REQUEST resourceRequest) = 0;
-	virtual void	MT_WaitForAllItems(IAssetMgr* pAssetMgr) = 0;
-	virtual void    MT_CompleteWork( UINT CurrentNumResourcesToService, IAssetMgr* pAssetMgr) = 0;
+	virtual void	AddWorkItem( RESOURCE_REQUEST resourceRequest) = 0;
+	virtual void	WaitForAllItems(IAssetMgr* pAssetMgr) = 0;
+	virtual void    CompleteWork( UINT CurrentNumResourcesToService, IAssetMgr* pAssetMgr) = 0;
 };

@@ -5,6 +5,7 @@
 
 EEngine* s_pEngine = NULL;
 
+
 EEngine::EEngine()
 	: m_pRenderer(NULL)
 {

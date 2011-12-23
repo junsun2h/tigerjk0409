@@ -4,6 +4,7 @@
 #include <locale>
 
 
+
 const IResource* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 {
 	return NULL;
@@ -42,7 +43,7 @@ long EAssetMgr::Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMP
 		assert(0);
 	}
 
-	m_AsyncLoader.MT_AddWorkItem(request);
+	m_AsyncLoader.AddWorkItem(request);
 
 	return GET_RID(fileName);
 }
@@ -51,12 +52,12 @@ void EAssetMgr::LoadCompletedResource( IResource* pResource)
 {
 	RESOURCE_TYPE type = pResource->Type();
 
-	if( m_Resources[type].find(pResource->RID) == m_Resources[type].end() )
+	if( m_Resources[type].Lookup(pResource->RID) != NULL )
 	{
 		assert(0);
 		return;
 	}
 
 	pResource->state = RESOURCE_LOAD_FINISHED;
-	m_Resources[type].insert( TYPE_RESOURCE_MAP::value_type( pResource->RID, pResource ) );
+	m_Resources[type].SetAt( pResource->RID, pResource );
 }

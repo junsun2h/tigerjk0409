@@ -6,7 +6,9 @@
 #include "RDX11Context.h"
 #include "RDX11Window.h"
 #include "CThread.h"
-#include <map>
+#include <CGuid.h>
+#include <atlcoll.h>
+
 
 struct RDX11Setting
 {
@@ -32,7 +34,7 @@ public:
 	virtual void	ShutDown() override;
 	virtual void	Render(uint32 index) override;
 	virtual bool	Resize(const CENGINE_INIT_PARAM &param) override;
-
+	virtual HWND	GetHWND() override	{ return m_HWND; }
 	virtual void	TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource) override;
 
 private:
@@ -42,16 +44,16 @@ private:
 	void			TS_CreateTexture(void* pBuf ,int size, IResource* pResource);
 	void			TS_CreateShader(void* pBuf ,int size, IResource* pResource);
 
+	HWND						m_HWND;
+	ID3D11Device*				m_pD3Device;
+	RDX11Setting				m_pDeviceSetting;
+	RDX11Context				m_pImmediateContext;
+	RDX11StateRepository		m_StateRepository;
+	RDX11Window					m_MainWindow;
 
-	ID3D11Device*					m_pD3Device;
-	RDX11Setting					m_pDeviceSetting;
-	RDX11Context					m_pImmediateContext;
-	RDX11StateRepository			m_StateRepository;
-	RDX11Window						m_MainWindow;
-
-	typedef std::map<long, ID3D11Buffer*>				RDX11BUFFER_RESOURCE_MAP;
-	typedef std::map<long, ID3D11ShaderResourceView*>	RDX11TEXTURE_RESOURCE_MAP;
-	typedef std::map<long, ID3D11DeviceChild*>			RDX11SHADER_RESOURCE_MAP;
+	typedef ATL::CAtlMap<long, ID3D11Buffer*>				RDX11BUFFER_RESOURCE_MAP;
+	typedef ATL::CAtlMap<long, ID3D11ShaderResourceView*>	RDX11TEXTURE_RESOURCE_MAP;
+	typedef ATL::CAtlMap<long, ID3D11DeviceChild*>			RDX11SHADER_RESOURCE_MAP;
 
 	RDX11BUFFER_RESOURCE_MAP	m_RscVBMap;
 	RDX11BUFFER_RESOURCE_MAP	m_RscIBMap;
