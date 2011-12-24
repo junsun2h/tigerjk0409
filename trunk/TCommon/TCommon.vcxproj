@@ -69,6 +69,8 @@
     <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CThread.h" />
+    <ClInclude Include="IEntity.h" />
+    <ClInclude Include="IEntityProxy.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />
     <ClInclude Include="IResource.h" />

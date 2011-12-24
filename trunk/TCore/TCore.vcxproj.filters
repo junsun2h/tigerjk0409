@@ -22,6 +22,8 @@
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
     <ClCompile Include="ERenderer.cpp" />
+    <ClCompile Include="EEntity.cpp" />
+    <ClCompile Include="EEntityMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -61,5 +63,7 @@
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
     <ClInclude Include="ERenderer.h" />
+    <ClInclude Include="EEntity.h" />
+    <ClInclude Include="EEntityMgr.h" />
   </ItemGroup>
 </Project>
