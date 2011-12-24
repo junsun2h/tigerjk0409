@@ -35,6 +35,12 @@
     <ClInclude Include="IAsyncLoader.h">
       <Filter>Interface</Filter>
     </ClInclude>
+    <ClInclude Include="IEntity.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntityProxy.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

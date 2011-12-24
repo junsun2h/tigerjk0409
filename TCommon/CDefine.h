@@ -42,5 +42,6 @@ typedef char			int8;
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
 #endif
 
+#define BIT(x) (1<<(x))
 
 #include "CMathType.h"
