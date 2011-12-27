@@ -24,15 +24,16 @@ UINT EAsyncLoader::m_NumProcessingThreads = 0;
 
 
 //--------------------------------------------------------------------------------------
-EAsyncLoader::EAsyncLoader( UINT NumProcessingThreads ) : m_bDone( false ),
+EAsyncLoader::EAsyncLoader() 
+	: m_bDone( false ),
 	m_bProcessThreadDone( false ),
 	m_bIOThreadDone( false ),
 	m_NumOustandingResources( 0 ),
 	m_hIOQueueSemaphore( 0 ),
 	m_hProcessQueueSemaphore( 0 ),
-	m_hIOThread( 0 )
+	m_hIOThread( 0 ),
+	m_pAssetMgr(NULL)
 {
-	InitAsyncLoadingThreadObjects( NumProcessingThreads );
 }
 
 //--------------------------------------------------------------------------------------
@@ -172,8 +173,16 @@ unsigned int EAsyncLoader::PT_ProcessingThreadProc()
 }
 
 //--------------------------------------------------------------------------------------
-bool EAsyncLoader::InitAsyncLoadingThreadObjects( UINT NumProcessingThreads )
+bool EAsyncLoader::Init( UINT NumProcessingThreads, EAssetMgr* pAssetMgr )
 {
+	if( pAssetMgr == NULL )
+	{
+		assert(0);
+		return false;
+	}
+
+	m_pAssetMgr = pAssetMgr;
+
 	if( NumProcessingThreads > MAX_DATA_PROC_THREAD )
 		NumProcessingThreads =  MAX_DATA_PROC_THREAD;
 
@@ -192,6 +201,7 @@ bool EAsyncLoader::InitAsyncLoadingThreadObjects( UINT NumProcessingThreads )
 	m_NumProcessingThreads = NumProcessingThreads;
 	if( !m_phProcessThreads )
 		return false;
+
 	for( UINT i = 0; i < m_NumProcessingThreads; i++ )
 	{
 		m_phProcessThreads[i] = ( HANDLE )_beginthreadex( NULL, 0, _ProcessingThreadProc, ( LPVOID )this,
@@ -215,11 +225,6 @@ void EAsyncLoader::DestroyAsyncLoadingThreadObjects()
 
 	ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );
 	ReleaseSemaphore( m_hProcessQueueSemaphore, 1, NULL );
-
-	while( !m_bIOThreadDone || !m_bProcessThreadDone )
-	{
-		Sleep( 100 );
-	}
 
 	CloseHandle( m_hIOQueueSemaphore );
 	CloseHandle( m_hProcessQueueSemaphore );

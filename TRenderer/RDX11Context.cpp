@@ -2,9 +2,6 @@
 #include "RDX11Window.h"
 
 
-
-
-
 RDX11Context::RDX11Context()
 {
 }
@@ -13,7 +10,6 @@ RDX11Context::~RDX11Context()
 {
 
 }
-
 
 void RDX11Context::SetViewport(float width, float height, float MinDepth, float MaxDepth, float TopLeftX, float TopLeftY)
 {
@@ -66,4 +62,27 @@ void RDX11Context::SetTarget(RDX11Window* pWindow)
 void RDX11Context::Destroy()
 {
 	m_pContext->Release();
+}
+
+//--------------------------------------------------------------------------------------
+void RDX11Context::StoreCurrentState()
+{
+	m_pContext->OMGetDepthStencilState( &m_pDepthStencilStateStored11, &m_StencilRefStored11 );
+	m_pContext->RSGetState( &m_pRasterizerStateStored11 );
+	m_pContext->OMGetBlendState( &m_pBlendStateStored11, m_BlendFactorStored11, &m_SampleMaskStored11 );
+	m_pContext->PSGetSamplers( 0, 1, &m_pSamplerStateStored11 );
+}
+
+//--------------------------------------------------------------------------------------
+void RDX11Context::RestoreSavedState()
+{
+	m_pContext->OMSetDepthStencilState( m_pDepthStencilStateStored11, m_StencilRefStored11 );
+	m_pContext->RSSetState( m_pRasterizerStateStored11 );
+	m_pContext->OMSetBlendState( m_pBlendStateStored11, m_BlendFactorStored11, m_SampleMaskStored11 );
+	m_pContext->PSSetSamplers( 0, 1, &m_pSamplerStateStored11 );
+
+	SAFE_RELEASE( m_pDepthStencilStateStored11 );
+	SAFE_RELEASE( m_pRasterizerStateStored11 );
+	SAFE_RELEASE( m_pBlendStateStored11 );
+	SAFE_RELEASE( m_pSamplerStateStored11 );
 }

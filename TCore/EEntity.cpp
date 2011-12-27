@@ -1,7 +1,10 @@
 #include "EEntity.h"
 #include "CDefine.h"
+#include "EEngine.h"
 
-EEntity::EEntity()
+
+
+EEntity::EEntity(std::string& name, UINT id)
 	: m_LocalPos(0,0,0)
 	, m_LocalScale(1,1,1)
 	, m_LocalRotation(0,0,0,1)
@@ -9,9 +12,13 @@ EEntity::EEntity()
 	, m_WorldScale(1,1,1)
 	, m_WorldRotation(0,0,0,1)
 	, m_pParent(NULL)
+	, m_Name(name)
+	, m_ID(id)
 {
 	m_LocalTM = CMatrix::Identity();
 	m_WorldTM = CMatrix::Identity();
+
+	memset( m_Proxyes, 0, 4 * NUM_ENTITY_PROXY_TYPE );
 }
 
 EEntity::~EEntity()
@@ -57,18 +64,28 @@ inline void EEntity::SetLocalTM(const CMatrix& tm)
 {
 	m_LocalTM = tm;
 	CMatrix::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+	UpdateWorldTM();
 }
 
 inline void EEntity::SetWorldTM(const CMatrix& tm)
 {
-	m_LocalTM = tm;
-	CMatrix::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+	if ( m_pParent )
+	{
+		CMatrix worldInverse = CMatrix::Inverse(NULL, m_pParent->GetWorldTM());
+		CMatrix localTM =  worldInverse * m_LocalTM;
+		SetLocalTM( localTM );
+	}
+	else
+	{
+		SetLocalTM( tm );
+	}
 }
 
 inline void EEntity::UpdateLocalTM()
 {
 	m_LocalTM = CMatrix::TransformationAffine(m_LocalScale, m_LocalPos, m_LocalRotation, m_LocalPos);
-
+	UpdateWorldTM();
+	
 	int count = m_Children.size();
 	for(int i= 0; i < count; i++)
 	{
@@ -89,6 +106,10 @@ inline void EEntity::UpdateWorldTM()
 
 	m_WorldTM = CMatrix::Multiply(m_LocalTM, m_pParent->GetLocalTM());
 	CMatrix::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+
+	EntityEvent e;
+	e.type = E_EVENT_TRANSFORM_CHANGED;
+	SendEvent(e);
 
 	int count = m_Children.size();
 	for(int i= 0; i < count; i++)
@@ -173,21 +194,19 @@ IEntity* EEntity::GetChild(UINT index )
 }
 
 //////////////////////////////////////////////////////////////////////////
-//   etc
+//   proxy
 //////////////////////////////////////////////////////////////////////////
-void EEntity::SendEvent( ENTITY_EVENT &e )
+IEntityProxy* EEntity::CreateProxy( ENTITY_PROXY_TYPE type, std::string& strResource)
 {
-}
+	if( type == ENTITY_ACTOR )
+	{
+		IEntityProxyActor* pActor = g_Engine.AcotrMgr()->SPawn( m_Name + "_ActorProxy" );
+		pActor->Init( strResource );
+		pActor->SetEntity( this );
+		m_Proxyes[ENTITY_ACTOR] = pActor;
+	}
 
-void EEntity::Update()
-{
-	for( int i=0; i < NUM_ENTITY_PROXY_TYPE; ++i )
-		m_Proxyes[i]->Update();
-}
-
-bool EEntity::IsUsingPerFrameUpdate()
-{
-	return false;
+	return NULL;
 }
 
 void EEntity::SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy)
@@ -195,5 +214,26 @@ void EEntity::SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy)
 	if( m_Proxyes[type] != NULL )
 		SAFE_DELETE( m_Proxyes[type] );
 
-	 m_Proxyes[type] = pProxy;
+	m_Proxyes[type] = pProxy;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//   etc
+//////////////////////////////////////////////////////////////////////////
+void EEntity::SendEvent( EntityEvent &e )
+{
+	m_EventQueue.Add(e);
+
+	while( m_EventQueue.GetSize() != 0 )
+	{
+		EntityEvent& e = m_EventQueue.GetAt( 0 );
+		m_EventQueue.Remove( 0 );
+		
+		for( int i=0; i < NUM_ENTITY_PROXY_TYPE; ++i )
+		{
+			if( m_Proxyes[i] != NULL )
+				m_Proxyes[i]->ProcessEvent(e);
+		}
+	}
 }

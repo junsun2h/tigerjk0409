@@ -3,6 +3,10 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include "EEngine.h"
+#include "EEntityMgr.h"
+#include "EActorMgr.h"
+
+EEngine g_Engine;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -24,6 +28,6 @@ extern "C"
 {
 	DLL_EXPORT IEngine* CreateEngine()
 	{
-		return new EEngine;
+		return &g_Engine;
 	}
 };

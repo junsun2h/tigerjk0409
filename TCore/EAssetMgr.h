@@ -20,13 +20,16 @@ class EAssetMgr : public IAssetMgr
 	TYPE_RESOURCE_MAP		m_Resources[NUM_RESOURCE_TYPE];
 
 public:
+	EAssetMgr();
+	~EAssetMgr();
 
-	// Add actual resource to list , called from IDataProcessor::MT_Complete()
+	void				Init( UINT numProcessThread, IRDevice*	pRDevice );
+
 	void				LoadCompletedResource( IResource* pResource);
 	long				Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true);
 
 	const IResource*	GetResource( RESOURCE_TYPE type, long id );
 	const IResource*	GetResource( RESOURCE_TYPE type, std::string name );
 
-
+	void				Clear() override;
 };

@@ -192,13 +192,14 @@ struct IAssetMgr
 {
 	virtual void				LoadCompletedResource( IResource* pResource) = 0;
 	virtual long				Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true) = 0;
- 
+ 	virtual void				Clear() = 0;
+
 	virtual const IResource*	GetResource( RESOURCE_TYPE type, long id ) = 0;
 	virtual const IResource*	GetResource( RESOURCE_TYPE type, std::string name ) = 0;
 };
 
 
-inline long GET_RID( std::string name )
+inline long GET_HASH_KEY( std::string name )
 {
 	std::locale loc;
 	const std::collate<char>& coll = std::use_facet<std::collate<char> >(loc);

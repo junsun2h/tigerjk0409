@@ -2,29 +2,34 @@
 
 #include <vector>
 #include "IEntity.h"
+#include "CGrowableArray.h"
 
 
 class EEntity : public IEntity
 {
 public:
-	EEntity();
+	EEntity(std::string& name, UINT id);
 	virtual ~EEntity();
 
 	UINT			GetID() override			{ return m_ID; };
-	const char*		GetName() override			{ return m_Name; }
+	std::string		GetName() override			{ return m_Name; }
 
-	void			Update() override;
-	bool			IsUsingPerFrameUpdate() override;
+	void			SendEvent( EntityEvent &e ) override;
 
-	void			SendEvent( ENTITY_EVENT &e ) override;
+private:
+	UINT			m_ID;
+	std::string		m_Name;
 
+	CGrowableArray<EntityEvent> m_EventQueue;	// event stack for additional events while event is processing
+
+public:
+	//////////////////////////////////////////////////////////////////////////
+	// proxy functions
+	IEntityProxy*	CreateProxy( ENTITY_PROXY_TYPE	type, std::string& strResource) override;
 	IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) override { return m_Proxyes[type]; }
 	void			SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy) override;
 
 private:
-	UINT			m_ID;
-	const char*		m_Name;
-
 	IEntityProxy*	m_Proxyes[NUM_ENTITY_PROXY_TYPE];
 
 public:

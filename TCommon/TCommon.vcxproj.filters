@@ -41,6 +41,18 @@
     <ClInclude Include="IEntityProxy.h">
       <Filter>Interface</Filter>
     </ClInclude>
+    <ClInclude Include="IMotionMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntityMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IActorMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CDColor.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

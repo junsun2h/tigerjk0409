@@ -104,6 +104,14 @@ bool InitEngine(HINSTANCE hInstance)
 
 bool SetupViewer()
 {
+	IEntityMgr* entityMgr = gEng->EntityMgr();
+
+	std::string strEntity = "aaa";
+	std::string strActor = "aaa2";
+
+	IEntity* pEntity = entityMgr->SPawn( strEntity );
+	IEntityProxy* pActorInstance = pEntity->CreateProxy( ENTITY_ACTOR, strActor );
+
 	return true;
 }
 
@@ -122,18 +130,13 @@ void MainLoop()
 		}
 		else
 		{
-			gEng->GetRenderer()->Render(0);
+			gEng->RDevice()->Render(0);
 		}
 	}
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR lpcmdline, int nCmdShow)
 {
-#ifdef _DEBUG
-	AllocConsole();
-	//	freopen_s(NULL, "CONOUT$", "w", stdout);
-#endif
-
 	if ( !InitWinApp(hInstance, nCmdShow, WIN_WIDTH, WIN_HEIGHT, L"exampleWorld") )
 		return FALSE;
 
