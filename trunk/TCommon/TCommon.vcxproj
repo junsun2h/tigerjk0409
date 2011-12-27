@@ -61,16 +61,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CDColor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CGrowableArray.h" />
     <ClInclude Include="CStack.h" />
+    <ClInclude Include="IActorMgr.h" />
     <ClInclude Include="IAsyncLoader.h" />
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CThread.h" />
     <ClInclude Include="IEntity.h" />
+    <ClInclude Include="IEntityMgr.h" />
     <ClInclude Include="IEntityProxy.h" />
+    <ClInclude Include="IMotionMgr.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />
     <ClInclude Include="IResource.h" />

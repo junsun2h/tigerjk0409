@@ -1,26 +1,45 @@
 #pragma once
 
+#include "CDefine.h"
 #include "CMathType.h"
 #include "IEntityProxy.h"
 
 
 
-enum ENTITY_EVENT
+enum ENTITY_TYPE
 {
 	E_EVENT_TRANSFORM_CHANGED,
 };
 
 
+struct EntityEvent
+{
+	ENTITY_TYPE		type;
+	byte*			pData;
+	UINT			dataSize;
+	UINT			flags;
+};
+
+enum ENTITY_UPDATE_FLAG
+{
+	ENTITY_UPDATE_NONE = 0,
+	ENTITY_PRE_UPDATE = BIT(1),
+	ENTITY_PRO_UPDATE = BIT(2),
+	ENTITY_UPDATE_BOTH = BIT(3)
+};
+
 struct IEntity
 {
 	virtual	UINT			GetID()	= 0;
-	virtual void			Update() = 0; 	// if entity need to be updated per frame, EntityMgr will call this function
-	virtual bool			IsUsingPerFrameUpdate() = 0;
+	virtual std::string		GetName() = 0;
 
-	virtual const char*		GetName() = 0;
-	
-	virtual	void			SendEvent( ENTITY_EVENT &e ) = 0;
+	//////////////////////////////////////////////////////////////////////////
+	// entity properties
+	virtual	void			SendEvent( EntityEvent &e ) = 0;
 
+	//////////////////////////////////////////////////////////////////////////
+	// proxy functions
+	virtual IEntityProxy*	CreateProxy( ENTITY_PROXY_TYPE	type, std::string& strResource) =0;
 	virtual IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) = 0;
 	virtual void			SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy) = 0;
 

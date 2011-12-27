@@ -10,16 +10,16 @@ class EAssetMgr;
 class EAsyncLoader : public IAsyncLoader
 {
 private:
-	EAssetMgr*	m_pAssetMgr;
-	BOOL	m_bDone;
-	BOOL	m_bProcessThreadDone;
-	BOOL	m_bIOThreadDone;
-	UINT	m_NumOustandingResources;
+	EAssetMgr*			m_pAssetMgr;
+	BOOL				m_bDone;
+	BOOL				m_bProcessThreadDone;
+	BOOL				m_bIOThreadDone;
+	UINT				m_NumOustandingResources;
 
-	HANDLE	m_hIOQueueSemaphore;
-	HANDLE	m_hProcessQueueSemaphore;
-	HANDLE	m_hIOThread;
-	HANDLE	 m_phProcessThreads[MAX_DATA_PROC_THREAD];
+	HANDLE				m_hIOQueueSemaphore;
+	HANDLE				m_hProcessQueueSemaphore;
+	HANDLE				m_hIOThread;
+	HANDLE				m_phProcessThreads[MAX_DATA_PROC_THREAD];
 	
 	static UINT	m_IOThreadID;
 	static UINT	m_ProcessThreadID[MAX_DATA_PROC_THREAD];
@@ -35,19 +35,21 @@ private:
 private:
 	unsigned int                IOT_FileIOThreadProc();
 	unsigned int                PT_ProcessingThreadProc();
-	bool                        InitAsyncLoadingThreadObjects( UINT NumProcessingThreads );
 	void                        DestroyAsyncLoadingThreadObjects();
 
 public:
+	EAsyncLoader();
+	virtual ~EAsyncLoader();
+
+
 	static	bool				IsIOThread();
 	static	bool				IsDataProcThread();
 
-
+	bool                        Init( UINT NumProcessingThreads, EAssetMgr* pAssetMgr );
+	
 	friend unsigned int WINAPI  _FileIOThreadProc( LPVOID lpParameter );
 	friend unsigned int WINAPI  _ProcessingThreadProc( LPVOID lpParameter );
-
-	EAsyncLoader( UINT NumProcessingThreads );
-	virtual ~EAsyncLoader();
+	
 
 	virtual void	AddWorkItem( RESOURCE_REQUEST resourceRequest) override;
 	virtual void    WaitForAllItems(IAssetMgr* pAssetMgr) override;

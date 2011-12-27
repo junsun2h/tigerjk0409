@@ -9,8 +9,7 @@ RDX11Window::RDX11Window()
 
 RDX11Window::~RDX11Window()
 {
-	ReleaseTexture();
-	SAFE_RELEASE(pSwapChain);
+	Destroy();
 }
 
 void RDX11Window::ReleaseTexture()
@@ -19,6 +18,12 @@ void RDX11Window::ReleaseTexture()
 	SAFE_RELEASE(pDSV);
 	SAFE_RELEASE(pRT);
 	SAFE_RELEASE(pRTV);
+}
+
+void RDX11Window::Destroy()
+{
+	ReleaseTexture();
+	SAFE_RELEASE(pSwapChain);
 }
 
 bool RDX11Window::Create(ID3D11Device* pD3Device)

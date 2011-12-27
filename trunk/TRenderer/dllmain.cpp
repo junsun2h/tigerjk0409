@@ -4,6 +4,8 @@
 #include <windows.h>
 #include "RDX11Device.h"
 
+RDX11Device g_RDevice;
+
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -25,6 +27,6 @@ extern "C"
 {
 	DLL_EXPORT IRDevice* CreateDX11Renderer()
 	{
-		return new RDX11Device;
+		return &g_RDevice;
 	}
 }

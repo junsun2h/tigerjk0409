@@ -22,8 +22,18 @@
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
     <ClCompile Include="ERenderer.cpp" />
-    <ClCompile Include="EEntity.cpp" />
-    <ClCompile Include="EEntityMgr.cpp" />
+    <ClCompile Include="EEntity.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityMgr.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EActorMgr.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyActor.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -34,6 +44,12 @@
     </Filter>
     <Filter Include="Asset\ResourceDataProcessor">
       <UniqueIdentifier>{ca07cc05-6db3-4247-8263-797bb4fdd57c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor">
+      <UniqueIdentifier>{4e975f01-410c-466c-8f40-c31d5479c243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{3df464fc-5f10-4a0a-adb6-1f94092d9355}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +79,18 @@
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
     <ClInclude Include="ERenderer.h" />
-    <ClInclude Include="EEntity.h" />
-    <ClInclude Include="EEntityMgr.h" />
+    <ClInclude Include="EEntityProxyActor.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityMgr.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntity.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EActorMgr.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="ETextHelper.h" />
   </ItemGroup>
 </Project>

@@ -27,7 +27,7 @@ bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	assert ( EAsyncLoader::IsDataProcThread() );
 
 	m_pResource = new CResourceTexture;
-	m_pResource->RID = GET_RID(m_Name);	
+	m_pResource->RID = GET_HASH_KEY(m_Name);	
 
 	m_pRDevice->TS_CreateDPResource( DP_RESOURCE_TEXTURE, pData, cBytes, m_pResource);
 	

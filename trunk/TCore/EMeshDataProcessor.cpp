@@ -59,7 +59,7 @@ bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	else
 	{
 		CResourceLODMesh* pResource = new CResourceLODMesh;
-		pResource->RID = GET_RID(m_name);	
+		pResource->RID = GET_HASH_KEY(m_name);	
 		pResource->LOD = levelOfDetail;
 		char s[25];
 
@@ -83,7 +83,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 	BYTE* pSrcBits = *ppSrcBits;
 	
 	CResourceMesh* pMesh = new CResourceMesh;
-	pMesh->RID = GET_RID(name);
+	pMesh->RID = GET_HASH_KEY(name);
 	strcpy_s( pMesh->name, m_name.c_str() );
 
 	ECopyData(&pMesh->geometryNum, &pSrcBits, 1);
@@ -93,11 +93,11 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 		CResourceGeometry* pGeometry = new CResourceGeometry;
 		
 		ECopyString(&pGeometry->name, &pSrcBits );
-		pGeometry->RID = GET_RID( pGeometry->name);
+		pGeometry->RID = GET_HASH_KEY( pGeometry->name);
 
 		{	// default material
 			ECopyString(&pGeometry->mtrlName, &pSrcBits );
-			pGeometry->RID_mtrl = GET_RID( pGeometry->mtrlName);
+			pGeometry->RID_mtrl = GET_HASH_KEY( pGeometry->mtrlName);
 		}
 		
 		{	// vertex information
@@ -106,7 +106,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 			std::string strVB = pGeometry->name;
 			strVB += "_VB";
 			strcpy_s( pVB->name, strVB.c_str() );
-			pVB->RID = GET_RID( pVB->name);
+			pVB->RID = GET_HASH_KEY( pVB->name);
 
 			ECopyData(&pVB->eType, &pSrcBits, 2);
 			ECopyData(&pVB->count, &pSrcBits, 2);
@@ -125,7 +125,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 			std::string strIB = pGeometry->name;
 			strIB += "_IB";
 			strcpy_s( pIB->name, strIB.c_str() );
-			pIB->RID = GET_RID( pIB->name);
+			pIB->RID = GET_HASH_KEY( pIB->name);
 			
 			ECopyData(&pIB->eType, &pSrcBits, 2);
 			ECopyData(&pIB->count, &pSrcBits, 2);

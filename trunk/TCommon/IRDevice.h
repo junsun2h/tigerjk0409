@@ -1,7 +1,5 @@
 #pragma once
 
-
-#include "IEngine.h"
 #include "IResource.h"
 
 struct CENGINE_INIT_PARAM;

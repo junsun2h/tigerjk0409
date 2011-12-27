@@ -56,39 +56,55 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 #endif
 	for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
 	{
-		m_pDeviceSetting.m_DriverType = driverTypes[driverTypeIndex];
-		hr = D3D11CreateDeviceAndSwapChain( NULL, m_pDeviceSetting.m_DriverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-			D3D11_SDK_VERSION, &swapChainDesc, &m_MainWindow.pSwapChain, &m_pD3Device, &m_pDeviceSetting.m_FeatureLevel, m_pImmediateContext.GetContextP() );
+		m_DeviceSetting.driverType = driverTypes[driverTypeIndex];
+		hr = D3D11CreateDeviceAndSwapChain( NULL, m_DeviceSetting.driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
+			D3D11_SDK_VERSION, &swapChainDesc, &m_MainWindow.pSwapChain, &m_pD3Device, &m_DeviceSetting.featureLevel, m_ImmediateContext.GetContextP() );
 		if( SUCCEEDED( hr ) )
 			break;
 	}
 	TDXERROR(hr);
 
+	m_DeviceSetting.width = param.width;
+	m_DeviceSetting.height = param.height;
+
 	m_StateRepository.CreateStates(m_pD3Device);
 
 	m_MainWindow.Create(m_pD3Device);
-	m_pImmediateContext.SetDefaultState(&m_StateRepository);
+	m_ImmediateContext.SetDefaultState(&m_StateRepository);
+	m_Font.Init( "fff", m_pD3Device );
 
 	return true;
 }
 
 void RDX11Device::ShutDown()
 {
-	m_MainWindow.ReleaseTexture();
+	m_Font.Destroy();
+	m_ImmediateContext.Destroy();
+	m_MainWindow.Destroy();
 	m_StateRepository.Destroy();
-	m_pImmediateContext.Destroy();
-	m_pD3Device->Release();
+	SAFE_RELEASE( m_pD3Device )
 }
 
 void RDX11Device::Render(uint32 index)
 {
-	m_pImmediateContext.SetTarget( &m_MainWindow );
+	m_ImmediateContext.SetTarget( &m_MainWindow );
+
+	m_ImmediateContext.StoreCurrentState();
+	m_Font.ApplyRenderState( m_ImmediateContext.GetContext() );
+
+	RENDER_TEXT_BUFFER ff;
+	m_Font.DrawText( m_pD3Device, m_ImmediateContext.GetContext(), ff, 10,  10 );
+
+	m_ImmediateContext.RestoreSavedState();
 
 	m_MainWindow.Present();
 }
 
 bool RDX11Device::Resize(const CENGINE_INIT_PARAM &param)
 {
+	m_DeviceSetting.width = param.width;
+	m_DeviceSetting.height = param.height;
+
 	return m_MainWindow.Resize(m_pD3Device, param.width, param.height, param.bFullScreen);
 }
 

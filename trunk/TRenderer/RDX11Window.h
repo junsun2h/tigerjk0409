@@ -19,4 +19,5 @@ struct RDX11Window
 	void	ReleaseTexture();
 	bool	Resize(ID3D11Device* pD3Device, int cx, int cy, bool bFullScreen);
 	void	Present();
+	void	Destroy();
 };

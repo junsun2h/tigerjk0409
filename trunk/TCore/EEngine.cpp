@@ -3,7 +3,6 @@
 
 #include <windows.h>
 
-EEngine* s_pEngine = NULL;
 
 
 EEngine::EEngine()
@@ -19,14 +18,7 @@ EEngine::~EEngine()
 
 bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 {
-	if( s_pEngine != NULL )
-	{
-		assert(0);
-		return false;
-	}
-
-	s_pEngine = this;
-
+	//////////////////////////////////////////////////////////////////////////
 	// load Render DLL
 	HMODULE	renderDll = ::LoadLibrary( L"Renderer.dll");
 	if( renderDll == NULL )
@@ -35,7 +27,6 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 		return false;
 	}
 
-	// make renderer
 	typedef IRDevice *(*CREATE_RENDERER)();
 	CREATE_RENDERER FuncCreateRenderer = (CREATE_RENDERER)::GetProcAddress( renderDll, "CreateDX11Renderer" );
 
@@ -45,18 +36,19 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	m_pRenderer = FuncCreateRenderer();
 	m_pRenderer->StartUp( param );
 
+	//////////////////////////////////////////////////////////////////////////
+	// initialize Asset manager
+	m_AssetMgr.Init( param.numOfProcessThread, m_pRenderer);
+
 	return true;
 }
 
 bool EEngine::ShutDown()
 {
+	m_ActorMgr.Clear();
+	m_EntityMgr.Clear();
+	m_AssetMgr.Clear();
 	m_pRenderer->ShutDown();
-	SAFE_DELETE(m_pRenderer);
 
 	return false;
-}
-
-IRDevice* EEngine::GetRenderer()
-{
-	return m_pRenderer;
 }

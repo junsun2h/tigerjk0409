@@ -5,6 +5,23 @@
 
 
 
+EAssetMgr::EAssetMgr()
+	: m_pRDevice(NULL)
+{
+
+}
+
+EAssetMgr::~EAssetMgr()
+{
+
+}
+
+void EAssetMgr::Init( UINT numProcessThread, IRDevice*	pRDevice )
+{
+	m_pRDevice = pRDevice;
+	m_AsyncLoader.Init( numProcessThread, this);
+}
+
 const IResource* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 {
 	return NULL;
@@ -12,7 +29,7 @@ const IResource* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 
 const IResource* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string name )
 {
-	return GetResource(type, GET_RID(name) );
+	return GetResource(type, GET_HASH_KEY(name) );
 }
 
 
@@ -45,7 +62,7 @@ long EAssetMgr::Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMP
 
 	m_AsyncLoader.AddWorkItem(request);
 
-	return GET_RID(fileName);
+	return GET_HASH_KEY(fileName);
 }
 
 void EAssetMgr::LoadCompletedResource( IResource* pResource)
@@ -60,4 +77,19 @@ void EAssetMgr::LoadCompletedResource( IResource* pResource)
 
 	pResource->state = RESOURCE_LOAD_FINISHED;
 	m_Resources[type].SetAt( pResource->RID, pResource );
+}
+
+void EAssetMgr::Clear()
+{
+	for( int i=0 ; i< NUM_RESOURCE_TYPE ; ++i)
+	{
+		POSITION pos = m_Resources[i].GetStartPosition();
+		TYPE_RESOURCE_MAP::CPair* itr = NULL;
+
+		while (pos)
+		{
+			itr = m_Resources[i].GetNext(pos);
+			SAFE_DELETE( itr->m_value );
+		}
+	}
 }
