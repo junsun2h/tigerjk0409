@@ -51,6 +51,9 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{3df464fc-5f10-4a0a-adb6-1f94092d9355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{df16fbb4-5d0c-4391-a232-fb208aa6985a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEngine.h" />
@@ -91,6 +94,8 @@
     <ClInclude Include="EActorMgr.h">
       <Filter>Actor</Filter>
     </ClInclude>
-    <ClInclude Include="ETextHelper.h" />
+    <ClInclude Include="ETextHelper.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

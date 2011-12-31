@@ -44,8 +44,8 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
-//		D3D_FEATURE_LEVEL_11_0,
-//		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
 	};
 	UINT numFeatureLevels = ARRAYSIZE( featureLevels );
@@ -71,14 +71,15 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 
 	m_MainWindow.Create(m_pD3Device);
 	m_ImmediateContext.SetDefaultState(&m_StateRepository);
-	m_Font.Init( "fff", m_pD3Device );
+	m_ImmediateContext.SetViewport( (float)m_DeviceSetting.width, (float)m_DeviceSetting.height);
+	m_FontRenderer.Init( "Font.dds", m_pD3Device );
 
 	return true;
 }
 
 void RDX11Device::ShutDown()
 {
-	m_Font.Destroy();
+	m_FontRenderer.Destroy();
 	m_ImmediateContext.Destroy();
 	m_MainWindow.Destroy();
 	m_StateRepository.Destroy();
@@ -89,23 +90,35 @@ void RDX11Device::Render(uint32 index)
 {
 	m_ImmediateContext.SetTarget( &m_MainWindow );
 
-	m_ImmediateContext.StoreCurrentState();
-	m_Font.ApplyRenderState( m_ImmediateContext.GetContext() );
-
-	RENDER_TEXT_BUFFER ff;
-	m_Font.DrawText( m_pD3Device, m_ImmediateContext.GetContext(), ff, 10,  10 );
-
-	m_ImmediateContext.RestoreSavedState();
+	RenderUI();
 
 	m_MainWindow.Present();
 }
 
-bool RDX11Device::Resize(const CENGINE_INIT_PARAM &param)
+void RDX11Device::RenderUI()
 {
-	m_DeviceSetting.width = param.width;
-	m_DeviceSetting.height = param.height;
+	m_ImmediateContext.StoreCurrentState();
+	m_FontRenderer.ApplyRenderState( m_ImmediateContext.GetContext() );
 
-	return m_MainWindow.Resize(m_pD3Device, param.width, param.height, param.bFullScreen);
+	RENDER_TEXT_BUFFER ff;
+	wcscpy_s( ff.strMsg , L"Rotate model: Left mouse button\n");
+	ff.rc.left = 0;
+	ff.rc.top = 0;
+	ff.rc.right = 100;
+	ff.rc.bottom = 100;
+	ff.clr = CColor( 1.0f, 0.75f, 0.0f, 1.0f );
+
+	m_FontRenderer.Draw( m_pD3Device, m_ImmediateContext.GetContext(), ff, m_DeviceSetting.width,  m_DeviceSetting.height );
+
+	m_ImmediateContext.RestoreSavedState();
+}
+
+bool RDX11Device::Resize(int width, int height)
+{
+	m_DeviceSetting.width = width;
+	m_DeviceSetting.height = height;
+
+	return m_MainWindow.Resize(m_pD3Device, width, height, false);
 }
 
 void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource)

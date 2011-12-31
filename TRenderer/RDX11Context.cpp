@@ -56,7 +56,7 @@ void RDX11Context::SetDefaultState(RDX11StateRepository* pStateRepository)
 void RDX11Context::SetTarget(RDX11Window* pWindow)
 {
 	m_pContext->OMSetRenderTargets( 1, &pWindow->pRTV, pWindow->pDSV );
-	m_pContext->ClearRenderTargetView( pWindow->pRTV, (float*)CVector4(0.25f, 0.25f, 0.55f, 1.0f) );
+	m_pContext->ClearRenderTargetView( pWindow->pRTV, pWindow->clearColor);
 }
 
 void RDX11Context::Destroy()

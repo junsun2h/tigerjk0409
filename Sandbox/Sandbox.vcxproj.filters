@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="SMainFrame.h" />
+    <ClInclude Include="S3DViewPanel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SMainFrame.cpp" />
+    <ClCompile Include="S3DViewPanel.cpp" />
+    <ClCompile Include="SApp.cpp" />
+  </ItemGroup>
+</Project>

@@ -42,42 +42,42 @@ const UINT g_uUIEffectFileSize = sizeof( g_strUIEffectFile );
 
 
 //--------------------------------------------------------------------------------------
-RDX11Font::RDX11Font()
+RDX11FontRenderer::RDX11FontRenderer()
 {
 	m_pFontBuffer = NULL;
 	m_FontBufferBytes = 0;
 	m_pFontSRV = NULL;
 
-	m_pVSRenderUI11 = NULL;
-	m_pPSRenderUI11 = NULL;
+	m_pVSRenderUI = NULL;
+	m_pPSRenderUI = NULL;
 
-	m_pDepthStencilStateUI11 = NULL;
-	m_pRasterizerStateUI11 = NULL;
-	m_pBlendStateUI11 = NULL;
-	m_pSamplerStateUI11 = NULL;
+	m_pDepthStencilStateUI = NULL;
+	m_pRasterizerStateUI = NULL;
+	m_pBlendStateUI = NULL;
+	m_pSamplerStateUI = NULL;
 }
 
 //--------------------------------------------------------------------------------------
-void RDX11Font::Destroy()
+void RDX11FontRenderer::Destroy()
 {
 	SAFE_RELEASE( m_pFontBuffer );
 	m_FontBufferBytes = 0;
 	SAFE_RELEASE( m_pFontSRV );
 
 	// Shaders
-	SAFE_RELEASE( m_pVSRenderUI11 );
-	SAFE_RELEASE( m_pPSRenderUI11 );
+	SAFE_RELEASE( m_pVSRenderUI );
+	SAFE_RELEASE( m_pPSRenderUI );
 
 	// States
-	SAFE_RELEASE( m_pDepthStencilStateUI11 );
-	SAFE_RELEASE( m_pRasterizerStateUI11 );
-	SAFE_RELEASE( m_pBlendStateUI11 );
-	SAFE_RELEASE( m_pSamplerStateUI11 );
+	SAFE_RELEASE( m_pDepthStencilStateUI );
+	SAFE_RELEASE( m_pRasterizerStateUI );
+	SAFE_RELEASE( m_pBlendStateUI );
+	SAFE_RELEASE( m_pSamplerStateUI );
 }
 
 
 //--------------------------------------------------------------------------------------
-HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
+HRESULT RDX11FontRenderer::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 {
 	HRESULT hr = S_OK;
 
@@ -90,11 +90,11 @@ HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 		D3D10_SHADER_ENABLE_BACKWARDS_COMPATIBILITY, 0, &pPSBlob, NULL ) );
 
 	// Create Shaders
-	V_RETURN( pd3dDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_pVSRenderUI11 ) );
-	DXUT_SetDebugName( m_pVSRenderUI11, "CDXUTDialogResourceManager" );
+	V_RETURN( pd3dDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_pVSRenderUI ) );
+	DXUT_SetDebugName( m_pVSRenderUI, "CDXUTDialogResourceManager" );
 
-	V_RETURN( pd3dDevice->CreatePixelShader( pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &m_pPSRenderUI11 ) );
-	DXUT_SetDebugName( m_pPSRenderUI11, "CDXUTDialogResourceManager" );
+	V_RETURN( pd3dDevice->CreatePixelShader( pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &m_pPSRenderUI ) );
+	DXUT_SetDebugName( m_pPSRenderUI, "CDXUTDialogResourceManager" );
 	
 	// States
 	D3D11_DEPTH_STENCIL_DESC DSDesc;
@@ -103,8 +103,8 @@ HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 	DSDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	DSDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	DSDesc.StencilEnable = FALSE;
-	V_RETURN( pd3dDevice->CreateDepthStencilState( &DSDesc, &m_pDepthStencilStateUI11 ) );
-	DXUT_SetDebugName( m_pDepthStencilStateUI11, "CDXUTDialogResourceManager" );
+	V_RETURN( pd3dDevice->CreateDepthStencilState( &DSDesc, &m_pDepthStencilStateUI ) );
+	DXUT_SetDebugName( m_pDepthStencilStateUI, "CDXUTDialogResourceManager" );
 
 	D3D11_RASTERIZER_DESC RSDesc;
 	RSDesc.AntialiasedLineEnable = FALSE;
@@ -117,8 +117,8 @@ HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 	RSDesc.MultisampleEnable = TRUE;
 	RSDesc.ScissorEnable = FALSE;
 	RSDesc.SlopeScaledDepthBias = 0.0f;
-	V_RETURN( pd3dDevice->CreateRasterizerState( &RSDesc, &m_pRasterizerStateUI11 ) );
-	DXUT_SetDebugName( m_pRasterizerStateUI11, "CDXUTDialogResourceManager" );
+	V_RETURN( pd3dDevice->CreateRasterizerState( &RSDesc, &m_pRasterizerStateUI ) );
+	DXUT_SetDebugName( m_pRasterizerStateUI, "CDXUTDialogResourceManager" );
 
 	D3D11_BLEND_DESC BSDesc;
 	ZeroMemory( &BSDesc, sizeof( D3D11_BLEND_DESC ) );
@@ -132,9 +132,8 @@ HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 	BSDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	BSDesc.RenderTarget[0].RenderTargetWriteMask = 0x0F;
 
-	V_RETURN( pd3dDevice->CreateBlendState( &BSDesc, &m_pBlendStateUI11 ) );
-	DXUT_SetDebugName( m_pBlendStateUI11, "CDXUTDialogResourceManager" );
-
+	V_RETURN( pd3dDevice->CreateBlendState( &BSDesc, &m_pBlendStateUI ) );
+	DXUT_SetDebugName( m_pBlendStateUI, "CDXUTDialogResourceManager" );
 
 	D3D11_SAMPLER_DESC SSDesc;
 	ZeroMemory( &SSDesc, sizeof( D3D11_SAMPLER_DESC ) );
@@ -146,12 +145,9 @@ HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 	SSDesc.MaxAnisotropy = 16;
 	SSDesc.MinLOD = 0;
 	SSDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	if ( pd3dDevice->GetFeatureLevel() < D3D_FEATURE_LEVEL_9_3 ) {
-		SSDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		SSDesc.MaxAnisotropy = 0;
-	}
-	V_RETURN( pd3dDevice->CreateSamplerState( &SSDesc, &m_pSamplerStateUI11 ) );
-	DXUT_SetDebugName( m_pSamplerStateUI11, "CDXUTDialogResourceManager" );
+
+	V_RETURN( pd3dDevice->CreateSamplerState( &SSDesc, &m_pSamplerStateUI ) );
+	DXUT_SetDebugName( m_pSamplerStateUI, "CDXUTDialogResourceManager" );
 
 
 	// Create input layout
@@ -176,7 +172,7 @@ HRESULT RDX11Font::Init(const char* fontDDS, ID3D11Device* pd3dDevice)
 
 
 //--------------------------------------------------------------------------------------
-void RDX11Font::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth, float screenHeight  )
+void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth, float screenHeight  )
 {
 	float fCharTexSizeX = 0.010526315f;
 	float fGlyphSizeX = 15.0f / screenWidth;
@@ -266,7 +262,7 @@ void RDX11Font::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth, float s
 
 
 //--------------------------------------------------------------------------------------
-void RDX11Font::RenderText( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
+void RDX11FontRenderer::RenderText( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
 {
 	// ensure our buffer size can hold our sprites
 	UINT FontDataBytes = m_FontVertices.GetSize() * sizeof( DXUTSpriteVertex );
@@ -319,26 +315,26 @@ void RDX11Font::RenderText( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dI
 }
 
 
-void RDX11Font::DrawText(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, RENDER_TEXT_BUFFER& text, float sw, float sh )
+void RDX11FontRenderer::Draw(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, RENDER_TEXT_BUFFER& text, int sw, int sh )
 {
-	FillVertex( text, sw, sh );
+	FillVertex( text, float(sw), float(sh) );
 	RenderText( pd3dDevice, pd3dImmediateContext );
 }
 
 //--------------------------------------------------------------------------------------
-void RDX11Font::ApplyRenderState( ID3D11DeviceContext* pd3dImmediateContext )
+void RDX11FontRenderer::ApplyRenderState( ID3D11DeviceContext* pd3dImmediateContext )
 {
 	// Shaders
-	pd3dImmediateContext->VSSetShader( m_pVSRenderUI11, NULL, 0 );
+	pd3dImmediateContext->VSSetShader( m_pVSRenderUI, NULL, 0 );
 	pd3dImmediateContext->HSSetShader( NULL, NULL, 0 );
 	pd3dImmediateContext->DSSetShader( NULL, NULL, 0 );
 	pd3dImmediateContext->GSSetShader( NULL, NULL, 0 );
-	pd3dImmediateContext->PSSetShader( m_pPSRenderUI11, NULL, 0 );
+	pd3dImmediateContext->PSSetShader( m_pPSRenderUI, NULL, 0 );
 
 	// States
-	pd3dImmediateContext->OMSetDepthStencilState( m_pDepthStencilStateUI11, 0 );
-	pd3dImmediateContext->RSSetState( m_pRasterizerStateUI11 );
+	pd3dImmediateContext->OMSetDepthStencilState( m_pDepthStencilStateUI, 0 );
+	pd3dImmediateContext->RSSetState( m_pRasterizerStateUI );
 	float BlendFactor[4] = { 0, 0, 0, 0 };
-	pd3dImmediateContext->OMSetBlendState( m_pBlendStateUI11, BlendFactor, 0xFFFFFFFF );
-    pd3dImmediateContext->PSSetSamplers( 0, 1, &m_pSamplerStateUI11 );
+	pd3dImmediateContext->OMSetBlendState( m_pBlendStateUI, BlendFactor, 0xFFFFFFFF );
+    pd3dImmediateContext->PSSetSamplers( 0, 1, &m_pSamplerStateUI );
 }
