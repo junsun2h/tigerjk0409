@@ -14,6 +14,7 @@ struct RDX11Window
 	ID3D11Texture2D*			pRT;
 	ID3D11RenderTargetView*		pRTV;
 	ID3D11DepthStencilView*		pDSV;
+	CColor						clearColor;
 
 	bool	Create(ID3D11Device* pD3Device);
 	void	ReleaseTexture();

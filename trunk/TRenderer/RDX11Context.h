@@ -27,7 +27,7 @@ public:
 	ID3D11DeviceContext*	GetContext()		{ return m_pContext; }	
 
 
-	void	SetViewport(float width, float height, float MinDepth = 0.0f, float MaxDepth = 0.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
+	void	SetViewport(float width, float height, float MinDepth = 1.0f, float MaxDepth = 1.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
 	void	SetRasterizerState(ID3D11RasterizerState* pState);
 	void	SetDepthStencilState(ID3D11DepthStencilState* pState);
 	void	SetBlendState(ID3D11BlendState* pState);

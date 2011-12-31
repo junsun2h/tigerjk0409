@@ -5,6 +5,7 @@
 
 #pragma comment( lib, "dxerr.lib" )
 #pragma comment( lib, "d3d11.lib" )
+#pragma comment( lib, "d3dcompiler.lib" )
 
 #if defined(DEBUG) || defined(_DEBUG)
 #pragma comment( lib, "d3dx11d.lib" )

@@ -4,6 +4,7 @@
 
 RDX11Window::RDX11Window()
 	: pSwapChain(NULL)
+	, clearColor(0.25f, 0.25f, 0.55f, 1.0f)
 {
 }
 

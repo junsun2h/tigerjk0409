@@ -37,13 +37,15 @@ public:
 	virtual bool	StartUp(const CENGINE_INIT_PARAM &param) override;
 	virtual void	ShutDown() override;
 	virtual void	Render(uint32 index) override;
-	virtual bool	Resize(const CENGINE_INIT_PARAM &param) override;
+	virtual bool	Resize(int width, int height) override;
 	virtual HWND	GetHWND() override	{ return m_HWND; }
 	virtual void	TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource) override;
 
 	const RDX11Setting& GetDeviceInfo()	{ return m_DeviceSetting; }
 
 private:
+	void			RenderUI();
+
 	void			TS_CreateVB(void* pBuf ,int size, IResource* pResource);
 	void			TS_CreateVBOut(void* pBuf ,int size, IResource* pResource);
 	void			TS_CreateIB(void* pBuf ,int size, IResource* pResource);
@@ -54,7 +56,7 @@ private:
 	ID3D11Device*				m_pD3Device;
 	RDX11Setting				m_DeviceSetting;
 	RDX11Context				m_ImmediateContext;
-	RDX11Font					m_Font;
+	RDX11FontRenderer			m_FontRenderer;
 	RDX11StateRepository		m_StateRepository;
 	RDX11Window					m_MainWindow;
 

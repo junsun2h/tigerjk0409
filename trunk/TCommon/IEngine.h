@@ -9,8 +9,7 @@
 struct CENGINE_INIT_PARAM
 {
 	CENGINE_INIT_PARAM()
-		: hInstance(NULL)
-		, hWnd(NULL)
+		: hWnd(NULL)
 		, width(-1)
 		, height(-1)
 		, bFullScreen(false)
@@ -18,7 +17,6 @@ struct CENGINE_INIT_PARAM
 	{
 	}
 
-	void *hInstance;
 	void *hWnd;
 	int width;
 	int height;

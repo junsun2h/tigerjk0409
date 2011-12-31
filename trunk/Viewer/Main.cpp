@@ -79,7 +79,6 @@ bool InitWinApp(HINSTANCE hInstance, int nCmdShow, int width, int height, LPCWST
 bool InitEngine(HINSTANCE hInstance)
 {
 	CENGINE_INIT_PARAM engineParam;
-	engineParam.hInstance = hInstance;
 	engineParam.hWnd = gHwnd;
 	engineParam.width = WIN_WIDTH;
 	engineParam.height = WIN_HEIGHT;

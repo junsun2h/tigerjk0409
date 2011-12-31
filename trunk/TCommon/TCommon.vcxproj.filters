@@ -93,5 +93,8 @@
     <None Include="CVector.inl">
       <Filter>DataStructure</Filter>
     </None>
+    <None Include="CColor.inl">
+      <Filter>DataStructure</Filter>
+    </None>
   </ItemGroup>
 </Project>

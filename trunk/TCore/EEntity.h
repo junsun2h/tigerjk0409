@@ -64,6 +64,8 @@ private:
 	CQuat		m_WorldRotation;
 	CMatrix		m_WorldTM;
 
+	UINT		m_SpaceID;		// Octree space id
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// hierarchy functions

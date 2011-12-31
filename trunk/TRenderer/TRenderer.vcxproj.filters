@@ -17,12 +17,6 @@
     <ClInclude Include="RDX11StateRepository.h" />
     <ClInclude Include="RDX11Window.h" />
     <ClInclude Include="RDX11DDS.h" />
-    <ClInclude Include="RDX11TextHelper.h" />
     <ClInclude Include="RDX11Font.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Helper">
-      <UniqueIdentifier>{e70bd236-c83e-41af-ba52-54fa5a0f9200}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
 </Project>

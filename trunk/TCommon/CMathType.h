@@ -236,6 +236,44 @@ struct CVector4{
 	bool operator >= ( const CVector4& in)			{ return Length(*this) <= Length(in);}
 };
 
+struct CColor
+{
+public:
+	CColor() {}
+	CColor( DWORD argb );
+	CColor( const FLOAT * );
+	CColor( FLOAT r, FLOAT g, FLOAT b, FLOAT a );
+
+	// casting
+	operator DWORD () const;
+
+	operator FLOAT* ();
+	operator const FLOAT* () const;
+	
+	// assignment operators
+	CColor& operator += ( const CColor& );
+	CColor& operator -= ( const CColor& );
+	CColor& operator *= ( FLOAT );
+	CColor& operator /= ( FLOAT );
+
+	// unary operators
+	CColor operator + () const;
+	CColor operator - () const;
+
+	// binary operators
+	CColor operator + ( const CColor& ) const;
+	CColor operator - ( const CColor& ) const;
+	CColor operator * ( FLOAT ) const;
+	CColor operator / ( FLOAT ) const;
+
+	friend CColor operator * ( FLOAT, const CColor& );
+
+	BOOL operator == ( const CColor& ) const;
+	BOOL operator != ( const CColor& ) const;
+
+	FLOAT r, g, b, a;
+};
+
 
 struct CMatrix
 {
@@ -290,8 +328,8 @@ struct CMatrix
 	static XMMATRIX		OrthographicOffCenterLH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixOrthographicOffCenterLH(ViewLeft, ViewRight, ViewBottom, ViewTop, NearZ, FarZ); }
 	static XMMATRIX		OrthographicOffCenterRH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixOrthographicOffCenterRH(ViewLeft, ViewRight, ViewBottom, ViewTop, NearZ, FarZ); }
 
-	CMatrix&  operator*= (CONST CMatrix& M)			{ *this = XMMatrixMultiply( _m, M._m);	return *this;}
-	CMatrix   operator* (CONST CMatrix& M) CONST	{ return XMMatrixMultiply( _m, M._m);}
+	CMatrix&  operator*= (const CMatrix& M)			{ *this = XMMatrixMultiply( _m, M._m);	return *this;}
+	CMatrix   operator* (const CMatrix& M) const	{ return XMMatrixMultiply( _m, M._m);}
 };
 
 
@@ -307,3 +345,4 @@ struct CMatrix
 #include "CVector.inl"
 #include "CQuat.inl"
 #include "CMatrix.inl"
+#include "CColor.inl"

@@ -81,6 +81,7 @@
     <ClInclude Include="xnamath.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CColor.inl" />
     <None Include="CMatrix.inl" />
     <None Include="CQuat.inl" />
     <None Include="CVector.inl" />
