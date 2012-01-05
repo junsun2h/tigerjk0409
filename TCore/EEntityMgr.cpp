@@ -1,43 +1,31 @@
 #include "EEntityMgr.h"
-#include "IResource.h"
-#include "EEntity.h"
 
 
-EEntityMgr::EEntityMgr()
+IEntity* EEntityMgr::SpawnEntity(std::string name)
 {
-
+	return m_EntityMap.SPawn(name);
 }
 
-EEntityMgr::~EEntityMgr()
+IEntityProxy* EEntityMgr::SpawnEntityProxy(std::string name, ENTITY_PROXY_TYPE type)
 {
-
+	return NULL;
 }
 
-IEntity* EEntityMgr::SPawn(std::string& name)
+void EEntityMgr::RemoveEntity(long id)
+{	 
+	m_EntityMap.Remove(id);	 
+}	 
+	 
+void EEntityMgr::RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type)
+{	 
+}	 
+	 
+void EEntityMgr::ClearEntity()
+{	 
+	m_EntityMap.Clear();
+}	 
+	 
+void EEntityMgr::ClearEntityProxy(ENTITY_PROXY_TYPE type)
 {
-	long newID = GET_HASH_KEY( name );
-	TYPE_ENTITY_MAP::CPair* pEntity = m_EntityMap.Lookup( newID );
-	if( pEntity != NULL )
-	{
-		assert(0);
-		return pEntity->m_value;
-	} 
-	
-	EEntity* newEnitty = new EEntity(name, newID);
-	m_EntityMap.SetAt( newID, newEnitty );
 
-	return newEnitty;
-}
-
-
-void EEntityMgr::Clear()
-{
-	POSITION pos = m_EntityMap.GetStartPosition();
-	TYPE_ENTITY_MAP::CPair* itr = NULL;
-
-	while (pos)
-	{
-		itr = m_EntityMap.GetNext(pos);
-		SAFE_DELETE( itr->m_value );
-	}
 }

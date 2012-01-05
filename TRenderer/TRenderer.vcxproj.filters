@@ -8,6 +8,7 @@
     <ClCompile Include="RDX11StateRepository.cpp" />
     <ClCompile Include="RDX11Window.cpp" />
     <ClCompile Include="RDX11Font.cpp" />
+    <ClCompile Include="RDX11RenderHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RDefine.h" />
@@ -18,5 +19,6 @@
     <ClInclude Include="RDX11Window.h" />
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Font.h" />
+    <ClInclude Include="RDX11RenderHelper.h" />
   </ItemGroup>
 </Project>

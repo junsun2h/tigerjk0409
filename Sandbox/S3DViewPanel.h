@@ -2,6 +2,7 @@
 
 #include "wx/wx.h"
 
+struct IEntityProxyCamera;
 
 class S3DViewPanel : public wxPanel
 {
@@ -15,5 +16,11 @@ private:
 	void	OnIdle(wxIdleEvent& event);
 	void	OnSize(wxSizeEvent& event);
 
+	void	DrawHelper();
+	void	Setup();
+
 	DECLARE_EVENT_TABLE()
+
+private:
+	IEntityProxyCamera* m_pCamera;
 };

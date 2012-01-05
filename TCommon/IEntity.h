@@ -39,9 +39,8 @@ struct IEntity
 
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
-	virtual IEntityProxy*	CreateProxy( ENTITY_PROXY_TYPE	type, std::string& strResource) =0;
 	virtual IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) = 0;
-	virtual void			SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy) = 0;
+	virtual void			SetProxy( IEntityProxy *pProxy) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// transform functions
@@ -75,3 +74,4 @@ struct IEntity
 	virtual IEntity*	GetParent() = 0;
 
 };
+

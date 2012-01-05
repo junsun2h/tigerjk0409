@@ -1,5 +1,13 @@
 #include "RDX11Device.h"
 
+
+ID3D11Device* g_D3Device = NULL;
+ID3D11DeviceContext* g_D3DeviceContext = NULL;
+
+ID3D11Device*			RDX11Device::GetDevice()	{ return g_D3Device;}
+ID3D11DeviceContext*	RDX11Device::GetContext()	{ return g_D3DeviceContext; }
+
+
 RDX11Device::RDX11Device()
 	: m_pD3Device(NULL)
 {
@@ -74,6 +82,9 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 	m_ImmediateContext.SetViewport( (float)m_DeviceSetting.width, (float)m_DeviceSetting.height);
 	m_FontRenderer.Init( "Font.dds", m_pD3Device );
 
+	g_D3Device = m_pD3Device;
+	g_D3DeviceContext = m_ImmediateContext.GetContext();
+
 	return true;
 }
 
@@ -89,11 +100,8 @@ void RDX11Device::ShutDown()
 void RDX11Device::Render(uint32 index)
 {
 	m_ImmediateContext.SetTarget( &m_MainWindow );
-
-	RenderUI();
-
-	m_MainWindow.Present();
 }
+
 
 void RDX11Device::RenderUI()
 {
@@ -112,6 +120,17 @@ void RDX11Device::RenderUI()
 
 	m_ImmediateContext.RestoreSavedState();
 }
+
+void RDX11Device::RenderLines()
+{
+
+}
+
+void RDX11Device::Present()
+{
+	m_MainWindow.Present();
+}
+
 
 bool RDX11Device::Resize(int width, int height)
 {

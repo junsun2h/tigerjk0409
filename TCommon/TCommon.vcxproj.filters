@@ -50,8 +50,14 @@
     <ClInclude Include="IActorMgr.h">
       <Filter>Interface</Filter>
     </ClInclude>
-    <ClInclude Include="CDColor.h">
-      <Filter>DataStructure</Filter>
+    <ClInclude Include="IRenderHelper.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderCallback.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="ISceneMgr.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

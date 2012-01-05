@@ -9,7 +9,20 @@
 
 struct IRDevice;
 
+enum HELPER_GEOMETRY_TYPE
+{
+	HELPER_BOX,
+	HELPER_SPHERE,
+	HELPER_AXIS,
+	HELPER_GRID
+};
 
+struct CHelperGeometryCreateParam
+{
+	HELPER_GEOMETRY_TYPE	type;
+	float					radius;
+	float					size;
+};
 
 class EAssetMgr : public IAssetMgr
 {

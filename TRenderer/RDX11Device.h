@@ -37,14 +37,20 @@ public:
 	virtual bool	StartUp(const CENGINE_INIT_PARAM &param) override;
 	virtual void	ShutDown() override;
 	virtual void	Render(uint32 index) override;
+	virtual	void	RenderUI() override;
+	virtual void	RenderLines() override;
+	virtual void	Present() override;
+
 	virtual bool	Resize(int width, int height) override;
 	virtual HWND	GetHWND() override	{ return m_HWND; }
 	virtual void	TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource) override;
 
 	const RDX11Setting& GetDeviceInfo()	{ return m_DeviceSetting; }
 
+	static ID3D11Device*		GetDevice();
+	static ID3D11DeviceContext*	GetContext();
 private:
-	void			RenderUI();
+
 
 	void			TS_CreateVB(void* pBuf ,int size, IResource* pResource);
 	void			TS_CreateVBOut(void* pBuf ,int size, IResource* pResource);

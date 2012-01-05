@@ -1,4 +1,5 @@
 #include "EEngine.h"
+#include "EEntityProxyCamera.h"
 #include "IRDevice.h"
 
 #include <windows.h>
@@ -7,8 +8,9 @@
 
 EEngine::EEngine()
 	: m_pRenderer(NULL)
+	, m_CurrentFrame(0)
 {
-
+	m_GlobalTimer.Start();
 }
 
 EEngine::~EEngine()
@@ -39,16 +41,53 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
 	m_AssetMgr.Init( param.numOfProcessThread, m_pRenderer);
-
+	
 	return true;
 }
 
 bool EEngine::ShutDown()
 {
-	m_ActorMgr.Clear();
-	m_EntityMgr.Clear();
 	m_AssetMgr.Clear();
 	m_pRenderer->ShutDown();
 
 	return false;
+}
+
+void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback)
+{
+	float deltaTime = m_GlobalTimer.GetElapsedTime();
+	
+	//////////////////////////////////////////////////////////////////////////
+	// 1) update Render independent system
+
+
+	//////////////////////////////////////////////////////////////////////////
+	// 2) update culled space list if camera is moved
+	if( pCamera->GetLastTransformChangedFrame() == m_CurrentFrame )
+		m_SceneMgr.UpdateVisibleOctreeNodeList(pCamera);
+
+	//////////////////////////////////////////////////////////////////////////
+	// 3) update render dependent system
+
+
+	//////////////////////////////////////////////////////////////////////////
+	// 4) make render object list
+	m_SceneMgr.UpdateRenderObjectList();
+
+	//////////////////////////////////////////////////////////////////////////
+	// 5) render current frame
+
+	if( pRenderCallback )
+		pRenderCallback->PreRender();
+
+	m_pRenderer->Render(0);
+	m_pRenderer->RenderLines();
+	m_pRenderer->RenderUI();
+
+	if( pRenderCallback )
+		pRenderCallback->PostRender();
+
+	m_pRenderer->Present();
+
+	m_CurrentFrame++;
 }

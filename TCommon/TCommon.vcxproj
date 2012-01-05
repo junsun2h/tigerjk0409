@@ -61,7 +61,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CDColor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CGrowableArray.h" />
     <ClInclude Include="CStack.h" />
@@ -77,7 +76,10 @@
     <ClInclude Include="IMotionMgr.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />
+    <ClInclude Include="IRenderCallback.h" />
+    <ClInclude Include="IRenderHelper.h" />
     <ClInclude Include="IResource.h" />
+    <ClInclude Include="ISceneMgr.h" />
     <ClInclude Include="xnamath.h" />
   </ItemGroup>
   <ItemGroup>

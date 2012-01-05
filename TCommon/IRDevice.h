@@ -20,6 +20,10 @@ struct IRDevice
 	virtual void		ShutDown() = 0;
 
 	virtual void		Render(uint32 index) = 0;
+	virtual	void		RenderUI() = 0;
+	virtual void		RenderLines() = 0;
+	virtual void		Present() = 0;
+
 	virtual bool		Resize(int width, int height) = 0;
 
 	// Device Dependent Resources ( ex: Texture, VB, IB, Shader )
