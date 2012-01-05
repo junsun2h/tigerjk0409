@@ -36,7 +36,7 @@ protected:
 
 
 //--------------------------------------------------------------------------------------
-CTimer::CTimer()
+inline CTimer::CTimer()
 {
 	m_bTimerStopped = true;
 	m_llQPFTicksPerSec = 0;
@@ -53,7 +53,7 @@ CTimer::CTimer()
 
 
 //--------------------------------------------------------------------------------------
-void CTimer::Reset()
+inline void CTimer::Reset()
 {
 	LARGE_INTEGER qwTime = GetAdjustedCurrentTime();
 
@@ -65,7 +65,7 @@ void CTimer::Reset()
 
 
 //--------------------------------------------------------------------------------------
-void CTimer::Start()
+inline void CTimer::Start()
 {
 	// Get the current time
 	LARGE_INTEGER qwTime = { 0 };
@@ -80,7 +80,7 @@ void CTimer::Start()
 
 
 //--------------------------------------------------------------------------------------
-void CTimer::Stop()
+inline void CTimer::Stop()
 {
 	if( !m_bTimerStopped )
 	{
@@ -94,14 +94,14 @@ void CTimer::Stop()
 
 
 //--------------------------------------------------------------------------------------
-void CTimer::Advance()
+inline void CTimer::Advance()
 {
 	m_llStopTime += m_llQPFTicksPerSec / 10;
 }
 
 
 //--------------------------------------------------------------------------------------
-double CTimer::GetAbsoluteTime()
+inline double CTimer::GetAbsoluteTime()
 {
 	LARGE_INTEGER qwTime = { 0 };
 	QueryPerformanceCounter( &qwTime );
@@ -113,7 +113,7 @@ double CTimer::GetAbsoluteTime()
 
 
 //--------------------------------------------------------------------------------------
-double CTimer::GetTime()
+inline double CTimer::GetTime()
 {
 	LARGE_INTEGER qwTime = GetAdjustedCurrentTime();
 
@@ -124,7 +124,7 @@ double CTimer::GetTime()
 
 
 //--------------------------------------------------------------------------------------
-void CTimer::GetTimeValues( double* pfTime, double* pfAbsoluteTime, float* pfElapsedTime )
+inline void CTimer::GetTimeValues( double* pfTime, double* pfAbsoluteTime, float* pfElapsedTime )
 {
 	assert( pfTime && pfAbsoluteTime && pfElapsedTime );
 
@@ -150,7 +150,7 @@ void CTimer::GetTimeValues( double* pfTime, double* pfAbsoluteTime, float* pfEla
 
 
 //--------------------------------------------------------------------------------------
-float CTimer::GetElapsedTime()
+inline float CTimer::GetElapsedTime()
 {
 	LARGE_INTEGER qwTime = GetAdjustedCurrentTime();
 
@@ -168,7 +168,7 @@ float CTimer::GetElapsedTime()
 //--------------------------------------------------------------------------------------
 // If stopped, returns time when stopped otherwise returns current time
 //--------------------------------------------------------------------------------------
-LARGE_INTEGER CTimer::GetAdjustedCurrentTime()
+inline LARGE_INTEGER CTimer::GetAdjustedCurrentTime()
 {
 	LARGE_INTEGER qwTime;
 	if( m_llStopTime != 0 )
@@ -179,7 +179,7 @@ LARGE_INTEGER CTimer::GetAdjustedCurrentTime()
 }
 
 //--------------------------------------------------------------------------------------
-bool CTimer::IsStopped()
+inline bool CTimer::IsStopped()
 {
 	return m_bTimerStopped;
 }
@@ -189,7 +189,7 @@ bool CTimer::IsStopped()
 // runs on only one processor, and will not suffer any ill effects from power management.
 // See "Game Timing and Multicore Processors" for more details
 //--------------------------------------------------------------------------------------
-void CTimer::LimitThreadAffinityToCurrentProc()
+inline void CTimer::LimitThreadAffinityToCurrentProc()
 {
 	HANDLE hCurrentProcess = GetCurrentProcess();
 

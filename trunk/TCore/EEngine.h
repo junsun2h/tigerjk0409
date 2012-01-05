@@ -1,10 +1,17 @@
 #pragma once
 
 #include "IEngine.h"
-#include "EActorMgr.h"
 #include "EEntityMgr.h"
 #include "EAssetMgr.h"
+#include "ESceneMgr.h"
+#include "CTimer.h"
+#include "IRenderCallback.h"
 
+
+
+
+
+struct IEntityProxyCamera;
 
 
 class EEngine : public IEngine
@@ -17,15 +24,25 @@ public:
 	bool			ShutDown() override;
 
 	IRDevice*		RDevice() override		{ return m_pRenderer; }
-	IEntityMgr*		EntityMgr()	override	{ return &m_EntityMgr; }
-	IActorMgr*		AcotrMgr() override		{ return &m_ActorMgr; }
 	IAssetMgr*		AssetMgr() override		{ return &m_AssetMgr; }
+	ISceneMgr*		SceneMgr() override		{ return &m_SceneMgr; }
+	IEntityMgr*		EntityMgr() override	{ return &m_EntityMgr; }
+
+	void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
+
+public:
+	long			GetCurrentFrame()		{ return m_CurrentFrame; }
 
 private:
 	IRDevice*		m_pRenderer;
-	EEntityMgr		m_EntityMgr;
-	EActorMgr		m_ActorMgr;
+
 	EAssetMgr		m_AssetMgr;
+	ESceneMgr		m_SceneMgr;
+	EEntityMgr		m_EntityMgr;
+	
+	long			m_CurrentFrame;
+
+	CTimer			m_GlobalTimer;
 };
 
 extern EEngine g_Engine;

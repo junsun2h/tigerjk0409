@@ -4,7 +4,7 @@
 EEntityProxyActor::EEntityProxyActor(std::string& name, long id)
 	: m_Name(name)
 	, m_ID(id)
-	, m_EntityID(-1)
+	, m_pEntity(NULL)
 {
 
 }
@@ -31,7 +31,7 @@ void EEntityProxyActor::ProcessEvent( EntityEvent &event )
 
 void EEntityProxyActor::SetEntity(IEntity* pEntity)
 {
-	m_EntityID = pEntity->GetID();
+	m_pEntity = pEntity;
 }
 
 void EEntityProxyActor::Update(float deltaTime)

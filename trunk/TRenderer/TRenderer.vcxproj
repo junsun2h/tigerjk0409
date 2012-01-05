@@ -83,6 +83,7 @@
     <ClCompile Include="RDX11Context.cpp" />
     <ClCompile Include="RDX11Device.cpp" />
     <ClCompile Include="RDX11Font.cpp" />
+    <ClCompile Include="RDX11RenderHelper.cpp" />
     <ClCompile Include="RDX11Window.cpp" />
     <ClCompile Include="RDX11StateRepository.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
@@ -92,6 +93,7 @@
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Device.h" />
     <ClInclude Include="RDX11Font.h" />
+    <ClInclude Include="RDX11RenderHelper.h" />
     <ClInclude Include="RDX11Window.h" />
     <ClInclude Include="RDX11StateRepository.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />

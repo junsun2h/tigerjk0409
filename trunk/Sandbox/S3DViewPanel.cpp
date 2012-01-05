@@ -4,6 +4,7 @@
 IEngine* gEng = NULL;
 
 
+
 BEGIN_EVENT_TABLE(S3DViewPanel, wxPanel)
 	EVT_IDLE(S3DViewPanel::OnIdle)
 	EVT_SIZE(S3DViewPanel::OnSize)
@@ -51,9 +52,26 @@ bool S3DViewPanel::InitDevice()
 	return true;
 }
 
+void S3DViewPanel::Setup()
+{
+	int nWidth = 100;
+	int nHeight = 100;
+	GetSize(&nWidth, &nHeight);
+
+	IEntityMgr* entityMgr = gEng->EntityMgr();
+
+	IEntity* pEntity = entityMgr->SpawnEntity( "Camera" );
+	m_pCamera = (IEntityProxyCamera*)entityMgr->SpawnEntityProxy("Main Camera" , ENTITY_CAMERA);
+	
+	m_pCamera->SetProjParam( XM_PIDIV4,  nWidth, nHeight, 1, 10000);
+	m_pCamera->SetViewParam( CVector3(1000, -1000, 1000), CVector3(0, 0, 0), CVector3(0.0f, 0.0f, 1.0f) );
+
+	pEntity->SetProxy( m_pCamera ); 
+}
+
 void S3DViewPanel::OnIdle(wxIdleEvent& event)
 {
-	gEng->RDevice()->Render(0);
+	gEng->UpdateAndRender( m_pCamera, NULL);
 }
 
 void S3DViewPanel::OnSize(wxSizeEvent& event)
@@ -61,4 +79,9 @@ void S3DViewPanel::OnSize(wxSizeEvent& event)
 	wxSize size = event.GetSize();
 
 	gEng->RDevice()->Resize( size.x, size.y );
+}
+
+void S3DViewPanel::DrawHelper()
+{
+
 }

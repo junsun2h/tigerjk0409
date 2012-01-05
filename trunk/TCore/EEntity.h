@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <atlcoll.h>
 #include "IEntity.h"
 #include "CGrowableArray.h"
 
@@ -25,12 +26,12 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
-	IEntityProxy*	CreateProxy( ENTITY_PROXY_TYPE	type, std::string& strResource) override;
-	IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) override { return m_Proxyes[type]; }
-	void			SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy) override;
+	IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) override;
+	void			SetProxy( IEntityProxy *pProxy) override;
 
 private:
-	IEntityProxy*	m_Proxyes[NUM_ENTITY_PROXY_TYPE];
+	typedef ATL::CAtlMap<ENTITY_PROXY_TYPE, IEntityProxy*>	ENEITY_PROXY_MAP;
+	ENEITY_PROXY_MAP	m_ProxyMap;
 
 public:
 	//////////////////////////////////////////////////////////////////////////

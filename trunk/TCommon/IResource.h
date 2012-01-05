@@ -73,9 +73,18 @@ enum TEXTURE_TYPE
 enum CVERTEX_TYPE
 {
 	FVF_3FP,
+	FVF_3FP_1DC,		// 3 float position + 1 DWORD Color
 	FVF_3FP_2FT,
 	FVF_3FP_3FN_2FT
 };
+
+
+struct CVertexPC 
+{
+	CVector3		vPos;
+	uint32			color;
+};
+
 
 enum CINDEX_TYPE
 {

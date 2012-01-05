@@ -3,8 +3,6 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include "EEngine.h"
-#include "EEntityMgr.h"
-#include "EActorMgr.h"
 
 EEngine g_Engine;
 

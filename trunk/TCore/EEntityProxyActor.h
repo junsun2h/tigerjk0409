@@ -14,7 +14,7 @@ public:
 	IMotionMgr*				GetMotionMgr() override;
 
 	long					GetID()	override			{ return m_ID; }
-	long					GetEntityID() override		{ return m_EntityID; }
+	IEntity*				GetEntity() override		{ return m_pEntity; }
 	
 	void					ProcessEvent( EntityEvent &event ) override;
 	void					SetEntity(IEntity* pEntity) override;
@@ -23,6 +23,6 @@ public:
 
 private:
 	long					m_ID;
-	long					m_EntityID;
+	IEntity*				m_pEntity;
 	std::string				m_Name;
 };

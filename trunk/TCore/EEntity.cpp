@@ -17,8 +17,6 @@ EEntity::EEntity(std::string& name, UINT id)
 {
 	m_LocalTM = CMatrix::Identity();
 	m_WorldTM = CMatrix::Identity();
-
-	memset( m_Proxyes, 0, 4 * NUM_ENTITY_PROXY_TYPE );
 }
 
 EEntity::~EEntity()
@@ -193,28 +191,30 @@ IEntity* EEntity::GetChild(UINT index )
 	return m_Children[index]; 
 }
 
-//////////////////////////////////////////////////////////////////////////
-//   proxy
-//////////////////////////////////////////////////////////////////////////
-IEntityProxy* EEntity::CreateProxy( ENTITY_PROXY_TYPE type, std::string& strResource)
+IEntityProxy* EEntity::GetProxy( ENTITY_PROXY_TYPE type )
 {
-	if( type == ENTITY_ACTOR )
+	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
+	if( pEntityProxy != NULL )
 	{
-		IEntityProxyActor* pActor = g_Engine.AcotrMgr()->SPawn( m_Name + "_ActorProxy" );
-		pActor->Init( strResource );
-		pActor->SetEntity( this );
-		m_Proxyes[ENTITY_ACTOR] = pActor;
-	}
+		assert(0);
+		return pEntityProxy->m_value;
+	} 
 
 	return NULL;
 }
 
-void EEntity::SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy)
+void EEntity::SetProxy( IEntityProxy *pProxy)
 {
-	if( m_Proxyes[type] != NULL )
-		SAFE_DELETE( m_Proxyes[type] );
+	ENTITY_PROXY_TYPE type = pProxy->GetType();
 
-	m_Proxyes[type] = pProxy;
+	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
+	if( pEntityProxy != NULL )
+	{
+		assert(0);
+		return;
+	}
+
+	m_ProxyMap.SetAt( type, pProxy );
 }
 
 
@@ -223,17 +223,13 @@ void EEntity::SetProxy( ENTITY_PROXY_TYPE type, IEntityProxy *pProxy)
 //////////////////////////////////////////////////////////////////////////
 void EEntity::SendEvent( EntityEvent &e )
 {
-	m_EventQueue.Add(e);
+	POSITION pos = m_ProxyMap.GetStartPosition();
+	ENEITY_PROXY_MAP::CPair* itr = NULL;
 
-	while( m_EventQueue.GetSize() != 0 )
+	while (pos)
 	{
-		EntityEvent& e = m_EventQueue.GetAt( 0 );
-		m_EventQueue.Remove( 0 );
-		
-		for( int i=0; i < NUM_ENTITY_PROXY_TYPE; ++i )
-		{
-			if( m_Proxyes[i] != NULL )
-				m_Proxyes[i]->ProcessEvent(e);
-		}
+		itr = m_ProxyMap.GetNext(pos);
+		IEntityProxy* pProxy = itr->m_value;
+		pProxy->ProcessEvent(e);
 	}
 }

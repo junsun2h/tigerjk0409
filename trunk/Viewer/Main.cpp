@@ -103,14 +103,6 @@ bool InitEngine(HINSTANCE hInstance)
 
 bool SetupViewer()
 {
-	IEntityMgr* entityMgr = gEng->EntityMgr();
-
-	std::string strEntity = "aaa";
-	std::string strActor = "aaa2";
-
-	IEntity* pEntity = entityMgr->SPawn( strEntity );
-	IEntityProxy* pActorInstance = pEntity->CreateProxy( ENTITY_ACTOR, strActor );
-
 	return true;
 }
 
