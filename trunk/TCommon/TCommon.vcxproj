@@ -61,6 +61,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CColor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CGrowableArray.h" />
     <ClInclude Include="IActorMgr.h" />
@@ -82,7 +83,6 @@
     <ClInclude Include="xnamath.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CColor.inl" />
     <None Include="xnamathconvert.inl" />
     <None Include="xnamathmatrix.inl" />
     <None Include="xnamathmisc.inl" />

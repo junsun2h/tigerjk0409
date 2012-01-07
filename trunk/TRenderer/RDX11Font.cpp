@@ -77,7 +77,7 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth,
 		}
 
 		// Add 6 sprite vertices
-		RSpriteVertex SpriteVertex;
+		CVertexPCT SpriteVertex;
 		float fRectRight = fRectLeft + fGlyphSizeX;
 		float fRectBottom = fRectTop - fGlyphSizeY;
 		float fTexLeft = ( text.strMsg[i] - 32 ) * fCharTexSizeX;
@@ -85,33 +85,33 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth,
 
 		// tri1
 		SpriteVertex.vPos = CVector3( fRectLeft, fRectTop, fDepth );
-		SpriteVertex.vTex = CVector2( fTexLeft, fTexTop );
+		SpriteVertex.vTex = XMHALF2( fTexLeft, fTexTop );
 		SpriteVertex.vColor = text.clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectRight, fRectTop, fDepth );
-		SpriteVertex.vTex = CVector2( fTexRight, fTexTop );
+		SpriteVertex.vTex = XMHALF2( fTexRight, fTexTop );
 		SpriteVertex.vColor =  text.clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectLeft, fRectBottom, fDepth );
-		SpriteVertex.vTex = CVector2( fTexLeft, fTexBottom );
+		SpriteVertex.vTex = XMHALF2( fTexLeft, fTexBottom );
 		SpriteVertex.vColor =  text.clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		// tri2
 		SpriteVertex.vPos = CVector3( fRectRight, fRectTop, fDepth );
-		SpriteVertex.vTex = CVector2( fTexRight, fTexTop );
+		SpriteVertex.vTex = XMHALF2( fTexRight, fTexTop );
 		SpriteVertex.vColor =  text.clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectRight, fRectBottom, fDepth );
-		SpriteVertex.vTex = CVector2( fTexRight, fTexBottom );
+		SpriteVertex.vTex = XMHALF2( fTexRight, fTexBottom );
 		SpriteVertex.vColor =  text.clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectLeft, fRectBottom, fDepth );
-		SpriteVertex.vTex = CVector2( fTexLeft, fTexBottom );
+		SpriteVertex.vTex = XMHALF2( fTexLeft, fTexBottom );
 		SpriteVertex.vColor =  text.clr;
 		m_FontVertices.Add( SpriteVertex );
 
@@ -129,7 +129,7 @@ void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text, int sw, int sh )
 	ID3D11DeviceContext* pd3dImmediateContext = GLOBAL::GetD3DContext();
 
 	// ensure our buffer size can hold our sprites
-	UINT FontDataBytes = m_FontVertices.GetSize() * sizeof( RSpriteVertex );
+	UINT FontDataBytes = m_FontVertices.GetSize() * sizeof( CVertexPCT );
 	if( m_FontBufferBytes < FontDataBytes )
 	{
 		SAFE_RELEASE( m_pFontBuffer );
@@ -166,7 +166,7 @@ void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text, int sw, int sh )
 	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
 
 	// Draw
-	UINT Stride = sizeof( RSpriteVertex );
+	UINT Stride = sizeof( CVertexPCT );
 	UINT Offset = 0;
 	pd3dImmediateContext->IASetVertexBuffers( 0, 1, &m_pFontBuffer, &Stride, &Offset );
 	pd3dImmediateContext->Draw( m_FontVertices.GetSize(), 0 );

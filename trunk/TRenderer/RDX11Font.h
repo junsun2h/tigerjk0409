@@ -3,21 +3,15 @@
 
 #include "RDefine.h"
 #include "CGrowableArray.h"
+#include "IResource.h"
 
-
-struct RSpriteVertex
-{
-	CVector3 vPos;
-	CColor vColor;
-	CVector2 vTex;
-};
 
 
 struct RENDER_TEXT_BUFFER
 {
 	RECT		rc;
 	WCHAR		strMsg[256];
-	CColor		clr;
+	DWORD		clr;
 	bool		bCenter;
 };
 
@@ -37,6 +31,6 @@ private:
 
 	ID3D11Buffer*					m_pFontBuffer;
 	UINT							m_FontBufferBytes;
-	CGrowableArray<RSpriteVertex>	m_FontVertices;
+	CGrowableArray<CVertexPCT>		m_FontVertices;
 	ID3D11ShaderResourceView*		m_pFontSRV;
 };

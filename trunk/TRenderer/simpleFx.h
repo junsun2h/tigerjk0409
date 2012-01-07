@@ -52,14 +52,17 @@ char g_strFontFxFile[] = \
 	"};"\
 	""\
 	"VS_OUTPUT VS( float3 vPos : POSITION,"\
-	"              float4 Dif : COLOR,"\
+	"              uint4 Color : COLOR,"\
 	"              float2 vTexCoord0 : TEXCOORD )"\
 	"{"\
 	"    VS_OUTPUT Output;"\
 	""\
-	"    Output.Pos = float4( vPos, 1.0f );"\
-	"    Output.Dif = Dif;"\
-	"    Output.Tex = vTexCoord0;"\
+	"	Output.Pos = float4( vPos, 1.0f );"\
+	"	Output.Dif.x = Color.x/255.f;"\
+	"	Output.Dif.y = Color.y/255.f;"\
+	"	Output.Dif.z = Color.z/255.f;"\
+	"	Output.Dif.w = Color.w/255.f;"\
+	"	Output.Tex = vTexCoord0;"\
 	""\
 	"    return Output;"\
 	"}"\
