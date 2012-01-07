@@ -47,17 +47,17 @@ struct IEntity
 	virtual CVector3	GetLocalPos() = 0;
 	virtual CQuat		GetLocalRot() = 0;
 	virtual CVector3	GetLocalScale() = 0;
-	virtual CMatrix		GetLocalTM() = 0;
+	virtual XMMATRIX	GetLocalTM() = 0;
 
 	virtual CVector3	GetWorldPos() = 0;
 	virtual CQuat		GetWorldRot() = 0;
-	virtual CMatrix		GetWorldTM() = 0;
+	virtual XMMATRIX	GetWorldTM() = 0;
 
 	virtual void		SetLocalPos(const CVector3& _pos) = 0;
 	virtual void		SetLocalScale(const CVector3& _scale) = 0;
 	virtual void		SetLocalRot(const CQuat& _rot) = 0;
-	virtual void		SetLocalTM(const CMatrix& tm) = 0;
-	virtual void		SetWorldTM(const CMatrix& tm) = 0;
+	virtual void		SetLocalTM(const XMMATRIX& tm) = 0;
+	virtual void		SetWorldTM(const XMMATRIX& tm) = 0;
 
 	virtual void		UpdateLocalTM() = 0;
 	virtual void		UpdateWorldTM() = 0;

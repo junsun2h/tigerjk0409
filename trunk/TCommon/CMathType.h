@@ -1,13 +1,13 @@
 #pragma once
 
+#define _XM_NO_INTRINSICS_
+
 #include <WTypes.h>
 #include "xnamath.h"
 #include <assert.h>
 
-struct CMatrix;
 struct CVector2;
 struct CVector3;
-struct CVector4;
 
 
 struct CQuat
@@ -29,22 +29,20 @@ struct CQuat
 		: x(x_), y(y_), z(z_), w(w_)	{}
 	CQuat(XMVECTOR _m128)	{ m128 = _m128; }
 
-	static XMVECTOR		Conjugate(const CQuat& q);
-	static XMVECTOR		Normalise(const CQuat& q);
-	static XMVECTOR		Identity()		{ return XMQuaternionIdentity(); }
+	static XMVECTOR		Conjugate(const CQuat& q)	{ return XMQuaternionConjugate(q.m128);}
+	static XMVECTOR		Normalise(const CQuat& q)	{ return XMQuaternionNormalize(q.m128);}
+	static XMVECTOR		Identity()					{ return XMQuaternionIdentity(); }
 
-	static XMVECTOR		Ratate(const CVector3& axis, float angle);
+	static XMVECTOR		Rotate(const CVector3& axis, float angle);
 
 	// in radians, Roll(Z) -> Pitch(X) -> Yaw(Y) order
-	static XMVECTOR		RatateRadian(float Pitch, float Yaw, float Roll);
-	static XMVECTOR		RatateDegree(float Pitch, float Yaw, float Roll);
+	static XMVECTOR		RotateRadian(float Pitch, float Yaw, float Roll)	{ return XMQuaternionRotationRollPitchYaw(Pitch, Yaw, Roll);  }
+	static XMVECTOR		RotateDegree(float Pitch, float Yaw, float Roll)	{ return RotateRadian( XMConvertToRadians(Pitch), XMConvertToRadians(Yaw), XMConvertToRadians(Roll));  }
 
-	static XMVECTOR		Slerp(const CQuat& q1, const CQuat& q2, float t);
-	static XMVECTOR		DotProduct(const CQuat& q1, const CQuat& q2);
-	static XMVECTOR		Inverse(const CQuat& q);
+	static XMVECTOR		Slerp(const CQuat& q1, const CQuat& q2, float t)	{ return XMQuaternionSlerp( q1.m128, q2.m128, t); }
+	static XMVECTOR		DotProduct(const CQuat& q1, const CQuat& q2)		{ return XMQuaternionDot( q1.m128, q2.m128);  }
+	static XMVECTOR		Inverse(const CQuat& q)								{ return XMQuaternionInverse( q.m128); }
 	static void			ToAxisAngle(const CQuat& q1, CVector3* pAxis, float* pAnlge);
-
-
 	
 	// assignment operators
 	CQuat operator *= ( const CQuat& q)			{ m128 = XMQuaternionMultiply(m128, q.m128);  return *this; }
@@ -74,7 +72,18 @@ struct CVector2
 	explicit CVector2( const float *in )			{ memcpy( f, in, sizeof(CVector2)); }
 
 	static float	Length(const CVector2& v)		{ return sqrtf(v.x * v.x + v.y * v.y); }
-	static CVector2	Normalize(const CVector2& v);
+	static CVector2	Normalize(const CVector2& v)							
+	{
+		CVector2 out = v;
+		float length = Length(v); 
+
+		if( length == 0)
+			return out;
+
+		out.x /= length; 
+		out.y /= length;
+		return out;
+	}
 
 	float		DotProduct(CVector2& p)				{ return x*p.x + y*p.y; }
 
@@ -136,9 +145,10 @@ struct CVector3{
 	static CVector3		Max(const CVector3& v1, const CVector3& v2)		{ return XMVectorMax( v1.ToXMVEECTOR(), v2.ToXMVEECTOR() ); }
 
 	static CVector3		Lerp(const CVector3& v1, const CVector3& v2, float ratio)	{	return XMVectorLerp(v1.ToXMVEECTOR(), v2.ToXMVEECTOR(), ratio);	}
-	static CVector3		Transform(const CVector3& v, const CMatrix& mt );
-	static CVector3		TransformCoord(const CVector3& v, const CMatrix& mt );
-	static CVector3		TransformNormal(const CVector3& v, const CMatrix& mt );
+	static CVector3		Transform(const CVector3& v, const XMMATRIX& mt )			{	return XMVector3Transform( v.ToXMVEECTOR(), mt);  }
+	static CVector3		TransformCoord(const CVector3& v, const XMMATRIX& mt )		{	return XMVector3TransformCoord( v.ToXMVEECTOR(), mt); }
+	static CVector3		TransformNormal(const CVector3& v, const XMMATRIX& mt )		{	return XMVector3TransformNormal( v.ToXMVEECTOR(), mt);}
+
 
 	// assignment operators
 	CVector3& operator += ( const CVector3& in)		{	x = x + in.x; y = y + in.y; z = z + in.z; return *this; }
@@ -227,8 +237,8 @@ struct CVector4{
 	operator float* ()								{	return (float*)this; }
 	operator const float* () const					{	return (float*)this; }
 
-	bool operator == ( const CVector4& in) const	{ return !(!XMVector3Equal( m128, in.m128)); }
-	bool operator != ( const CVector4& in) const	{ return !XMVector3Equal( m128, in.m128); }
+	bool operator == ( const CVector4& in) const	{ return !(!XMVector4Equal( m128, in.m128)); }
+	bool operator != ( const CVector4& in) const	{ return !XMVector4Equal( m128, in.m128); }
 
 	bool operator < ( const CVector4& in)			{ return Length(*this) < Length(in);}
 	bool operator > ( const CVector4& in)			{ return Length(*this) < Length(in);}
@@ -275,64 +285,66 @@ public:
 };
 
 
-struct CMatrix
+namespace XMMATRIX_UTIL
 {
-	CMatrix(){}
-	CMatrix(const XMMATRIX& mt)
-	{
-		_m = mt;
+	inline XMMATRIX	Inverse(CVector4* pDeterminant, const XMMATRIX& mt)		
+	{  
+		XMVECTOR _m128;
+		XMMATRIX inv = XMMatrixInverse( &_m128, mt);
+
+		if( pDeterminant != NULL)
+			*pDeterminant = _m128;
+
+		return inv;
 	}
 
-	XMMATRIX _m;
+	inline BOOL Decompose(CVector3* pScale, CQuat* pRot, CVector3* pPos, const XMMATRIX& mt)
+	{
+		XMVECTOR outScale;
+		XMVECTOR outRotQuat;
+		XMVECTOR outTrans;
 
-	CVector3			GetRow(int row) const;
-	void				SetRow(const CVector3& vec, int row);
+		if( !XMMatrixDecompose( &outScale, &outRotQuat, &outTrans, mt) )
+			return false;
 
-	static BOOL			IsValid(const CMatrix& mt);
-	static BOOL         IsIdentity(const CMatrix& mt);
+		*pScale = outScale;
+		*pRot = outRotQuat;
+		*pPos = outTrans;
 
-	static XMMATRIX		Multiply(const CMatrix& mt1, const CMatrix& mt2);
-	static XMMATRIX		MultiplyTranspose(const CMatrix& mt1, const CMatrix& mt2);
-	static XMMATRIX		Transpose(const CMatrix& mt);
+		return true;
+	}
 
-	static XMVECTOR		Determinant(const CMatrix& mt);
-	static XMMATRIX		Inverse(CVector3* pDeterminant, const CMatrix& mt);
-	static BOOL         Decompose(CVector3* pScale, CQuat* pRot, CVector3* pPos, const CMatrix& mt);
+	inline void ToRollPitchYaw(float& pitch, float& yaw, float& roll, const XMMATRIX& mt)
+	{
+		//	since xna math rotate Roll(Z) -> Pitch(X) -> Yaw(Y), we have to decompose from Yaw, followed by Pitch and finally roll
+		CVector3 y = mt.r[1];
+		CVector3 z = mt.r[2];
 
-	static XMMATRIX		Identity()											{ return XMMatrixIdentity(); }
-	static XMMATRIX		Translation(float x, float y, float z)				{  return XMMatrixTranslation(x, y, z); }
-	static XMMATRIX		Scaling(float x, float y, float z)					{  return XMMatrixScaling(x, y, z); }
-	static XMMATRIX		RotateX(FLOAT Angle)								{  return XMMatrixRotationX(Angle);	};
-	static XMMATRIX		RotateY(FLOAT Angle)								{  return XMMatrixRotationY(Angle);	};
-	static XMMATRIX		RotateZ(FLOAT Angle)								{  return XMMatrixRotationZ(Angle);	};
-	static XMMATRIX		RotationRollPitchYawRadian(FLOAT Pitch, FLOAT Yaw, FLOAT Roll)	{ return XMMatrixRotationRollPitchYaw(Pitch, Yaw, Roll); }
-	static XMMATRIX		RotationRollPitchYawDegree(FLOAT Pitch, FLOAT Yaw, FLOAT Roll)	{ return XMMatrixRotationRollPitchYaw( XMConvertToRadians(Pitch), XMConvertToRadians(Yaw), XMConvertToRadians(Roll) ); }
-	static XMMATRIX		RotateAxis(const CVector3& Axis, FLOAT Angle)		{  return XMMatrixRotationAxis( Axis.ToXMVEECTOR(), Angle); }
-	static XMMATRIX		RotateQuaternion(const CQuat& Quaternion)			{  return XMMatrixRotationQuaternion(Quaternion.m128); }
-	static CQuat		ToQuaternion(const CMatrix& mt)						{  return XMQuaternionRotationMatrix(mt._m);  }	
-	static void			ToRollPitchYaw(float& pitch, float& yaw, float& roll, const CMatrix& mt);
-	static XMMATRIX		TransformationAffine(const CVector3& scale, const CVector3& rotOrigin, const CQuat& rot, const CVector3& pos) { return XMMatrixAffineTransformation(scale.ToXMVEECTOR(), pos.ToXMVEECTOR(), rot.m128, pos.ToXMVEECTOR()); }
+		// decompose y-aix( yaw )
+		yaw = XMConvertToDegrees( atan2f( z.x, z.z ) );
 
-	static XMMATRIX		LookAtLH(const CVector4& Eye, const CVector4& Focus, const CVector4& Up)	{ return XMMatrixLookAtLH(Eye.m128, Focus.m128, Up.m128); }
-	static XMMATRIX		LookAtRH(const CVector4& Eye, const CVector4& Focus, const CVector4& Up)	{ return XMMatrixLookAtRH(Eye.m128, Focus.m128, Up.m128); }
-	static XMMATRIX		LookToLH(const CVector4& EyePos, const CVector4& EyeDir, const CVector4& Up)	{ return XMMatrixLookToLH(EyePos.m128, EyeDir.m128, Up.m128); }
-	static XMMATRIX		LookToRH(const CVector4& EyePos, const CVector4& EyeDir, const CVector4& Up)	{ return XMMatrixLookToRH(EyePos.m128, EyeDir.m128, Up.m128); }
-	static XMMATRIX		PerspectiveLH(FLOAT w, FLOAT h, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixPerspectiveLH(w, h, NearZ, FarZ); }
-	static XMMATRIX		PerspectiveRH(FLOAT w, FLOAT h, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixPerspectiveRH(w, h, NearZ, FarZ); }
-	static XMMATRIX		PerspectiveFovLH(FLOAT FovAngleY, FLOAT AspectHByW, FLOAT NearZ, FLOAT FarZ)	{	return XMMatrixPerspectiveFovLH( FovAngleY, AspectHByW, NearZ, FarZ); }
-	static XMMATRIX		PerspectiveFovRH(FLOAT FovAngleY, FLOAT AspectHByW, FLOAT NearZ, FLOAT FarZ)	{	return XMMatrixPerspectiveFovRH( FovAngleY, AspectHByW, NearZ, FarZ); }
-	static XMMATRIX		PerspectiveOffCenterLH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ) { return XMMatrixPerspectiveOffCenterLH(ViewLeft, ViewRight, ViewBottom, ViewTop, NearZ, FarZ); }
-	static XMMATRIX		PerspectiveOffCenterRH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ) { return XMMatrixPerspectiveOffCenterRH(ViewLeft, ViewRight, ViewBottom, ViewTop, NearZ, FarZ); }
-	static XMMATRIX		OrthographicLH(FLOAT ViewWidth, FLOAT ViewHeight, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixOrthographicLH( ViewWidth, ViewHeight, NearZ, FarZ);	}
-	static XMMATRIX		OrthographicRH(FLOAT ViewWidth, FLOAT ViewHeight, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixOrthographicRH( ViewWidth, ViewHeight, NearZ, FarZ);	}
-	static XMMATRIX		OrthographicOffCenterLH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixOrthographicOffCenterLH(ViewLeft, ViewRight, ViewBottom, ViewTop, NearZ, FarZ); }
-	static XMMATRIX		OrthographicOffCenterRH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ)	{ return XMMatrixOrthographicOffCenterRH(ViewLeft, ViewRight, ViewBottom, ViewTop, NearZ, FarZ); }
+		// decompose x-aix( pitch )
+		XMMATRIX rot_y = XMMatrixRotationY( XMConvertToRadians( -yaw)  );
 
-	CMatrix&  operator*= (const CMatrix& M)			{ *this = XMMatrixMultiply( _m, M._m);	return *this;}
-	CMatrix   operator* (const CMatrix& M) const	{ return XMMatrixMultiply( _m, M._m);}
-};
+		y = CVector3::Transform( y , rot_y );
+		z = CVector3::Transform( z , rot_y );
 
+		pitch = XMConvertToDegrees( - atan2f( z.y, z.z ) );
 
+		// decompose z-aix( roll )
+		XMMATRIX rot_z = XMMatrixRotationX( XMConvertToRadians( -pitch)  );
+
+		y = CVector3::Transform( y , rot_z );
+
+		roll = XMConvertToDegrees( -atan2f( y.x, y.y ) );
+	}
+
+	inline XMMATRIX	TransformationAffine(const CVector3& scale, const CVector3& rotOrigin, const CQuat& rot, const CVector3& pos) 
+	{ 
+		return XMMatrixAffineTransformation(scale.ToXMVEECTOR(), pos.ToXMVEECTOR(), rot.m128, pos.ToXMVEECTOR()); 
+	}
+
+}
 
 #define	COLOR_RED	0xff0000ff
 #define	COLOR_GREEN	0xff00ff00
@@ -341,8 +353,16 @@ struct CMatrix
 #define	COLOR_BLACK	0xff000000
 #define	COLOR_GRAY	0xff808080
 
+inline XMVECTOR CQuat::Rotate(const CVector3& axis, float angle)	
+{ 
+	return XMQuaternionRotationAxis( axis.ToXMVEECTOR(), angle);
+}
 
-#include "CVector.inl"
-#include "CQuat.inl"
-#include "CMatrix.inl"
+inline void	CQuat::ToAxisAngle(const CQuat& q1, CVector3* pAxis, float* pAnlge)
+{
+	XMVECTOR axis;
+	XMQuaternionToAxisAngle(&axis, pAnlge, q1.m128);
+	*pAxis = axis;
+}
+
 #include "CColor.inl"

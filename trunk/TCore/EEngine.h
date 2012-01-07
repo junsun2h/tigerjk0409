@@ -10,9 +10,8 @@
 
 
 
-
 struct IEntityProxyCamera;
-
+struct IRenderHelper;
 
 class EEngine : public IEngine
 {
@@ -27,7 +26,7 @@ public:
 	IAssetMgr*		AssetMgr() override		{ return &m_AssetMgr; }
 	ISceneMgr*		SceneMgr() override		{ return &m_SceneMgr; }
 	IEntityMgr*		EntityMgr() override	{ return &m_EntityMgr; }
-
+	IRenderHelper*	RenderHelper() override { return m_pRenderer->GetRenderHelper(); }
 	void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
 
 public:
@@ -35,6 +34,7 @@ public:
 
 private:
 	IRDevice*		m_pRenderer;
+	IRenderHelper*	m_pRenderHelper;
 
 	EAssetMgr		m_AssetMgr;
 	ESceneMgr		m_SceneMgr;

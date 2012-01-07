@@ -11,9 +11,11 @@ struct ERenderItem
 	long	mtrlID;
 };
 
-class EEntityProxyRender : IEntityProxyRender
+class EEntityProxyRender : public IEntityProxyRender
 {
 public:
+	EEntityProxyRender(std::string& name, long id );
+
 	long			GetID()	override							{ return m_ID; }
 	IEntity*		GetEntity()	override						{ return m_pEntity;}
 	void			SetEntity(IEntity* pEntity) override;

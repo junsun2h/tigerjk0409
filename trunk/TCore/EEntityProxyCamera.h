@@ -14,13 +14,8 @@ public:
 
 	void					SetProjParam(float fovy, int width, int height, float nearPlane, float farPlane) override;
 	void					SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector) override;
+	const CCAMERA_DESC&		GetDesc() override		{ return m_Desc; }
 
-	CMatrix					GetViewTransform() override			{ return m_ViewTM; }
-	CMatrix					GetProjectionTransform() override	{ return m_ProjTM; }
-
-	float					GetNearClip() override				{ return m_nearClip; }
-	float					GetFarClip() override				{ return m_farClip; }
-	float					GetFovy() override					{ return m_Fovy;}
 	long					GetLastTransformChangedFrame() override	{ return m_FrameTransformChanged; }
 
 private:
@@ -29,12 +24,6 @@ private:
 	std::string				m_Name;
 
 private:
-	CMatrix					m_ViewTM;
-	CMatrix					m_ProjTM;
-		
-	float					m_nearClip;
-	float					m_farClip;
-	float					m_Fovy;
-
+	CCAMERA_DESC			m_Desc;
 	long					m_FrameTransformChanged;
 };

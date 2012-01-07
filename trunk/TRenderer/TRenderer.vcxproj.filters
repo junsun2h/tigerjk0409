@@ -4,21 +4,44 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="RDX11Device.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
-    <ClCompile Include="RDX11Context.cpp" />
-    <ClCompile Include="RDX11StateRepository.cpp" />
     <ClCompile Include="RDX11Window.cpp" />
     <ClCompile Include="RDX11Font.cpp" />
     <ClCompile Include="RDX11RenderHelper.cpp" />
+    <ClCompile Include="RDX11Shader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RDX11RenderStateMgr.cpp" />
+    <ClCompile Include="RDX11ShaderMgr.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RDefine.h" />
     <ClInclude Include="RDX11Device.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />
-    <ClInclude Include="RDX11Context.h" />
-    <ClInclude Include="RDX11StateRepository.h" />
     <ClInclude Include="RDX11Window.h" />
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Font.h" />
     <ClInclude Include="RDX11RenderHelper.h" />
+    <ClInclude Include="RDX11Shader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RDX11ShaderMgr.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RDX11RenderStateMgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{77a49b5e-393a-412d-8f7a-682c17733f69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx">
+      <UniqueIdentifier>{a2f6e5e9-d821-49da-998e-374b27394ce9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="simpleFx.h">
+      <Filter>Shader\fx</Filter>
+    </None>
   </ItemGroup>
 </Project>

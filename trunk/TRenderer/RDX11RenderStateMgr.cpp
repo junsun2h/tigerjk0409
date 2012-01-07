@@ -1,30 +1,36 @@
-#include "RDX11StateRepository.h"
+#include "RDX11RenderStateMgr.h"
+#include "RDX11Device.h"
 
-RDX11StateRepository::RDX11StateRepository()
+
+RDX11RenderStateMgr::RDX11RenderStateMgr()
 	: m_bCreated(false)
 {
 }
 
-RDX11StateRepository::~RDX11StateRepository()
+RDX11RenderStateMgr::~RDX11RenderStateMgr()
 {
 	if( m_bCreated )
 		Destroy();
 }
 
-void RDX11StateRepository::CreateStates(ID3D11Device* pD3Device)
+void RDX11RenderStateMgr::Init()
 {
 	if( m_bCreated == true)
 		return;
+
+	ID3D11Device* pD3Device = GLOBAL::GetD3DDevice();
 
 	CreateSampler(pD3Device);
 	CreateBlenderStates(pD3Device);
 	CreateRasterizerStates(pD3Device);
 	CreateDepthStencilStates(pD3Device);
 
+	GLOBAL::GetD3DContext()->PSSetSamplers(0, 3, m_SamplerStates);
+
 	m_bCreated = true;
 }
 
-void RDX11StateRepository::Destroy()
+void RDX11RenderStateMgr::Destroy()
 {
 	for (int i= 0; i < NUM_ALPHA_BLEND_TYPE; ++i)
 	{
@@ -49,7 +55,7 @@ void RDX11StateRepository::Destroy()
 	m_bCreated = false;
 }
 
-void RDX11StateRepository::CreateBlenderStates(ID3D11Device* pD3Device)
+void RDX11RenderStateMgr::CreateBlenderStates(ID3D11Device* pD3Device)
 {
 	D3D11_BLEND_DESC blendDesc;
 
@@ -73,7 +79,7 @@ void RDX11StateRepository::CreateBlenderStates(ID3D11Device* pD3Device)
 	m_pBlendType[BLEND_NONE] = NULL;
 }
 
-void RDX11StateRepository::CreateDepthStencilStates(ID3D11Device* pD3Device)
+void RDX11RenderStateMgr::CreateDepthStencilStates(ID3D11Device* pD3Device)
 {
 	{
 		D3D11_DEPTH_STENCIL_DESC dsDesc;
@@ -161,7 +167,7 @@ void RDX11StateRepository::CreateDepthStencilStates(ID3D11Device* pD3Device)
 	}
 }
 
-void RDX11StateRepository::CreateRasterizerStates(ID3D11Device* pD3Device)
+void RDX11RenderStateMgr::CreateRasterizerStates(ID3D11Device* pD3Device)
 {
 	D3D11_RASTERIZER_DESC rsDesc;
 	rsDesc.FillMode = D3D11_FILL_SOLID;
@@ -205,7 +211,7 @@ void RDX11StateRepository::CreateRasterizerStates(ID3D11Device* pD3Device)
 	}
 }
 
-void RDX11StateRepository::CreateSampler(ID3D11Device* pD3Device)
+void RDX11RenderStateMgr::CreateSampler(ID3D11Device* pD3Device)
 {
 	D3D11_SAMPLER_DESC SamDesc;
 	ZeroMemory( &SamDesc, sizeof(SamDesc) );
@@ -231,22 +237,40 @@ void RDX11StateRepository::CreateSampler(ID3D11Device* pD3Device)
 	TDXERROR( pD3Device->CreateSamplerState( &SamDesc, &m_SamplerStates[POINT_SAMPLER] ) );
 }
 
-ID3D11BlendState*			RDX11StateRepository::GetBlenderState(ALPHA_BLEND_TYPE type)
+void RDX11RenderStateMgr::ApplyRenderState(DEPTH_STENCIL_TYPE DepthStencil,
+	RASTERIZER_TYPE RasterizerState,
+	ALPHA_BLEND_TYPE BlendState,
+	UINT stencilRef,
+	float* blendFactor,
+	UINT sampleMask)
 {
-	return m_pBlendType[type];
+	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+
+	pContext->OMSetDepthStencilState( m_pDepthStencilType[DepthStencil], stencilRef );
+	pContext->RSSetState( m_pRasterizerType[RasterizerState] );
+	pContext->OMSetBlendState( m_pBlendType[BlendState], blendFactor, sampleMask );
 }
 
-ID3D11RasterizerState*		RDX11StateRepository::GetRasterizerState(RASTERIZER_TYPE type)
+//--------------------------------------------------------------------------------------
+void RDX11RenderStateMgr::StoreCurrentState()
 {
-	return m_pRasterizerType[type];
+	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+
+	pContext->OMGetDepthStencilState( &m_pStoredDepthStencil, &m_StoredStencilRef );
+	pContext->RSGetState( &m_pStoredRasterizer );
+	pContext->OMGetBlendState( &m_pStoredBlend, m_StoredBlendFactor, &m_StoredSampleMask );
 }
 
-ID3D11DepthStencilState*	RDX11StateRepository::GetDepthStencilState(DEPTH_STENCIL_TYPE type)
+//--------------------------------------------------------------------------------------
+void RDX11RenderStateMgr::RestoreSavedState()
 {
-	return m_pDepthStencilType[type];
-}
+	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
 
-ID3D11SamplerState*			RDX11StateRepository::GetSamplerState(TSAMPLER_TYPE type)
-{
-	return m_SamplerStates[type];
+	pContext->OMSetDepthStencilState( m_pStoredDepthStencil, m_StoredStencilRef );
+	pContext->RSSetState( m_pStoredRasterizer );
+	pContext->OMSetBlendState( m_pStoredBlend, m_StoredBlendFactor, m_StoredSampleMask );
+
+	SAFE_RELEASE( m_pStoredDepthStencil );
+	SAFE_RELEASE( m_pStoredRasterizer );
+	SAFE_RELEASE( m_pStoredBlend );
 }

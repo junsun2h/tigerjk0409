@@ -39,17 +39,17 @@ public:
 	CVector3		GetLocalPos() override		{ return m_LocalPos;	}
 	CQuat			GetLocalRot() override		{ return m_LocalRotation;	}
 	CVector3		GetLocalScale() override	{ return m_LocalScale;	}
-	CMatrix			GetLocalTM() override		{ return m_LocalTM;	}
+	XMMATRIX		GetLocalTM() override		{ return m_LocalTM;	}
 
 	CVector3		GetWorldPos() override		{ return m_WorldPos;	}
 	CQuat			GetWorldRot() override		{ return m_WorldRotation;	}
-	CMatrix			GetWorldTM() override		{ return m_WorldTM;	}
+	XMMATRIX		GetWorldTM() override		{ return m_WorldTM;	}
 
 	void			SetLocalPos(const CVector3& _pos) override;
 	void			SetLocalScale(const CVector3& _scale) override;
 	void			SetLocalRot(const CQuat& _rot) override;
-	void			SetLocalTM(const CMatrix& tm) override;
-	void			SetWorldTM(const CMatrix& tm) override;
+	void			SetLocalTM(const XMMATRIX& tm) override;
+	void			SetWorldTM(const XMMATRIX& tm) override;
 
 	void			UpdateLocalTM() override;
 	void			UpdateWorldTM() override;
@@ -58,12 +58,12 @@ private:
 	CVector3	m_LocalPos;
 	CVector3	m_LocalScale;
 	CQuat		m_LocalRotation;
-	CMatrix		m_LocalTM;
+	XMMATRIX	m_LocalTM;
 
 	CVector3	m_WorldPos;
 	CVector3	m_WorldScale;
 	CQuat		m_WorldRotation;
-	CMatrix		m_WorldTM;
+	XMMATRIX	m_WorldTM;
 
 	UINT		m_SpaceID;		// Octree space id
 

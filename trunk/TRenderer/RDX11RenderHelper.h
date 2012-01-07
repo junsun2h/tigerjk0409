@@ -6,23 +6,22 @@
 #include "CGrowableArray.h"
 
 
-class RDX11RenderHelper : IRenderHelper
+class RDX11RenderHelper : public IRenderHelper
 {
 public:
 	RDX11RenderHelper();
 
-	bool Init();
-	void Destroy();
-	void RenderBox(CMatrix& mtWorld, CVector3& min, CVector3& max) override;
-	void RenderGrid(CMatrix& mtWorld, int size, int segmentCount) override;
-	void ApplyRenderState();
+public:
+	void	 RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max) override;
+	void	 RenderGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
+	
+public:
+	bool	Init();
+	void	Destroy();
+	void	ApplyRenderState();
 
 private:
 	UINT						m_LineBufferBytes;
-	ID3D11VertexShader*			m_pVSRender;
-	ID3D11PixelShader*			m_pPSRender;
-	ID3D11InputLayout*			m_pInputLayout;
-
 	CGrowableArray<CVertexPC>	m_LineVertices;
 	ID3D11Buffer*				m_pLineBuffer;
 };

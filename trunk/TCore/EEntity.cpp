@@ -15,8 +15,8 @@ EEntity::EEntity(std::string& name, UINT id)
 	, m_Name(name)
 	, m_ID(id)
 {
-	m_LocalTM = CMatrix::Identity();
-	m_WorldTM = CMatrix::Identity();
+	m_LocalTM = XMMatrixIdentity();
+	m_WorldTM = XMMatrixIdentity();
 }
 
 EEntity::~EEntity()
@@ -58,19 +58,19 @@ void EEntity::SetLocalRot(const CQuat& _rot)
 	UpdateLocalTM();
 }
 
-inline void EEntity::SetLocalTM(const CMatrix& tm)
+inline void EEntity::SetLocalTM(const XMMATRIX& tm)
 {
 	m_LocalTM = tm;
-	CMatrix::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+	XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
 	UpdateWorldTM();
 }
 
-inline void EEntity::SetWorldTM(const CMatrix& tm)
+inline void EEntity::SetWorldTM(const XMMATRIX& tm)
 {
 	if ( m_pParent )
 	{
-		CMatrix worldInverse = CMatrix::Inverse(NULL, m_pParent->GetWorldTM());
-		CMatrix localTM =  worldInverse * m_LocalTM;
+		XMMATRIX worldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
+		XMMATRIX localTM =  worldInverse * m_LocalTM;
 		SetLocalTM( localTM );
 	}
 	else
@@ -81,7 +81,7 @@ inline void EEntity::SetWorldTM(const CMatrix& tm)
 
 inline void EEntity::UpdateLocalTM()
 {
-	m_LocalTM = CMatrix::TransformationAffine(m_LocalScale, m_LocalPos, m_LocalRotation, m_LocalPos);
+	m_LocalTM = XMMATRIX_UTIL::TransformationAffine(m_LocalScale, m_LocalPos, m_LocalRotation, m_LocalPos);
 	UpdateWorldTM();
 	
 	int count = m_Children.size();
@@ -102,8 +102,8 @@ inline void EEntity::UpdateWorldTM()
 		return;
 	}
 
-	m_WorldTM = CMatrix::Multiply(m_LocalTM, m_pParent->GetLocalTM());
-	CMatrix::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+	m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetLocalTM());
+	XMMATRIX_UTIL::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
 
 	EntityEvent e;
 	e.type = E_EVENT_TRANSFORM_CHANGED;

@@ -53,12 +53,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;TRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\TCommon;..\..\SDK\directx\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\TCommon;..\..\SDK\directx\Include;..\..\SDK\vld\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\SDK\directx\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\SDK\directx\Lib\x86;..\..\SDK\vld\lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -80,24 +81,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="RDX11Context.cpp" />
     <ClCompile Include="RDX11Device.cpp" />
     <ClCompile Include="RDX11Font.cpp" />
     <ClCompile Include="RDX11RenderHelper.cpp" />
+    <ClCompile Include="RDX11RenderStateMgr.cpp" />
+    <ClCompile Include="RDX11Shader.cpp" />
+    <ClCompile Include="RDX11ShaderMgr.cpp" />
     <ClCompile Include="RDX11Window.cpp" />
-    <ClCompile Include="RDX11StateRepository.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RDX11Context.h" />
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Device.h" />
     <ClInclude Include="RDX11Font.h" />
     <ClInclude Include="RDX11RenderHelper.h" />
+    <ClInclude Include="RDX11RenderStateMgr.h" />
+    <ClInclude Include="RDX11Shader.h" />
+    <ClInclude Include="RDX11ShaderMgr.h" />
     <ClInclude Include="RDX11Window.h" />
-    <ClInclude Include="RDX11StateRepository.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />
     <ClInclude Include="RDefine.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="simpleFx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

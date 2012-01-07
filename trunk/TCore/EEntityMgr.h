@@ -39,7 +39,7 @@ public:
 		} 
 	}
 
-	void Clear()
+	void RemoveAll()
 	{
 		POSITION pos = m_Map.GetStartPosition();
 		ATL::CAtlMap<long, T*>::CPair* itr = NULL;
@@ -60,19 +60,21 @@ private:
 
 class EEntityMgr : public IEntityMgr
 {
-private:
+public:
 	IEntity*			SpawnEntity(std::string name) override;
 	IEntityProxy*		SpawnEntityProxy(std::string name, ENTITY_PROXY_TYPE type) override;
 
 	void				RemoveEntity(long id) override;
 	void				RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type) override;
 
-	void				ClearEntity() override;
-	void				ClearEntityProxy(ENTITY_PROXY_TYPE type) override;
+	void				RemoveAllEntity() override;
+	void				RemoveAllEntityProxy(ENTITY_PROXY_TYPE type) override;
+
+	void				Destroy() override;
 
 private:
 	EEntityMap<EEntity>				m_EntityMap;
 	EEntityMap<EEntityProxyActor>	m_ActorMap;
 	EEntityMap<EEntityProxyCamera>	m_CameraMap;
-	EEntityMap<EEntityProxyRender>	m_RenderObjectMap;
+	EEntityMap<EEntityProxyRender>	m_RendererMap;
 };

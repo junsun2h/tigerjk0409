@@ -13,7 +13,8 @@ END_EVENT_TABLE()
 
 
 S3DViewPanel::S3DViewPanel(wxWindow* parent)
-	:  wxPanel(parent)
+	: wxPanel(parent)
+	, m_pCamera(NULL)
 {
 }
 
@@ -49,6 +50,8 @@ bool S3DViewPanel::InitDevice()
 	if( gEng->StartUp( engineParam ) == false )
 		return false;
 
+	Setup();
+
 	return true;
 }
 
@@ -61,17 +64,17 @@ void S3DViewPanel::Setup()
 	IEntityMgr* entityMgr = gEng->EntityMgr();
 
 	IEntity* pEntity = entityMgr->SpawnEntity( "Camera" );
-	m_pCamera = (IEntityProxyCamera*)entityMgr->SpawnEntityProxy("Main Camera" , ENTITY_CAMERA);
+	m_pCamera = (IEntityProxyCamera*)entityMgr->SpawnEntityProxy("Main Camera" , ENTITY_PROXY_CAMERA);
 	
 	m_pCamera->SetProjParam( XM_PIDIV4,  nWidth, nHeight, 1, 10000);
 	m_pCamera->SetViewParam( CVector3(1000, -1000, 1000), CVector3(0, 0, 0), CVector3(0.0f, 0.0f, 1.0f) );
 
-	pEntity->SetProxy( m_pCamera ); 
+	pEntity->SetProxy( m_pCamera );
 }
 
 void S3DViewPanel::OnIdle(wxIdleEvent& event)
 {
-	gEng->UpdateAndRender( m_pCamera, NULL);
+	gEng->UpdateAndRender( m_pCamera, this);
 }
 
 void S3DViewPanel::OnSize(wxSizeEvent& event)
@@ -81,7 +84,10 @@ void S3DViewPanel::OnSize(wxSizeEvent& event)
 	gEng->RDevice()->Resize( size.x, size.y );
 }
 
-void S3DViewPanel::DrawHelper()
+void S3DViewPanel::PostRender()
 {
+	IRenderHelper* pRenderHelper = gEng->RenderHelper();
 
+	XMMATRIX tm = XMMatrixIdentity();
+	pRenderHelper->RenderGrid( tm, 5000, 100 );
 }
