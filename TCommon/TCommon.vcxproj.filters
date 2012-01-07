@@ -13,9 +13,6 @@
     <ClInclude Include="CGrowableArray.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="CStack.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="xnamath.h">
       <Filter>3rdParty\xnamath</Filter>
@@ -89,15 +86,6 @@
     </None>
     <None Include="xnamathvector.inl">
       <Filter>3rdParty\xnamath</Filter>
-    </None>
-    <None Include="CMatrix.inl">
-      <Filter>DataStructure</Filter>
-    </None>
-    <None Include="CQuat.inl">
-      <Filter>DataStructure</Filter>
-    </None>
-    <None Include="CVector.inl">
-      <Filter>DataStructure</Filter>
     </None>
     <None Include="CColor.inl">
       <Filter>DataStructure</Filter>

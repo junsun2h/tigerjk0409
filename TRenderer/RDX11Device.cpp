@@ -1,12 +1,29 @@
 #include "RDX11Device.h"
 
 
-ID3D11Device* g_D3Device = NULL;
-ID3D11DeviceContext* g_D3DeviceContext = NULL;
+namespace GLOBAL
+{
+	ID3D11Device*			g_D3Device = NULL;
+	ID3D11DeviceContext*	g_D3DeviceContext = NULL;
+	RDX11Device*			g_RDX11Device = NULL;
+	RDX11Setting			g_DeviceSetting;
+	RDX11FontRenderer		g_FontRenderer;
+	RDX11RenderStateMgr		g_StateRepository;
+	RDX11Window				g_MainWindow;
+	RDX11RenderHelper		g_RenderHelper;
+	RDX11ShaderMgr			g_ShaderMgr;
+	CCAMERA_DESC			g_pCurrentCameraDesc;
 
-ID3D11Device*			RDX11Device::GetDevice()	{ return g_D3Device;}
-ID3D11DeviceContext*	RDX11Device::GetContext()	{ return g_D3DeviceContext; }
+	ID3D11Device*			GetD3DDevice()		{ return g_D3Device;}
+	ID3D11DeviceContext*	GetD3DContext()		{ return g_D3DeviceContext; }
+	RDX11Device*			GetRDX11Device()	{ return g_RDX11Device; }
+	RDX11RenderStateMgr*	GetD3DStateMgr()	{ return &g_StateRepository; }
+	const RDX11Setting&		GetDeviceInfo()		{ return g_DeviceSetting; }
+	RDX11ShaderMgr*			GetShaderMgr()		{ return &g_ShaderMgr; }
+	const CCAMERA_DESC&		GetCameraDesc()		{ return g_pCurrentCameraDesc; }
+};
 
+using namespace GLOBAL;
 
 RDX11Device::RDX11Device()
 	: m_pD3Device(NULL)
@@ -17,6 +34,11 @@ RDX11Device::RDX11Device()
 RDX11Device::~RDX11Device()
 {
 
+}
+
+IRenderHelper* RDX11Device::GetRenderHelper()
+{
+	return &g_RenderHelper;
 }
 
 bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
@@ -64,80 +86,101 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 #endif
 	for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
 	{
-		m_DeviceSetting.driverType = driverTypes[driverTypeIndex];
-		hr = D3D11CreateDeviceAndSwapChain( NULL, m_DeviceSetting.driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-			D3D11_SDK_VERSION, &swapChainDesc, &m_MainWindow.pSwapChain, &m_pD3Device, &m_DeviceSetting.featureLevel, m_ImmediateContext.GetContextP() );
+		g_DeviceSetting.driverType = driverTypes[driverTypeIndex];
+		hr = D3D11CreateDeviceAndSwapChain( NULL, g_DeviceSetting.driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
+			D3D11_SDK_VERSION, &swapChainDesc, &g_MainWindow.pSwapChain, &m_pD3Device, &g_DeviceSetting.featureLevel, &m_pContext );
 		if( SUCCEEDED( hr ) )
 			break;
 	}
 	TDXERROR(hr);
-
-	m_DeviceSetting.width = param.width;
-	m_DeviceSetting.height = param.height;
-
-	m_StateRepository.CreateStates(m_pD3Device);
-
-	m_MainWindow.Create(m_pD3Device);
-	m_ImmediateContext.SetDefaultState(&m_StateRepository);
-	m_ImmediateContext.SetViewport( (float)m_DeviceSetting.width, (float)m_DeviceSetting.height);
-	m_FontRenderer.Init( "Font.dds", m_pD3Device );
-
+	
+	// set global variables
 	g_D3Device = m_pD3Device;
-	g_D3DeviceContext = m_ImmediateContext.GetContext();
+	g_D3DeviceContext = m_pContext;
+	g_RDX11Device = this;
+
+	g_DeviceSetting.width = param.width;
+	g_DeviceSetting.height = param.height;
+
+	g_StateRepository.Init();
+	g_MainWindow.Create(m_pD3Device);
+	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
+
+	// initialize subsystem
+	g_ShaderMgr.init();
+	g_FontRenderer.SetFontFile( "Font.dds");
 
 	return true;
 }
 
 void RDX11Device::ShutDown()
 {
-	m_FontRenderer.Destroy();
-	m_ImmediateContext.Destroy();
-	m_MainWindow.Destroy();
-	m_StateRepository.Destroy();
+	g_RenderHelper.Destroy();
+	g_FontRenderer.Destroy();
+	g_MainWindow.Destroy();
+	g_StateRepository.Destroy();
+	g_ShaderMgr.Destroy();
+	SAFE_RELEASE( m_pContext )
 	SAFE_RELEASE( m_pD3Device )
 }
 
-void RDX11Device::Render(uint32 index)
+void RDX11Device::SetViewport(float width, float height, float MinDepth, float MaxDepth, float TopLeftX, float TopLeftY)
 {
-	m_ImmediateContext.SetTarget( &m_MainWindow );
+	D3D11_VIEWPORT vp;
+
+	vp.Width = width;
+	vp.Height = height;
+	vp.MinDepth = MinDepth;
+	vp.MaxDepth = MaxDepth;
+	vp.TopLeftX = TopLeftX;
+	vp.TopLeftY = TopLeftY;
+
+	m_pContext->RSSetViewports( 1, &vp );
+}
+
+void RDX11Device::Render(const CCAMERA_DESC& cameraDesc)
+{
+	g_pCurrentCameraDesc = cameraDesc;
+
+	m_pContext->OMSetRenderTargets( 1, &g_MainWindow.pRTV, g_MainWindow.pDSV );
+	m_pContext->ClearRenderTargetView( g_MainWindow.pRTV, g_MainWindow.clearColor);
+	m_pContext->ClearDepthStencilView( g_MainWindow.pDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0, 0 );
 }
 
 
 void RDX11Device::RenderUI()
 {
-	m_ImmediateContext.StoreCurrentState();
-	m_FontRenderer.ApplyRenderState( m_ImmediateContext.GetContext() );
+	g_StateRepository.StoreCurrentState();
 
+	GLOBAL::GetShaderMgr()->BeginShader(EFFECT_FONT);
+	
 	RENDER_TEXT_BUFFER ff;
 	wcscpy_s( ff.strMsg , L"Rotate model: Left mouse button\n");
 	ff.rc.left = 0;
 	ff.rc.top = 0;
 	ff.rc.right = 100;
 	ff.rc.bottom = 100;
-	ff.clr = CColor( 1.0f, 0.75f, 0.0f, 1.0f );
+	ff.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	m_FontRenderer.Draw( m_pD3Device, m_ImmediateContext.GetContext(), ff, m_DeviceSetting.width,  m_DeviceSetting.height );
+	g_FontRenderer.Render( ff, g_DeviceSetting.width,  g_DeviceSetting.height );
 
-	m_ImmediateContext.RestoreSavedState();
-}
-
-void RDX11Device::RenderLines()
-{
-
+	g_StateRepository.RestoreSavedState();
 }
 
 void RDX11Device::Present()
 {
-	m_MainWindow.Present();
+	g_MainWindow.Present();
 }
 
 
 bool RDX11Device::Resize(int width, int height)
 {
-	m_DeviceSetting.width = width;
-	m_DeviceSetting.height = height;
+	g_DeviceSetting.width = width;
+	g_DeviceSetting.height = height;
 
-	return m_MainWindow.Resize(m_pD3Device, width, height, false);
+	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
+
+	return g_MainWindow.Resize(m_pD3Device, width, height, false);
 }
 
 void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource)

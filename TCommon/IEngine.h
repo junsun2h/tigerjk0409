@@ -28,13 +28,14 @@ struct CENGINE_INIT_PARAM
 
 struct IEngine
 {
-	virtual bool		StartUp(const CENGINE_INIT_PARAM &param) = 0;
-	virtual bool		ShutDown() = 0;
+	virtual bool			StartUp(const CENGINE_INIT_PARAM &param) = 0;
+	virtual bool			ShutDown() = 0;
 
-	virtual IRDevice*	RDevice() = 0;
-	virtual IAssetMgr*	AssetMgr() = 0;
-	virtual ISceneMgr*	SceneMgr() = 0;
-	virtual IEntityMgr*	EntityMgr() =0;
+	virtual IRDevice*		RDevice() = 0;
+	virtual IAssetMgr*		AssetMgr() = 0;
+	virtual ISceneMgr*		SceneMgr() = 0;
+	virtual IEntityMgr*		EntityMgr() =0;
+	virtual IRenderHelper*	RenderHelper() =0;
 
-	virtual void		UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
+	virtual void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
 };

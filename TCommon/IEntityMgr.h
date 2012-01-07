@@ -10,6 +10,8 @@ struct IEntityMgr
 	virtual void			RemoveEntity(long id)  =0;
 	virtual void			RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type)  =0;
 
-	virtual void			ClearEntity()  =0;
-	virtual void			ClearEntityProxy(ENTITY_PROXY_TYPE type)  =0;
+	virtual void			RemoveAllEntity()  =0;
+	virtual void			RemoveAllEntityProxy(ENTITY_PROXY_TYPE type)  =0;
+
+	virtual	void			Destroy() = 0;
 };

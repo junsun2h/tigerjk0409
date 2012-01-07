@@ -10,6 +10,7 @@
 // CRT's memory leak detection
 #if defined(DEBUG) || defined(_DEBUG)
 #include <crtdbg.h>
+//#include <vld.h>  // use only when memory leak detected
 #endif
 
 #define ENUMSTR(a) (#a) 

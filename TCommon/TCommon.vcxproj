@@ -63,7 +63,6 @@
   <ItemGroup>
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CGrowableArray.h" />
-    <ClInclude Include="CStack.h" />
     <ClInclude Include="IActorMgr.h" />
     <ClInclude Include="IAsyncLoader.h" />
     <ClInclude Include="IEngine.h" />
@@ -84,9 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CColor.inl" />
-    <None Include="CMatrix.inl" />
-    <None Include="CQuat.inl" />
-    <None Include="CVector.inl" />
     <None Include="xnamathconvert.inl" />
     <None Include="xnamathmatrix.inl" />
     <None Include="xnamathmisc.inl" />

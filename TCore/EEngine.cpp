@@ -49,6 +49,7 @@ bool EEngine::ShutDown()
 {
 	m_AssetMgr.Clear();
 	m_pRenderer->ShutDown();
+	m_EntityMgr.Destroy();
 
 	return false;
 }
@@ -63,7 +64,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list if camera is moved
-	if( pCamera->GetLastTransformChangedFrame() == m_CurrentFrame )
+	if( pCamera != NULL && pCamera->GetLastTransformChangedFrame() == m_CurrentFrame )
 		m_SceneMgr.UpdateVisibleOctreeNodeList(pCamera);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -80,13 +81,12 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 	if( pRenderCallback )
 		pRenderCallback->PreRender();
 
-	m_pRenderer->Render(0);
-	m_pRenderer->RenderLines();
-	m_pRenderer->RenderUI();
+	m_pRenderer->Render( pCamera->GetDesc() );
 
 	if( pRenderCallback )
 		pRenderCallback->PostRender();
 
+	m_pRenderer->RenderUI();
 	m_pRenderer->Present();
 
 	m_CurrentFrame++;

@@ -14,7 +14,7 @@ EEntityProxyCamera::EEntityProxyCamera(std::string& name, long id )
 void EEntityProxyCamera::SetEntity(IEntity* pEntity)
 {
 	m_pEntity = pEntity;
-	m_ViewTM = CMatrix::Inverse( NULL, pEntity->GetLocalTM() );
+	m_Desc.ViewTM = XMMATRIX_UTIL::Inverse( NULL, pEntity->GetLocalTM() );
 }
 
 void EEntityProxyCamera::ProcessEvent( EntityEvent &event )
@@ -27,18 +27,18 @@ void EEntityProxyCamera::ProcessEvent( EntityEvent &event )
 
 void EEntityProxyCamera::SetProjParam(float fovy, int width, int height, float nearPlane, float farPlane)
 {
-	m_farClip = farPlane;
-	m_Fovy = fovy;
+	m_Desc.farClip = farPlane;
+	m_Desc.Fovy = fovy;
 
 	float aspect = (float)width / (float)height;
 
-	m_ProjTM.PerspectiveFovLH( m_Fovy, aspect, nearPlane, farPlane);
+	m_Desc.ProjTM = XMMatrixPerspectiveFovLH( m_Desc.Fovy, aspect, nearPlane, farPlane);
 }
 
 void EEntityProxyCamera::SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector)
 {
-	m_ViewTM.LookAtLH(eyePos, targetPos, upVector);
+	m_Desc.ViewTM = XMMatrixLookAtLH(eyePos.ToXMVEECTOR(), targetPos.ToXMVEECTOR(), upVector.ToXMVEECTOR() );
 
 	if( m_pEntity != NULL)
-		m_pEntity->SetLocalTM( CMatrix::Inverse( NULL,  m_ViewTM ) );
+		m_pEntity->SetLocalTM( XMMATRIX_UTIL::Inverse( NULL,  m_Desc.ViewTM ) );
 }
