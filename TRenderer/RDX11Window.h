@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RDefine.h"
-
+#include "CColor.h"
 
 
 struct RDX11Window

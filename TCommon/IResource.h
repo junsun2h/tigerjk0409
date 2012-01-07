@@ -74,8 +74,7 @@ enum CVERTEX_TYPE
 {
 	FVF_3FP,
 	FVF_3FP_1DC,		// 3 float position + 1 DWORD Color
-	FVF_3FP_2FT,
-	FVF_3FP_3FN_2FT
+	FVF_3FP_1DC_2FT,
 };
 
 
@@ -85,6 +84,12 @@ struct CVertexPC
 	uint32			color;
 };
 
+struct CVertexPCT
+{
+	CVector3 vPos;
+	DWORD vColor;
+	XMHALF2 vTex;
+};
 
 enum CINDEX_TYPE
 {

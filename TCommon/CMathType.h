@@ -246,44 +246,6 @@ struct CVector4{
 	bool operator >= ( const CVector4& in)			{ return Length(*this) <= Length(in);}
 };
 
-struct CColor
-{
-public:
-	CColor() {}
-	CColor( DWORD argb );
-	CColor( const FLOAT * );
-	CColor( FLOAT r, FLOAT g, FLOAT b, FLOAT a );
-
-	// casting
-	operator DWORD () const;
-
-	operator FLOAT* ();
-	operator const FLOAT* () const;
-	
-	// assignment operators
-	CColor& operator += ( const CColor& );
-	CColor& operator -= ( const CColor& );
-	CColor& operator *= ( FLOAT );
-	CColor& operator /= ( FLOAT );
-
-	// unary operators
-	CColor operator + () const;
-	CColor operator - () const;
-
-	// binary operators
-	CColor operator + ( const CColor& ) const;
-	CColor operator - ( const CColor& ) const;
-	CColor operator * ( FLOAT ) const;
-	CColor operator / ( FLOAT ) const;
-
-	friend CColor operator * ( FLOAT, const CColor& );
-
-	BOOL operator == ( const CColor& ) const;
-	BOOL operator != ( const CColor& ) const;
-
-	FLOAT r, g, b, a;
-};
-
 
 namespace XMMATRIX_UTIL
 {
@@ -346,12 +308,6 @@ namespace XMMATRIX_UTIL
 
 }
 
-#define	COLOR_RED	0xff0000ff
-#define	COLOR_GREEN	0xff00ff00
-#define	COLOR_BLUE	0xffff0000
-#define	COLOR_WHITE	0xffffffff
-#define	COLOR_BLACK	0xff000000
-#define	COLOR_GRAY	0xff808080
 
 inline XMVECTOR CQuat::Rotate(const CVector3& axis, float angle)	
 { 
@@ -364,5 +320,3 @@ inline void	CQuat::ToAxisAngle(const CQuat& q1, CVector3* pAxis, float* pAnlge)
 	XMQuaternionToAxisAngle(&axis, pAnlge, q1.m128);
 	*pAxis = axis;
 }
-
-#include "CColor.inl"

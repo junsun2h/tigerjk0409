@@ -56,6 +56,9 @@
     <ClInclude Include="ISceneMgr.h">
       <Filter>Interface</Filter>
     </ClInclude>
+    <ClInclude Include="CColor.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">
@@ -86,9 +89,6 @@
     </None>
     <None Include="xnamathvector.inl">
       <Filter>3rdParty\xnamath</Filter>
-    </None>
-    <None Include="CColor.inl">
-      <Filter>DataStructure</Filter>
     </None>
   </ItemGroup>
 </Project>
