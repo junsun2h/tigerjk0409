@@ -1,12 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="SMainFrame.h" />
-    <ClInclude Include="S3DViewPanel.h" />
+    <ClInclude Include="SMainMenuBar.h" />
+    <ClInclude Include="SMainFrame.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="S3DViewPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="SAssetPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="SSceneHierarchyPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="SWxWidgetID.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="SPropertyPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SMainFrame.cpp" />
-    <ClCompile Include="S3DViewPanel.cpp" />
     <ClCompile Include="SApp.cpp" />
+    <ClCompile Include="SMainFrame.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="S3DViewPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="SAssetPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="SSceneHierarchyPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="SPropertyPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Panels">
+      <UniqueIdentifier>{b685312c-241b-4fea-a71a-9aa279e4e398}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

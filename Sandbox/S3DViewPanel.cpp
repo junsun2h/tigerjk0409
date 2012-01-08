@@ -1,8 +1,9 @@
 #include "S3DViewPanel.h"
 #include "IEngine.h"
+#include "SWxWidgetID.h"
+
 
 IEngine* gEng = NULL;
-
 
 
 BEGIN_EVENT_TABLE(S3DViewPanel, wxPanel)
@@ -13,7 +14,7 @@ END_EVENT_TABLE()
 
 
 S3DViewPanel::S3DViewPanel(wxWindow* parent)
-	: wxPanel(parent)
+	: wxPanel(parent, ID_PANEL_3DVIEW)
 	, m_pCamera(NULL)
 {
 }
@@ -75,19 +76,30 @@ void S3DViewPanel::Setup()
 void S3DViewPanel::OnIdle(wxIdleEvent& event)
 {
 	gEng->UpdateAndRender( m_pCamera, this);
+
+	event.RequestMore();
 }
 
 void S3DViewPanel::OnSize(wxSizeEvent& event)
 {
 	wxSize size = event.GetSize();
 
+	m_pCamera->SetProjParam( XM_PIDIV4, size.x, size.y, 1, 10000);
 	gEng->RDevice()->Resize( size.x, size.y );
 }
 
 void S3DViewPanel::PostRender()
 {
-	IRenderHelper* pRenderHelper = gEng->RenderHelper();
+	int FPS = gEng->GlobalTimer()->GetFPS();
 
-	XMMATRIX tm = XMMatrixIdentity();
-	pRenderHelper->RenderGrid( tm, 5000, 100 );
+	RENDER_TEXT_BUFFER textFPS;
+	_itow_s(FPS, textFPS.strMsg, 5);
+	textFPS.rc.left = 0;
+	textFPS.rc.top = 0;
+	textFPS.rc.right = 100;
+	textFPS.rc.bottom = 100;
+	textFPS.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
+
+	gEng->RenderHelper()->RenderText(textFPS);
+	gEng->RenderHelper()->RenderGrid( XMMatrixIdentity(), 5000, 100 );
 }

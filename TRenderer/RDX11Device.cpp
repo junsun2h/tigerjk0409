@@ -7,7 +7,6 @@ namespace GLOBAL
 	ID3D11DeviceContext*	g_D3DeviceContext = NULL;
 	RDX11Device*			g_RDX11Device = NULL;
 	RDX11Setting			g_DeviceSetting;
-	RDX11FontRenderer		g_FontRenderer;
 	RDX11RenderStateMgr		g_StateRepository;
 	RDX11Window				g_MainWindow;
 	RDX11RenderHelper		g_RenderHelper;
@@ -108,7 +107,7 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 
 	// initialize subsystem
 	g_ShaderMgr.init();
-	g_FontRenderer.SetFontFile( "Font.dds");
+	g_RenderHelper.Init( "Font.dds");
 
 	return true;
 }
@@ -116,7 +115,6 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 void RDX11Device::ShutDown()
 {
 	g_RenderHelper.Destroy();
-	g_FontRenderer.Destroy();
 	g_MainWindow.Destroy();
 	g_StateRepository.Destroy();
 	g_ShaderMgr.Destroy();
@@ -147,25 +145,6 @@ void RDX11Device::Render(const CCAMERA_DESC& cameraDesc)
 	m_pContext->ClearDepthStencilView( g_MainWindow.pDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0, 0 );
 }
 
-
-void RDX11Device::RenderUI()
-{
-	g_StateRepository.StoreCurrentState();
-
-	GLOBAL::GetShaderMgr()->BeginShader(EFFECT_FONT);
-	
-	RENDER_TEXT_BUFFER ff;
-	wcscpy_s( ff.strMsg , L"Rotate model: Left mouse button\n");
-	ff.rc.left = 0;
-	ff.rc.top = 0;
-	ff.rc.right = 100;
-	ff.rc.bottom = 100;
-	ff.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
-
-	g_FontRenderer.Render( ff, g_DeviceSetting.width,  g_DeviceSetting.height );
-
-	g_StateRepository.RestoreSavedState();
-}
 
 void RDX11Device::Present()
 {

@@ -59,6 +59,9 @@
     <ClInclude Include="CColor.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
+    <ClInclude Include="CText.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

@@ -31,8 +31,11 @@ HRESULT RDX11FontRenderer::SetFontFile(const char* fontDDS)
 
 
 //--------------------------------------------------------------------------------------
-void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth, float screenHeight  )
+void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text)
 {
+	float screenWidth = (float)GLOBAL::GetDeviceInfo().width;
+	float screenHeight = (float)GLOBAL::GetDeviceInfo().height;
+
 	float fCharTexSizeX = 0.010526315f;
 	float fGlyphSizeX = 15.0f / screenWidth;
 	float fGlyphSizeY = 42.0f / screenHeight;
@@ -121,9 +124,9 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth,
 
 
 //--------------------------------------------------------------------------------------
-void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text, int sw, int sh )
+void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text)
 {
-	FillVertex( text, float(sw), float(sh) );
+	FillVertex( text );
 
 	ID3D11Device* pd3dDevice = GLOBAL::GetD3DDevice();
 	ID3D11DeviceContext* pd3dImmediateContext = GLOBAL::GetD3DContext();
@@ -164,6 +167,8 @@ void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text, int sw, int sh )
 	ID3D11ShaderResourceView* pOldTexture = NULL;
 	pd3dImmediateContext->PSGetShaderResources( 0, 1, &pOldTexture );
 	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
+
+	GLOBAL::GetShaderMgr()->BeginShader(EFFECT_FONT);
 
 	// Draw
 	UINT Stride = sizeof( CVertexPCT );

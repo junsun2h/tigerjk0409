@@ -64,6 +64,7 @@
     <ClInclude Include="CColor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CGrowableArray.h" />
+    <ClInclude Include="CText.h" />
     <ClInclude Include="IActorMgr.h" />
     <ClInclude Include="IAsyncLoader.h" />
     <ClInclude Include="IEngine.h" />

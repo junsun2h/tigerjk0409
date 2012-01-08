@@ -22,6 +22,9 @@ public:
 	// on only one processor, and will not suffer any ill effects from power management.
 	void            LimitThreadAffinityToCurrentProc();
 
+	void			CountFPS(double fElapsedTime);
+	int				GetFPS()			{ return m_currentFPS; }
+
 protected:
 	LARGE_INTEGER   GetAdjustedCurrentTime();
 
@@ -32,12 +35,21 @@ protected:
 	LONGLONG m_llStopTime;
 	LONGLONG m_llLastElapsedTime;
 	LONGLONG m_llBaseTime;
+
+private:
+	int			m_iFPS;
+	int			m_currentFPS;
+	double		m_FPSTime;
 };
 
 
 //--------------------------------------------------------------------------------------
 inline CTimer::CTimer()
 {
+	m_FPSTime = 0;
+	m_iFPS = 0;
+	m_currentFPS = 0;
+
 	m_bTimerStopped = true;
 	m_llQPFTicksPerSec = 0;
 
@@ -161,6 +173,8 @@ inline float CTimer::GetElapsedTime()
 	if( fElapsedTime < 0.0f )
 		fElapsedTime = 0.0f;
 
+	CountFPS(fElapsedTime);
+
 	return ( float )fElapsedTime;
 }
 
@@ -214,4 +228,17 @@ inline void CTimer::LimitThreadAffinityToCurrentProc()
 	}
 
 	CloseHandle( hCurrentProcess );
+}
+
+inline void CTimer::CountFPS(double fElapsedTime)
+{
+	m_FPSTime += fElapsedTime;
+	++m_iFPS;
+
+	if( m_FPSTime > 1.0f )
+	{
+		m_currentFPS = m_iFPS;
+		m_FPSTime = 0;
+		m_iFPS = 0;
+	}
 }

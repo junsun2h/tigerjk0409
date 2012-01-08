@@ -11,8 +11,14 @@ RDX11RenderHelper::RDX11RenderHelper()
 
 }
 
+void RDX11RenderHelper::Init(const char* fontDDS)
+{
+	m_FontRenderer.SetFontFile(fontDDS);
+}
+
 void RDX11RenderHelper::Destroy()
 {
+	m_FontRenderer.Destroy();
 	SAFE_RELEASE( m_pLineBuffer )
 	m_LineVertices.RemoveAll();
 	m_LineBufferBytes = 0;
@@ -160,5 +166,10 @@ void RDX11RenderHelper::RenderGrid(XMMATRIX& mtWorld, int size, int lineCount)
 	pContext->Draw( m_LineVertices.GetSize(), 0 );
 
 	m_LineVertices.Reset();
+}
+
+void RDX11RenderHelper::RenderText(RENDER_TEXT_BUFFER& text)
+{
+	m_FontRenderer.Render(text);
 }
 

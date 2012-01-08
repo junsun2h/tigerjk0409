@@ -54,10 +54,11 @@ bool EEngine::ShutDown()
 	return false;
 }
 
+
 void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback)
 {
 	float deltaTime = m_GlobalTimer.GetElapsedTime();
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	// 1) update Render independent system
 
@@ -86,7 +87,6 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 	if( pRenderCallback )
 		pRenderCallback->PostRender();
 
-	m_pRenderer->RenderUI();
 	m_pRenderer->Present();
 
 	m_CurrentFrame++;
