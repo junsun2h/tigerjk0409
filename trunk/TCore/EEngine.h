@@ -28,9 +28,11 @@ public:
 	IEntityMgr*		EntityMgr() override	{ return &m_EntityMgr; }
 	IRenderHelper*	RenderHelper() override { return m_pRenderer->GetRenderHelper(); }
 	void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
+	CTimer*			GlobalTimer() override	{ return &m_GlobalTimer; }
 
 public:
 	long			GetCurrentFrame()		{ return m_CurrentFrame; }
+
 
 private:
 	IRDevice*		m_pRenderer;
@@ -41,7 +43,6 @@ private:
 	EEntityMgr		m_EntityMgr;
 	
 	long			m_CurrentFrame;
-
 	CTimer			m_GlobalTimer;
 };
 

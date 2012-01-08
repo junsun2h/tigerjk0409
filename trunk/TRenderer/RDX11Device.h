@@ -39,7 +39,6 @@ public:
 	bool		StartUp(const CENGINE_INIT_PARAM &param) override;
 	void		ShutDown() override;
 	void		Render(const CCAMERA_DESC& cameraDesc) override;
-	void		RenderUI() override;
 	void		Present() override;
 
 	bool		Resize(int width, int height) override;

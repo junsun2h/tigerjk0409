@@ -6,6 +6,8 @@
 #include "IEntityMgr.h"
 #include "ISceneMgr.h"
 #include "IRenderCallback.h"
+#include "CTimer.h"
+#include "CText.h"
 
 
 struct CENGINE_INIT_PARAM
@@ -36,6 +38,7 @@ struct IEngine
 	virtual ISceneMgr*		SceneMgr() = 0;
 	virtual IEntityMgr*		EntityMgr() =0;
 	virtual IRenderHelper*	RenderHelper() =0;
+	virtual CTimer*			GlobalTimer() = 0;
 
 	virtual void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
 };

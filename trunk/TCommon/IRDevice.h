@@ -21,7 +21,6 @@ struct IRDevice
 	virtual void			ShutDown() = 0;
 
 	virtual void			Render(const CCAMERA_DESC& cameraDesc) = 0;
-	virtual	void			RenderUI() = 0;
 	virtual void			Present() = 0;
 
 	virtual bool			Resize(int width, int height) = 0;

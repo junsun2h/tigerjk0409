@@ -79,12 +79,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="S3DViewPanel.h" />
+    <ClInclude Include="SAssetPanel.h" />
+    <ClInclude Include="SPropertyPanel.h" />
+    <ClInclude Include="SWxWidgetID.h" />
     <ClInclude Include="SMainFrame.h" />
+    <ClInclude Include="SMainMenuBar.h" />
+    <ClInclude Include="SSceneHierarchyPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="S3DViewPanel.cpp" />
     <ClCompile Include="SApp.cpp" />
+    <ClCompile Include="SAssetPanel.cpp" />
     <ClCompile Include="SMainFrame.cpp" />
+    <ClCompile Include="SPropertyPanel.cpp" />
+    <ClCompile Include="SSceneHierarchyPanel.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

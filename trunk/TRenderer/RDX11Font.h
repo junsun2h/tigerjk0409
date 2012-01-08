@@ -4,16 +4,8 @@
 #include "RDefine.h"
 #include "CGrowableArray.h"
 #include "IResource.h"
+#include "CText.h"
 
-
-
-struct RENDER_TEXT_BUFFER
-{
-	RECT		rc;
-	WCHAR		strMsg[256];
-	DWORD		clr;
-	bool		bCenter;
-};
 
 class RDX11FontRenderer
 {
@@ -23,11 +15,10 @@ public:
 	HRESULT		SetFontFile(const char* fontDDS);
 	void		Destroy();
 
-	void		Render( RENDER_TEXT_BUFFER& text, int sw, int sh );
+	void		Render( RENDER_TEXT_BUFFER& text );
 
 private:
-	void		FillVertex( RENDER_TEXT_BUFFER& text, float screenWidth, float screenHeight );
-
+	void		FillVertex( RENDER_TEXT_BUFFER& text );
 
 	ID3D11Buffer*					m_pFontBuffer;
 	UINT							m_FontBufferBytes;

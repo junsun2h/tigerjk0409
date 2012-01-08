@@ -1,41 +1,48 @@
 #include "SMainFrame.h"
 #include "S3DViewPanel.h"
-#include "wx/aui/aui.h"
+#include "SSceneHierarchyPanel.h"
+#include "SAssetPanel.h"
+#include "SMainMenuBar.h"
+#include "SPropertyPanel.h"
+
 
 
 BEGIN_EVENT_TABLE(SMainFrame, wxFrame)
-	EVT_MENU(ID_Quit,  SMainFrame::OnQuit)
-	EVT_MENU(ID_About, SMainFrame::OnAbout)
+	EVT_MENU(wxID_NEW, SMainFrame::OnNew)
+	EVT_MENU(wxID_SAVE, SMainFrame::OnSave)
+	EVT_MENU(wxID_SAVEAS, SMainFrame::OnSaveAs)
+	EVT_MENU(wxID_EXIT, SMainFrame::OnQuit)
+
+	EVT_MENU(ID_MENU_VIEW_PROPERTY, SMainFrame::OnPanelCreate)
+	EVT_MENU(ID_MENU_VIEW_SCENE_HIERARCHY, SMainFrame::OnPanelCreate)
+	EVT_MENU(ID_MENU_VIEW_ASSET, SMainFrame::OnPanelCreate)
+	EVT_MENU(ID_MENU_DEFAULT_LAYOUT, SMainFrame::OnDefaultLayout)
+	EVT_MENU(ID_MENU_LOAD_SAVED_LAYOUT, SMainFrame::OnLoadSavedLayout)
+	EVT_MENU(ID_MENU_SAVE_LAYOUT, SMainFrame::OnSaveLayout)
+
+	EVT_AUI_PANE_CLOSE(SMainFrame::OnPanelClose)
 END_EVENT_TABLE()
+
+
+
+const wxString g_strSceneHierarchy = "SceneHierarchyPanel";
+const wxString g_strAsset = "AssetPanel";
+const wxString g_strProperty = "PropertyPanel";
+
 
 
 SMainFrame::SMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(NULL, -1, title, pos, size)
 {
-	wxAuiManager* auiManager = new wxAuiManager;
-	auiManager->SetManagedWindow(this);
+	InitLayout();
 
-	SetMinSize(wxSize(800,600));
+	S3DViewPanel* p3DView = wxDynamicCast( FindWindow( ID_PANEL_3DVIEW ), S3DViewPanel );
+	p3DView->InitDevice();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Panel initializing
-	S3DViewPanel* pViewPanel = new S3DViewPanel(this);
-	auiManager->AddPane(pViewPanel, wxAuiPaneInfo().Name("3DViewPanel").Show().CenterPane().Layer(0).Position(0));
+	SMainMenuBar* pMainMenu = new SMainMenuBar;
 
-	auiManager->Update();
-
-	pViewPanel->InitDevice();
-
-	wxMenu *menuFile = new wxMenu;
-	
-	menuFile->Append( ID_About, _("&About...") );
-	menuFile->AppendSeparator();
-	menuFile->Append( ID_Quit, _("E&xit") );
-
-	wxMenuBar *menuBar = new wxMenuBar;
-	menuBar->Append( menuFile, _("&File") );
-
-	SetMenuBar( menuBar );
+	SetMenuBar( pMainMenu );
+	pMainMenu->UpdateMenuBarCheckStatus(this);
 
 	CreateStatusBar();
 	SetStatusText( _("") );
@@ -48,14 +55,103 @@ SMainFrame::~SMainFrame()
 	delete mgr;
 }
 
-void SMainFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
+void SMainFrame::InitLayout()
 {
-	Close(true);
+	wxAuiManager* auiManager = new wxAuiManager;
+	auiManager->SetManagedWindow(this);
+
+	SetMinSize(wxSize(1024, 768));
+
+	S3DViewPanel* pViewPanel = new S3DViewPanel(this);
+	auiManager->AddPane(pViewPanel, wxAuiPaneInfo().Name("3DViewPanel").Show().CenterPane().Layer(0).Position(0));
+
+	SSceneHierarchyPanel* pActorPanel = new SSceneHierarchyPanel(this);
+	auiManager->AddPane(pActorPanel, wxAuiPaneInfo().Name(g_strSceneHierarchy).Show().PinButton().Caption("Scene Hierarchy").Right().Layer(2).Position(1).FloatingSize(250, 500));
+
+	SAssetPanel* pAssetPanel = new SAssetPanel(this);
+	auiManager->AddPane(pAssetPanel, wxAuiPaneInfo().Name(g_strAsset).Show().PinButton().Caption("Asset").Right().Layer(2).Position(1).FloatingSize(250, 500));
+
+	SPropertyPanel* pPropertyPanel = new SPropertyPanel(this);
+	auiManager->AddPane(pPropertyPanel, wxAuiPaneInfo().Name(g_strProperty).Show().PinButton().Caption("Properties").Right().Layer(1).Position(0).FloatingSize(250, 500));
+
+	auiManager->Update();
+	m_LayoutDefault = auiManager->SavePerspective();
 }
 
-void SMainFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
+void SMainFrame::OnNew(wxCommandEvent& event)
 {
-	wxMessageBox( _("This is a wxWidgets Hello world sample"),
-		_("About Hello World"),
-		wxOK | wxICON_INFORMATION, this );
+
+}
+
+void SMainFrame::OnSave(wxCommandEvent& event)
+{
+
+}
+
+void SMainFrame::OnSaveAs(wxCommandEvent& event)
+{
+
+}
+
+void SMainFrame::OnQuit(wxCommandEvent& event)
+{
+	Close();
+}
+
+void SMainFrame::OnPanelClose(wxAuiManagerEvent& event)
+{
+	const wxAuiPaneInfo* info = event.GetPane();
+	_ASSERT(info);
+
+	wxString name = info->name;
+
+	wxMenuBar* menuBar = GetMenuBar();
+	_ASSERT(menuBar);
+
+	if(name == g_strSceneHierarchy) menuBar->Check(ID_MENU_VIEW_SCENE_HIERARCHY, false);
+	else if(name == g_strAsset) menuBar->Check(ID_MENU_VIEW_ASSET, false);
+	else if(name == g_strProperty) menuBar->Check(ID_MENU_VIEW_PROPERTY, false);
+};
+
+void SMainFrame::OnPanelCreate(wxCommandEvent& event)
+{
+	wxAuiManager* mgr = wxAuiManager::GetManager(this);
+
+	switch( event.GetId() )
+	{
+		case ID_MENU_VIEW_PROPERTY:			mgr->GetPane(g_strProperty).Show( event.IsChecked() );	break;
+		case ID_MENU_VIEW_SCENE_HIERARCHY:	mgr->GetPane(g_strSceneHierarchy).Show( event.IsChecked() );	break;
+		case ID_MENU_VIEW_ASSET: 			mgr->GetPane(g_strAsset).Show( event.IsChecked() );	break;
+	}
+	mgr->Update();
+}
+
+void SMainFrame::OnDefaultLayout(wxCommandEvent& event)
+{
+	wxAuiManager::GetManager(this)->LoadPerspective(m_LayoutDefault);
+}
+
+void SMainFrame::OnLoadSavedLayout(wxCommandEvent& event)
+{
+	wxString savedLayout = wxAuiManager::GetManager(this)->SavePerspective();
+	char buff[1024] = {0,};
+	GetCurrentDirectoryA( _MAX_DIR, buff );
+	wxString strDir(buff);
+	wxString strFullPath = strDir + "\\config.ini"; 
+	GetPrivateProfileStringA("SANDBOX", "LAYOUT", "", buff, sizeof(buff), strFullPath.char_str() );
+	
+	wxAuiManager::GetManager(this)->LoadPerspective(buff);
+
+	SMainMenuBar* pMainMenuBar = wxDynamicCast( GetMenuBar(), SMainMenuBar );
+	pMainMenuBar->UpdateMenuBarCheckStatus(this);
+}
+
+void SMainFrame::OnSaveLayout(wxCommandEvent& event)
+{
+	wxString savedLayout = wxAuiManager::GetManager(this)->SavePerspective();
+	wchar_t buff[_MAX_DIR] = {0,};
+	GetCurrentDirectory( _MAX_DIR, buff );
+	wxString strDir(buff);
+	wxString strFullPath = strDir + "\\config.ini"; 
+	WritePrivateProfileStringA("SANDBOX", "LAYOUT", savedLayout.char_str(), strFullPath.char_str() );
 }
