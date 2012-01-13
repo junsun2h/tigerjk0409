@@ -29,20 +29,23 @@ class EAssetMgr : public IAssetMgr
 	IRDevice*				m_pRDevice;
 	EAsyncLoader			m_AsyncLoader;
 
-	typedef	ATL::CAtlMap<long, IResource*>	TYPE_RESOURCE_MAP;
 	TYPE_RESOURCE_MAP		m_Resources[NUM_RESOURCE_TYPE];
 
 public:
 	EAssetMgr();
 	~EAssetMgr();
 
-	void				Init( UINT numProcessThread, IRDevice*	pRDevice );
+	void						Init( UINT numProcessThread, IRDevice*	pRDevice );
 
-	void				LoadCompletedResource( IResource* pResource);
-	long				Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true);
+public:
+	long						LoadCompletedResource( CResourceBase* pResource) override;
+	long						Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true) override;
 
-	const IResource*	GetResource( RESOURCE_TYPE type, long id );
-	const IResource*	GetResource( RESOURCE_TYPE type, std::string name );
+	const CResourceBase*		GetResource( RESOURCE_TYPE type, long id ) override;
+	const CResourceBase*		GetResource( RESOURCE_TYPE type, std::string name ) override;
+	const TYPE_RESOURCE_MAP*	GetResources( RESOURCE_TYPE type ) override			{ return &m_Resources[type]; }
 
-	void				Clear() override;
+	void						Clear() override;
+	void						Remove(RESOURCE_TYPE type, long id) override;
+	void						Remove(RESOURCE_TYPE type, std::string& name) override;
 };

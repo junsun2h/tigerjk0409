@@ -35,7 +35,7 @@ private:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	// transform functions
+	// transform
 	CVector3		GetLocalPos() override		{ return m_LocalPos;	}
 	CQuat			GetLocalRot() override		{ return m_LocalRotation;	}
 	CVector3		GetLocalScale() override	{ return m_LocalScale;	}
@@ -69,7 +69,7 @@ private:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	// hierarchy functions
+	// hierarchy
 	void			Reparent( IEntity* _pParent ) override;
 	void			AttachChild( IEntity* pChild ) override;
 	void			DetachChild( IEntity* pChild ) override;
@@ -82,5 +82,11 @@ public:
 private:
 	IEntity*				m_pParent;
 	std::vector<IEntity*>	m_Children;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Culling information
+public:
+	// AABB
+	bool			m_OffScreen;
 };
 

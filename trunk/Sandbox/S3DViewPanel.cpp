@@ -1,10 +1,10 @@
 #include "S3DViewPanel.h"
-#include "IEngine.h"
 #include "SWxWidgetID.h"
 
-
-IEngine* gEng = NULL;
-
+namespace SGLOBAL
+{
+	extern IEngine*	g_Eng;
+};
 
 BEGIN_EVENT_TABLE(S3DViewPanel, wxPanel)
 	EVT_IDLE(S3DViewPanel::OnIdle)
@@ -21,7 +21,7 @@ S3DViewPanel::S3DViewPanel(wxWindow* parent)
 
 S3DViewPanel::~S3DViewPanel()
 {
-	gEng->ShutDown();
+	SGLOBAL::Engine()->ShutDown();
 }
 
 bool S3DViewPanel::InitDevice()
@@ -47,8 +47,8 @@ bool S3DViewPanel::InitDevice()
 	if( FuncCreateEngine == NULL )
 		return false;
 
-	gEng = FuncCreateEngine();
-	if( gEng->StartUp( engineParam ) == false )
+	SGLOBAL::g_Eng = FuncCreateEngine();
+	if( SGLOBAL::Engine()->StartUp( engineParam ) == false )
 		return false;
 
 	Setup();
@@ -62,7 +62,7 @@ void S3DViewPanel::Setup()
 	int nHeight = 100;
 	GetSize(&nWidth, &nHeight);
 
-	IEntityMgr* entityMgr = gEng->EntityMgr();
+	IEntityMgr* entityMgr = SGLOBAL::Engine()->EntityMgr();
 
 	IEntity* pEntity = entityMgr->SpawnEntity( "Camera" );
 	m_pCamera = (IEntityProxyCamera*)entityMgr->SpawnEntityProxy("Main Camera" , ENTITY_PROXY_CAMERA);
@@ -75,7 +75,7 @@ void S3DViewPanel::Setup()
 
 void S3DViewPanel::OnIdle(wxIdleEvent& event)
 {
-	gEng->UpdateAndRender( m_pCamera, this);
+	SGLOBAL::Engine()->UpdateAndRender( m_pCamera, this);
 
 	event.RequestMore();
 }
@@ -85,12 +85,14 @@ void S3DViewPanel::OnSize(wxSizeEvent& event)
 	wxSize size = event.GetSize();
 
 	m_pCamera->SetProjParam( XM_PIDIV4, size.x, size.y, 1, 10000);
-	gEng->RDevice()->Resize( size.x, size.y );
+	SGLOBAL::Engine()->RDevice()->Resize( size.x, size.y );
 }
 
 void S3DViewPanel::PostRender()
 {
-	int FPS = gEng->GlobalTimer()->GetFPS();
+	IEngine* pEngine = SGLOBAL::Engine();
+
+	int FPS = pEngine->GlobalTimer()->GetFPS();
 
 	RENDER_TEXT_BUFFER textFPS;
 	_itow_s(FPS, textFPS.strMsg, 5);
@@ -100,6 +102,6 @@ void S3DViewPanel::PostRender()
 	textFPS.rc.bottom = 100;
 	textFPS.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	gEng->RenderHelper()->RenderText(textFPS);
-	gEng->RenderHelper()->RenderGrid( XMMatrixIdentity(), 5000, 100 );
+	pEngine->RenderHelper()->RenderText(textFPS);
+	pEngine->RenderHelper()->RenderGrid( XMMatrixIdentity(), 5000, 100 );
 }

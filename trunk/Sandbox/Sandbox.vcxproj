@@ -80,6 +80,9 @@
   <ItemGroup>
     <ClInclude Include="S3DViewPanel.h" />
     <ClInclude Include="SAssetPanel.h" />
+    <ClInclude Include="SMainDragAndDrop.h" />
+    <ClInclude Include="SMainToolBar.h" />
+    <ClInclude Include="SMeshImportor.h" />
     <ClInclude Include="SPropertyPanel.h" />
     <ClInclude Include="SWxWidgetID.h" />
     <ClInclude Include="SMainFrame.h" />
@@ -90,7 +93,10 @@
     <ClCompile Include="S3DViewPanel.cpp" />
     <ClCompile Include="SApp.cpp" />
     <ClCompile Include="SAssetPanel.cpp" />
+    <ClCompile Include="SMainDragAndDrop.cpp" />
     <ClCompile Include="SMainFrame.cpp" />
+    <ClCompile Include="SMainToolBar.cpp" />
+    <ClCompile Include="SMeshImportor.cpp" />
     <ClCompile Include="SPropertyPanel.cpp" />
     <ClCompile Include="SSceneHierarchyPanel.cpp" />
   </ItemGroup>

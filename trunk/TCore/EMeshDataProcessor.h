@@ -10,7 +10,7 @@ class EMeshDataProcessor : public IDataProcessor
 {
 	IRDevice*				m_pRDevice;
 	std::string				m_name;
-	std::vector<IResource*>	m_pResources;
+	std::vector<CResourceBase*>	m_pResources;
 	
 	long					PT_ReadMesh(BYTE** ppSrcBits, std::string name);
 

@@ -43,7 +43,7 @@ public:
 
 	bool		Resize(int width, int height) override;
 	HWND		GetHWND() override	{ return m_HWND; }
-	void		TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource) override;
+	void		TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, CResourceBase* pResource) override;
 	
 	IRenderHelper*	GetRenderHelper() override;
 
@@ -51,11 +51,11 @@ public:
 	void	SetViewport(float width, float height, float MinDepth = 0.0f, float MaxDepth = 1.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
 
 private:
-	void		TS_CreateVB(void* pBuf ,int size, IResource* pResource);
-	void		TS_CreateVBOut(void* pBuf ,int size, IResource* pResource);
-	void		TS_CreateIB(void* pBuf ,int size, IResource* pResource);
-	void		TS_CreateTexture(void* pBuf ,int size, IResource* pResource);
-	void		TS_CreateShader(void* pBuf ,int size, IResource* pResource);
+	void		TS_CreateVB(void* pBuf ,int size, CResourceBase* pResource);
+	void		TS_CreateVBOut(void* pBuf ,int size, CResourceBase* pResource);
+	void		TS_CreateIB(void* pBuf ,int size, CResourceBase* pResource);
+	void		TS_CreateTexture(void* pBuf ,int size, CResourceBase* pResource);
+	void		TS_CreateShader(void* pBuf ,int size, CResourceBase* pResource);
 
 	HWND						m_HWND;
 	

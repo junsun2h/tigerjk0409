@@ -9,7 +9,7 @@ struct IRDevice;
 class ETextureDataProcessor : public IDataProcessor
 {
 	IRDevice*	m_pRDevice;
-	IResource*	m_pResource;
+	CResourceBase*	m_pResource;
 	char*		m_Name;
 
 public:
