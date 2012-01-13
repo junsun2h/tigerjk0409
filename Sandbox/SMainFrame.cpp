@@ -3,7 +3,10 @@
 #include "SSceneHierarchyPanel.h"
 #include "SAssetPanel.h"
 #include "SMainMenuBar.h"
+#include "SMainToolBar.h"
 #include "SPropertyPanel.h"
+#include "SMainDragAndDrop.h"
+
 
 
 
@@ -34,6 +37,13 @@ const wxString g_strProperty = "PropertyPanel";
 SMainFrame::SMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(NULL, -1, title, pos, size)
 {
+	wxInitAllImageHandlers();
+
+	CreateStatusBar();
+
+	SMainToolBar* pToolBar = new SMainToolBar(this, ID_MAIN_TOOLBAR);
+	SetToolBar(pToolBar);
+
 	InitLayout();
 
 	S3DViewPanel* p3DView = wxDynamicCast( FindWindow( ID_PANEL_3DVIEW ), S3DViewPanel );
@@ -43,8 +53,8 @@ SMainFrame::SMainFrame(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	SetMenuBar( pMainMenu );
 	pMainMenu->UpdateMenuBarCheckStatus(this);
-
-	CreateStatusBar();
+	
+	SetDropTarget( new SMainDragAndDrop );
 	SetStatusText( _("") );
 }
 
@@ -155,3 +165,4 @@ void SMainFrame::OnSaveLayout(wxCommandEvent& event)
 	wxString strFullPath = strDir + "\\config.ini"; 
 	WritePrivateProfileStringA("SANDBOX", "LAYOUT", savedLayout.char_str(), strFullPath.char_str() );
 }
+

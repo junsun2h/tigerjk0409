@@ -22,6 +22,7 @@ public:
 
 private:
 	void	InitLayout();
+	void	InitToolBar();
 
 	wxString	m_LayoutDefault;
 	wxString	m_LayoutSaved;

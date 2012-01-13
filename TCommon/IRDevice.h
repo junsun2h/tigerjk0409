@@ -28,6 +28,6 @@ struct IRDevice
 	virtual IRenderHelper*	GetRenderHelper() = 0;
 
 	// Device Dependent Resources ( ex: Texture, VB, IB, Shader )
-	virtual void			TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource) = 0;
+	virtual void			TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, CResourceBase* pResource) = 0;
 	virtual HWND			GetHWND() = 0;
 };

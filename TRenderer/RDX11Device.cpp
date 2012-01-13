@@ -162,7 +162,7 @@ bool RDX11Device::Resize(int width, int height)
 	return g_MainWindow.Resize(m_pD3Device, width, height, false);
 }
 
-void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, IResource* pResource)
+void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, CResourceBase* pResource)
 {
 	switch( type )
 	{
@@ -174,27 +174,27 @@ void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf
 	}
 }
 
-void RDX11Device::TS_CreateVB(void* pBuf ,int size, IResource* pResource)
+void RDX11Device::TS_CreateVB(void* pBuf ,int size, CResourceBase* pResource)
 {
 
 }
 
-void RDX11Device::TS_CreateVBOut(void* pBuf ,int size, IResource* pResource)
+void RDX11Device::TS_CreateVBOut(void* pBuf ,int size, CResourceBase* pResource)
 {
 
 }
 
-void RDX11Device::TS_CreateIB(void* pBuf ,int size, IResource* pResource)
+void RDX11Device::TS_CreateIB(void* pBuf ,int size, CResourceBase* pResource)
 {
 
 }
 
-void RDX11Device::TS_CreateTexture(void* pBuf ,int size, IResource* pResource)
+void RDX11Device::TS_CreateTexture(void* pBuf ,int size, CResourceBase* pResource)
 {
 
 }
 
-void RDX11Device::TS_CreateShader(void* pBuf ,int size, IResource* pResource)
+void RDX11Device::TS_CreateShader(void* pBuf ,int size, CResourceBase* pResource)
 {
 
 }

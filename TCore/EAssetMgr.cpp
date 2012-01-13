@@ -22,12 +22,12 @@ void EAssetMgr::Init( UINT numProcessThread, IRDevice*	pRDevice )
 	m_AsyncLoader.Init( numProcessThread, this);
 }
 
-const IResource* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
+const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 {
 	return NULL;
 }
 
-const IResource* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string name )
+const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string name )
 {
 	return GetResource(type, GET_HASH_KEY(name) );
 }
@@ -65,18 +65,17 @@ long EAssetMgr::Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMP
 	return GET_HASH_KEY(fileName);
 }
 
-void EAssetMgr::LoadCompletedResource( IResource* pResource)
+long EAssetMgr::LoadCompletedResource( CResourceBase* pResource)
 {
 	RESOURCE_TYPE type = pResource->Type();
 
-	if( m_Resources[type].Lookup(pResource->RID) != NULL )
-	{
-		assert(0);
-		return;
-	}
+	if( m_Resources[type].Lookup(pResource->RID) == NULL )
+		pResource->RID = GET_HASH_KEY( pResource->name );
 
 	pResource->state = RESOURCE_LOAD_FINISHED;
 	m_Resources[type].SetAt( pResource->RID, pResource );
+
+	return pResource->RID;
 }
 
 void EAssetMgr::Clear()
@@ -92,4 +91,14 @@ void EAssetMgr::Clear()
 			SAFE_DELETE( itr->m_value );
 		}
 	}
+}
+
+void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
+{
+	m_Resources[type].RemoveKey( id);
+}
+
+void EAssetMgr::Remove(RESOURCE_TYPE type, std::string& name)
+{
+	m_Resources[type].RemoveKey( GET_HASH_KEY(name) );
 }

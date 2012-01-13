@@ -97,7 +97,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 
 		{	// default material
 			ECopyString(&pGeometry->mtrlName, &pSrcBits );
-			pGeometry->RID_mtrl = GET_HASH_KEY( pGeometry->mtrlName);
+			pGeometry->defaultMtrl = GET_HASH_KEY( pGeometry->mtrlName);
 		}
 		
 		{	// vertex information
@@ -114,7 +114,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 			m_pRDevice->TS_CreateDPResource(DP_RESOURCE_VERTEX, pSrcBits, pVB->count ,pVB );
 			*ppSrcBits += pVB->count;
 
-			pGeometry->RID_vb = pVB->RID;
+			pGeometry->vertexBuffer = pVB->RID;
 
 			m_pResources.push_back( pVB );
 		}
@@ -128,17 +128,17 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 			pIB->RID = GET_HASH_KEY( pIB->name);
 			
 			ECopyData(&pIB->eType, &pSrcBits, 2);
-			ECopyData(&pIB->count, &pSrcBits, 2);
+			ECopyData(&pIB->primitiveCount, &pSrcBits, 2);
 
-			m_pRDevice->TS_CreateDPResource(DP_RESOURCE_INDEX, pSrcBits, pIB->count ,pIB );
-			*ppSrcBits += pIB->count;	
+			m_pRDevice->TS_CreateDPResource(DP_RESOURCE_INDEX, pSrcBits, pIB->primitiveCount ,pIB );
+			*ppSrcBits += pIB->primitiveCount;	
 
-			pGeometry->RID_ib = pIB->RID;
+			pGeometry->indexBuffer = pIB->RID;
 
 			m_pResources.push_back( pIB );
 		}
 
-		pMesh->RID_goemetry[i] = pGeometry->RID;
+		pMesh->goemetries[i] = pGeometry->RID;
 
 		m_pResources.push_back( pGeometry );
 	}

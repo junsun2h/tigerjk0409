@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="SMainMenuBar.h" />
-    <ClInclude Include="SMainFrame.h">
-      <Filter>Panels</Filter>
-    </ClInclude>
     <ClInclude Include="S3DViewPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
@@ -20,12 +16,22 @@
     <ClInclude Include="SPropertyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
+    <ClInclude Include="SMainToolBar.h" />
+    <ClInclude Include="SMeshImportor.h">
+      <Filter>Importor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMainFrame.h">
+      <Filter>MainFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="SMainMenuBar.h">
+      <Filter>MainFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="SMainDragAndDrop.h">
+      <Filter>MainFrame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SApp.cpp" />
-    <ClCompile Include="SMainFrame.cpp">
-      <Filter>Panels</Filter>
-    </ClCompile>
     <ClCompile Include="S3DViewPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
@@ -38,10 +44,28 @@
     <ClCompile Include="SPropertyPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
+    <ClCompile Include="SMeshImportor.cpp">
+      <Filter>Importor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMainFrame.cpp">
+      <Filter>MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="SMainToolBar.cpp">
+      <Filter>MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="SMainDragAndDrop.cpp">
+      <Filter>MainFrame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Panels">
       <UniqueIdentifier>{b685312c-241b-4fea-a71a-9aa279e4e398}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importor">
+      <UniqueIdentifier>{b4fa715c-a253-4687-990c-8ab26981da73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainFrame">
+      <UniqueIdentifier>{72b3fb9c-24a9-4509-bb63-36c6920881a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

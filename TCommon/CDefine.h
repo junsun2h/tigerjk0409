@@ -45,4 +45,6 @@ typedef char			int8;
 
 #define BIT(x) (1<<(x))
 
+template <class T> void TSWAP ( T& a, T& b )	{	T c(a); a=b; b=c;	}
+
 #include "CMathType.h"
