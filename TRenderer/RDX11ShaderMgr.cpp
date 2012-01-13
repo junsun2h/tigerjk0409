@@ -16,6 +16,18 @@ void RDX11ShaderMgr::init()
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::Destroy()
 {
+	for( int i=0; i < NUM_SHADER_TYPE; ++i)
+	{
+		POSITION pos = m_ConstBufferMap[i].GetStartPosition();
+		CONST_BUFFER_MAP::CPair* itr = NULL;
+
+		while (pos)
+		{
+			itr = m_ConstBufferMap[i].GetNext(pos);
+			SAFE_RELEASE( itr->m_value );
+		}		
+	}
+
 	POSITION pos = m_ShaderMap.GetStartPosition();
 	SHADER_MAP::CPair* itr = NULL;
 
@@ -153,17 +165,7 @@ void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_
 	CONST_BUFFER_MAP::CPair* pBuffer = m_ConstBufferMap[type].Lookup( slot );
 	if( pBuffer == NULL )
 	{
-		D3D11_BUFFER_DESC bd;
-		ZeroMemory( &bd, sizeof(bd) );
-		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = GetDXBufSize(slot);
-		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-		D3D11_SUBRESOURCE_DATA InitData;
-		ZeroMemory( &InitData, sizeof(InitData) );
-		InitData.pSysMem = pData;
-
-		V( GLOBAL::GetD3DDevice()->CreateBuffer( &bd, &InitData, &pDXBuffer ) );
+		GLOBAL::GetRDX11Device()->RecreateBuffer( &pDXBuffer, pData, GetDXBufSize(slot), D3D11_BIND_CONSTANT_BUFFER );
 		m_ConstBufferMap[type].SetAt( slot, pDXBuffer);
 	}
 	else

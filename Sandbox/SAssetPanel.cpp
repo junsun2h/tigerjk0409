@@ -12,8 +12,6 @@ END_EVENT_TABLE()
 
 wxString strAssetType[] = 
 {
-	wxString("VERTEX"),
-	wxString("INDEX"),
 	wxString("GEOMETRY"),
 	wxString("TEXTURE"),
 	wxString("MESH"),
@@ -60,8 +58,8 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 			break;
 		}
 	}
-	GetItemText( m_SeletedItem );
 
+	Reload();
 }
 
 void SAssetTreeCtrl::Reload()

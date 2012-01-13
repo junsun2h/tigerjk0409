@@ -17,7 +17,7 @@ ETextureDataProcessor::~ETextureDataProcessor()
 
 bool ETextureDataProcessor::PopData(IAssetMgr* pAssetMgr)
 {
-	pAssetMgr->LoadCompletedResource(m_pResource);
+	pAssetMgr->LoadComplete(m_pResource);
 	return true;
 }
 
@@ -29,7 +29,7 @@ bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	m_pResource = new CResourceTexture;
 	m_pResource->RID = GET_HASH_KEY(m_Name);	
 
-	m_pRDevice->TS_CreateDPResource( DP_RESOURCE_TEXTURE, pData, cBytes, m_pResource);
+	m_pRDevice->PT_CreateGraphicBuffer( m_pResource);
 	
 	return true;
 }

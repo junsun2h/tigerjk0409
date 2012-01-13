@@ -42,6 +42,26 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	// initialize Asset manager
 	m_AssetMgr.Init( param.numOfProcessThread, m_pRenderer);
 	
+	CResourceTexture* pGeometryTexture = new CResourceTexture;
+	strcpy_s( pGeometryTexture->name, "GeometryRenderTarget" );
+	pGeometryTexture->height = param.height;
+	pGeometryTexture->Width = param.width;
+	pGeometryTexture->usage = TEXTURE_RENDER_RAGET;
+	pGeometryTexture->Format = COLOR_FORMAT_R10G10B10A2_UNORM;
+	pGeometryTexture->MipLevels = 1;
+
+	m_AssetMgr.LoadForward( pGeometryTexture );
+
+	CResourceTexture* pLightTexture = new CResourceTexture;
+	strcpy_s( pLightTexture->name, "LightRenderTarget" );
+	pLightTexture->height = param.height;
+	pLightTexture->Width = param.width;
+	pLightTexture->usage = TEXTURE_RENDER_RAGET;
+	pLightTexture->Format = COLOR_FORMAT_R8G8B8A8_UNORM;
+	pLightTexture->MipLevels = 1;
+	
+	m_AssetMgr.LoadForward( pLightTexture );
+
 	return true;
 }
 

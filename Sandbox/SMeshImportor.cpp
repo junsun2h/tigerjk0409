@@ -270,16 +270,14 @@ typedef	std::map<TVertexKey, uint16>	UNIFIED_VERTEX_MAP;
 
 
 //------------------------------------------------------------------------------------------------------
-CResourceVB* CreateVertexBuffer(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap)
+void CreateVertexBuffer(CResourceGeometry* pGeometry, TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap)
 {
-	CResourceVB* pVertexBuffer = new CResourceVB;
-
-	pVertexBuffer->count = vertexMap.size();
+	pGeometry->vertexCount = vertexMap.size();
 
 	if( pRawMesh->weightList.size() > 0 )
 	{
-		CVertexPNTW* pVertexBuf = new CVertexPNTW[ pVertexBuffer->count ];
-		pVertexBuffer->eType = FVF_3FP_4BN_2HT_4BW;
+		CVertexPNTW* pVertexBuf = new CVertexPNTW[ pGeometry->vertexCount ];
+		pGeometry->eVertexType = FVF_3FP_4BN_2HT_4BW;
 
 		for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
 		{
@@ -317,12 +315,12 @@ CResourceVB* CreateVertexBuffer(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexM
 			}
 		}
 
-		pVertexBuffer->pData = pVertexBuf;
+		pGeometry->pVertexBuffer = pVertexBuf;
 	}
 	else
 	{
-		CVertexPNT* pVertexBuf = new CVertexPNT[ pVertexBuffer->count ];
-		pVertexBuffer->eType = FVF_3FP_4BN_2HT;
+		CVertexPNT* pVertexBuf = new CVertexPNT[ pGeometry->vertexCount ];
+		pGeometry->eVertexType = FVF_3FP_4BN_2HT;
 
 		for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
 		{
@@ -337,10 +335,8 @@ CResourceVB* CreateVertexBuffer(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexM
 			pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
 		}
 
-		pVertexBuffer->pData = pVertexBuf;
+		pGeometry->pVertexBuffer = pVertexBuf;
 	}
-
-	return pVertexBuffer;
 }
 
 
@@ -361,20 +357,15 @@ CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& verte
 
 	//////////////////////////////////////////////////////////////////////////
 	// set index buffer info
-	CResourceIB* pIB = new CResourceIB;
-	wxString strIB = geometryName + "_IB";
-	strcpy_s( pIB->name, strIB.c_str() );
-
-
 	if( pMtrlIDList == NULL )
-		pIB->primitiveCount = pRawMesh->facePos.size()/3;
+		pGeometry->primitiveCount = pRawMesh->facePos.size()/3;
 	else
-		pIB->primitiveCount = pMtrlIDList->size();
+		pGeometry->primitiveCount = pMtrlIDList->size();
 
-	pIB->eType = INDEX_16BIT_TYPE;
+	pGeometry->eIndexType = INDEX_16BIT_TYPE;
 	uint16* pData = new uint16[ pRawMesh->facePos.size() ];
 
-	for ( UINT primitiveNum = 0; primitiveNum < pIB->primitiveCount; ++primitiveNum)
+	for ( UINT primitiveNum = 0; primitiveNum < pGeometry->primitiveCount; ++primitiveNum)
 	{
 		for( int j = 0; j < 3; ++j )
 		{
@@ -410,17 +401,12 @@ CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& verte
 		}
 	}
 
-	pIB->pData = pData;
-	pGeometry->indexBuffer = pAssetMgr->LoadCompletedResource( pIB );
+	pGeometry->pIndexBuffer = pData;
 	
 
 	//////////////////////////////////////////////////////////////////////////
 	// set vertex buffer info
-	CResourceVB* pVB = CreateVertexBuffer(pRawMesh, vertexMap);
-	wxString strVB = geometryName + "_VB";
-	strcpy_s( pVB->name, strVB.c_str() );
-
-	pGeometry->vertexBuffer = pAssetMgr->LoadCompletedResource( pVB );
+	CreateVertexBuffer(pGeometry, pRawMesh, vertexMap);
 
 	return pGeometry;
 }
@@ -443,7 +429,8 @@ void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
 		wxString geometryName = name + "_Geometry";
 
 		CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , vertexMap, NULL, geometryName);
-		pMesh->goemetries[0] = pAssetMgr->LoadCompletedResource( pGeometry );
+		pMesh->goemetries[0] = pAssetMgr->LoadForward( pGeometry );
+		pMesh->geometryNum++;
 	}
 	else // split mesh per material
 	{
@@ -460,9 +447,10 @@ void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
 			wxString geometryName = name + "_Geometry" + s;
 
 			CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , vertexMap, pMtrlIDList, geometryName);
-			pMesh->goemetries[i] = pAssetMgr->LoadCompletedResource( pGeometry );
+			pMesh->goemetries[i] = pAssetMgr->LoadForward( pGeometry );
+			pMesh->geometryNum++;
 		}
 	}
 
-	pAssetMgr->LoadCompletedResource( pMesh );
+	pAssetMgr->LoadForward( pMesh );
 }
