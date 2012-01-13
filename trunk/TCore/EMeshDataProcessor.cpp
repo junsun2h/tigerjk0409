@@ -32,7 +32,7 @@ bool EMeshDataProcessor::PopData(IAssetMgr* pAssetMgr)
 {
 	for( UINT i=0; i< m_pResources.size(); ++i )
 	{
-		pAssetMgr->LoadCompletedResource(m_pResources[i]);
+		pAssetMgr->LoadComplete(m_pResources[i]);
 	}
 
 	return true;
@@ -101,42 +101,24 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 		}
 		
 		{	// vertex information
-			CResourceVB* pVB = new CResourceVB;
+			ECopyData(&pGeometry->eVertexType, &pSrcBits, 2);
+			ECopyData(&pGeometry->vertexCount, &pSrcBits, 2);
 
-			std::string strVB = pGeometry->name;
-			strVB += "_VB";
-			strcpy_s( pVB->name, strVB.c_str() );
-			pVB->RID = GET_HASH_KEY( pVB->name);
-
-			ECopyData(&pVB->eType, &pSrcBits, 2);
-			ECopyData(&pVB->count, &pSrcBits, 2);
-
-			m_pRDevice->TS_CreateDPResource(DP_RESOURCE_VERTEX, pSrcBits, pVB->count ,pVB );
-			*ppSrcBits += pVB->count;
-
-			pGeometry->vertexBuffer = pVB->RID;
-
-			m_pResources.push_back( pVB );
+			memcpy(pGeometry->pVertexBuffer, pSrcBits, SIZE_OF_VERTEX(pGeometry->eVertexType) * pGeometry->vertexCount );
+			*ppSrcBits += pGeometry->vertexCount;
 		}
 		
 		{	// index information
-			CResourceIB* pIB = new CResourceIB;
+			ECopyData(&pGeometry->eIndexType, &pSrcBits, 2);
+			ECopyData(&pGeometry->primitiveCount, &pSrcBits, 2);
 
-			std::string strIB = pGeometry->name;
-			strIB += "_IB";
-			strcpy_s( pIB->name, strIB.c_str() );
-			pIB->RID = GET_HASH_KEY( pIB->name);
-			
-			ECopyData(&pIB->eType, &pSrcBits, 2);
-			ECopyData(&pIB->primitiveCount, &pSrcBits, 2);
-
-			m_pRDevice->TS_CreateDPResource(DP_RESOURCE_INDEX, pSrcBits, pIB->primitiveCount ,pIB );
-			*ppSrcBits += pIB->primitiveCount;	
-
-			pGeometry->indexBuffer = pIB->RID;
-
-			m_pResources.push_back( pIB );
+			if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
+				memcpy(pGeometry->pIndexBuffer, pSrcBits, 2 * 3 * pGeometry->primitiveCount );
+			else
+				memcpy(pGeometry->pIndexBuffer, pSrcBits, 4 * 3 * pGeometry->primitiveCount );
+			*ppSrcBits += pGeometry->primitiveCount;	
 		}
+		m_pRDevice->PT_CreateGraphicBuffer( pGeometry );
 
 		pMesh->goemetries[i] = pGeometry->RID;
 

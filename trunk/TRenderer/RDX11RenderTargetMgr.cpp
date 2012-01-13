@@ -1,40 +1,40 @@
-#include "RDX11Window.h"
+#include "RDX11RenderTargetMgr.h"
 
 
-
-RDX11Window::RDX11Window()
+RDX11MainFrameBuffer::RDX11MainFrameBuffer()
 	: pSwapChain(NULL)
 	, clearColor(0.25f, 0.25f, 0.55f, 1.0f)
 {
 }
 
-RDX11Window::~RDX11Window()
+RDX11MainFrameBuffer::~RDX11MainFrameBuffer()
 {
 	Destroy();
 }
 
-void RDX11Window::ReleaseTexture()
+void RDX11MainFrameBuffer::ReleaseTexture()
 {
 	SAFE_RELEASE(pSRV);
 	SAFE_RELEASE(pDSV);
-	SAFE_RELEASE(pRT);
 	SAFE_RELEASE(pRTV);
 }
 
-void RDX11Window::Destroy()
+void RDX11MainFrameBuffer::Destroy()
 {
 	ReleaseTexture();
 	SAFE_RELEASE(pSwapChain);
 }
 
-bool RDX11Window::Create(ID3D11Device* pD3Device)
+bool RDX11MainFrameBuffer::Create(ID3D11Device* pD3Device)
 {
 	if( pSwapChain == NULL)
 	{
 		assert(0);
 		return false;
 	}
-	
+
+	ID3D11Texture2D*			pRT;
+
 	TDXERROR( pSwapChain->GetBuffer( 0, __uuidof( *pRT ), ( LPVOID* )&pRT ) );
 	TDXERROR( pD3Device->CreateRenderTargetView( pRT, NULL, &pRTV ) );
 	SAFE_RELEASE( pRT );
@@ -73,11 +73,12 @@ bool RDX11Window::Create(ID3D11Device* pD3Device)
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	TDXERROR( pD3Device->CreateShaderResourceView( pRT, &shaderResourceViewDesc, &pSRV) );
+	SAFE_RELEASE( pRT );
 
 	return true;
 }
 
-bool RDX11Window::Resize(ID3D11Device* pD3Device, int cx, int cy, bool bFullScreen)
+bool RDX11MainFrameBuffer::Resize(ID3D11Device* pD3Device, int cx, int cy, bool bFullScreen)
 {
 	ReleaseTexture();
 
@@ -100,7 +101,7 @@ bool RDX11Window::Resize(ID3D11Device* pD3Device, int cx, int cy, bool bFullScre
 	return Create(pD3Device);
 }
 
-void RDX11Window::Present()
+void RDX11MainFrameBuffer::Present()
 {
 	pSwapChain->Present(0,0);
 }

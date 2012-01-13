@@ -38,8 +38,9 @@ public:
 	void						Init( UINT numProcessThread, IRDevice*	pRDevice );
 
 public:
-	long						LoadCompletedResource( CResourceBase* pResource) override;
-	long						Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true) override;
+	long						LoadComplete( CResourceBase* pResource) override;
+	long						LoadForward( CResourceBase* pResource ) override;
+	long						LoadFromFile(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true) override;
 
 	const CResourceBase*		GetResource( RESOURCE_TYPE type, long id ) override;
 	const CResourceBase*		GetResource( RESOURCE_TYPE type, std::string name ) override;

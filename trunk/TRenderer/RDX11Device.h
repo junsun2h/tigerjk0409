@@ -3,7 +3,7 @@
 #include "IRDevice.h"
 #include "RDefine.h"
 #include "RDX11RenderStateMgr.h"
-#include "RDX11Window.h"
+#include "RDX11RenderTargetMgr.h"
 #include "RDX11Font.h"
 #include "RDX11RenderHelper.h"
 #include "RDX11ShaderMgr.h"
@@ -43,33 +43,24 @@ public:
 
 	bool		Resize(int width, int height) override;
 	HWND		GetHWND() override	{ return m_HWND; }
-	void		TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, CResourceBase* pResource) override;
-	
+	void		PT_CreateGraphicBuffer(CResourceBase* pResource) override;
+	void		CreateGraphicBuffer(CResourceBase* pResource) override;
+	void		RemoveGraphicBuffer(CResourceBase* pResource) override;
+
 	IRenderHelper*	GetRenderHelper() override;
 
 public:
-	void	SetViewport(float width, float height, float MinDepth = 0.0f, float MaxDepth = 1.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
+	void			SetViewport(float width, float height, float MinDepth = 0.0f, float MaxDepth = 1.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
+	ID3D11Buffer*	CreateBuffer(void* pData ,int size, UINT bindFlag, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
+	void			RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
 
 private:
-	void		TS_CreateVB(void* pBuf ,int size, CResourceBase* pResource);
-	void		TS_CreateVBOut(void* pBuf ,int size, CResourceBase* pResource);
-	void		TS_CreateIB(void* pBuf ,int size, CResourceBase* pResource);
-	void		TS_CreateTexture(void* pBuf ,int size, CResourceBase* pResource);
-	void		TS_CreateShader(void* pBuf ,int size, CResourceBase* pResource);
 
-	HWND						m_HWND;
+
+	HWND					m_HWND;
 	
-	ID3D11Device*				m_pD3Device;
-	ID3D11DeviceContext*		m_pContext;
-
-	typedef ATL::CAtlMap<long, ID3D11Buffer*>				RDX11BUFFER_RESOURCE_MAP;
-	typedef ATL::CAtlMap<long, ID3D11ShaderResourceView*>	RDX11TEXTURE_RESOURCE_MAP;
-	typedef ATL::CAtlMap<long, ID3D11DeviceChild*>			RDX11SHADER_RESOURCE_MAP;
-
-	RDX11BUFFER_RESOURCE_MAP	m_RscVBMap;
-	RDX11BUFFER_RESOURCE_MAP	m_RscIBMap;
-	RDX11TEXTURE_RESOURCE_MAP	m_RscTexMap;
-	RDX11SHADER_RESOURCE_MAP	m_RscShaderMap;
+	ID3D11Device*			m_pD3Device;
+	ID3D11DeviceContext*	m_pContext;
 };
 
 

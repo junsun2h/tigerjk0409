@@ -8,7 +8,7 @@ namespace GLOBAL
 	RDX11Device*			g_RDX11Device = NULL;
 	RDX11Setting			g_DeviceSetting;
 	RDX11RenderStateMgr		g_StateRepository;
-	RDX11Window				g_MainWindow;
+	RDX11MainFrameBuffer	g_MainWindow;
 	RDX11RenderHelper		g_RenderHelper;
 	RDX11ShaderMgr			g_ShaderMgr;
 	CCAMERA_DESC			g_pCurrentCameraDesc;
@@ -21,6 +21,8 @@ namespace GLOBAL
 	RDX11ShaderMgr*			GetShaderMgr()		{ return &g_ShaderMgr; }
 	const CCAMERA_DESC&		GetCameraDesc()		{ return g_pCurrentCameraDesc; }
 };
+
+
 
 using namespace GLOBAL;
 
@@ -40,6 +42,8 @@ IRenderHelper* RDX11Device::GetRenderHelper()
 	return &g_RenderHelper;
 }
 
+
+//----------------------------------------------------------------------------------------------------------
 bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 {
 	m_HWND = (HWND)param.hWnd;
@@ -112,6 +116,8 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 	return true;
 }
 
+
+//----------------------------------------------------------------------------------------------------------
 void RDX11Device::ShutDown()
 {
 	g_RenderHelper.Destroy();
@@ -122,6 +128,8 @@ void RDX11Device::ShutDown()
 	SAFE_RELEASE( m_pD3Device )
 }
 
+
+//----------------------------------------------------------------------------------------------------------
 void RDX11Device::SetViewport(float width, float height, float MinDepth, float MaxDepth, float TopLeftX, float TopLeftY)
 {
 	D3D11_VIEWPORT vp;
@@ -136,6 +144,7 @@ void RDX11Device::SetViewport(float width, float height, float MinDepth, float M
 	m_pContext->RSSetViewports( 1, &vp );
 }
 
+//----------------------------------------------------------------------------------------------------------
 void RDX11Device::Render(const CCAMERA_DESC& cameraDesc)
 {
 	g_pCurrentCameraDesc = cameraDesc;
@@ -145,13 +154,14 @@ void RDX11Device::Render(const CCAMERA_DESC& cameraDesc)
 	m_pContext->ClearDepthStencilView( g_MainWindow.pDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0, 0 );
 }
 
-
+//----------------------------------------------------------------------------------------------------------
 void RDX11Device::Present()
 {
 	g_MainWindow.Present();
 }
 
 
+//----------------------------------------------------------------------------------------------------------
 bool RDX11Device::Resize(int width, int height)
 {
 	g_DeviceSetting.width = width;
@@ -162,39 +172,177 @@ bool RDX11Device::Resize(int width, int height)
 	return g_MainWindow.Resize(m_pD3Device, width, height, false);
 }
 
-void RDX11Device::TS_CreateDPResource(DEVICE_DEPENDENT_RESOURCE type, void* pBuf ,int size, CResourceBase* pResource)
+//----------------------------------------------------------------------------------------------------------
+void RDX11Device::PT_CreateGraphicBuffer(CResourceBase* pResource)
 {
-	switch( type )
+	CreateGraphicBuffer( pResource);
+}
+
+//----------------------------------------------------------------------------------------------------------
+void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
+{
+	RESOURCE_TYPE type = pResource->Type();
+
+	if( type == RESOURCE_GEOMETRY )
 	{
-	case DP_RESOURCE_VERTEX:		TS_CreateVB(pBuf, size, pResource); break;
-	case DP_RESOURCE_VERTEX_OUT:	TS_CreateVBOut(pBuf, size, pResource);	break;
-	case DP_RESOURCE_INDEX:			TS_CreateIB(pBuf, size, pResource);	break;
-	case DP_RESOURCE_TEXTURE:		TS_CreateTexture(pBuf, size, pResource);	break;
-	case DP_RESOURCE_SHADER:		TS_CreateShader(pBuf, size, pResource);	break;
+		CResourceGeometry* pGeometry = (CResourceGeometry*)pResource;
+
+		if( pGeometry->vertexCount <= 0)
+			return;
+
+		size_t size = SIZE_OF_VERTEX(pGeometry->eVertexType) * pGeometry->vertexCount;
+		pGeometry->pGraphicMemoryVertexBuffer = CreateBuffer(pGeometry->pVertexBuffer, size, D3D11_BIND_VERTEX_BUFFER);
+
+		if( pGeometry->primitiveCount > 0)
+		{
+			if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
+				pGeometry->pGraphicMemoryIndexBuffer = CreateBuffer(pGeometry->pIndexBuffer, 2 * 3 * pGeometry->primitiveCount, D3D11_BIND_INDEX_BUFFER);
+			else
+				pGeometry->pGraphicMemoryIndexBuffer = CreateBuffer(pGeometry->pIndexBuffer, 4 * 3 * pGeometry->primitiveCount, D3D11_BIND_INDEX_BUFFER);
+		}
+	}
+	else if( type == RESOURCE_TEXTURE)
+	{
+		CResourceTexture* pTexture = (CResourceTexture*)pResource;
+
+		D3D11_TEXTURE2D_DESC textureDesc;
+		ZeroMemory(&textureDesc, sizeof(textureDesc));
+		textureDesc.Width = pTexture->Width;
+		textureDesc.Height = pTexture->height;
+		textureDesc.MipLevels = pTexture->MipLevels;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT( pTexture->Format );
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+		if( pTexture->usage == TEXTURE_RENDER_RAGET )
+			textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		else
+			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		ID3D11Texture2D* pRT;
+		m_pD3Device->CreateTexture2D(&textureDesc, NULL, &pRT);
+
+		if( pTexture->usage == TEXTURE_RENDER_RAGET )
+		{
+			ID3D11RenderTargetView*	pRTV;
+
+			D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+			renderTargetViewDesc.Format = textureDesc.Format;
+			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+			m_pD3Device->CreateRenderTargetView( pRT, &renderTargetViewDesc, &pRTV);
+			pTexture->pRenderTargetView = pRTV;
+		}
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		shaderResourceViewDesc.Format = textureDesc.Format;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+		ID3D11ShaderResourceView* pSRV;
+		m_pD3Device->CreateShaderResourceView(pRT, &shaderResourceViewDesc, &pSRV);
+		pTexture->pShaderResourceView = pSRV;
+
+		SAFE_RELEASE(pRT);
+	}
+	else if( type == RESOURCE_SHADER)
+	{
+
 	}
 }
 
-void RDX11Device::TS_CreateVB(void* pBuf ,int size, CResourceBase* pResource)
+void RDX11Device::RemoveGraphicBuffer(CResourceBase* pResource)
 {
+	RESOURCE_TYPE type = pResource->Type();
 
+	if( type == RESOURCE_GEOMETRY )
+	{
+		CResourceGeometry* pGeometry = (CResourceGeometry*)pResource;
+
+		if( pGeometry->pGraphicMemoryVertexBuffer != NULL )
+		{
+			ID3D11Buffer* pBuffer = (ID3D11Buffer*)pGeometry->pGraphicMemoryVertexBuffer;
+			pBuffer->Release();
+			pGeometry->pGraphicMemoryVertexBuffer = NULL;
+		}
+
+		if( pGeometry->pGraphicMemoryIndexBuffer != NULL )
+		{
+			ID3D11Buffer* pBuffer = (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer;
+			pBuffer->Release();
+			pGeometry->pGraphicMemoryIndexBuffer = NULL;
+		}
+
+		if( pGeometry->pGraphicMemoryVertexBufferOut != NULL )
+		{
+			ID3D11Buffer* pBuffer = (ID3D11Buffer*)pGeometry->pGraphicMemoryVertexBufferOut;
+			pBuffer->Release();
+			pGeometry->pGraphicMemoryVertexBufferOut = NULL;
+		}
+	}
+	else if( type == RESOURCE_TEXTURE )
+	{
+		CResourceTexture* pTexture = (CResourceTexture*)pResource;
+
+		if( pTexture->pRenderTargetView != NULL )
+		{
+			ID3D11RenderTargetView* pRTV = (ID3D11RenderTargetView*)pTexture->pRenderTargetView;
+			pRTV->Release();
+			pTexture->pRenderTargetView = NULL;
+		}
+
+		if( pTexture->pShaderResourceView != NULL )
+		{
+			ID3D11ShaderResourceView* pSRV = (ID3D11ShaderResourceView*)pTexture->pShaderResourceView;
+			pSRV->Release();
+			pTexture->pShaderResourceView = NULL;
+		}
+	}
+	else if( type == RESOURCE_SHADER )
+	{
+	}
 }
 
-void RDX11Device::TS_CreateVBOut(void* pBuf ,int size, CResourceBase* pResource)
-{
 
+//----------------------------------------------------------------------------------------------------------
+ID3D11Buffer* RDX11Device::CreateBuffer(void* pData ,int size, UINT bindFlag, D3D11_USAGE usage )
+{
+	ID3D11Buffer* pBuffer = NULL;
+	
+	RecreateBuffer( &pBuffer, pData, size, bindFlag, usage);
+
+	return pBuffer;
 }
 
-void RDX11Device::TS_CreateIB(void* pBuf ,int size, CResourceBase* pResource)
+void RDX11Device::RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage)
 {
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof(bd) );
+	bd.Usage = usage;
+	bd.ByteWidth = size;
+	bd.BindFlags = bindFlag;
 
+	if( usage == D3D11_USAGE_STAGING )
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	else
+		bd.CPUAccessFlags = 0;
+	
+	if( pData != NULL)
+	{
+		D3D11_SUBRESOURCE_DATA InitData;
+		ZeroMemory( &InitData, sizeof(InitData) );
+		InitData.pSysMem = pData;
+		TDXERROR( m_pD3Device->CreateBuffer( &bd, &InitData, ppBuffer ) );
+	}
+	else
+	{
+		TDXERROR( m_pD3Device->CreateBuffer( &bd, NULL, ppBuffer ) );
+	}
 }
 
-void RDX11Device::TS_CreateTexture(void* pBuf ,int size, CResourceBase* pResource)
-{
-
-}
-
-void RDX11Device::TS_CreateShader(void* pBuf ,int size, CResourceBase* pResource)
-{
-
-}

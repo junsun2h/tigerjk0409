@@ -1,6 +1,7 @@
 #include "EAssetMgr.h"
 #include "EWinFileLoader.h"
 #include "ETextureDataProcessor.h"
+#include "EEngine.h"
 #include <locale>
 
 
@@ -33,7 +34,7 @@ const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string nam
 }
 
 
-long EAssetMgr::Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback, bool bAsync)
+long EAssetMgr::LoadFromFile(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback, bool bAsync)
 {
 	RESOURCE_REQUEST request;
 	request.pCallBackComplete = pCallback;
@@ -65,7 +66,13 @@ long EAssetMgr::Load(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMP
 	return GET_HASH_KEY(fileName);
 }
 
-long EAssetMgr::LoadCompletedResource( CResourceBase* pResource)
+long EAssetMgr::LoadForward( CResourceBase* pResource )
+{
+	g_Engine.RDevice()->CreateGraphicBuffer( pResource );
+	return LoadComplete( pResource );
+}
+
+long EAssetMgr::LoadComplete( CResourceBase* pResource)
 {
 	RESOURCE_TYPE type = pResource->Type();
 
@@ -80,25 +87,47 @@ long EAssetMgr::LoadCompletedResource( CResourceBase* pResource)
 
 void EAssetMgr::Clear()
 {
-	for( int i=0 ; i< NUM_RESOURCE_TYPE ; ++i)
+	for( int i = 0; i < NUM_RESOURCE_TYPE; ++i )
 	{
+		if( i == RESOURCE_GEOMETRY )
+			continue; // it will be deleted when deletes mesh.
+
 		POSITION pos = m_Resources[i].GetStartPosition();
 		TYPE_RESOURCE_MAP::CPair* itr = NULL;
 
 		while (pos)
 		{
 			itr = m_Resources[i].GetNext(pos);
-			SAFE_DELETE( itr->m_value );
+			Remove( RESOURCE_TYPE(i), itr->m_key );
 		}
 	}
 }
 
 void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
 {
+	if( type == RESOURCE_MESH )
+	{
+		CResourceMesh* pMesh = (CResourceMesh*)m_Resources[type].Lookup( id )->m_value;
+		for(int i=0; i< pMesh->geometryNum; ++i)
+		{
+			int key = pMesh->goemetries[i];
+			TYPE_RESOURCE_MAP::CPair* itr = m_Resources[RESOURCE_GEOMETRY].Lookup( key );
+
+			if( itr != NULL)
+			{
+				CResourceGeometry* pGeometry = (CResourceGeometry*)itr->m_value;
+				g_Engine.RDevice()->RemoveGraphicBuffer(pGeometry);
+				SAFE_DELETE( pGeometry );
+				m_Resources[RESOURCE_GEOMETRY].RemoveKey( key);
+			}
+		}
+	}
+
+	SAFE_DELETE(m_Resources[type].Lookup( id )->m_value);
 	m_Resources[type].RemoveKey( id);
 }
 
 void EAssetMgr::Remove(RESOURCE_TYPE type, std::string& name)
 {
-	m_Resources[type].RemoveKey( GET_HASH_KEY(name) );
+	Remove(type, GET_HASH_KEY(name));
 }
