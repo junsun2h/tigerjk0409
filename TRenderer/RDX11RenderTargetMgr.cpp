@@ -1,5 +1,5 @@
 #include "RDX11RenderTargetMgr.h"
-
+#include "RDX11Device.h"
 
 RDX11MainFrameBuffer::RDX11MainFrameBuffer()
 	: pSwapChain(NULL)
@@ -25,8 +25,10 @@ void RDX11MainFrameBuffer::Destroy()
 	SAFE_RELEASE(pSwapChain);
 }
 
-bool RDX11MainFrameBuffer::Create(ID3D11Device* pD3Device)
+bool RDX11MainFrameBuffer::Create()
 {
+	ID3D11Device* pD3Device = GLOBAL::GetD3DDevice();
+
 	if( pSwapChain == NULL)
 	{
 		assert(0);
@@ -78,7 +80,7 @@ bool RDX11MainFrameBuffer::Create(ID3D11Device* pD3Device)
 	return true;
 }
 
-bool RDX11MainFrameBuffer::Resize(ID3D11Device* pD3Device, int cx, int cy, bool bFullScreen)
+bool RDX11MainFrameBuffer::Resize(int cx, int cy, bool bFullScreen)
 {
 	ReleaseTexture();
 
@@ -98,7 +100,7 @@ bool RDX11MainFrameBuffer::Resize(ID3D11Device* pD3Device, int cx, int cy, bool 
 	TDXERROR(  pSwapChain->ResizeBuffers( desc.BufferCount, cx, cy, desc.BufferDesc.Format, Flags ) );
 	pSwapChain->GetDesc(&desc);
 
-	return Create(pD3Device);
+	return Create();
 }
 
 void RDX11MainFrameBuffer::Present()

@@ -138,7 +138,7 @@ void EEntity::Reparent( IEntity* _pNewParent )
 		if( m_pParent != NULL )
 			GetParent()->DetachChild( this );
 
-		_pNewParent->AttachChild( this );
+		m_pParent = _pNewParent;
 	}
 }
 
@@ -170,7 +170,7 @@ void EEntity::DetachChild( IEntity* _pChild )
 		if( pChild == _pChild )
 		{
 			itr = m_Children.erase(itr);
-			pChild->Reparent( NULL );
+			_pChild->Reparent( NULL );
 
 			return;
 		}

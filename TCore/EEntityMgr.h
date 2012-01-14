@@ -39,6 +39,15 @@ public:
 		} 
 	}
 
+	T* Find(long id)
+	{
+		ATL::CAtlMap<long, T*>::CPair* pObject = m_Map.Lookup( id );
+		if( pObject != NULL )
+			return pObject->m_value;
+
+		return NULL;
+	}
+
 	void RemoveAll()
 	{
 		POSITION pos = m_Map.GetStartPosition();
@@ -63,6 +72,9 @@ class EEntityMgr : public IEntityMgr
 public:
 	IEntity*			SpawnEntity(std::string name) override;
 	IEntityProxy*		SpawnEntityProxy(std::string name, ENTITY_PROXY_TYPE type) override;
+
+	IEntity*			GetEntity(std::string name) override	{ return GetEntity( GET_HASH_KEY(name) );}
+	IEntity*			GetEntity(long id) override				{ return m_EntityMap.Find( id );}
 
 	void				RemoveEntity(long id) override;
 	void				RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type) override;

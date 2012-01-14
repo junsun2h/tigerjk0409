@@ -21,6 +21,7 @@ public:
 
 	bool			StartUp(const CENGINE_INIT_PARAM &param) override;
 	bool			ShutDown() override;
+	void			Resize(UINT width, UINT height) override;
 
 	IRDevice*		RDevice() override		{ return m_pRenderer; }
 	IAssetMgr*		AssetMgr() override		{ return &m_AssetMgr; }

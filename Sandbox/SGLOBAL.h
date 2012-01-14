@@ -1,20 +1,28 @@
 #pragma once
 
+#include "wx/wx.h"
 #include "IEngine.h"
-#include "SAssetPanel.h"
-#include "SPropertyPanel.h"
-#include "SSceneHierarchyPanel.h"
-#include "SMainFrame.h"
 
 
-namespace SGLOBAL
+class SAssetPanel;
+class SPropertyPanel;
+class SSceneHierarchyPanel;
+class SMainFrame;
+
+
+
+namespace GLOBAL
 {
+	bool					InitDevice(CENGINE_INIT_PARAM& engineParam);
+
+	IEntity*				SceneRoot();
 	IEngine*				Engine();
+	IEntityProxyCamera*		MainCamera();
 	SAssetPanel*			AssetPanel();
 	SPropertyPanel*			PropertyPanel();
 	SSceneHierarchyPanel*	SceneHierarchyPanel();
 	SMainFrame*				MainFrame();
-};
+}
 
 
 enum eWIDGETID
@@ -39,11 +47,12 @@ enum eWIDGETID
 	ID_PANEL_PROPERTY,
 	ID_PANEL_SCENE_HIERARCHY,
 	ID_PANEL_ASSET,
-	
+
 	ID_ASSET_FILTER_TEXTCTRL,
 	ID_ASSET_TREECTRL,
 	ID_ASSET_DELETE,
 
 	ID_SCENE_FILTER_TEXTCTRL,
 	ID_SCENE_TREECTRL,
+	ID_SCENE_DELETE,
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wx/wx.h"
+#include "SGlobal.h"
 #include "IRenderCallback.h"
 
 
@@ -12,18 +12,13 @@ public:
 	S3DViewPanel(wxWindow* parent);
 	virtual ~S3DViewPanel();
 
-	bool	InitDevice();
-
 private:
 	void	OnIdle(wxIdleEvent& event);
 	void	OnSize(wxSizeEvent& event);
 
 	virtual void PostRender() override;
-
-	void	Setup();
+	
+	bool	m_bSetup;
 
 	DECLARE_EVENT_TABLE()
-
-private:
-	IEntityProxyCamera* m_pCamera;
 };

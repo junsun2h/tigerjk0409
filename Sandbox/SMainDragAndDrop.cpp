@@ -1,6 +1,7 @@
 #include "SMainDragAndDrop.h"
 #include "wx/filename.h"
 #include "SMeshImportor.h"
+#include "SAssetPanel.h"
 
 
 bool SMainDragAndDrop::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
@@ -18,7 +19,7 @@ bool SMainDragAndDrop::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& fi
 			rawMesh.ChangeCoordsys( COODSYS_DIRECTX );
 			ImportRawMesh( &rawMesh , fn.GetName().char_str() );
 
-			SGLOBAL::AssetPanel()->Reload();
+			GLOBAL::AssetPanel()->Reload();
 		}
 	}
 

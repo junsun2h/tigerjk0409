@@ -381,6 +381,14 @@ struct CResourceShader : CResourceBase
 typedef void    (CALLBACK *CALLBACK_LOAD_COMPLED)();
 typedef	ATL::CAtlMap<long, CResourceBase*>	TYPE_RESOURCE_MAP;
 
+enum DEFFERED_RENDER_TARGET
+{
+	RENDER_TARGET_GEOMERTY,
+	RENDER_TARGET_LIGHT,
+
+	NUM_DEFFERED_RENDER_TARGET
+};
+
 struct IAssetMgr
 {
 	virtual long				LoadComplete( CResourceBase* pResource) = 0;

@@ -1,7 +1,5 @@
 #include "SMeshImportor.h"
 #include "IResource.h"
-#include "SWxWidgetID.h"
-
 
 
 TRAW_MESH::TRAW_MESH()
@@ -343,7 +341,7 @@ void CreateVertexBuffer(CResourceGeometry* pGeometry, TRAW_MESH* pRawMesh, UNIFI
 //------------------------------------------------------------------------------------------------------
 CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap, std::vector<int>* pMtrlIDList, wxString geometryName)
 {
-	IAssetMgr* pAssetMgr = SGLOBAL::Engine()->AssetMgr();
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 
 	//////////////////////////////////////////////////////////////////////////
 	// set geometry info
@@ -415,7 +413,7 @@ CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& verte
 //------------------------------------------------------------------------------------------------------
 void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
 {
-	IAssetMgr* pAssetMgr = SGLOBAL::Engine()->AssetMgr();
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 
 	CResourceMesh* pMesh = new CResourceMesh;
 	strcpy_s( pMesh->name, name.char_str() );

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wx/wx.h"
+#include "SGlobal.h"
 #include "wx/propgrid/manager.h"
 #include "wx/propgrid/advprops.h"
 
@@ -13,6 +13,8 @@ class SPropertyPanel : public wxPanel
 public:
 	SPropertyPanel();
 	SPropertyPanel(wxWindow* parent);
+
+	void		SetProperty( IEntity* pEntity );
 
 private:
 	wxPropertyGridManager*	m_pGridMgr;

@@ -60,3 +60,4 @@ void EEntityMgr::Destroy()
 	m_CameraMap.RemoveAll();
 	RemoveAllEntity();
 }
+

@@ -7,9 +7,8 @@
 
 
 EAssetMgr::EAssetMgr()
-	: m_pRDevice(NULL)
 {
-
+	memset( m_DefferdRenderTargets, 0, 4*NUM_DEFFERED_RENDER_TARGET );
 }
 
 EAssetMgr::~EAssetMgr()
@@ -17,14 +16,53 @@ EAssetMgr::~EAssetMgr()
 
 }
 
-void EAssetMgr::Init( UINT numProcessThread, IRDevice*	pRDevice )
+void EAssetMgr::Init( const CENGINE_INIT_PARAM &param)
 {
-	m_pRDevice = pRDevice;
-	m_AsyncLoader.Init( numProcessThread, this);
+	m_AsyncLoader.Init( param.numOfProcessThread, this);
+	
+	CResourceTexture* pGeometryTexture = new CResourceTexture;
+	strcpy_s( pGeometryTexture->name, "GeometryRenderTarget" );
+	pGeometryTexture->height = param.height;
+	pGeometryTexture->Width = param.width;
+	pGeometryTexture->usage = TEXTURE_RENDER_RAGET;
+	pGeometryTexture->Format = COLOR_FORMAT_R10G10B10A2_UNORM;
+	pGeometryTexture->MipLevels = 1;
+
+	LoadForward( pGeometryTexture );
+	m_DefferdRenderTargets[RENDER_TARGET_GEOMERTY] = pGeometryTexture;
+
+	CResourceTexture* pLightTexture = new CResourceTexture;
+	strcpy_s( pLightTexture->name, "LightRenderTarget" );
+	pLightTexture->height = param.height;
+	pLightTexture->Width = param.width;
+	pLightTexture->usage = TEXTURE_RENDER_RAGET;
+	pLightTexture->Format = COLOR_FORMAT_R8G8B8A8_UNORM;
+	pLightTexture->MipLevels = 1;
+
+	LoadForward( pLightTexture );
+	m_DefferdRenderTargets[RENDER_TARGET_LIGHT] = pLightTexture;
+}
+
+
+void EAssetMgr::ResizeDefferedRenderTarget(UINT width, UINT height)
+{
+	IRDevice* pRDevice = g_Engine.RDevice();
+	
+	for( int i=0; i < NUM_DEFFERED_RENDER_TARGET; ++i)
+	{
+		pRDevice->RemoveGraphicBuffer( m_DefferdRenderTargets[i] );
+		m_DefferdRenderTargets[i]->Width = width;
+		m_DefferdRenderTargets[i]->height = height;
+		pRDevice->CreateGraphicBuffer( m_DefferdRenderTargets[i] );
+	}
 }
 
 const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 {
+	TYPE_RESOURCE_MAP::CPair* itr = m_Resources[RESOURCE_GEOMETRY].Lookup( id );
+	if( itr != NULL)
+		return itr->m_value;
+
 	return NULL;
 }
 
@@ -47,7 +85,7 @@ long EAssetMgr::LoadFromFile(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_L
 	case RESOURCE_FILE_MOTION:
 		break;
 	case RESOURCE_FILE_TEXTURE:
-		request.pDataProcessor = new ETextureDataProcessor( m_pRDevice, fileName );
+		request.pDataProcessor = new ETextureDataProcessor( fileName );
 		break;
 	case RESOURCE_FILE_SHADER:
 		break;
@@ -105,6 +143,9 @@ void EAssetMgr::Clear()
 
 void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
 {
+	IRDevice* pRDevice = g_Engine.RDevice();
+	CResourceBase* pResource = m_Resources[type].Lookup( id )->m_value;
+
 	if( type == RESOURCE_MESH )
 	{
 		CResourceMesh* pMesh = (CResourceMesh*)m_Resources[type].Lookup( id )->m_value;
@@ -116,14 +157,18 @@ void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
 			if( itr != NULL)
 			{
 				CResourceGeometry* pGeometry = (CResourceGeometry*)itr->m_value;
-				g_Engine.RDevice()->RemoveGraphicBuffer(pGeometry);
+				pRDevice->RemoveGraphicBuffer(pGeometry);
 				SAFE_DELETE( pGeometry );
 				m_Resources[RESOURCE_GEOMETRY].RemoveKey( key);
 			}
 		}
 	}
+	else if( type == RESOURCE_TEXTURE )
+	{
+		pRDevice->RemoveGraphicBuffer(pResource);
+	}
 
-	SAFE_DELETE(m_Resources[type].Lookup( id )->m_value);
+	SAFE_DELETE(pResource);
 	m_Resources[type].RemoveKey( id);
 }
 

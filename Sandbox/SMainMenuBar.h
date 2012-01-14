@@ -1,7 +1,6 @@
 #pragma once
 
-#include "wx/wx.h"
-#include "SWxWidgetID.h"
+#include "SGlobal.h"
 
 class SMainMenuBar: public wxMenuBar
 {
