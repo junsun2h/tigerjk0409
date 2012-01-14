@@ -5,9 +5,8 @@
 #include "IAsyncLoader.h"
 #include "IResource.h"
 #include "EAsyncLoader.h"
-#include <atlcoll.h>
+#include "IEngine.h"
 
-struct IRDevice;
 
 enum HELPER_GEOMETRY_TYPE
 {
@@ -26,16 +25,12 @@ struct CHelperGeometryCreateParam
 
 class EAssetMgr : public IAssetMgr
 {
-	IRDevice*				m_pRDevice;
-	EAsyncLoader			m_AsyncLoader;
-
-	TYPE_RESOURCE_MAP		m_Resources[NUM_RESOURCE_TYPE];
-
 public:
 	EAssetMgr();
 	~EAssetMgr();
 
-	void						Init( UINT numProcessThread, IRDevice*	pRDevice );
+	void						Init(const CENGINE_INIT_PARAM &param);
+	void						ResizeDefferedRenderTarget(UINT width, UINT height);
 
 public:
 	long						LoadComplete( CResourceBase* pResource) override;
@@ -49,4 +44,12 @@ public:
 	void						Clear() override;
 	void						Remove(RESOURCE_TYPE type, long id) override;
 	void						Remove(RESOURCE_TYPE type, std::string& name) override;
+
+private:
+	void						CreateDefferedRenderTarget(UINT width, UINT height);
+
+	EAsyncLoader				m_AsyncLoader;
+	TYPE_RESOURCE_MAP			m_Resources[NUM_RESOURCE_TYPE];
+
+	CResourceTexture*			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
 };

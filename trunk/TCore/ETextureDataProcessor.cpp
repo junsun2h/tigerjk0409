@@ -3,9 +3,8 @@
 #include "EAsyncLoader.h"
 
 
-ETextureDataProcessor::ETextureDataProcessor( IRDevice* pRDevice, char* name )
-	: m_pRDevice(pRDevice)
-	, m_pResource(NULL)
+ETextureDataProcessor::ETextureDataProcessor( char* name )
+	: m_pResource(NULL)
 	, m_Name(name)
 {
 }
@@ -29,7 +28,7 @@ bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	m_pResource = new CResourceTexture;
 	m_pResource->RID = GET_HASH_KEY(m_Name);	
 
-	m_pRDevice->PT_CreateGraphicBuffer( m_pResource);
+//	m_pRDevice->PT_CreateGraphicBuffer( m_pResource);
 	
 	return true;
 }

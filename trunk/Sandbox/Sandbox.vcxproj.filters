@@ -10,13 +10,9 @@
     <ClInclude Include="SSceneHierarchyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="SWxWidgetID.h">
-      <Filter>Panels</Filter>
-    </ClInclude>
     <ClInclude Include="SPropertyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="SMainToolBar.h" />
     <ClInclude Include="SMeshImportor.h">
       <Filter>Importor</Filter>
     </ClInclude>
@@ -27,6 +23,10 @@
       <Filter>MainFrame</Filter>
     </ClInclude>
     <ClInclude Include="SMainDragAndDrop.h">
+      <Filter>MainFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="SGlobal.h" />
+    <ClInclude Include="SMainToolBar.h">
       <Filter>MainFrame</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,6 +56,7 @@
     <ClCompile Include="SMainDragAndDrop.cpp">
       <Filter>MainFrame</Filter>
     </ClCompile>
+    <ClCompile Include="SGlobal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Panels">

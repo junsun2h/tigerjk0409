@@ -1,12 +1,5 @@
 #include "SMainToolBar.h"
 
-
-#pragma once
-
-#include "wx/wx.h"
-#include "SWxWidgetID.h"
-
-
 SMainToolBar::SMainToolBar(wxWindow *parent, wxWindowID id)
 	: wxToolBar(parent, id)
 {	

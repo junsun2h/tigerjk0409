@@ -12,7 +12,9 @@ namespace GLOBAL
 	RDX11RenderHelper		g_RenderHelper;
 	RDX11ShaderMgr			g_ShaderMgr;
 	CCAMERA_DESC			g_pCurrentCameraDesc;
-
+	IEngine*				g_pEngine = NULL;
+	
+	IAssetMgr*				GetAssetMgr()		{ return g_pEngine->AssetMgr(); }
 	ID3D11Device*			GetD3DDevice()		{ return g_D3Device;}
 	ID3D11DeviceContext*	GetD3DContext()		{ return g_D3DeviceContext; }
 	RDX11Device*			GetRDX11Device()	{ return g_RDX11Device; }
@@ -44,7 +46,7 @@ IRenderHelper* RDX11Device::GetRenderHelper()
 
 
 //----------------------------------------------------------------------------------------------------------
-bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
+bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
 {
 	m_HWND = (HWND)param.hWnd;
 
@@ -101,12 +103,13 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param)
 	g_D3Device = m_pD3Device;
 	g_D3DeviceContext = m_pContext;
 	g_RDX11Device = this;
+	g_pEngine = pEngine;
 
 	g_DeviceSetting.width = param.width;
 	g_DeviceSetting.height = param.height;
 
 	g_StateRepository.Init();
-	g_MainWindow.Create(m_pD3Device);
+	g_MainWindow.Create();
 	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
 
 	// initialize subsystem
@@ -169,7 +172,7 @@ bool RDX11Device::Resize(int width, int height)
 
 	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
 
-	return g_MainWindow.Resize(m_pD3Device, width, height, false);
+	return g_MainWindow.Resize(width, height, false);
 }
 
 //----------------------------------------------------------------------------------------------------------

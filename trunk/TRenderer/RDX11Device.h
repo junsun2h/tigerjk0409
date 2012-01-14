@@ -36,7 +36,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 	// IRenderer
 	//////////////////////////////////////////////////////////////////////////
-	bool		StartUp(const CENGINE_INIT_PARAM &param) override;
+	bool		StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine) override;
 	void		ShutDown() override;
 	void		Render(const CCAMERA_DESC& cameraDesc) override;
 	void		Present() override;
@@ -66,6 +66,7 @@ private:
 
 namespace GLOBAL
 {
+	IAssetMgr*				GetAssetMgr();
 	ID3D11Device*			GetD3DDevice();
 	ID3D11DeviceContext*	GetD3DContext();
 	RDX11Device*			GetRDX11Device();

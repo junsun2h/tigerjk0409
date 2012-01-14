@@ -8,6 +8,12 @@
 #include "SMainDragAndDrop.h"
 
 
+namespace GLOBAL
+{
+	extern SAssetPanel*	g_AssetPanel;
+	extern SPropertyPanel* g_PropertyPanel;
+	extern SSceneHierarchyPanel* g_SceneHierarchyPanel;
+};
 
 
 BEGIN_EVENT_TABLE(SMainFrame, wxFrame)
@@ -46,9 +52,6 @@ SMainFrame::SMainFrame(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	InitLayout();
 
-	S3DViewPanel* p3DView = wxDynamicCast( FindWindow( ID_PANEL_3DVIEW ), S3DViewPanel );
-	p3DView->InitDevice();
-
 	SMainMenuBar* pMainMenu = new SMainMenuBar;
 
 	SetMenuBar( pMainMenu );
@@ -71,18 +74,18 @@ void SMainFrame::InitLayout()
 	auiManager->SetManagedWindow(this);
 
 	SetMinSize(wxSize(1024, 768));
-
+	
 	S3DViewPanel* pViewPanel = new S3DViewPanel(this);
 	auiManager->AddPane(pViewPanel, wxAuiPaneInfo().Name("3DViewPanel").Show().CenterPane().Layer(0).Position(0));
 
-	SSceneHierarchyPanel* pActorPanel = new SSceneHierarchyPanel(this);
-	auiManager->AddPane(pActorPanel, wxAuiPaneInfo().Name(g_strSceneHierarchy).Show().PinButton().Caption("Scene Hierarchy").Right().Layer(2).Position(1).FloatingSize(250, 500));
+	GLOBAL::g_SceneHierarchyPanel = new SSceneHierarchyPanel(this);
+	auiManager->AddPane(GLOBAL::g_SceneHierarchyPanel, wxAuiPaneInfo().Name(g_strSceneHierarchy).Show().PinButton().Caption("Scene Hierarchy").Right().Layer(2).Position(1).FloatingSize(250, 500));
 
-	SAssetPanel* pAssetPanel = new SAssetPanel(this);
-	auiManager->AddPane(pAssetPanel, wxAuiPaneInfo().Name(g_strAsset).Show().PinButton().Caption("Asset").Right().Layer(2).Position(1).FloatingSize(250, 500));
+	GLOBAL::g_AssetPanel = new SAssetPanel(this);
+	auiManager->AddPane(GLOBAL::g_AssetPanel, wxAuiPaneInfo().Name(g_strAsset).Show().PinButton().Caption("Asset").Right().Layer(2).Position(1).FloatingSize(250, 500));
 
-	SPropertyPanel* pPropertyPanel = new SPropertyPanel(this);
-	auiManager->AddPane(pPropertyPanel, wxAuiPaneInfo().Name(g_strProperty).Show().PinButton().Caption("Properties").Right().Layer(1).Position(0).FloatingSize(250, 500));
+	GLOBAL::g_PropertyPanel = new SPropertyPanel(this);
+	auiManager->AddPane(GLOBAL::g_PropertyPanel, wxAuiPaneInfo().Name(g_strProperty).Show().PinButton().Caption("Properties").Right().Layer(1).Position(0).FloatingSize(250, 500));
 
 	auiManager->Update();
 	m_LayoutDefault = auiManager->SavePerspective();

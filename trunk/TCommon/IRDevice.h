@@ -3,7 +3,7 @@
 #include "IResource.h"
 #include "IRenderHelper.h"
 
-
+struct IEngine;
 struct CENGINE_INIT_PARAM;
 struct CCAMERA_DESC;
 
@@ -17,7 +17,7 @@ struct IRDevice
 {
 	virtual ~IRDevice(){}
 
-	virtual bool			StartUp(const CENGINE_INIT_PARAM &param) = 0;
+	virtual bool			StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine) = 0;
 	virtual void			ShutDown() = 0;
 
 	virtual void			Render(const CCAMERA_DESC& cameraDesc) = 0;

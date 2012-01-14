@@ -32,6 +32,7 @@ struct IEngine
 {
 	virtual bool			StartUp(const CENGINE_INIT_PARAM &param) = 0;
 	virtual bool			ShutDown() = 0;
+	virtual void			Resize(UINT width, UINT height) = 0;
 
 	virtual IRDevice*		RDevice() = 0;
 	virtual IAssetMgr*		AssetMgr() = 0;

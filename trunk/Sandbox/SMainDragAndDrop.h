@@ -1,8 +1,7 @@
 #pragma once
 
-#include "wx/wx.h"
+#include "SGlobal.h"
 #include "wx/dnd.h"
-#include "SWxWidgetID.h"
 
 
 class SMainDragAndDrop : public wxFileDropTarget

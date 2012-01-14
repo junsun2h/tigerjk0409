@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wx/wx.h"
+#include "SGlobal.h"
 #include "wx/treectrl.h"
 
 

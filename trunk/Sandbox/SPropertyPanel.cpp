@@ -1,5 +1,4 @@
 #include "SPropertyPanel.h"
-#include "SWxWidgetID.h"
 
 
 IMPLEMENT_DYNAMIC_CLASS(SPropertyPanel, wxPanel)
@@ -22,4 +21,9 @@ SPropertyPanel::SPropertyPanel(wxWindow* parent)
 	pRootSizer->Add(m_pGridMgr, wxSizerFlags(1).Center().Expand());
 
 	SetSizerAndFit(pRootSizer);
+}
+
+void SPropertyPanel::SetProperty( IEntity* pEntity )
+{
+
 }

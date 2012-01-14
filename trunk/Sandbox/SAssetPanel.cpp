@@ -1,6 +1,6 @@
 #include "SAssetPanel.h"
 #include "wx/treectrl.h"
-#include "SWxWidgetID.h"
+
 
 IMPLEMENT_DYNAMIC_CLASS(SAssetTreeCtrl, wxTreeCtrl)
 BEGIN_EVENT_TABLE(SAssetTreeCtrl, wxTreeCtrl)
@@ -45,7 +45,7 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 {
-	IAssetMgr* pAssetMgr =SGLOBAL::Engine()->AssetMgr();
+	IAssetMgr* pAssetMgr =GLOBAL::Engine()->AssetMgr();
 
 	wxString parentText = GetItemText( GetItemParent( m_SeletedItem ) );
 	std::string strSeletedItem =  GetItemText(m_SeletedItem).c_str();
@@ -64,7 +64,7 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 
 void SAssetTreeCtrl::Reload()
 {
-	IAssetMgr* pAssetMgr =SGLOBAL::Engine()->AssetMgr();
+	IAssetMgr* pAssetMgr =GLOBAL::Engine()->AssetMgr();
 
 	DeleteAllItems();
 	wxTreeItemId rootItem = AddRoot( "Asset" );
