@@ -57,10 +57,15 @@ struct IEntity
 	virtual void		SetLocalScale(const CVector3& _scale) = 0;
 	virtual void		SetLocalRot(const CQuat& _rot) = 0;
 	virtual void		SetLocalTM(const XMMATRIX& tm) = 0;
+	virtual void		SetWorldPos(const CVector3& _pos) = 0;
+	virtual void		SetWorldRot(const CQuat& _rot) = 0;
 	virtual void		SetWorldTM(const XMMATRIX& tm) = 0;
 
 	virtual void		UpdateLocalTM() = 0;
 	virtual void		UpdateWorldTM() = 0;
+
+	virtual void		MoveLocalAxis(float x, float y, float z) = 0;
+	virtual void		RotateLocalAxis(CVector3 axis, float radian) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// hierarchy functions

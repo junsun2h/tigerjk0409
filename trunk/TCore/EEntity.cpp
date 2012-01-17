@@ -65,23 +65,83 @@ inline void EEntity::SetLocalTM(const XMMATRIX& tm)
 	UpdateWorldTM();
 }
 
-inline void EEntity::SetWorldTM(const XMMATRIX& tm)
+void EEntity::SetWorldPos(const CVector3& _pos)
 {
-	if ( m_pParent )
+	m_WorldTM._41 = _pos.x;
+	m_WorldTM._42 = _pos.y;
+	m_WorldTM._43 = _pos.z;
+
+	m_WorldPos = _pos;
+
+	if( m_pParent )
 	{
-		XMMATRIX worldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
-		XMMATRIX localTM =  worldInverse * m_LocalTM;
-		SetLocalTM( localTM );
+		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
+		m_LocalTM =  parentWorldInverse * m_WorldTM;		
+		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
 	}
 	else
 	{
-		SetLocalTM( tm );
+		m_LocalTM =  m_WorldTM;		
+		m_LocalPos = m_WorldPos;
+		m_LocalRotation = m_WorldRotation;
+	}
+}
+
+inline void EEntity::SetWorldRot(const CQuat& _rot)
+{
+	m_WorldRotation = _rot;
+	m_WorldTM = XMMATRIX_UTIL::TransformationAffine( CVector3(1,1,1), m_WorldRotation, m_WorldPos);
+	
+	if( m_pParent )
+	{
+		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
+		m_LocalTM =  parentWorldInverse * m_WorldTM;		
+		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+	}
+	else
+	{
+		m_LocalTM =  m_WorldTM;		
+		m_LocalPos = m_WorldPos;
+		m_LocalRotation = m_WorldRotation;
+	}
+}
+
+inline void EEntity::SetWorldTM(const XMMATRIX& tm)
+{
+	m_WorldTM = tm;
+	XMMATRIX_UTIL::Decompose(NULL, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+
+	if( m_pParent )
+	{
+		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
+		m_LocalTM =  parentWorldInverse * m_WorldTM;		
+		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+
+		EntityEvent e;
+		e.type = E_EVENT_TRANSFORM_CHANGED;
+		SendEvent(e);
+
+		int count = m_Children.size();
+		for(int i= 0; i < count; i++)
+		{
+			m_Children[i]->UpdateWorldTM();
+		}
+	}
+	else
+	{
+		m_LocalTM =  m_WorldTM;		
+		m_LocalPos = m_WorldPos;
+		m_LocalRotation = m_WorldRotation;
+		
+		EntityEvent e;
+		e.type = E_EVENT_TRANSFORM_CHANGED;
+		SendEvent(e);
 	}
 }
 
 inline void EEntity::UpdateLocalTM()
 {
-	m_LocalTM = XMMATRIX_UTIL::TransformationAffine(m_LocalScale, m_LocalPos, m_LocalRotation, m_LocalPos);
+	m_LocalTM = XMMATRIX_UTIL::TransformationAffine(m_LocalScale, m_LocalRotation, m_LocalPos);
 	UpdateWorldTM();
 	
 	int count = m_Children.size();
@@ -99,21 +159,52 @@ inline void EEntity::UpdateWorldTM()
 		m_WorldPos = m_LocalPos;
 		m_WorldRotation = m_LocalRotation;
 		m_WorldScale = m_LocalScale;
-		return;
+
+		EntityEvent e;
+		e.type = E_EVENT_TRANSFORM_CHANGED;
+		SendEvent(e);
 	}
-
-	m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetLocalTM());
-	XMMATRIX_UTIL::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
-
-	EntityEvent e;
-	e.type = E_EVENT_TRANSFORM_CHANGED;
-	SendEvent(e);
-
-	int count = m_Children.size();
-	for(int i= 0; i < count; i++)
+	else
 	{
-		m_Children[i]->UpdateWorldTM();
+		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetLocalTM());
+		XMMATRIX_UTIL::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+
+		EntityEvent e;
+		e.type = E_EVENT_TRANSFORM_CHANGED;
+		SendEvent(e);
+
+		int count = m_Children.size();
+		for(int i= 0; i < count; i++)
+		{
+			m_Children[i]->UpdateWorldTM();
+		}
 	}
+}
+
+void EEntity::MoveLocalAxis(float x, float y, float z)
+{
+	m_LocalPos += *(CVector3*)&m_LocalTM._11 * x;
+	m_LocalPos += *(CVector3*)&m_LocalTM._21 * y;
+	m_LocalPos += *(CVector3*)&m_LocalTM._31 * z;
+
+	UpdateLocalTM();
+}
+
+void EEntity::RotateLocalAxis(CVector3 axis, float radian)
+{
+	m_WorldTM.r[3].x = 0;
+	m_WorldTM.r[3].y = 0;
+	m_WorldTM.r[3].z = 0;
+
+	XMMATRIX rotTM = XMMatrixRotationAxis( axis.ToXMVEECTOR(), radian );
+
+	rotTM = m_WorldTM * rotTM;
+
+	rotTM.r[3].x = m_WorldPos.x;
+	rotTM.r[3].y = m_WorldPos.y;
+	rotTM.r[3].z = m_WorldPos.z;
+
+	SetWorldTM(rotTM);
 }
 
 
@@ -126,19 +217,21 @@ void EEntity::Reparent( IEntity* _pNewParent )
 	if( _pNewParent == this || m_pParent == _pNewParent )
 		return;
 
+	if( m_pParent != NULL )
+		m_pParent->DetachChild( this );
+
 	if( _pNewParent == NULL )
 	{
 		m_pParent = NULL;
 		SetLocalTM( GetWorldTM() );
-		UpdateWorldTM();
 		return;
 	}
 	else
 	{
-		if( m_pParent != NULL )
-			GetParent()->DetachChild( this );
+		XMMATRIX worldTM = GetWorldTM();
 
 		m_pParent = _pNewParent;
+		SetWorldTM(worldTM);
 	}
 }
 
@@ -195,10 +288,7 @@ IEntityProxy* EEntity::GetProxy( ENTITY_PROXY_TYPE type )
 {
 	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
 	if( pEntityProxy != NULL )
-	{
-		assert(0);
 		return pEntityProxy->m_value;
-	} 
 
 	return NULL;
 }
@@ -215,6 +305,7 @@ void EEntity::SetProxy( IEntityProxy *pProxy)
 	}
 
 	m_ProxyMap.SetAt( type, pProxy );
+	pProxy->SetEntity(this);
 }
 
 

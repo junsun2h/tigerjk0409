@@ -4,6 +4,15 @@
 #include "wx/treectrl.h"
 
 
+enum SASSET_WIDGET_ID
+{
+	ID_ASSET_FILTER_TEXTCTRL,
+	ID_ASSET_TREECTRL,
+	ID_ASSET_DELETE,
+};
+
+
+
 class SAssetTreeCtrl : public wxTreeCtrl
 {
 public:

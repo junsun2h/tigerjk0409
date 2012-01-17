@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SGlobal.h"
+#include "SMainToolBar.h"
 
 class SMainMenuBar: public wxMenuBar
 {
@@ -39,6 +39,14 @@ public:
 			viewMenu->Append(ID_MENU_SAVE_LAYOUT, "Save Layout(&S)");
 
 			Append(viewMenu, "Layout(&L)");
+		}
+		// GameObject
+		{
+			wxMenu* viewMenu = new wxMenu;
+
+			viewMenu->Append(ID_MENU_ENTITY_NEW, "Create(&C)");
+
+			Append(viewMenu, "Entity(&E)");
 		}
 	}
 

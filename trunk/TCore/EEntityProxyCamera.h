@@ -19,6 +19,8 @@ public:
 	long					GetLastTransformChangedFrame() override	{ return m_FrameTransformChanged; }
 
 private:
+	void					SetViewDescFromWorldMatrix();
+
 	long					m_ID;
 	IEntity*				m_pEntity;
 	std::string				m_Name;

@@ -49,24 +49,27 @@ public:
 	void			SetLocalScale(const CVector3& _scale) override;
 	void			SetLocalRot(const CQuat& _rot) override;
 	void			SetLocalTM(const XMMATRIX& tm) override;
+	void			SetWorldPos(const CVector3& _pos) override;
+	void			SetWorldRot(const CQuat& _rot) override;
 	void			SetWorldTM(const XMMATRIX& tm) override;
+
+	void			MoveLocalAxis(float x, float y, float z) override;
+	void			RotateLocalAxis(CVector3 axis, float radian) override;
 
 	void			UpdateLocalTM() override;
 	void			UpdateWorldTM() override;
 
 private:
-	CVector3	m_LocalPos;
-	CVector3	m_LocalScale;
-	CQuat		m_LocalRotation;
-	XMMATRIX	m_LocalTM;
+	CVector3		m_LocalPos;
+	CVector3		m_LocalScale;
+	CQuat			m_LocalRotation;
+	XMMATRIX		m_LocalTM;
 
-	CVector3	m_WorldPos;
-	CVector3	m_WorldScale;
-	CQuat		m_WorldRotation;
-	XMMATRIX	m_WorldTM;
-
-	UINT		m_SpaceID;		// Octree space id
-
+	CVector3		m_WorldPos;
+	CVector3		m_WorldScale;
+	CQuat			m_WorldRotation;
+	XMMATRIX		m_WorldTM;
+	
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// hierarchy

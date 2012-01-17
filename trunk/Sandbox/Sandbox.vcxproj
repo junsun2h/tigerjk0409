@@ -80,26 +80,32 @@
   <ItemGroup>
     <ClInclude Include="S3DViewPanel.h" />
     <ClInclude Include="SAssetPanel.h" />
+    <ClInclude Include="SCreateEntityDlg.h" />
     <ClInclude Include="SGlobal.h" />
     <ClInclude Include="SMainDragAndDrop.h" />
     <ClInclude Include="SMainToolBar.h" />
     <ClInclude Include="SMeshImportor.h" />
+    <ClInclude Include="SPropertyGrid.h" />
+    <ClInclude Include="SPropertyGridReflection.h" />
     <ClInclude Include="SPropertyPanel.h" />
     <ClInclude Include="SMainFrame.h" />
     <ClInclude Include="SMainMenuBar.h" />
     <ClInclude Include="SSceneHierarchyPanel.h" />
+    <ClInclude Include="SVectorProperty.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="S3DViewPanel.cpp" />
     <ClCompile Include="SApp.cpp" />
     <ClCompile Include="SAssetPanel.cpp" />
     <ClCompile Include="SGlobal.cpp" />
-    <ClCompile Include="SMainDragAndDrop.cpp" />
     <ClCompile Include="SMainFrame.cpp" />
     <ClCompile Include="SMainToolBar.cpp" />
     <ClCompile Include="SMeshImportor.cpp" />
+    <ClCompile Include="SPropertyGrid.cpp" />
+    <ClCompile Include="SPropertyGridReflection.cpp" />
     <ClCompile Include="SPropertyPanel.cpp" />
     <ClCompile Include="SSceneHierarchyPanel.cpp" />
+    <ClCompile Include="SVectorProperty.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

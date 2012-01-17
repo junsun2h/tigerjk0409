@@ -1,8 +1,37 @@
 #pragma once
 
 #include "SGlobal.h"
-#include "wx/propgrid/manager.h"
-#include "wx/propgrid/advprops.h"
+#include "wx/treectrl.h"
+
+
+enum PROPERTY_WIDGET_ID
+{
+	ID_PROPERTY_TREECTRL,
+	ID_PROPERTY_GRID
+};
+
+class SPropertyGrid;
+
+class SPropertyTreeCtrl : public wxTreeCtrl
+{
+public:
+	SPropertyTreeCtrl(){}
+	SPropertyTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id);
+
+	void			OnSelChanged(wxTreeEvent& event);
+	void			SetEntity(IEntity* pEntity);
+
+private:
+	wxTreeItemId	m_SeletedItem;
+	IEntity*		m_pEntity;
+	SPropertyGrid*	m_pGrid;
+
+	DECLARE_DYNAMIC_CLASS(SPropertyTreeCtrl)
+	DECLARE_EVENT_TABLE()
+};
+
+
+
 
 
 class SPropertyPanel : public wxPanel
@@ -14,11 +43,11 @@ public:
 	SPropertyPanel();
 	SPropertyPanel(wxWindow* parent);
 
-	void		SetProperty( IEntity* pEntity );
+	void					SetObject( IEntity* pEntity );
 
 private:
-	wxPropertyGridManager*	m_pGridMgr;
-
+	SPropertyGrid*			m_pGridMgr;
+	SPropertyTreeCtrl*		m_pTreeCtrl;
 
 	DECLARE_EVENT_TABLE()
 };

@@ -38,9 +38,6 @@
     <Filter Include="Shader\fx">
       <UniqueIdentifier>{a2f6e5e9-d821-49da-998e-374b27394ce9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RenderTarget">
-      <UniqueIdentifier>{b122d17d-721a-41e9-8f5e-3e72454bee17}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="simpleFx.h">
