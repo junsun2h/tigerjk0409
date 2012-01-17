@@ -16,10 +16,10 @@ struct CQuat
 	{
 		struct
 		{
-			FLOAT w;
-			FLOAT z;
-			FLOAT y;
 			FLOAT x;
+			FLOAT y;
+			FLOAT z;
+			FLOAT w;
 		};
 		XMVECTOR m128;
 	};
@@ -269,9 +269,14 @@ namespace XMMATRIX_UTIL
 		if( !XMMatrixDecompose( &outScale, &outRotQuat, &outTrans, mt) )
 			return false;
 
-		*pScale = outScale;
-		*pRot = outRotQuat;
-		*pPos = outTrans;
+		if( pScale != NULL )
+			*pScale = outScale;
+
+		if( pRot != NULL )
+			*pRot = outRotQuat;
+
+		if( pPos != NULL )
+			*pPos = outTrans;
 
 		return true;
 	}
@@ -301,11 +306,17 @@ namespace XMMATRIX_UTIL
 		roll = XMConvertToDegrees( -atan2f( y.x, y.y ) );
 	}
 
-	inline XMMATRIX	TransformationAffine(const CVector3& scale, const CVector3& rotOrigin, const CQuat& rot, const CVector3& pos) 
-	{ 
-		return XMMatrixAffineTransformation(scale.ToXMVEECTOR(), pos.ToXMVEECTOR(), rot.m128, pos.ToXMVEECTOR()); 
+	inline XMMATRIX ToMatrix(float& pitch, float& yaw, float& roll)
+	{
+		return XMMatrixRotationRollPitchYaw( XMConvertToRadians(pitch ),
+										XMConvertToRadians(yaw ),
+										XMConvertToRadians(roll ));
 	}
 
+	inline XMMATRIX	TransformationAffine(const CVector3& scale, const CQuat& rot, const CVector3& pos) 
+	{ 
+		return XMMatrixAffineTransformation(scale.ToXMVEECTOR(), XMVectorZero(), rot.m128, pos.ToXMVEECTOR()); 
+	}
 }
 
 

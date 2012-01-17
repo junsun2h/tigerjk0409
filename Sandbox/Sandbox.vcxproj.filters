@@ -25,9 +25,21 @@
     <ClInclude Include="SMainDragAndDrop.h">
       <Filter>MainFrame</Filter>
     </ClInclude>
-    <ClInclude Include="SGlobal.h" />
     <ClInclude Include="SMainToolBar.h">
       <Filter>MainFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="SGlobal.h" />
+    <ClInclude Include="SCreateEntityDlg.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SPropertyGrid.h">
+      <Filter>Panels\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="SVectorProperty.h">
+      <Filter>Panels\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="SPropertyGridReflection.h">
+      <Filter>Panels\PropertyGrid</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,10 +65,16 @@
     <ClCompile Include="SMainToolBar.cpp">
       <Filter>MainFrame</Filter>
     </ClCompile>
-    <ClCompile Include="SMainDragAndDrop.cpp">
-      <Filter>MainFrame</Filter>
-    </ClCompile>
     <ClCompile Include="SGlobal.cpp" />
+    <ClCompile Include="SPropertyGrid.cpp">
+      <Filter>Panels\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="SVectorProperty.cpp">
+      <Filter>Panels\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="SPropertyGridReflection.cpp">
+      <Filter>Panels\PropertyGrid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Panels">
@@ -67,6 +85,12 @@
     </Filter>
     <Filter Include="MainFrame">
       <UniqueIdentifier>{72b3fb9c-24a9-4509-bb63-36c6920881a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dialog">
+      <UniqueIdentifier>{752c1083-137a-4204-ad56-a78770ebe3ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\PropertyGrid">
+      <UniqueIdentifier>{c625b0f8-0768-42ee-8518-a20b6af81d49}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

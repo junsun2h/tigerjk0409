@@ -6,6 +6,7 @@
 #include "SMainToolBar.h"
 #include "SPropertyPanel.h"
 #include "SMainDragAndDrop.h"
+#include "SCreateEntityDlg.h"
 
 
 namespace GLOBAL
@@ -13,6 +14,7 @@ namespace GLOBAL
 	extern SAssetPanel*	g_AssetPanel;
 	extern SPropertyPanel* g_PropertyPanel;
 	extern SSceneHierarchyPanel* g_SceneHierarchyPanel;
+	extern S3DViewPanel* g_ViewPanel;
 };
 
 
@@ -28,7 +30,8 @@ BEGIN_EVENT_TABLE(SMainFrame, wxFrame)
 	EVT_MENU(ID_MENU_DEFAULT_LAYOUT, SMainFrame::OnDefaultLayout)
 	EVT_MENU(ID_MENU_LOAD_SAVED_LAYOUT, SMainFrame::OnLoadSavedLayout)
 	EVT_MENU(ID_MENU_SAVE_LAYOUT, SMainFrame::OnSaveLayout)
-
+	EVT_MENU(ID_MENU_ENTITY_NEW, SMainFrame::OnCreateEntity)
+	
 	EVT_AUI_PANE_CLOSE(SMainFrame::OnPanelClose)
 END_EVENT_TABLE()
 
@@ -75,11 +78,11 @@ void SMainFrame::InitLayout()
 
 	SetMinSize(wxSize(1024, 768));
 	
-	S3DViewPanel* pViewPanel = new S3DViewPanel(this);
-	auiManager->AddPane(pViewPanel, wxAuiPaneInfo().Name("3DViewPanel").Show().CenterPane().Layer(0).Position(0));
+	GLOBAL::g_ViewPanel = new S3DViewPanel(this);
+	auiManager->AddPane(GLOBAL::g_ViewPanel, wxAuiPaneInfo().Name("3DViewPanel").Show().CenterPane().Layer(0).Position(0));
 
 	GLOBAL::g_SceneHierarchyPanel = new SSceneHierarchyPanel(this);
-	auiManager->AddPane(GLOBAL::g_SceneHierarchyPanel, wxAuiPaneInfo().Name(g_strSceneHierarchy).Show().PinButton().Caption("Scene Hierarchy").Right().Layer(2).Position(1).FloatingSize(250, 500));
+	auiManager->AddPane(GLOBAL::g_SceneHierarchyPanel, wxAuiPaneInfo().Name(g_strSceneHierarchy).Show().PinButton().Caption("Scene Hierarchy[Entity Tree]").Right().Layer(2).Position(1).FloatingSize(250, 500));
 
 	GLOBAL::g_AssetPanel = new SAssetPanel(this);
 	auiManager->AddPane(GLOBAL::g_AssetPanel, wxAuiPaneInfo().Name(g_strAsset).Show().PinButton().Caption("Asset").Right().Layer(2).Position(1).FloatingSize(250, 500));
@@ -169,3 +172,24 @@ void SMainFrame::OnSaveLayout(wxCommandEvent& event)
 	WritePrivateProfileStringA("SANDBOX", "LAYOUT", savedLayout.char_str(), strFullPath.char_str() );
 }
 
+void SMainFrame::OnCreateEntity(wxCommandEvent& event)
+{
+	SCreateEntityDlg dlg(this);
+
+	if(wxID_OK == dlg.ShowModal())
+	{
+		wxString name;
+		CVector3 pos;
+		
+		dlg.GetNameAndPosition( name, pos );
+		
+		IEntityMgr* entityMgr = GLOBAL::Engine()->EntityMgr();
+
+		
+		IEntity* pEntity = entityMgr->SpawnEntity( name.c_str().AsChar() );
+		pEntity->SetLocalPos( pos );
+
+		GLOBAL::SceneRoot()->AttachChild( pEntity );
+		GLOBAL::SceneHierarchyPanel()->Reload();
+	}
+}

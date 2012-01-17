@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SGlobal.h"
+#include "SMainFrame.h"
 
 
 class SMainToolBar: public wxToolBar
@@ -12,4 +12,5 @@ public:
 	virtual void OnPositionMode( wxCommandEvent& event );
 	virtual void OnRotateMode( wxCommandEvent& event );
 	virtual void OnScaleMode( wxCommandEvent& event );
+	virtual void OnSelectCameraSpeed( wxCommandEvent& event );
 };

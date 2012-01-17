@@ -24,6 +24,7 @@ struct IEntityProxy
 	virtual ~IEntityProxy(){}
 
 	virtual ENTITY_PROXY_TYPE	GetType() = 0;
+	virtual const char*			GetTypeString() = 0;
 	virtual IEntity*			GetEntity() = 0;
 	virtual void				SetEntity(IEntity* pEntity) = 0;
 	virtual long				GetID()	= 0;
@@ -34,6 +35,7 @@ struct IEntityProxy
 struct IEntityProxyActor : IEntityProxy
 {
 	virtual ENTITY_PROXY_TYPE		GetType()			{ return ENTITY_PROXY_ACTOR; };
+	virtual const char*				GetTypeString()		{ return "ENTITY_PROXY_ACTOR"; }
 
 	virtual void					Init(std::string strResource) = 0;
 	virtual const CResourceActor*	GetActorInfo() = 0;
@@ -46,14 +48,20 @@ struct CCAMERA_DESC
 	XMMATRIX ViewTM;
 	XMMATRIX ProjTM;
 			 
-	float	 nearClip;
-	float	 farClip;
-	float	 Fovy;
+	float	nearClip;
+	float	farClip;
+	float	Fovy;
+	float	aspect;
+
+	CVector3	eyePos;
+	CVector3	eyeDirection;
+	CVector3	upVector;
 };
 
 struct IEntityProxyCamera : IEntityProxy
 {
 	virtual ENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_CAMERA; };
+	virtual const char*				GetTypeString()					{ return "ENTITY_PROXY_CAMERA"; }
 
 	virtual void					SetProjParam(float fovy, int width, int height, float nearPlane, float farPlane) = 0;
 	virtual void					SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector) = 0;
@@ -65,6 +73,7 @@ struct IEntityProxyCamera : IEntityProxy
 struct IEntityProxyRender : IEntityProxy
 {
 	virtual ENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_RENDER; };
+	virtual const char*				GetTypeString()					{ return "ENTITY_PROXY_RENDER"; }
 
 	virtual int						GetTotalSlot() = 0;
 	virtual	bool					AddGeometry(int slot, long geometryID, long mtrlID ) = 0;

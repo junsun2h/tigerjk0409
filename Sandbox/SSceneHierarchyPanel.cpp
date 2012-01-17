@@ -3,22 +3,26 @@
 #include "SPropertyPanel.h"
 
 
-IMPLEMENT_DYNAMIC_CLASS(SSceneHierarchyreeCtrl, wxTreeCtrl)
-	BEGIN_EVENT_TABLE(SSceneHierarchyreeCtrl, wxTreeCtrl)
-	EVT_TREE_SEL_CHANGED(ID_SCENE_TREECTRL, SSceneHierarchyreeCtrl::OnSelChanged)
-	EVT_TREE_ITEM_MENU(ID_SCENE_TREECTRL, SSceneHierarchyreeCtrl::OnItemMenu)
-	EVT_MENU(ID_SCENE_DELETE, SSceneHierarchyreeCtrl::OnDelete)
+IMPLEMENT_DYNAMIC_CLASS(SSceneHierarchyTreeCtrl, wxTreeCtrl)
+	BEGIN_EVENT_TABLE(SSceneHierarchyTreeCtrl, wxTreeCtrl)
+	EVT_TREE_SEL_CHANGED(ID_SCENE_TREECTRL, SSceneHierarchyTreeCtrl::OnSelChanged)
+	EVT_TREE_ITEM_MENU(ID_SCENE_TREECTRL, SSceneHierarchyTreeCtrl::OnItemMenu)
+	EVT_MENU(ID_SCENE_DELETE, SSceneHierarchyTreeCtrl::OnDelete)
 END_EVENT_TABLE()
 
 
-SSceneHierarchyreeCtrl::SSceneHierarchyreeCtrl(wxWindow *parent, const wxWindowID id)
+SSceneHierarchyTreeCtrl::SSceneHierarchyTreeCtrl(wxWindow *parent, const wxWindowID id)
 	: wxTreeCtrl(parent, id)
 {
 }
 
-void SSceneHierarchyreeCtrl::OnItemMenu(wxTreeEvent& event)
+void SSceneHierarchyTreeCtrl::OnItemMenu(wxTreeEvent& event)
 {
 	m_SeletedItem = event.GetItem();
+	
+	wxString strItem = GetItemText(m_SeletedItem);
+	if( strItem == "Root" )
+		return;
 
 	wxMenu menu( GetItemText(m_SeletedItem) );
 	menu.Append(ID_SCENE_DELETE, wxT("&ADD Component"));
@@ -28,18 +32,21 @@ void SSceneHierarchyreeCtrl::OnItemMenu(wxTreeEvent& event)
 }
 
 
-void SSceneHierarchyreeCtrl::OnSelChanged(wxTreeEvent& event)
+void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
+	GLOBAL::PropertyPanel()->SetObject(NULL);
+
 	m_SeletedItem = event.GetItem();
-	
-	std::string entityName  = GetItemText(m_SeletedItem);
+	wxString strItem = GetItemText(m_SeletedItem);
 
-	IEntity* pEntity = GLOBAL::Engine()->EntityMgr()->GetEntity( entityName );
+	if( strItem == "Root" )
+		return;
 
-	GLOBAL::PropertyPanel()->SetProperty(pEntity );
+	IEntity* pEntity = GLOBAL::Engine()->EntityMgr()->GetEntity( strItem.c_str().AsChar() );
+	GLOBAL::PropertyPanel()->SetObject(pEntity );
 }
 
-void SSceneHierarchyreeCtrl::OnDelete(wxCommandEvent& event)
+void SSceneHierarchyTreeCtrl::OnDelete(wxCommandEvent& event)
 {
 	IAssetMgr* pAssetMgr =GLOBAL::Engine()->AssetMgr();
 
@@ -59,7 +66,7 @@ void SSceneHierarchyreeCtrl::OnDelete(wxCommandEvent& event)
 	Reload();
 }
 
-void SSceneHierarchyreeCtrl::AddEntity(wxTreeItemId parent, IEntity* pEntity)
+void SSceneHierarchyTreeCtrl::AddEntity(wxTreeItemId parent, IEntity* pEntity)
 {
 	wxTreeItemId item = AppendItem(parent, pEntity->GetName() );
 
@@ -71,7 +78,7 @@ void SSceneHierarchyreeCtrl::AddEntity(wxTreeItemId parent, IEntity* pEntity)
 	}
 }
 
-void SSceneHierarchyreeCtrl::Reload()
+void SSceneHierarchyTreeCtrl::Reload()
 {
 	IEntity* pEntity = GLOBAL::SceneRoot();
 
@@ -87,7 +94,7 @@ void SSceneHierarchyreeCtrl::Reload()
 }
 
 
-
+//-------------------------------------------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(SSceneHierarchyPanel, wxPanel)
 	EVT_TEXT(ID_SCENE_FILTER_TEXTCTRL, SSceneHierarchyPanel::OnFilterChanged)
 END_EVENT_TABLE()
@@ -101,7 +108,7 @@ SSceneHierarchyPanel::SSceneHierarchyPanel(wxWindow* parent)
 	wxTextCtrl* pTextBoxCtrl = new wxTextCtrl(this, ID_SCENE_FILTER_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxSize(200, wxDefaultSize.y));
 	pRootSizer->Add(pTextBoxCtrl, wxSizerFlags(0).Top().Border());
 
-	m_pTreeCtrl = new SSceneHierarchyreeCtrl(this, ID_SCENE_TREECTRL);
+	m_pTreeCtrl = new SSceneHierarchyTreeCtrl(this, ID_SCENE_TREECTRL);
 	pRootSizer->Add(m_pTreeCtrl, wxSizerFlags(1).Center().Border().Expand());
 /*	{
 		wxIcon icons[ICONID_NUM];

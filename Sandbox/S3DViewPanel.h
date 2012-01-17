@@ -12,9 +12,13 @@ public:
 	S3DViewPanel(wxWindow* parent);
 	virtual ~S3DViewPanel();
 
+	float	m_CameraSpeed;
+
 private:
 	void	OnIdle(wxIdleEvent& event);
 	void	OnSize(wxSizeEvent& event);
+	void	OnMouseEvent(wxMouseEvent& event);
+	void	OnKeyDown(wxKeyEvent& event);
 
 	virtual void PostRender() override;
 	
