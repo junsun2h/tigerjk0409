@@ -1,3 +1,7 @@
+#include "wx/dnd.h"
+#include "wx/filename.h"
+
+
 #include "SMainFrame.h"
 #include "S3DViewPanel.h"
 #include "SSceneHierarchyPanel.h"
@@ -5,10 +9,38 @@
 #include "SMainMenuBar.h"
 #include "SMainToolBar.h"
 #include "SPropertyPanel.h"
-#include "SMainDragAndDrop.h"
 #include "SCreateEntityDlg.h"
+#include "SMeshImportor.h"
 
 
+class SMainDragAndDrop : public wxFileDropTarget
+{
+public:
+	bool SMainDragAndDrop::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
+	{
+		size_t nFiles = filenames.GetCount();
+
+		for( UINT i=0; i < filenames.Count(); ++i)
+		{
+			wxFileName fn = filenames[i];
+			if( fn.GetExt() == "mesh" )
+			{
+				SMESH_LOADER::TRAW_MESH rawMesh;
+				SMESH_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
+
+				rawMesh.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+				SMESH_LOADER::ImportRawMesh( &rawMesh , fn.GetName().char_str() );
+
+				wxCommandEvent e;
+				GLOBAL::AssetPanel()->OnReload(e);
+			}
+		}
+
+		return true;
+	}
+};
+
+//-------------------------------------------------------------------------------------------------------------------
 namespace GLOBAL
 {
 	extern SAssetPanel*	g_AssetPanel;

@@ -3,6 +3,7 @@
 #include "IResource.h"
 #include "IRenderHelper.h"
 
+
 struct IEngine;
 struct CENGINE_INIT_PARAM;
 struct CCAMERA_DESC;
@@ -31,6 +32,8 @@ struct IRDevice
 	virtual void			PT_CreateGraphicBuffer(CResourceBase* pResource) = 0;
 	virtual void			CreateGraphicBuffer(CResourceBase* pResource) = 0;
 	virtual void			RemoveGraphicBuffer(CResourceBase* pResource) =0;
+
+	virtual CResourceTexture* CreateTextureFromFile(const char* fileName) = 0;
 
 	virtual HWND			GetHWND() = 0;
 };

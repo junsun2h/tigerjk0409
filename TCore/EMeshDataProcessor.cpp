@@ -1,6 +1,6 @@
 #include "EMeshDataProcessor.h"
 #include "IRDevice.h"
-#include "EAsyncLoader.h"
+#include "EEngine.h"
 
 
 void ECopyData(void* dest, BYTE** src, int size)
@@ -28,11 +28,11 @@ EMeshDataProcessor::~EMeshDataProcessor()
 
 }
 
-bool EMeshDataProcessor::PopData(IAssetMgr* pAssetMgr)
+bool EMeshDataProcessor::PopData()
 {
 	for( UINT i=0; i< m_pResources.size(); ++i )
 	{
-		pAssetMgr->LoadComplete(m_pResources[i]);
+		g_Engine.AssetMgr()->Insert(m_pResources[i]);
 	}
 
 	return true;
@@ -40,7 +40,7 @@ bool EMeshDataProcessor::PopData(IAssetMgr* pAssetMgr)
 
 bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 {
-	assert ( EAsyncLoader::IsDataProcThread() );
+	assert ( ELoader::IsDataProcThread() );
 
 	byte ptr = NULL;
 
@@ -78,7 +78,7 @@ bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 
 long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 {
-	assert ( EAsyncLoader::IsDataProcThread() );
+	assert ( ELoader::IsDataProcThread() );
 
 	BYTE* pSrcBits = *ppSrcBits;
 	

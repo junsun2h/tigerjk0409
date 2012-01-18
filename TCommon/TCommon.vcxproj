@@ -66,7 +66,7 @@
     <ClInclude Include="CGrowableArray.h" />
     <ClInclude Include="CText.h" />
     <ClInclude Include="IActorMgr.h" />
-    <ClInclude Include="IAsyncLoader.h" />
+    <ClInclude Include="IAssetMgr.h" />
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="CTimer.h" />
@@ -74,6 +74,8 @@
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="IEntityMgr.h" />
     <ClInclude Include="IEntityProxy.h" />
+    <ClInclude Include="IFileUtility.h" />
+    <ClInclude Include="ILoader.h" />
     <ClInclude Include="IMotionMgr.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />

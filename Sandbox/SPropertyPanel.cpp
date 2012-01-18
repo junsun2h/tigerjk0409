@@ -1,5 +1,7 @@
 #include "SPropertyPanel.h"
 #include "SPropertyGrid.h"
+#include "STexturePopupWindow.h"
+#include "STextureConvertor.h"
 
 
 IMPLEMENT_DYNAMIC_CLASS(SPropertyTreeCtrl, wxTreeCtrl)
@@ -52,6 +54,7 @@ void SPropertyTreeCtrl::SetEntity(IEntity* pEntity)
 
 
 
+
 //-------------------------------------------------------------------------------------------------------------------
 IMPLEMENT_DYNAMIC_CLASS(SPropertyPanel, wxPanel)
 BEGIN_EVENT_TABLE(SPropertyPanel, wxPanel)
@@ -68,17 +71,63 @@ SPropertyPanel::SPropertyPanel(wxWindow* parent)
 {
 	wxBoxSizer* pRootSizer = new wxBoxSizer(wxVERTICAL);
 
+	m_pTextureCanvas = new SCanvas(this);
 	m_pGridMgr = new SPropertyGrid(this);	
-	m_pTreeCtrl = new SPropertyTreeCtrl(this, m_pGridMgr, ID_PROPERTY_TREECTRL);
+	m_pEntityTreeCtrl = new SPropertyTreeCtrl(this, m_pGridMgr, ID_PROPERTY_TREECTRL);
 
-	pRootSizer->Add(m_pTreeCtrl, 0, wxALL|wxEXPAND, 5);
+	pRootSizer->Add(m_pTextureCanvas, 0, wxALL|wxEXPAND, 5);
+	pRootSizer->Add(m_pEntityTreeCtrl, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pGridMgr, wxSizerFlags(1).Center().Expand());
 
 	SetSizerAndFit(pRootSizer);
+
+	SetEmpty();
 }
 
 void SPropertyPanel::SetObject( IEntity* pEntity )
 {
-	m_pTreeCtrl->SetEntity(pEntity);
+	m_pEntityTreeCtrl->SetEntity(pEntity);
 	m_pGridMgr->Clear();
+
+	m_pEntityTreeCtrl->Show();
+	m_pGridMgr->Show();
+	m_pTextureCanvas->Hide();
+
+	OrganizeInside();
+}
+
+void SPropertyPanel::SetObject( const CResourceTexture* pResource )
+{
+	m_pGridMgr->SetProperty( pResource );
+
+	SaveTextureToPNGFile( pResource, COLOR_FORMAT_R8G8B8A8_TYPELESS);
+
+	m_pTextureCanvas->SetImage( &wxImage("temp.png") );
+
+	m_pTextureCanvas->Show();
+	m_pGridMgr->Show();
+	m_pEntityTreeCtrl->Hide();
+
+	OrganizeInside();
+}
+
+void SPropertyPanel::SetEmpty()
+{
+	m_pGridMgr->Clear();
+	m_pEntityTreeCtrl->SetEntity(NULL);
+
+	m_pEntityTreeCtrl->Hide();
+	m_pGridMgr->Hide();
+	m_pTextureCanvas->Hide();
+
+	OrganizeInside();
+}
+
+void SPropertyPanel::OrganizeInside()
+{
+	int nWidth = 100;
+	int nHeight = 100;
+	GetSize(&nWidth, &nHeight);
+	SetSize(nWidth + 1, nHeight);
+	SetSize(nWidth - 1, nHeight);
 }

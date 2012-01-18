@@ -82,13 +82,14 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EActorDataProcessor.cpp" />
     <ClCompile Include="EAssetMgr.cpp" />
-    <ClCompile Include="EAsyncLoader.cpp" />
     <ClCompile Include="EEngine.cpp" />
     <ClCompile Include="EEntity.cpp" />
     <ClCompile Include="EEntityMgr.cpp" />
     <ClCompile Include="EEntityProxyActor.cpp" />
     <ClCompile Include="EEntityProxyCamera.cpp" />
     <ClCompile Include="EEntityProxyRender.cpp" />
+    <ClCompile Include="EFileUtility.cpp" />
+    <ClCompile Include="ELoader.cpp" />
     <ClCompile Include="EMeshDataProcessor.cpp" />
     <ClCompile Include="ESceneMgr.cpp" />
     <ClCompile Include="EOctreeNode.cpp" />
@@ -99,20 +100,20 @@
   <ItemGroup>
     <ClInclude Include="EActorDataProcessor.h" />
     <ClInclude Include="EAssetMgr.h" />
-    <ClInclude Include="EAsyncLoader.h" />
     <ClInclude Include="EEngine.h" />
     <ClInclude Include="EEntity.h" />
     <ClInclude Include="EEntityMgr.h" />
     <ClInclude Include="EEntityProxyActor.h" />
     <ClInclude Include="EEntityProxyCamera.h" />
     <ClInclude Include="EEntityProxyRender.h" />
+    <ClInclude Include="EFileUtility.h" />
+    <ClInclude Include="ELoader.h" />
     <ClInclude Include="EMeshDataProcessor.h" />
     <ClInclude Include="EMotionDataProcessor.h" />
     <ClInclude Include="EMtrlDataProcessor.h" />
     <ClInclude Include="ESceneMgr.h" />
     <ClInclude Include="EOctreeNode.h" />
     <ClInclude Include="ERenderer.h" />
-    <ClInclude Include="ETextHelper.h" />
     <ClInclude Include="EWinFileLoader.h" />
     <ClInclude Include="ETextureDataProcessor.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IAsyncLoader.h"
+#include "ILoader.h"
 
 
 
@@ -13,6 +13,7 @@ public:
 	ETextureDataProcessor( char* name );
 	~ETextureDataProcessor();
 
-	virtual bool			PopData(IAssetMgr* pAssetMgr) override;
-	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) override;
+	virtual bool	PopData() override;
+	virtual bool	PT_Process( void* pData, SIZE_T cBytes ) override;
+	virtual bool	Process( void* pData, SIZE_T cBytes ) override;
 };

@@ -26,7 +26,7 @@ EActorDataProcessor::~EActorDataProcessor()
 
 }
 
-bool EActorDataProcessor::PopData(IAssetMgr* pAssetMgr)
+bool EActorDataProcessor::PopData()
 {
 	return true;
 }

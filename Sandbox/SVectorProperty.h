@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SGlobal.h"
+#include "wx/wx.h"
 #include "wx/propgrid/manager.h"
 #include "wx/propgrid/advprops.h"
 

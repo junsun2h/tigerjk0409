@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SGlobal.h"
+#include "wx/wx.h"
 #include "wx/propgrid/manager.h"
 #include "wx/propgrid/advprops.h"
 #include "SPropertyGridReflection.h"
@@ -18,6 +19,7 @@ public:
 
 	void			SetProperty( IEntity* pEntity );
 	void			SetProperty( IEntityProxy* pEntityProxy );
+	void			SetProperty( const CResourceTexture* pTexture );
 	void			ClearProperties();
 
 private:

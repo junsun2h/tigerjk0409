@@ -10,9 +10,6 @@
     <ClInclude Include="SSceneHierarchyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="SPropertyPanel.h">
-      <Filter>Panels</Filter>
-    </ClInclude>
     <ClInclude Include="SMeshImportor.h">
       <Filter>Importor</Filter>
     </ClInclude>
@@ -20,9 +17,6 @@
       <Filter>MainFrame</Filter>
     </ClInclude>
     <ClInclude Include="SMainMenuBar.h">
-      <Filter>MainFrame</Filter>
-    </ClInclude>
-    <ClInclude Include="SMainDragAndDrop.h">
       <Filter>MainFrame</Filter>
     </ClInclude>
     <ClInclude Include="SMainToolBar.h">
@@ -33,14 +27,24 @@
       <Filter>Dialog</Filter>
     </ClInclude>
     <ClInclude Include="SPropertyGrid.h">
-      <Filter>Panels\PropertyGrid</Filter>
-    </ClInclude>
-    <ClInclude Include="SVectorProperty.h">
-      <Filter>Panels\PropertyGrid</Filter>
+      <Filter>Panels\Property\PropertyGrid</Filter>
     </ClInclude>
     <ClInclude Include="SPropertyGridReflection.h">
-      <Filter>Panels\PropertyGrid</Filter>
+      <Filter>Panels\Property\PropertyGrid</Filter>
     </ClInclude>
+    <ClInclude Include="SVectorProperty.h">
+      <Filter>Panels\Property\data</Filter>
+    </ClInclude>
+    <ClInclude Include="STextureFormatString.h">
+      <Filter>Panels\Property\data</Filter>
+    </ClInclude>
+    <ClInclude Include="SPropertyPanel.h">
+      <Filter>Panels\Property</Filter>
+    </ClInclude>
+    <ClInclude Include="STexturePopupWindow.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="STextureConvertor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SApp.cpp" />
@@ -51,9 +55,6 @@
       <Filter>Panels</Filter>
     </ClCompile>
     <ClCompile Include="SSceneHierarchyPanel.cpp">
-      <Filter>Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="SPropertyPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
     <ClCompile Include="SMeshImportor.cpp">
@@ -67,14 +68,21 @@
     </ClCompile>
     <ClCompile Include="SGlobal.cpp" />
     <ClCompile Include="SPropertyGrid.cpp">
-      <Filter>Panels\PropertyGrid</Filter>
-    </ClCompile>
-    <ClCompile Include="SVectorProperty.cpp">
-      <Filter>Panels\PropertyGrid</Filter>
+      <Filter>Panels\Property\PropertyGrid</Filter>
     </ClCompile>
     <ClCompile Include="SPropertyGridReflection.cpp">
-      <Filter>Panels\PropertyGrid</Filter>
+      <Filter>Panels\Property\PropertyGrid</Filter>
     </ClCompile>
+    <ClCompile Include="SVectorProperty.cpp">
+      <Filter>Panels\Property\data</Filter>
+    </ClCompile>
+    <ClCompile Include="SPropertyPanel.cpp">
+      <Filter>Panels\Property</Filter>
+    </ClCompile>
+    <ClCompile Include="STexturePopupWindow.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="STextureConvertor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Panels">
@@ -89,7 +97,13 @@
     <Filter Include="Dialog">
       <UniqueIdentifier>{752c1083-137a-4204-ad56-a78770ebe3ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Panels\PropertyGrid">
+    <Filter Include="Panels\Property">
+      <UniqueIdentifier>{d40ca6ac-ed5f-4ec7-89a5-e8456bfa790e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Property\data">
+      <UniqueIdentifier>{b8e458cb-a2eb-4792-8a28-e6de902532e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Property\PropertyGrid">
       <UniqueIdentifier>{c625b0f8-0768-42ee-8518-a20b6af81d49}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

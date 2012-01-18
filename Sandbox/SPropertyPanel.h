@@ -1,7 +1,11 @@
 #pragma once
 
 #include "SGlobal.h"
+#include "wx/wx.h"
 #include "wx/treectrl.h"
+
+
+class SCanvas;
 
 
 enum PROPERTY_WIDGET_ID
@@ -19,6 +23,7 @@ public:
 	SPropertyTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id);
 
 	void			OnSelChanged(wxTreeEvent& event);
+
 	void			SetEntity(IEntity* pEntity);
 
 private:
@@ -44,10 +49,15 @@ public:
 	SPropertyPanel(wxWindow* parent);
 
 	void					SetObject( IEntity* pEntity );
+	void					SetObject( const CResourceTexture* pResource );
+	void					SetEmpty();
 
 private:
+	void					OrganizeInside();
+
+	SCanvas*				m_pTextureCanvas;
 	SPropertyGrid*			m_pGridMgr;
-	SPropertyTreeCtrl*		m_pTreeCtrl;
+	SPropertyTreeCtrl*		m_pEntityTreeCtrl;
 
 	DECLARE_EVENT_TABLE()
 };

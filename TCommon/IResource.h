@@ -34,9 +34,10 @@ enum RESOURCE_FILE_TYPE
 	RESOURCE_FILE_MESH,
 	RESOURCE_FILE_MOTION,
 	RESOURCE_FILE_MATERIAL,
-	RESOURCE_FILE_SHADER,
 
-	NUM_RESOURCE_FILE_TYPE
+	NUM_RESOURCE_FILE_TYPE,
+
+	RESOURCE_FILE_INVALID
 };
 
 enum RESOURCE_LOAD_STATE
@@ -268,19 +269,23 @@ struct CResourceTexture : CResourceBase
 {
 	void* pShaderResourceView;
 	void* pRenderTargetView;
+	void* pTextureSource;
+
+	bool bDeleteMemoryAfterLoading;
 
 	eTEXTURE_USAGE		usage;
 	eTEXTURE_FORMAT		Format;
 	UINT				Width;
 	UINT				height;
 	UINT				MipLevels;
-
-
+	
 	CResourceTexture()
 		: pShaderResourceView(NULL)
 		, pRenderTargetView(NULL)
+		, pTextureSource(NULL)
 		, usage(TEXTURE_NORMAL)
 		, Format(COLOR_FORMAT_UNKNOWN)
+		, bDeleteMemoryAfterLoading(false)
 	{
 	}
 
@@ -377,32 +382,6 @@ struct CResourceShader : CResourceBase
 	RESOURCE_TYPE	Type() override { return RESOURCE_SHADER; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_SHADER); }
 };
-
-typedef void    (CALLBACK *CALLBACK_LOAD_COMPLED)();
-typedef	ATL::CAtlMap<long, CResourceBase*>	TYPE_RESOURCE_MAP;
-
-enum DEFFERED_RENDER_TARGET
-{
-	RENDER_TARGET_GEOMERTY,
-	RENDER_TARGET_LIGHT,
-
-	NUM_DEFFERED_RENDER_TARGET
-};
-
-struct IAssetMgr
-{
-	virtual long				LoadComplete( CResourceBase* pResource) = 0;
-	virtual long				LoadForward( CResourceBase* pResource) = 0;
-	virtual long				LoadFromFile(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true) = 0;
- 	virtual void				Clear() = 0;
- 	virtual void				Remove(RESOURCE_TYPE type, long id) = 0;
-	virtual void				Remove(RESOURCE_TYPE type, std::string& name) = 0;
-
-	virtual const CResourceBase*		GetResource( RESOURCE_TYPE type, long id ) = 0;
-	virtual const CResourceBase*		GetResource( RESOURCE_TYPE type, std::string name ) = 0;
-	virtual const TYPE_RESOURCE_MAP*	GetResources( RESOURCE_TYPE type ) = 0;
-};
-
 
 inline long GET_HASH_KEY( std::string name )
 {

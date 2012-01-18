@@ -11,6 +11,7 @@ struct IEntityMgr
 	virtual IEntity*		GetEntity(long id) =0;
 
 	virtual void			RemoveEntity(long id)  =0;
+	virtual void			RemoveEntity(const char* name)  =0;
 	virtual void			RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type)  =0;
 
 	virtual void			RemoveAllEntity()  =0;

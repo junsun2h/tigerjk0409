@@ -47,6 +47,8 @@ public:
 	void		CreateGraphicBuffer(CResourceBase* pResource) override;
 	void		RemoveGraphicBuffer(CResourceBase* pResource) override;
 
+	CResourceTexture* CreateTextureFromFile(const char* fileName) override;
+
 	IRenderHelper*	GetRenderHelper() override;
 
 public:

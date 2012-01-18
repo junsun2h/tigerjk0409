@@ -1,5 +1,6 @@
 #pragma once
 
+#include "wx/wx.h"
 #include "SGlobal.h"
 #include "wx/aui/aui.h"
 

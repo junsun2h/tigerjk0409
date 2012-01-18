@@ -25,7 +25,6 @@ void SSceneHierarchyTreeCtrl::OnItemMenu(wxTreeEvent& event)
 		return;
 
 	wxMenu menu( GetItemText(m_SeletedItem) );
-	menu.Append(ID_SCENE_DELETE, wxT("&ADD Component"));
 	menu.Append(ID_SCENE_DELETE, wxT("&Delete"));
 
 	PopupMenu(&menu, event.GetPoint());
@@ -34,7 +33,7 @@ void SSceneHierarchyTreeCtrl::OnItemMenu(wxTreeEvent& event)
 
 void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
-	GLOBAL::PropertyPanel()->SetObject(NULL);
+	GLOBAL::PropertyPanel()->SetEmpty();
 
 	m_SeletedItem = event.GetItem();
 	wxString strItem = GetItemText(m_SeletedItem);
@@ -48,20 +47,9 @@ void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 void SSceneHierarchyTreeCtrl::OnDelete(wxCommandEvent& event)
 {
-	IAssetMgr* pAssetMgr =GLOBAL::Engine()->AssetMgr();
+	wxString strItem = GetItemText(m_SeletedItem);
 
-	wxString parentText = GetItemText( GetItemParent( m_SeletedItem ) );
-	std::string strSeletedItem =  GetItemText(m_SeletedItem).c_str();
-
-	for( int i = RESOURCE_TEXTURE; i< RESOURCE_SHADER; ++i	)
-	{
-		/*
-		if( strAssetType[i] == parentText )
-		{
-			pAssetMgr->Remove( RESOURCE_TYPE(i), strSeletedItem );
-			break;
-		}*/
-	}
+	GLOBAL::Engine()->EntityMgr()->RemoveEntity( strItem );
 
 	Reload();
 }

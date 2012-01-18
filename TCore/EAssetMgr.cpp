@@ -1,11 +1,9 @@
 #include "EAssetMgr.h"
-#include "EWinFileLoader.h"
-#include "ETextureDataProcessor.h"
 #include "EEngine.h"
 #include <locale>
 
 
-
+//--------------------------------------------------------------------------------------------------------
 EAssetMgr::EAssetMgr()
 {
 	memset( m_DefferdRenderTargets, 0, 4*NUM_DEFFERED_RENDER_TARGET );
@@ -17,18 +15,16 @@ EAssetMgr::~EAssetMgr()
 }
 
 void EAssetMgr::Init( const CENGINE_INIT_PARAM &param)
-{
-	m_AsyncLoader.Init( param.numOfProcessThread, this);
-	
+{	
 	CResourceTexture* pGeometryTexture = new CResourceTexture;
 	strcpy_s( pGeometryTexture->name, "GeometryRenderTarget" );
 	pGeometryTexture->height = param.height;
 	pGeometryTexture->Width = param.width;
 	pGeometryTexture->usage = TEXTURE_RENDER_RAGET;
-	pGeometryTexture->Format = COLOR_FORMAT_R10G10B10A2_UNORM;
+	pGeometryTexture->Format = COLOR_FORMAT_R8G8B8A8_UNORM;
 	pGeometryTexture->MipLevels = 1;
 
-	LoadForward( pGeometryTexture );
+	Insert( pGeometryTexture );
 	m_DefferdRenderTargets[RENDER_TARGET_GEOMERTY] = pGeometryTexture;
 
 	CResourceTexture* pLightTexture = new CResourceTexture;
@@ -39,7 +35,7 @@ void EAssetMgr::Init( const CENGINE_INIT_PARAM &param)
 	pLightTexture->Format = COLOR_FORMAT_R8G8B8A8_UNORM;
 	pLightTexture->MipLevels = 1;
 
-	LoadForward( pLightTexture );
+	Insert( pLightTexture );
 	m_DefferdRenderTargets[RENDER_TARGET_LIGHT] = pLightTexture;
 }
 
@@ -59,11 +55,16 @@ void EAssetMgr::ResizeDefferedRenderTarget(UINT width, UINT height)
 
 const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 {
-	TYPE_RESOURCE_MAP::CPair* itr = m_Resources[RESOURCE_GEOMETRY].Lookup( id );
+	TYPE_RESOURCE_MAP::CPair* itr = m_Resources[type].Lookup( id );
 	if( itr != NULL)
 		return itr->m_value;
 
 	return NULL;
+}
+
+const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, const char* name )
+{
+	return GetResource(type, GET_HASH_KEY(name) );
 }
 
 const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string name )
@@ -71,46 +72,7 @@ const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string nam
 	return GetResource(type, GET_HASH_KEY(name) );
 }
 
-
-long EAssetMgr::LoadFromFile(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback, bool bAsync)
-{
-	RESOURCE_REQUEST request;
-	request.pCallBackComplete = pCallback;
-	request.pDataLoader = new EWinFileLoader(fileName);
-
-	switch(type)
-	{
-	case RESOURCE_FILE_ACTOR:
-		break;
-	case RESOURCE_FILE_MOTION:
-		break;
-	case RESOURCE_FILE_TEXTURE:
-		request.pDataProcessor = new ETextureDataProcessor( fileName );
-		break;
-	case RESOURCE_FILE_SHADER:
-		break;
-	case RESOURCE_FILE_MATERIAL:
-		break;
-	default:
-		WCHAR szMessage[MAX_PATH];
-		swprintf_s( szMessage, MAX_PATH, L"invalid resource file type %s\n", fileName );
-		OutputDebugString( szMessage );
-		SAFE_DELETE(request.pDataLoader);
-		assert(0);
-	}
-
-	m_AsyncLoader.AddWorkItem(request);
-
-	return GET_HASH_KEY(fileName);
-}
-
-long EAssetMgr::LoadForward( CResourceBase* pResource )
-{
-	g_Engine.RDevice()->CreateGraphicBuffer( pResource );
-	return LoadComplete( pResource );
-}
-
-long EAssetMgr::LoadComplete( CResourceBase* pResource)
+long EAssetMgr::Insert( CResourceBase* pResource)
 {
 	RESOURCE_TYPE type = pResource->Type();
 
@@ -173,6 +135,11 @@ void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
 }
 
 void EAssetMgr::Remove(RESOURCE_TYPE type, std::string& name)
+{
+	Remove(type, GET_HASH_KEY(name));
+}
+
+void EAssetMgr::Remove(RESOURCE_TYPE type, const char* name)
 {
 	Remove(type, GET_HASH_KEY(name));
 }

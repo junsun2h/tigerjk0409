@@ -5,8 +5,9 @@
 #include "EAssetMgr.h"
 #include "ESceneMgr.h"
 #include "CTimer.h"
+#include "ELoader.h"
 #include "IRenderCallback.h"
-
+#include "EFileUtility.h"
 
 
 
@@ -30,10 +31,11 @@ public:
 	IRenderHelper*	RenderHelper() override { return m_pRenderer->GetRenderHelper(); }
 	void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
 	CTimer*			GlobalTimer() override	{ return &m_GlobalTimer; }
+	IFileUtility*	FileUtility() override	{ return &m_FileUtility; }
+	ILoader*		Loader() override		{ return &m_Loader; }
 
 public:
 	long			GetCurrentFrame()		{ return m_CurrentFrame; }
-
 
 private:
 	IRDevice*		m_pRenderer;
@@ -42,9 +44,12 @@ private:
 	EAssetMgr		m_AssetMgr;
 	ESceneMgr		m_SceneMgr;
 	EEntityMgr		m_EntityMgr;
-	
+	ELoader			m_Loader;
+
 	long			m_CurrentFrame;
 	CTimer			m_GlobalTimer;
+
+	EFileUtility	m_FileUtility;
 };
 
 extern EEngine g_Engine;

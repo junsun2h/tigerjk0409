@@ -1,8 +1,10 @@
 #include "EWinFileLoader.h"
-#include "EAsyncLoader.h"
+#include "ELoader.h"
 
 
 EWinFileLoader::EWinFileLoader( char* szFileName  )
+	: m_pData(NULL)
+	, m_cBytes(0)
 {
     strcpy_s( m_szFileName, szFileName );
 }
@@ -13,7 +15,7 @@ EWinFileLoader::~EWinFileLoader()
 	m_cBytes = 0;
 }
 
-bool EWinFileLoader::PT_Decompress( void** ppData, SIZE_T* pcBytes )
+bool EWinFileLoader::GetData( void** ppData, SIZE_T* pcBytes )
 {
 	*ppData = m_pData;
 	*pcBytes = m_cBytes;
@@ -23,7 +25,7 @@ bool EWinFileLoader::PT_Decompress( void** ppData, SIZE_T* pcBytes )
 
 bool EWinFileLoader::IOT_Load()
 {
-	assert ( EAsyncLoader::IsIOThread() );
+	assert ( ELoader::IsIOThread() );
 
     // Open the file
 	m_hFile = CreateFileA( m_szFileName, 
@@ -33,6 +35,30 @@ bool EWinFileLoader::IOT_Load()
 							OPEN_EXISTING, 
 							FILE_ATTRIBUTE_NORMAL,	
 							NULL );
+
+	if( INVALID_HANDLE_VALUE == m_hFile )
+		return false;
+
+	DWORD size = GetFileSize(m_hFile, NULL );
+	m_pData = new BYTE[size];
+
+	// read the header
+	DWORD dwRead;
+	if( !ReadFile( m_hFile, m_pData, size, &dwRead, NULL ) )
+		return false;
+
+	return true;
+}
+
+bool EWinFileLoader::Load()
+{
+	m_hFile = CreateFileA( m_szFileName, 
+		GENERIC_READ, 
+		FILE_SHARE_READ, 
+		NULL, 
+		OPEN_EXISTING, 
+		FILE_ATTRIBUTE_NORMAL,	
+		NULL );
 
 	if( INVALID_HANDLE_VALUE == m_hFile )
 		return false;

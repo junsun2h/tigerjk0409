@@ -272,8 +272,14 @@ void EEntity::DetachChild( IEntity* _pChild )
 
 void EEntity::DetachAllChild()
 {
-	for( UINT i =0 ; i < m_Children.size(); ++i )
-		DetachChild( m_Children[i] );
+	std::vector<IEntity*>::iterator itr = m_Children.begin();
+
+	for( ; itr != m_Children.end(); itr++ )
+	{
+		IEntity* pChild = *itr;
+		itr = m_Children.erase(itr);
+		pChild->Reparent( NULL );
+	}
 }
 
 IEntity* EEntity::GetChild(UINT index )
