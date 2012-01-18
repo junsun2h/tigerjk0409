@@ -3,23 +3,25 @@
 #include "CDefine.h"
 #include "IResource.h"
 
+
 #define E_TRYAGAIN MAKE_HRESULT(1,FACILITY_WIN32,123456)
 
 
 ///////////////////////////////Thread Prefix///////////////////////////////
 //IOP_ = IO Thread
 //PT_  = Process Thread
-//MT_  = Main Thread
 //RT_  = Render Thread
+// no prefix mean main thread
 //////////////////////////////////////////////////////////////////////////
 
-
+typedef void    (CALLBACK *CALLBACK_LOAD_COMPLED)();
 
 struct IDataLoader
 {
 	virtual ~IDataLoader(){}
-	virtual bool PT_Decompress( void** ppData, SIZE_T* pcBytes ) = 0;
+	virtual bool GetData( void** ppData, SIZE_T* pcBytes ) = 0;
 	virtual bool IOT_Load() = 0;
+	virtual bool Load() = 0;
 };
 
 
@@ -27,8 +29,9 @@ struct IDataLoader
 struct IDataProcessor
 {
 	virtual ~IDataProcessor()	{}
-	virtual bool			PopData(IAssetMgr* pAssetMgr) = 0;
-	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) = 0;
+	virtual bool	PopData() = 0;
+	virtual bool	PT_Process( void* pData, SIZE_T cBytes ) = 0;
+	virtual bool	Process( void* pData, SIZE_T cBytes ) = 0;
 };
 
 
@@ -42,10 +45,10 @@ struct RESOURCE_REQUEST
 
 
 
-struct IAsyncLoader
+struct ILoader
 {
-	virtual ~IAsyncLoader(){}
-	virtual void	AddWorkItem( RESOURCE_REQUEST resourceRequest) = 0;
-	virtual void	WaitForAllItems(IAssetMgr* pAssetMgr) = 0;
-	virtual void    CompleteWork( UINT CurrentNumResourcesToService, IAssetMgr* pAssetMgr) = 0;
+	virtual CResourceBase*	LoadForward(char* fileName, char* name, RESOURCE_FILE_TYPE type) = 0;
+	virtual void			LoadBackword(char* fileName, char* name, RESOURCE_FILE_TYPE type) = 0;
+	virtual void			WaitForAllItems() = 0;
+	virtual void			CompleteWork( UINT CurrentNumResourcesToService ) = 0;
 };

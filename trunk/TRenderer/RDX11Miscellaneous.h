@@ -13,13 +13,6 @@ HRESULT DXUTSnapD3D11Screenshot( LPCTSTR szFileName,
 								ID3D11Device *pDevice );
 
 //--------------------------------------------------------------------------------------
-// Returns the string for the given DXGI_FORMAT.
-//       bWithPrefix determines whether the string should include the "DXGI_FORMAT_"
-//--------------------------------------------------------------------------------------
-LPCWSTR WINAPI DXUTDXGIFormatToString( DXGI_FORMAT format, bool bWithPrefix );
-
-
-//--------------------------------------------------------------------------------------
 // Debug printing support
 // See dxerr.h for more debug printing support
 //--------------------------------------------------------------------------------------

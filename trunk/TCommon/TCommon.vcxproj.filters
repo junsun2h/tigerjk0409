@@ -29,9 +29,6 @@
     <ClInclude Include="IResource.h">
       <Filter>Interface</Filter>
     </ClInclude>
-    <ClInclude Include="IAsyncLoader.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
     <ClInclude Include="IEntity.h">
       <Filter>Interface</Filter>
     </ClInclude>
@@ -61,6 +58,15 @@
     </ClInclude>
     <ClInclude Include="CText.h">
       <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="IFileUtility.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IAssetMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="ILoader.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

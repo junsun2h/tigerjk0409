@@ -1,5 +1,6 @@
 #include "SGlobal.h"
 #include "SSceneHierarchyPanel.h"
+#include "SAssetPanel.h"
 
 
 namespace GLOBAL
@@ -21,7 +22,7 @@ namespace GLOBAL
 	SSceneHierarchyPanel*	SceneHierarchyPanel()	{ return g_SceneHierarchyPanel; }
 	SMainFrame*				MainFrame()				{ return g_MainFrame; }
 	S3DViewPanel*			ViewPanel()				{ return g_ViewPanel; }
-
+	
 	void SetupScene(int nWidth, int nHeight)
 	{
 		IEntityMgr* entityMgr = g_Eng->EntityMgr();
@@ -39,7 +40,9 @@ namespace GLOBAL
 
 		g_Observer = pCamera;
 
-		SceneHierarchyPanel()->Reload();
+		g_SceneHierarchyPanel->Reload();
+		wxCommandEvent e;
+		GLOBAL::AssetPanel()->OnReload(e);
 	}
 
 	bool InitDevice(CENGINE_INIT_PARAM& engineParam)

@@ -41,7 +41,7 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
 	m_AssetMgr.Init( param );
-
+	m_Loader.Init( param.numOfProcessThread );
 
 	return true;
 }

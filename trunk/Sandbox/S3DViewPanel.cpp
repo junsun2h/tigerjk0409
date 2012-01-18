@@ -33,6 +33,7 @@ void S3DViewPanel::OnIdle(wxIdleEvent& event)
 		engineParam.hWnd = GetHWND();
 		engineParam.width = nWidth;
 		engineParam.height = nHeight;
+		engineParam.resourceFolder = L"\\Data";
 
 		GLOBAL::InitDevice( engineParam );
 		m_bSetup = true;
@@ -116,9 +117,9 @@ void S3DViewPanel::OnKeyDown(wxKeyEvent& event)
 	
 	switch( event.GetKeyCode() )
 	{
-	case 'W':	pCamera->MoveLocalAxis( 0, 0, 10 * m_CameraSpeed);		break;
-	case 'S':	pCamera->MoveLocalAxis( 0, 0, -10 * m_CameraSpeed);		break;
-	case 'A':	pCamera->MoveLocalAxis( -10 * m_CameraSpeed, 0, 0);		break;
-	case 'D':	pCamera->MoveLocalAxis( 10 * m_CameraSpeed, 0, 0);		break;
+	case 'W':	pCamera->MoveLocalAxis( 0, 0, 100 * m_CameraSpeed);		break;
+	case 'S':	pCamera->MoveLocalAxis( 0, 0, -100 * m_CameraSpeed);		break;
+	case 'A':	pCamera->MoveLocalAxis( -100 * m_CameraSpeed, 0, 0);		break;
+	case 'D':	pCamera->MoveLocalAxis( 100 * m_CameraSpeed, 0, 0);		break;
 	}
 }

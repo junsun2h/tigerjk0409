@@ -16,6 +16,8 @@ public:
 	SPRopertyGridReflection();
 
 	void	SetEntityReflection(SPropertyGrid* pPropertyGrid, IEntity* pEntity);
+	void	SetTextureReflection(SPropertyGrid* pPropertyGrid, const CResourceTexture* pTexture);
+
 	void	OnEntityPropertyChanged(wxString& propertyName, wxVectorProperty* pPg);
 	void	Clear();
 

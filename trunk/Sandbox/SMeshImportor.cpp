@@ -2,6 +2,9 @@
 #include "IResource.h"
 
 
+namespace SMESH_LOADER
+{
+	
 TRAW_MESH::TRAW_MESH()
 	: BBoxMin(FLT_MAX, FLT_MAX, FLT_MAX)
 	, BBoxMax(-FLT_MAX, -FLT_MAX, -FLT_MAX)
@@ -427,7 +430,7 @@ void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
 		wxString geometryName = name + "_Geometry";
 
 		CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , vertexMap, NULL, geometryName);
-		pMesh->goemetries[0] = pAssetMgr->LoadForward( pGeometry );
+		pMesh->goemetries[0] = pAssetMgr->Insert( pGeometry );
 		pMesh->geometryNum++;
 	}
 	else // split mesh per material
@@ -445,10 +448,11 @@ void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
 			wxString geometryName = name + "_Geometry" + s;
 
 			CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , vertexMap, pMtrlIDList, geometryName);
-			pMesh->goemetries[i] = pAssetMgr->LoadForward( pGeometry );
+			pMesh->goemetries[i] = pAssetMgr->Insert( pGeometry );
 			pMesh->geometryNum++;
 		}
 	}
 
-	pAssetMgr->LoadForward( pMesh );
+	pAssetMgr->Insert( pMesh );
+}
 }

@@ -2,9 +2,7 @@
 
 
 #include "CDefine.h"
-#include "IAsyncLoader.h"
-#include "IResource.h"
-#include "EAsyncLoader.h"
+#include "IAssetMgr.h"
 #include "IEngine.h"
 
 
@@ -33,23 +31,22 @@ public:
 	void						ResizeDefferedRenderTarget(UINT width, UINT height);
 
 public:
-	long						LoadComplete( CResourceBase* pResource) override;
-	long						LoadForward( CResourceBase* pResource ) override;
-	long						LoadFromFile(char* fileName, RESOURCE_FILE_TYPE type, CALLBACK_LOAD_COMPLED pCallback = NULL, bool bAsync = true) override;
+	long						Insert( CResourceBase* pResource) override;
 
 	const CResourceBase*		GetResource( RESOURCE_TYPE type, long id ) override;
+	const CResourceBase*		GetResource( RESOURCE_TYPE type, const char* name ) override;
 	const CResourceBase*		GetResource( RESOURCE_TYPE type, std::string name ) override;
 	const TYPE_RESOURCE_MAP*	GetResources( RESOURCE_TYPE type ) override			{ return &m_Resources[type]; }
 
 	void						Clear() override;
 	void						Remove(RESOURCE_TYPE type, long id) override;
 	void						Remove(RESOURCE_TYPE type, std::string& name) override;
+	void						Remove(RESOURCE_TYPE type, const char* name) override;
 
 private:
 	void						CreateDefferedRenderTarget(UINT width, UINT height);
+	void						GenerateMapData(const wchar_t* path);
 
-	EAsyncLoader				m_AsyncLoader;
 	TYPE_RESOURCE_MAP			m_Resources[NUM_RESOURCE_TYPE];
-
 	CResourceTexture*			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
 };

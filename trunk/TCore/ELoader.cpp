@@ -1,5 +1,5 @@
-#include "EAsyncLoader.h"
-#include "EAssetMgr.h"
+#include "ELoader.h"
+#include "EEngine.h"
 #include <process.h>
 
 
@@ -9,68 +9,46 @@
 //--------------------------------------------------------------------------------------
 unsigned int WINAPI _FileIOThreadProc( LPVOID lpParameter )
 {
-	return ( ( EAsyncLoader* )lpParameter )->IOT_FileIOThreadProc();
+	return ( ( ELoader* )lpParameter )->IOT_FileIOThreadProc();
 }
 
 //--------------------------------------------------------------------------------------
 unsigned int WINAPI _ProcessingThreadProc( LPVOID lpParameter )
 {
-	return ( ( EAsyncLoader* )lpParameter )->PT_ProcessingThreadProc();
+	return ( ( ELoader* )lpParameter )->PT_ProcessingThreadProc();
 }
 
-UINT EAsyncLoader::m_IOThreadID = 0;
-UINT EAsyncLoader::m_ProcessThreadID[MAX_DATA_PROC_THREAD] = {0};
-UINT EAsyncLoader::m_NumProcessingThreads = 0;
+UINT ELoader::m_IOThreadID = 0;
+UINT ELoader::m_ProcessThreadID[MAX_DATA_PROC_THREAD] = {0};
+UINT ELoader::m_NumProcessingThreads = 0;
 
 
 //--------------------------------------------------------------------------------------
-EAsyncLoader::EAsyncLoader() 
+ELoader::ELoader() 
 	: m_bDone( false ),
 	m_bProcessThreadDone( false ),
 	m_bIOThreadDone( false ),
 	m_NumOustandingResources( 0 ),
 	m_hIOQueueSemaphore( 0 ),
 	m_hProcessQueueSemaphore( 0 ),
-	m_hIOThread( 0 ),
-	m_pAssetMgr(NULL)
+	m_hIOThread( 0 )
 {
 }
 
 //--------------------------------------------------------------------------------------
-EAsyncLoader::~EAsyncLoader()
+ELoader::~ELoader()
 {
 	DestroyAsyncLoadingThreadObjects();
 }
 
-//--------------------------------------------------------------------------------------
-// Add a work item to the queue of work items
-//--------------------------------------------------------------------------------------
-void EAsyncLoader::AddWorkItem( RESOURCE_REQUEST resourceRequest )
-{
-	if( !resourceRequest.pDataLoader || !resourceRequest.pDataProcessor )
-	{
-		assert(0);
-		return;
-	}
 
-	// Add the request to the read queue
-	EnterCriticalSection( &m_csIOQueue );
-	m_IOQueue.Add( resourceRequest );
-	LeaveCriticalSection( &m_csIOQueue );
-
-	// TODO: critsec around this?
-	m_NumOustandingResources ++;
-
-	// Signal that we have something to read
-	ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );
-}
 
 //--------------------------------------------------------------------------------------
 // Wait for all work in the queues to finish
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::WaitForAllItems( IAssetMgr* pAssetMgr)
+void ELoader::WaitForAllItems()
 {
-	CompleteWork( UINT_MAX, pAssetMgr );
+	CompleteWork( UINT_MAX );
 
 	for(; ; )
 	{
@@ -79,13 +57,13 @@ void EAsyncLoader::WaitForAllItems( IAssetMgr* pAssetMgr)
 			return;
 
 		// Service Queues
-		CompleteWork( UINT_MAX, pAssetMgr );
+		CompleteWork( UINT_MAX );
 		Sleep( 100 );
 	}
 }
 
 //--------------------------------------------------------------------------------------
-unsigned int EAsyncLoader::IOT_FileIOThreadProc()
+unsigned int ELoader::IOT_FileIOThreadProc()
 {
 	WCHAR szMessage[MAX_PATH];
 	HRESULT hr = S_OK;
@@ -99,7 +77,7 @@ unsigned int EAsyncLoader::IOT_FileIOThreadProc()
 		WaitForSingleObject( m_hIOQueueSemaphore, INFINITE );
 		if( m_bDone )
 			break;
-		
+
 		// Pop a request off of the IOQueue
 		EnterCriticalSection( &m_csIOQueue );
 		ResourceRequest = m_IOQueue.GetAt( 0 );
@@ -129,7 +107,7 @@ unsigned int EAsyncLoader::IOT_FileIOThreadProc()
 }
 
 //--------------------------------------------------------------------------------------
-unsigned int EAsyncLoader::PT_ProcessingThreadProc()
+unsigned int ELoader::PT_ProcessingThreadProc()
 {
 	WCHAR szMessage[MAX_PATH];
 	HRESULT hr = S_OK;
@@ -140,7 +118,7 @@ unsigned int EAsyncLoader::PT_ProcessingThreadProc()
 		WaitForSingleObject( m_hProcessQueueSemaphore, INFINITE );
 		if( m_bDone )
 			break;
-		
+
 		// Pop a request off of the ProcessQueue
 		EnterCriticalSection( &m_csProcessQueue );
 		RESOURCE_REQUEST ResourceRequest = m_ProcessQueue.GetAt( 0 );
@@ -150,7 +128,7 @@ unsigned int EAsyncLoader::PT_ProcessingThreadProc()
 		// Decompress the data
 		void* pData = NULL;
 		SIZE_T cDataSize = 0;
-		hr = ResourceRequest.pDataLoader->PT_Decompress( &pData, &cDataSize );
+		hr = ResourceRequest.pDataLoader->GetData( &pData, &cDataSize );
 		if( SUCCEEDED( hr ) )
 		{
 			// Process the data
@@ -173,16 +151,8 @@ unsigned int EAsyncLoader::PT_ProcessingThreadProc()
 }
 
 //--------------------------------------------------------------------------------------
-bool EAsyncLoader::Init( UINT NumProcessingThreads, EAssetMgr* pAssetMgr )
+bool ELoader::Init( UINT NumProcessingThreads )
 {
-	if( pAssetMgr == NULL )
-	{
-		assert(0);
-		return false;
-	}
-
-	m_pAssetMgr = pAssetMgr;
-
 	if( NumProcessingThreads > MAX_DATA_PROC_THREAD )
 		NumProcessingThreads =  MAX_DATA_PROC_THREAD;
 
@@ -219,7 +189,7 @@ bool EAsyncLoader::Init( UINT NumProcessingThreads, EAssetMgr* pAssetMgr )
 }
 
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::DestroyAsyncLoadingThreadObjects()
+void ELoader::DestroyAsyncLoadingThreadObjects()
 {
 	m_bDone = true;
 
@@ -240,7 +210,7 @@ void EAsyncLoader::DestroyAsyncLoadingThreadObjects()
 }
 
 //--------------------------------------------------------------------------------------
-void EAsyncLoader::CompleteWork( UINT CurrentNumResourcesToService , IAssetMgr* pAssetMgr)
+void ELoader::CompleteWork( UINT CurrentNumResourcesToService)
 {
 	HRESULT hr = S_OK;
 
@@ -255,8 +225,8 @@ void EAsyncLoader::CompleteWork( UINT CurrentNumResourcesToService , IAssetMgr* 
 		m_MainThreadQueue.Remove( 0 );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 
-		ResourceRequest.pDataProcessor->PopData(pAssetMgr);
-		
+		ResourceRequest.pDataProcessor->PopData();
+
 		if( ResourceRequest.pCallBackComplete != NULL )
 			ResourceRequest.pCallBackComplete();
 
@@ -268,14 +238,14 @@ void EAsyncLoader::CompleteWork( UINT CurrentNumResourcesToService , IAssetMgr* 
 	}
 }
 
-bool EAsyncLoader::IsIOThread()
+bool ELoader::IsIOThread()
 {
 	if (::GetCurrentThreadId() == m_IOThreadID )
 		return true;
 	return false;
 }
 
-bool EAsyncLoader::IsDataProcThread()
+bool ELoader::IsDataProcThread()
 {
 	UINT currentID = ::GetCurrentThreadId();
 
@@ -285,4 +255,58 @@ bool EAsyncLoader::IsDataProcThread()
 			return true;
 	}
 	return false;
+}
+
+
+
+CResourceBase* ELoader::LoadForward(char* fileName, char* name, RESOURCE_FILE_TYPE type)
+{
+	if(RESOURCE_FILE_ACTOR == type )
+	{
+
+	}
+	else if(RESOURCE_FILE_MOTION == type )
+	{
+
+	}
+	else if(RESOURCE_FILE_TEXTURE == type )
+	{
+		CResourceTexture* pTexture = g_Engine.RDevice()->CreateTextureFromFile(fileName);
+		strcpy_s( pTexture->name, name );
+
+		g_Engine.AssetMgr()->Insert(pTexture);
+		return pTexture;
+	}
+	else if(RESOURCE_FILE_MATERIAL == type )
+	{
+
+	}
+
+	return NULL;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Add a work item to the queue of work items
+//--------------------------------------------------------------------------------------
+void ELoader::LoadBackword(char* fileName, char* name, RESOURCE_FILE_TYPE type)
+{
+	RESOURCE_REQUEST resourceRequest;
+
+	if( !resourceRequest.pDataLoader || !resourceRequest.pDataProcessor )
+	{
+		assert(0);
+		return;
+	}
+
+	// Add the request to the read queue
+	EnterCriticalSection( &m_csIOQueue );
+	m_IOQueue.Add( resourceRequest );
+	LeaveCriticalSection( &m_csIOQueue );
+
+	// TODO: critsec around this?
+	m_NumOustandingResources ++;
+
+	// Signal that we have something to read
+	ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );
 }

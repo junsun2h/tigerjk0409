@@ -1,6 +1,7 @@
 #include "ETextureDataProcessor.h"
 #include "IRDevice.h"
-#include "EAsyncLoader.h"
+#include "EEngine.h"
+
 
 
 ETextureDataProcessor::ETextureDataProcessor( char* name )
@@ -14,21 +15,27 @@ ETextureDataProcessor::~ETextureDataProcessor()
 
 }
 
-bool ETextureDataProcessor::PopData(IAssetMgr* pAssetMgr)
+bool ETextureDataProcessor::PopData()
 {
-	pAssetMgr->LoadComplete(m_pResource);
+	g_Engine.AssetMgr()->Insert(m_pResource);
 	return true;
 }
 
 
 bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 {
-	assert ( EAsyncLoader::IsDataProcThread() );
+	assert( ELoader::IsDataProcThread() );
 
 	m_pResource = new CResourceTexture;
 	m_pResource->RID = GET_HASH_KEY(m_Name);	
 
 //	m_pRDevice->PT_CreateGraphicBuffer( m_pResource);
 	
+	return true;
+}
+
+bool ETextureDataProcessor::Process( void* pData, SIZE_T cBytes )
+{
+
 	return true;
 }

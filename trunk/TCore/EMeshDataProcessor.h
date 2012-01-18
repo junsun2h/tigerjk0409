@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IAsyncLoader.h"
+#include "ILoader.h"
 #include <vector>
 
 struct IRDevice;
@@ -18,6 +18,6 @@ public:
 	EMeshDataProcessor( IRDevice* pRDevice, std::string name );
 	~EMeshDataProcessor();
 
-	virtual bool			PopData(IAssetMgr* pAssetMgr) override;
+	virtual bool			PopData() override;
 	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) override;
 };

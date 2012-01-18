@@ -1,5 +1,9 @@
 #include "SAssetPanel.h"
 #include "wx/treectrl.h"
+#include "wx/filename.h"
+#include "SPropertyPanel.h"
+
+
 
 
 IMPLEMENT_DYNAMIC_CLASS(SAssetTreeCtrl, wxTreeCtrl)
@@ -12,11 +16,9 @@ END_EVENT_TABLE()
 
 wxString strAssetType[] = 
 {
-	wxString("GEOMETRY"),
 	wxString("TEXTURE"),
-	wxString("MESH"),
-	wxString("LOD_MESH"),
 	wxString("ACTOR"),
+	wxString("MESH"),
 	wxString("MOTION"),
 	wxString("MATERIAL")
 };
@@ -24,12 +26,23 @@ wxString strAssetType[] =
 
 SAssetTreeCtrl::SAssetTreeCtrl(wxWindow *parent, const wxWindowID id)
 	: wxTreeCtrl(parent, id)
+	, m_pTexturePopupWindow(NULL)
 {
+	GetCurrentDirectory( MAX_PATH, m_Path);
 }
 
 void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)
 {
 	m_SeletedItem = event.GetItem();
+	
+	wxString strItem = GetItemText(m_SeletedItem);
+
+	if( strItem == "Root" ) 
+		return;
+
+	for( int i=0; i< NUM_RESOURCE_FILE_TYPE; ++i)
+		if( strItem == strAssetType[i])
+			return;
 
 	wxMenu menu( GetItemText(m_SeletedItem) );
 	menu.Append(ID_ASSET_DELETE, wxT("&Delete"));
@@ -40,75 +53,139 @@ void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)
 
 void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
-	int ad = 0;
+	SPropertyPanel*	pPropertyPanel	= GLOBAL::PropertyPanel();
+	IAssetMgr*		pAssetMgr		= GLOBAL::Engine()->AssetMgr();
+	ILoader*		pLoader			= GLOBAL::Engine()->Loader();
+
+	m_SeletedItem		= event.GetItem();
+	wxString strItem	= GetItemText(m_SeletedItem);
+
+	RESOURCE_FILE_TYPE fileType = GetAssetType();
+
+	pPropertyPanel->SetEmpty();
+
+	if( fileType == RESOURCE_FILE_TEXTURE )
+	{
+		const CResourceBase* pTexture = pAssetMgr->GetResource(RESOURCE_TEXTURE, strItem.c_str().AsChar() );
+
+		if( pTexture == NULL )
+		{
+			wxString fullPath = wxString(m_Path) + wxString("\\Data\\texture\\") + strItem + wxString(".dds");
+			pTexture = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_TEXTURE );
+		}
+
+		pPropertyPanel->SetObject( (CResourceTexture*)pTexture );
+	}
 }
+
 
 void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 {
-	IAssetMgr* pAssetMgr =GLOBAL::Engine()->AssetMgr();
+	IAssetMgr*			pAssetMgr	= GLOBAL::Engine()->AssetMgr();
+	wxString			strItem		= GetItemText(m_SeletedItem);
+	RESOURCE_FILE_TYPE	fileType	= GetAssetType();
 
-	wxString parentText = GetItemText( GetItemParent( m_SeletedItem ) );
-	std::string strSeletedItem =  GetItemText(m_SeletedItem).c_str();
-
-	for( int i = RESOURCE_TEXTURE; i< RESOURCE_SHADER; ++i	)
+	if( fileType == RESOURCE_FILE_TEXTURE )
 	{
-		if( strAssetType[i] == parentText )
-		{
-			pAssetMgr->Remove( RESOURCE_TYPE(i), strSeletedItem );
-			break;
-		}
+		wxString fullPath = wxString(m_Path) + wxString("\\Data\\texture\\") + strItem + wxString(".dds");
+		DeleteFile( fullPath );
+
+		pAssetMgr->Remove( RESOURCE_TEXTURE, (char*)strItem.char_str() );
+		Delete(m_SeletedItem);
 	}
 
 	Reload();
 }
 
+
 void SAssetTreeCtrl::Reload()
 {
-	IAssetMgr* pAssetMgr =GLOBAL::Engine()->AssetMgr();
-
 	DeleteAllItems();
-	wxTreeItemId rootItem = AddRoot( "Asset" );
 
-	for( int i=RESOURCE_TEXTURE; i< RESOURCE_SHADER; ++i	)
-	{
-		const TYPE_RESOURCE_MAP* pResourceMap = pAssetMgr->GetResources( RESOURCE_TYPE(i) );
+	IAssetMgr*		pAssetMgr	= GLOBAL::Engine()->AssetMgr();
+	wxTreeItemId	rootItem	= AddRoot( "Asset" );
+	wchar_t			pathBuf[MAX_PATH];
+	
+	{ // texture
+		wxTreeItemId textureItem = AppendItem( rootItem, strAssetType[RESOURCE_FILE_TEXTURE] );
+		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\Texture");
 
-		int itemCount = pResourceMap->GetCount();
-
-		if( itemCount > 0)
+		CSTRING_LIST fileList;
+		GLOBAL::Engine()->FileUtility()->CollectFileList( pathBuf, &fileList);
+		for(UINT i=0; i< fileList.size(); ++i)
 		{
-			wxTreeItemId category = AppendItem( rootItem, strAssetType[i] );
+			wxFileName fn = fileList[i];
+			AppendItem( textureItem, fn.GetName() );
+		}
+	}
+	{ // actor
+		wxTreeItemId actorItem = AppendItem( rootItem, strAssetType[RESOURCE_FILE_ACTOR] );
+		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\actor");
 
-			POSITION pos = pResourceMap->GetStartPosition();
-			const TYPE_RESOURCE_MAP::CPair* itr = NULL;
+		CSTRING_LIST fileList;
+		GLOBAL::Engine()->FileUtility()->CollectFileList( pathBuf, &fileList);
+		for(UINT i=0; i< fileList.size(); ++i)
+		{
+			wxFileName fn = fileList[i];
+			AppendItem( actorItem, fn.GetName() );
+		}
+	}
+	{ // mesh
+		wxTreeItemId meshItem = AppendItem( rootItem, strAssetType[RESOURCE_FILE_MESH] );
+		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\mesh");
 
-			while (pos)
-			{
-				itr = pResourceMap->GetNext(pos);		
-				AppendItem( category, itr->m_value->name );
-			}
+		CSTRING_LIST fileList;
+		GLOBAL::Engine()->FileUtility()->CollectFileList( pathBuf, &fileList);
+		for(UINT i=0; i< fileList.size(); ++i)
+		{
+			wxFileName fn = fileList[i];
+			AppendItem( meshItem, fn.GetName() );
 		}
 	}
 }
+
+RESOURCE_FILE_TYPE SAssetTreeCtrl::GetAssetType()
+{
+	wxString strItem = GetItemText(m_SeletedItem);
+
+	if( strItem == "Asset" )
+		return RESOURCE_FILE_INVALID;
+
+	wxString strParent = GetItemText( GetItemParent(m_SeletedItem) );
+
+	if( strParent == strAssetType[RESOURCE_FILE_TEXTURE] )		return RESOURCE_FILE_TEXTURE;
+	else if( strParent == strAssetType[RESOURCE_FILE_ACTOR] )	return RESOURCE_FILE_ACTOR;
+	else if( strParent == strAssetType[RESOURCE_FILE_MESH] )	return RESOURCE_FILE_MESH;
+	else if( strParent == strAssetType[RESOURCE_FILE_MOTION] )	return RESOURCE_FILE_MOTION;
+	else if( strParent == strAssetType[RESOURCE_FILE_MATERIAL] )return RESOURCE_FILE_MATERIAL;
+	else
+		return RESOURCE_FILE_INVALID;
+}
+
+
 
 
 //---------------------------------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(SAssetPanel, wxPanel)
 	EVT_TEXT(ID_ASSET_FILTER_TEXTCTRL, SAssetPanel::OnFilterChanged)
+	EVT_BUTTON(ID_ASSET_RELOAD, SAssetPanel::OnReload)
 END_EVENT_TABLE()
 
 
 SAssetPanel::SAssetPanel(wxWindow* parent)
-	:  wxPanel(parent, ID_PANEL_ASSET)
+	: wxPanel(parent, ID_PANEL_ASSET)
 {
 	wxBoxSizer* pRootSizer = new wxBoxSizer(wxVERTICAL);
+	{
+		wxButton* pbtnReload = new wxButton( this, ID_ASSET_RELOAD, wxT("Reload"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
+		pRootSizer->Add( pbtnReload, 0, wxALL, 5 );
 
-	wxTextCtrl* pTextBoxCtrl = new wxTextCtrl(this, ID_ASSET_FILTER_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxSize(200, wxDefaultSize.y));
-	pRootSizer->Add(pTextBoxCtrl, wxSizerFlags(0).Top().Border());
+		wxTextCtrl* pTextBoxCtrl = new wxTextCtrl(this, ID_ASSET_FILTER_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxSize(200, wxDefaultSize.y));
+		pRootSizer->Add(pTextBoxCtrl, wxSizerFlags(0).Top().Border());
 
-	m_pTreeCtrl = new SAssetTreeCtrl(this, ID_ASSET_TREECTRL);
-	pRootSizer->Add(m_pTreeCtrl, wxSizerFlags(1).Center().Border().Expand());
-
+		m_pTreeCtrl = new SAssetTreeCtrl(this, ID_ASSET_TREECTRL);
+		pRootSizer->Add(m_pTreeCtrl, wxSizerFlags(1).Center().Border().Expand());
+	}
 	SetSizerAndFit(pRootSizer);
 }
 
@@ -118,7 +195,7 @@ void SAssetPanel::OnFilterChanged(wxCommandEvent& event)
 
 }
 
-void SAssetPanel::Reload()
+void SAssetPanel::OnReload(wxCommandEvent& event)
 {
 	m_pTreeCtrl->Reload();
 }

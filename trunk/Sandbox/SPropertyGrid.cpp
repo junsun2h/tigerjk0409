@@ -33,6 +33,11 @@ void SPropertyGrid::SetProperty( IEntityProxy* pEntityProxy )
 {
 }
 
+void SPropertyGrid::SetProperty(const CResourceTexture* pTexture)
+{
+	m_PropertyReflection.SetTextureReflection( this, pTexture);
+}
+
 void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)
 {
 	wxString propertyName = event.GetPropertyName();

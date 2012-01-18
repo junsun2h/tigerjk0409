@@ -35,6 +35,7 @@ public:
 		ATL::CAtlMap<long, T*>::CPair* pObject = m_Map.Lookup( id );
 		if( pObject != NULL )
 		{
+			SAFE_DELETE( pObject->m_value );
 			m_Map.RemoveKey(id);
 		} 
 	}
@@ -77,6 +78,7 @@ public:
 	IEntity*			GetEntity(long id) override				{ return m_EntityMap.Find( id );}
 
 	void				RemoveEntity(long id) override;
+	void				RemoveEntity(const char* name) override	{ return RemoveEntity( GET_HASH_KEY(name) ); }
 	void				RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type) override;
 
 	void				RemoveAllEntity() override;

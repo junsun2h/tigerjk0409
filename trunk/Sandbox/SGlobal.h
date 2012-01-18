@@ -1,6 +1,5 @@
 #pragma once
 
-#include "wx/wx.h"
 #include "IEngine.h"
 
 
@@ -28,7 +27,7 @@ namespace GLOBAL
 
 enum GLOBAL_WIDGET_ID
 {
-	ID_MAINFRAME = wxID_HIGHEST+1,
+	ID_MAINFRAME = 6000, // wxID_HIGHEST + 1
 
 	ID_PANEL_3DVIEW,
 	ID_PANEL_PROPERTY,

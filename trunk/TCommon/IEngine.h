@@ -4,10 +4,13 @@
 #include "IRDevice.h"
 #include "IActorMgr.h"
 #include "IEntityMgr.h"
+#include "IAssetMgr.h"
 #include "ISceneMgr.h"
 #include "IRenderCallback.h"
 #include "CTimer.h"
 #include "CText.h"
+#include "IFileUtility.h"
+#include "ILoader.h"
 
 
 struct CENGINE_INIT_PARAM
@@ -18,15 +21,19 @@ struct CENGINE_INIT_PARAM
 		, height(-1)
 		, bFullScreen(false)
 		, numOfProcessThread(1)
+		, resourceFolder(NULL)
 	{
 	}
 
-	void *hWnd;
-	int width;
-	int height;
-	bool bFullScreen;
-	UINT numOfProcessThread;
+	void*			hWnd;
+	int				width;
+	int				height;
+	bool			bFullScreen;
+	UINT			numOfProcessThread;
+	const wchar_t*	resourceFolder;
 };
+
+
 
 struct IEngine
 {
@@ -40,6 +47,8 @@ struct IEngine
 	virtual IEntityMgr*		EntityMgr() =0;
 	virtual IRenderHelper*	RenderHelper() =0;
 	virtual CTimer*			GlobalTimer() = 0;
+	virtual IFileUtility*	FileUtility() = 0;
+	virtual ILoader*		Loader() = 0;
 
 	virtual void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
 };

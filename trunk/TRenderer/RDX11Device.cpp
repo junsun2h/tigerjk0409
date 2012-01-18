@@ -31,7 +31,6 @@ using namespace GLOBAL;
 RDX11Device::RDX11Device()
 	: m_pD3Device(NULL)
 {
-
 }
 
 RDX11Device::~RDX11Device()
@@ -226,8 +225,9 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = 0;
 
-		ID3D11Texture2D* pRT;
-		m_pD3Device->CreateTexture2D(&textureDesc, NULL, &pRT);
+		ID3D11Texture2D* pRT = (ID3D11Texture2D*)pTexture->pTextureSource;
+		if( pRT == NULL )
+			m_pD3Device->CreateTexture2D(&textureDesc, NULL, &pRT);
 
 		if( pTexture->usage == TEXTURE_RENDER_RAGET )
 		{
@@ -252,7 +252,12 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 		m_pD3Device->CreateShaderResourceView(pRT, &shaderResourceViewDesc, &pSRV);
 		pTexture->pShaderResourceView = pSRV;
 
-		SAFE_RELEASE(pRT);
+		if( pTexture->bDeleteMemoryAfterLoading )
+		{
+			SAFE_RELEASE(pRT)
+		}
+		else
+			pTexture->pTextureSource = pRT;
 	}
 	else if( type == RESOURCE_SHADER)
 	{
@@ -306,6 +311,13 @@ void RDX11Device::RemoveGraphicBuffer(CResourceBase* pResource)
 			pSRV->Release();
 			pTexture->pShaderResourceView = NULL;
 		}
+
+		if( pTexture->pTextureSource != NULL )
+		{
+			ID3D11Resource* pResource = (ID3D11Resource*)pTexture->pTextureSource;
+			pResource->Release();
+			pTexture->pTextureSource = NULL;
+		}
 	}
 	else if( type == RESOURCE_SHADER )
 	{
@@ -348,4 +360,32 @@ void RDX11Device::RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size,
 		TDXERROR( m_pD3Device->CreateBuffer( &bd, NULL, ppBuffer ) );
 	}
 }
+
+CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
+{
+	HRESULT hr = S_OK;
+	ID3D11Resource *pDXTexture = NULL;
+
+	hr = D3DX11CreateTextureFromFileA( m_pD3Device, fileName, NULL, NULL, &pDXTexture, NULL );
+
+	if( FAILED( hr ) )
+		return NULL;
+
+	ID3D11Texture2D* pRT = (ID3D11Texture2D*)pDXTexture;
+
+	D3D11_TEXTURE2D_DESC desc;
+	pRT->GetDesc(&desc);
+
+	CResourceTexture* pTexture = new CResourceTexture;
+	pTexture->pTextureSource = pDXTexture;
+	pTexture->Width = desc.Width;
+	pTexture->height = desc.Height;
+	pTexture->MipLevels = desc.MipLevels;
+	pTexture->Format = eTEXTURE_FORMAT(desc.Format);
+
+	CreateGraphicBuffer(pTexture);
+
+	return pTexture;
+}
+
 

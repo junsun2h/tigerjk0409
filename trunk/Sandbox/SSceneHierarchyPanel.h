@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SGlobal.h"
+#include "wx/wx.h"
 #include "wx/treectrl.h"
 
 struct IEntity;
