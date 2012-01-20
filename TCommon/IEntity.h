@@ -6,7 +6,7 @@
 
 
 
-enum ENTITY_TYPE
+enum eENTITY_TYPE
 {
 	E_EVENT_TRANSFORM_CHANGED,
 };
@@ -14,13 +14,13 @@ enum ENTITY_TYPE
 
 struct EntityEvent
 {
-	ENTITY_TYPE		type;
+	eENTITY_TYPE		type;
 	byte*			pData;
 	UINT			dataSize;
 	UINT			flags;
 };
 
-enum ENTITY_UPDATE_FLAG
+enum eENTITY_UPDATE_FLAG
 {
 	ENTITY_UPDATE_NONE = 0,
 	ENTITY_PRE_UPDATE = BIT(1),
@@ -39,8 +39,9 @@ struct IEntity
 
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
-	virtual IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) = 0;
+	virtual IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type ) = 0;
 	virtual void			SetProxy( IEntityProxy *pProxy) = 0;
+	virtual void			DeleteAllPrxoy() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// transform functions

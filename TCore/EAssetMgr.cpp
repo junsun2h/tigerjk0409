@@ -5,6 +5,7 @@
 
 //--------------------------------------------------------------------------------------------------------
 EAssetMgr::EAssetMgr()
+
 {
 	memset( m_DefferdRenderTargets, 0, 4*NUM_DEFFERED_RENDER_TARGET );
 }
@@ -16,7 +17,9 @@ EAssetMgr::~EAssetMgr()
 
 void EAssetMgr::Init( const CENGINE_INIT_PARAM &param)
 {	
-	CResourceTexture* pGeometryTexture = new CResourceTexture;
+	IEngineMemoryMgr* pMemoryMgr = g_Engine.EngineMemoryMgr();
+	
+	CResourceTexture* pGeometryTexture = (CResourceTexture*)pMemoryMgr->GetNewResource(RESOURCE_TEXTURE);
 	strcpy_s( pGeometryTexture->name, "GeometryRenderTarget" );
 	pGeometryTexture->height = param.height;
 	pGeometryTexture->Width = param.width;
@@ -27,7 +30,7 @@ void EAssetMgr::Init( const CENGINE_INIT_PARAM &param)
 	Insert( pGeometryTexture );
 	m_DefferdRenderTargets[RENDER_TARGET_GEOMERTY] = pGeometryTexture;
 
-	CResourceTexture* pLightTexture = new CResourceTexture;
+	CResourceTexture* pLightTexture = (CResourceTexture*)pMemoryMgr->GetNewResource(RESOURCE_TEXTURE);
 	strcpy_s( pLightTexture->name, "LightRenderTarget" );
 	pLightTexture->height = param.height;
 	pLightTexture->Width = param.width;
@@ -53,7 +56,7 @@ void EAssetMgr::ResizeDefferedRenderTarget(UINT width, UINT height)
 	}
 }
 
-const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
+const CResourceBase* EAssetMgr::GetResource( eRESOURCE_TYPE type, long id )
 {
 	TYPE_RESOURCE_MAP::CPair* itr = m_Resources[type].Lookup( id );
 	if( itr != NULL)
@@ -62,20 +65,20 @@ const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, long id )
 	return NULL;
 }
 
-const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, const char* name )
+const CResourceBase* EAssetMgr::GetResource( eRESOURCE_TYPE type, const char* name )
 {
 	return GetResource(type, GET_HASH_KEY(name) );
 }
 
-const CResourceBase* EAssetMgr::GetResource( RESOURCE_TYPE type, std::string name )
+const CResourceBase* EAssetMgr::GetResource( eRESOURCE_TYPE type, std::string name )
 {
 	return GetResource(type, GET_HASH_KEY(name) );
 }
 
 long EAssetMgr::Insert( CResourceBase* pResource)
 {
-	RESOURCE_TYPE type = pResource->Type();
-
+	eRESOURCE_TYPE type = pResource->Type();
+	
 	if( m_Resources[type].Lookup(pResource->RID) == NULL )
 		pResource->RID = GET_HASH_KEY( pResource->name );
 
@@ -98,14 +101,16 @@ void EAssetMgr::Clear()
 		while (pos)
 		{
 			itr = m_Resources[i].GetNext(pos);
-			Remove( RESOURCE_TYPE(i), itr->m_key );
+			Remove( eRESOURCE_TYPE(i), itr->m_key );
 		}
 	}
 }
 
-void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
+void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 {
-	IRDevice* pRDevice = g_Engine.RDevice();
+	IRDevice*		pRDevice		= g_Engine.RDevice();
+	EEngineMemoryMgr* pMemeoryPool	= g_Engine.EngMemoryPoolMgr();
+
 	CResourceBase* pResource = m_Resources[type].Lookup( id )->m_value;
 
 	if( type == RESOURCE_MESH )
@@ -120,7 +125,7 @@ void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
 			{
 				CResourceGeometry* pGeometry = (CResourceGeometry*)itr->m_value;
 				pRDevice->RemoveGraphicBuffer(pGeometry);
-				SAFE_DELETE( pGeometry );
+				pMemeoryPool->RemoveResource( pGeometry );
 				m_Resources[RESOURCE_GEOMETRY].RemoveKey( key);
 			}
 		}
@@ -130,16 +135,16 @@ void EAssetMgr::Remove(RESOURCE_TYPE type, long id)
 		pRDevice->RemoveGraphicBuffer(pResource);
 	}
 
-	SAFE_DELETE(pResource);
+	pMemeoryPool->RemoveResource( pResource );
 	m_Resources[type].RemoveKey( id);
 }
 
-void EAssetMgr::Remove(RESOURCE_TYPE type, std::string& name)
+void EAssetMgr::Remove(eRESOURCE_TYPE type, std::string& name)
 {
 	Remove(type, GET_HASH_KEY(name));
 }
 
-void EAssetMgr::Remove(RESOURCE_TYPE type, const char* name)
+void EAssetMgr::Remove(eRESOURCE_TYPE type, const char* name)
 {
 	Remove(type, GET_HASH_KEY(name));
 }

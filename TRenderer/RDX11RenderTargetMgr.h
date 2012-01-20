@@ -2,7 +2,7 @@
 
 #include "RDefine.h"
 #include "CColor.h"
-#include "IResource.h"
+#include "CResource.h"
 
 
 struct RDX11MainFrameBuffer

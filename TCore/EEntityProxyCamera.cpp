@@ -2,13 +2,12 @@
 #include "EEngine.h"
 
 
-EEntityProxyCamera::EEntityProxyCamera(std::string& name, long id )
-	: m_Name(name)
-	, m_ID(id)
-	, m_pEntity(NULL)
-	, m_FrameTransformChanged(false)
+void EEntityProxyCamera::Init(std::string& name, long id )
 {
-
+	m_Name = name;
+	m_ID = id;
+	m_pEntity = NULL;
+	m_FrameTransformChanged = false;
 }
 
 void EEntityProxyCamera::SetEntity(IEntity* pEntity)

@@ -1,15 +1,15 @@
 #pragma once
 
 #include <string>
-#include "IResource.h"
+#include "CResource.h"
 #include "IMotionMgr.h"
 
 struct IEntity;
 struct EntityEvent;
-enum ENTITY_TYPE;
+enum eENTITY_TYPE;
 
 
-enum ENTITY_PROXY_TYPE
+enum eENTITY_PROXY_TYPE
 {
 	ENTITY_PROXY_ACTOR,
 	ENTITY_PROXY_RENDER,
@@ -23,7 +23,7 @@ struct IEntityProxy
 {
 	virtual ~IEntityProxy(){}
 
-	virtual ENTITY_PROXY_TYPE	GetType() = 0;
+	virtual eENTITY_PROXY_TYPE	GetType() = 0;
 	virtual const char*			GetTypeString() = 0;
 	virtual IEntity*			GetEntity() = 0;
 	virtual void				SetEntity(IEntity* pEntity) = 0;
@@ -34,10 +34,9 @@ struct IEntityProxy
 
 struct IEntityProxyActor : IEntityProxy
 {
-	virtual ENTITY_PROXY_TYPE		GetType()			{ return ENTITY_PROXY_ACTOR; };
+	virtual eENTITY_PROXY_TYPE		GetType()			{ return ENTITY_PROXY_ACTOR; };
 	virtual const char*				GetTypeString()		{ return "ENTITY_PROXY_ACTOR"; }
 
-	virtual void					Init(std::string strResource) = 0;
 	virtual const CResourceActor*	GetActorInfo() = 0;
 	virtual IMotionMgr*				GetMotionMgr() = 0;
 	virtual void					Update(float deltaTime) = 0;
@@ -60,7 +59,7 @@ struct CCAMERA_DESC
 
 struct IEntityProxyCamera : IEntityProxy
 {
-	virtual ENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_CAMERA; };
+	virtual eENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_CAMERA; };
 	virtual const char*				GetTypeString()					{ return "ENTITY_PROXY_CAMERA"; }
 
 	virtual void					SetProjParam(float fovy, int width, int height, float nearPlane, float farPlane) = 0;
@@ -72,7 +71,7 @@ struct IEntityProxyCamera : IEntityProxy
 
 struct IEntityProxyRender : IEntityProxy
 {
-	virtual ENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_RENDER; };
+	virtual eENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_RENDER; };
 	virtual const char*				GetTypeString()					{ return "ENTITY_PROXY_RENDER"; }
 
 	virtual int						GetTotalSlot() = 0;

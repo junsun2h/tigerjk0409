@@ -4,9 +4,10 @@
 #include "CDefine.h"
 #include "IAssetMgr.h"
 #include "IEngine.h"
+#include "CUnitPool.h"
 
 
-enum HELPER_GEOMETRY_TYPE
+enum eHELPER_GEOMETRY_TYPE
 {
 	HELPER_BOX,
 	HELPER_SPHERE,
@@ -16,7 +17,7 @@ enum HELPER_GEOMETRY_TYPE
 
 struct CHelperGeometryCreateParam
 {
-	HELPER_GEOMETRY_TYPE	type;
+	eHELPER_GEOMETRY_TYPE	type;
 	float					radius;
 	float					size;
 };
@@ -33,15 +34,15 @@ public:
 public:
 	long						Insert( CResourceBase* pResource) override;
 
-	const CResourceBase*		GetResource( RESOURCE_TYPE type, long id ) override;
-	const CResourceBase*		GetResource( RESOURCE_TYPE type, const char* name ) override;
-	const CResourceBase*		GetResource( RESOURCE_TYPE type, std::string name ) override;
-	const TYPE_RESOURCE_MAP*	GetResources( RESOURCE_TYPE type ) override			{ return &m_Resources[type]; }
+	const CResourceBase*		GetResource( eRESOURCE_TYPE type, long id ) override;
+	const CResourceBase*		GetResource( eRESOURCE_TYPE type, const char* name ) override;
+	const CResourceBase*		GetResource( eRESOURCE_TYPE type, std::string name ) override;
+	const TYPE_RESOURCE_MAP*	GetResources( eRESOURCE_TYPE type ) override			{ return &m_Resources[type]; }
 
 	void						Clear() override;
-	void						Remove(RESOURCE_TYPE type, long id) override;
-	void						Remove(RESOURCE_TYPE type, std::string& name) override;
-	void						Remove(RESOURCE_TYPE type, const char* name) override;
+	void						Remove(eRESOURCE_TYPE type, long id) override;
+	void						Remove(eRESOURCE_TYPE type, std::string& name) override;
+	void						Remove(eRESOURCE_TYPE type, const char* name) override;
 
 private:
 	void						CreateDefferedRenderTarget(UINT width, UINT height);

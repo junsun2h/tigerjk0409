@@ -1,15 +1,20 @@
 #pragma once
 
 #include "IEntity.h"
+#include "CUnitPool.h"
 
 
 class EEntityProxyActor : public IEntityProxyActor 
 {
-public:
-	EEntityProxyActor(std::string& name, long id );
-	~EEntityProxyActor();
+	// only object pool can make&delete this class
+	friend CObjectPool<EEntityProxyActor>;
+	EEntityProxyActor(){}
+	~EEntityProxyActor(){}
 
-	void					Init(std::string strResource) override;
+public:
+	void					Init(std::string& name, long id);
+	void					Destroy(){}
+
 	const CResourceActor*	GetActorInfo() override;
 	IMotionMgr*				GetMotionMgr() override;
 

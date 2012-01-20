@@ -60,7 +60,7 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	m_SeletedItem		= event.GetItem();
 	wxString strItem	= GetItemText(m_SeletedItem);
 
-	RESOURCE_FILE_TYPE fileType = GetAssetType();
+	eRESOURCE_FILE_TYPE fileType = GetAssetType();
 
 	pPropertyPanel->SetEmpty();
 
@@ -83,7 +83,7 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 {
 	IAssetMgr*			pAssetMgr	= GLOBAL::Engine()->AssetMgr();
 	wxString			strItem		= GetItemText(m_SeletedItem);
-	RESOURCE_FILE_TYPE	fileType	= GetAssetType();
+	eRESOURCE_FILE_TYPE	fileType	= GetAssetType();
 
 	if( fileType == RESOURCE_FILE_TEXTURE )
 	{
@@ -144,7 +144,7 @@ void SAssetTreeCtrl::Reload()
 	}
 }
 
-RESOURCE_FILE_TYPE SAssetTreeCtrl::GetAssetType()
+eRESOURCE_FILE_TYPE SAssetTreeCtrl::GetAssetType()
 {
 	wxString strItem = GetItemText(m_SeletedItem);
 

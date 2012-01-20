@@ -14,7 +14,7 @@ namespace GLOBAL
 	CCAMERA_DESC			g_pCurrentCameraDesc;
 	IEngine*				g_pEngine = NULL;
 	
-	IAssetMgr*				GetAssetMgr()		{ return g_pEngine->AssetMgr(); }
+	IEngine*				Engine()			{ return g_pEngine; }
 	ID3D11Device*			GetD3DDevice()		{ return g_D3Device;}
 	ID3D11DeviceContext*	GetD3DContext()		{ return g_D3DeviceContext; }
 	RDX11Device*			GetRDX11Device()	{ return g_RDX11Device; }
@@ -183,7 +183,7 @@ void RDX11Device::PT_CreateGraphicBuffer(CResourceBase* pResource)
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 {
-	RESOURCE_TYPE type = pResource->Type();
+	eRESOURCE_TYPE type = pResource->Type();
 
 	if( type == RESOURCE_GEOMETRY )
 	{
@@ -259,15 +259,11 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 		else
 			pTexture->pTextureSource = pRT;
 	}
-	else if( type == RESOURCE_SHADER)
-	{
-
-	}
 }
 
 void RDX11Device::RemoveGraphicBuffer(CResourceBase* pResource)
 {
-	RESOURCE_TYPE type = pResource->Type();
+	eRESOURCE_TYPE type = pResource->Type();
 
 	if( type == RESOURCE_GEOMETRY )
 	{
@@ -318,9 +314,6 @@ void RDX11Device::RemoveGraphicBuffer(CResourceBase* pResource)
 			pResource->Release();
 			pTexture->pTextureSource = NULL;
 		}
-	}
-	else if( type == RESOURCE_SHADER )
-	{
 	}
 }
 
@@ -376,7 +369,7 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
 	D3D11_TEXTURE2D_DESC desc;
 	pRT->GetDesc(&desc);
 
-	CResourceTexture* pTexture = new CResourceTexture;
+	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->EngineMemoryMgr()->GetNewResource(RESOURCE_TEXTURE);
 	pTexture->pTextureSource = pDXTexture;
 	pTexture->Width = desc.Width;
 	pTexture->height = desc.Height;
@@ -388,4 +381,19 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
 	return pTexture;
 }
 
+bool RDX11Device::SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName)
+{
+	ID3D11Resource* pResource = (ID3D11Resource*)pTexture->pTextureSource;
 
+	HRESULT hr = S_OK;
+
+	hr = D3DX11SaveTextureToFileA( GLOBAL::GetD3DContext(), pResource,  D3DX11_IMAGE_FILE_FORMAT(format), fileName );
+
+	if( FAILED(hr) )
+	{
+		assert(0);
+		return false;
+	}
+
+	return true;
+}

@@ -64,7 +64,9 @@
     <ClInclude Include="CColor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CGrowableArray.h" />
+    <ClInclude Include="CResource.h" />
     <ClInclude Include="CText.h" />
+    <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="IActorMgr.h" />
     <ClInclude Include="IAssetMgr.h" />
     <ClInclude Include="IEngine.h" />
@@ -76,12 +78,12 @@
     <ClInclude Include="IEntityProxy.h" />
     <ClInclude Include="IFileUtility.h" />
     <ClInclude Include="ILoader.h" />
+    <ClInclude Include="IEngineMemoryMgr.h" />
     <ClInclude Include="IMotionMgr.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />
     <ClInclude Include="IRenderCallback.h" />
     <ClInclude Include="IRenderHelper.h" />
-    <ClInclude Include="IResource.h" />
     <ClInclude Include="ISceneMgr.h" />
     <ClInclude Include="xnamath.h" />
   </ItemGroup>

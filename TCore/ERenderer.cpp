@@ -115,7 +115,7 @@ void ERenderer::RT_ProcessCommand()
 
 
 //--------------------------------------------------------------------------------------
-byte* ERenderer::AddCommand(RENDER_COMMAND cmd, size_t bufBytes)
+byte* ERenderer::AddCommand(eRENDER_COMMAND cmd, size_t bufBytes)
 {
 	assert (IsMainThread());
 

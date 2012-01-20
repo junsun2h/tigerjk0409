@@ -2,29 +2,45 @@
 #include "CDefine.h"
 #include "EEngine.h"
 
-
-
-EEntity::EEntity(std::string& name, UINT id)
-	: m_LocalPos(0,0,0)
-	, m_LocalScale(1,1,1)
-	, m_LocalRotation(0,0,0,1)
-	, m_WorldPos(0,0,0)
-	, m_WorldScale(1,1,1)
-	, m_WorldRotation(0,0,0,1)
-	, m_pParent(NULL)
-	, m_Name(name)
-	, m_ID(id)
+EEntity::EEntity()
+	: m_pParent(NULL)
 {
+}
+
+void EEntity::Init(std::string& name, UINT id)
+{
+	m_LocalPos = CVector3(0,0,0);
+	m_LocalScale = CVector3(1,1,1);
+	m_LocalRotation = CQuat(0,0,0,1);
+	m_WorldPos = CVector3(0,0,0);
+	m_WorldRotation = CQuat(0,0,0,1);
+	m_pParent = NULL;
+	m_Name = name;
+	m_ID = id;
+
 	m_LocalTM = XMMatrixIdentity();
 	m_WorldTM = XMMatrixIdentity();
 }
 
 EEntity::~EEntity()
 {
+	Destroy();
+}
+
+void EEntity::Destroy()
+{
+	DeleteAllPrxoy();
 	DetachAllChild();
+	m_EventQueue.RemoveAll();
 
 	if( m_pParent )
 		m_pParent->DetachChild( this );
+
+	if( m_EventQueue.GetSize() > 0 || 
+		m_pParent != NULL || 
+		m_ProxyMap.GetCount() > 0 || 
+		m_Children.size() > 0)
+		assert(0);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -158,7 +174,6 @@ inline void EEntity::UpdateWorldTM()
 		m_WorldTM = m_LocalTM;
 		m_WorldPos = m_LocalPos;
 		m_WorldRotation = m_LocalRotation;
-		m_WorldScale = m_LocalScale;
 
 		EntityEvent e;
 		e.type = E_EVENT_TRANSFORM_CHANGED;
@@ -167,7 +182,7 @@ inline void EEntity::UpdateWorldTM()
 	else
 	{
 		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetLocalTM());
-		XMMATRIX_UTIL::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+		XMMATRIX_UTIL::Decompose(NULL, &m_WorldRotation, &m_WorldPos, m_WorldTM);
 
 		EntityEvent e;
 		e.type = E_EVENT_TRANSFORM_CHANGED;
@@ -280,6 +295,8 @@ void EEntity::DetachAllChild()
 		itr = m_Children.erase(itr);
 		pChild->Reparent( NULL );
 	}
+
+	m_Children.clear();
 }
 
 IEntity* EEntity::GetChild(UINT index )
@@ -290,7 +307,7 @@ IEntity* EEntity::GetChild(UINT index )
 	return m_Children[index]; 
 }
 
-IEntityProxy* EEntity::GetProxy( ENTITY_PROXY_TYPE type )
+IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type )
 {
 	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
 	if( pEntityProxy != NULL )
@@ -301,7 +318,7 @@ IEntityProxy* EEntity::GetProxy( ENTITY_PROXY_TYPE type )
 
 void EEntity::SetProxy( IEntityProxy *pProxy)
 {
-	ENTITY_PROXY_TYPE type = pProxy->GetType();
+	eENTITY_PROXY_TYPE type = pProxy->GetType();
 
 	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
 	if( pEntityProxy != NULL )
@@ -314,6 +331,19 @@ void EEntity::SetProxy( IEntityProxy *pProxy)
 	pProxy->SetEntity(this);
 }
 
+void EEntity::DeleteAllPrxoy()
+{
+	POSITION pos = m_ProxyMap.GetStartPosition();
+	ENEITY_PROXY_MAP::CPair* itr = NULL;
+
+	while (pos)
+	{
+		itr = m_ProxyMap.GetNext(pos);
+		IEntityProxy* pProxy = itr->m_value;
+		g_Engine.EntityProxyMgr()->RemoveEntityProxy( pProxy->GetID(), itr->m_value->GetType() );
+		m_ProxyMap.RemoveKey( itr->m_key );
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////
 //   etc

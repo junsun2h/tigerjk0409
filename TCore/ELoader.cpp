@@ -259,7 +259,7 @@ bool ELoader::IsDataProcThread()
 
 
 
-CResourceBase* ELoader::LoadForward(char* fileName, char* name, RESOURCE_FILE_TYPE type)
+CResourceBase* ELoader::LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type)
 {
 	if(RESOURCE_FILE_ACTOR == type )
 	{
@@ -289,8 +289,8 @@ CResourceBase* ELoader::LoadForward(char* fileName, char* name, RESOURCE_FILE_TY
 //--------------------------------------------------------------------------------------
 // Add a work item to the queue of work items
 //--------------------------------------------------------------------------------------
-void ELoader::LoadBackword(char* fileName, char* name, RESOURCE_FILE_TYPE type)
-{
+void ELoader::LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type)
+{/*
 	RESOURCE_REQUEST resourceRequest;
 
 	if( !resourceRequest.pDataLoader || !resourceRequest.pDataProcessor )
@@ -308,5 +308,5 @@ void ELoader::LoadBackword(char* fileName, char* name, RESOURCE_FILE_TYPE type)
 	m_NumOustandingResources ++;
 
 	// Signal that we have something to read
-	ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );
+	ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );*/
 }

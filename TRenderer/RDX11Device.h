@@ -47,7 +47,8 @@ public:
 	void		CreateGraphicBuffer(CResourceBase* pResource) override;
 	void		RemoveGraphicBuffer(CResourceBase* pResource) override;
 
-	CResourceTexture* CreateTextureFromFile(const char* fileName) override;
+	CResourceTexture*	CreateTextureFromFile(const char* fileName) override;
+	bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) override;
 
 	IRenderHelper*	GetRenderHelper() override;
 
@@ -68,7 +69,7 @@ private:
 
 namespace GLOBAL
 {
-	IAssetMgr*				GetAssetMgr();
+	IEngine*				Engine();
 	ID3D11Device*			GetD3DDevice();
 	ID3D11DeviceContext*	GetD3DContext();
 	RDX11Device*			GetRDX11Device();

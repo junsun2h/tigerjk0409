@@ -1,25 +1,23 @@
 #pragma once
 
 #include "CDefine.h"
+#include "CUnitPool.h"
 #include <string>
 #include <locale>
 #include <atlcoll.h>
 
-#define MAX_MESH_LOD	5
 #define MAX_GEOMETRY	5
 #define MAX_NAME		64
 
 
-enum RESOURCE_TYPE
+enum eRESOURCE_TYPE
 {
 	RESOURCE_GEOMETRY,
 	RESOURCE_TEXTURE,
-	RESOURCE_MESH,	
-	RESOURCE_LOD_MESH,
+	RESOURCE_MESH,
 	RESOURCE_ACTOR,	
 	RESOURCE_MOTION,
 	RESOURCE_MATERIAL,
-	RESOURCE_SHADER,
 
 	NUM_RESOURCE_TYPE,
 
@@ -27,7 +25,7 @@ enum RESOURCE_TYPE
 };
 
 
-enum RESOURCE_FILE_TYPE
+enum eRESOURCE_FILE_TYPE
 {
 	RESOURCE_FILE_TEXTURE,
 	RESOURCE_FILE_ACTOR,
@@ -40,14 +38,14 @@ enum RESOURCE_FILE_TYPE
 	RESOURCE_FILE_INVALID
 };
 
-enum RESOURCE_LOAD_STATE
+enum eRESOURCE_LOAD_STATE
 {
 	RESOURCE_LOAD_NONE,
 	RESOURCE_LOAD_STARTED,
 	RESOURCE_LOAD_FINISHED
 };
 
-enum TEXTURE_TYPE
+enum eTEXTURE_TYPE
 {
 	PARAM_DIFFISE,
 	PARAM_SPECULAR,
@@ -58,7 +56,7 @@ enum TEXTURE_TYPE
 };
 
 
-enum CVERTEX_TYPE
+enum eCVERTEX_TYPE
 {
 	FVF_3FP,
 	FVF_3FP_1DC,		// 3 float position + 1 DWORD Color
@@ -114,7 +112,7 @@ struct CVertexPNTW
 	static size_t Size()	{ return 28; }
 };
 
-inline size_t SIZE_OF_VERTEX(CVERTEX_TYPE type)
+inline size_t SIZE_OF_VERTEX(eCVERTEX_TYPE type)
 {
 	if( type == FVF_3FP ) return CVertexP::Size();
 	else if( type == FVF_3FP_1DC ) return CVertexPC::Size();
@@ -125,7 +123,7 @@ inline size_t SIZE_OF_VERTEX(CVERTEX_TYPE type)
 	return 0;
 };
 
-enum CINDEX_TYPE
+enum eCINDEX_TYPE
 {
 	INDEX_16BIT_TYPE,
 	INDEX_32BIT_TYPE,
@@ -137,13 +135,15 @@ enum CINDEX_TYPE
 struct CResourceBase
 {
 	long					RID;	// resource ID, hash Key fron resource name
-	RESOURCE_LOAD_STATE		state;
+	eRESOURCE_LOAD_STATE	state;
 	double					loadBeginTime;
 	char					name[MAX_NAME];
 
-	virtual RESOURCE_TYPE	Type()	{ return RESOURCE_INVALID; }
+	virtual eRESOURCE_TYPE	Type()	{ return RESOURCE_INVALID; }
 	virtual std::string		strType()  { return ""; }
-	std::string				strLoadState()	{ return ENUMSTR(RESOURCE_LOAD_STATE(state)); }
+	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(state)); }
+
+	void					Destroy(){}
 
 	CResourceBase()
 		: RID(-1)
@@ -265,8 +265,23 @@ enum eTEXTURE_FORMAT
 	COLOR_FORMAT_FORCE_UINT                  = 0xffffffff
 };
 
-struct CResourceTexture : CResourceBase
+class CResourceTexture : public CResourceBase
 {
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceTexture>;
+	CResourceTexture()
+		: pShaderResourceView(NULL)
+		, pRenderTargetView(NULL)
+		, pTextureSource(NULL)
+		, usage(TEXTURE_NORMAL)
+		, Format(COLOR_FORMAT_UNKNOWN)
+		, bDeleteMemoryAfterLoading(false)
+	{
+	}
+
+	void Destroy()	{}
+
+public:
 	void* pShaderResourceView;
 	void* pRenderTargetView;
 	void* pTextureSource;
@@ -278,38 +293,15 @@ struct CResourceTexture : CResourceBase
 	UINT				Width;
 	UINT				height;
 	UINT				MipLevels;
-	
-	CResourceTexture()
-		: pShaderResourceView(NULL)
-		, pRenderTargetView(NULL)
-		, pTextureSource(NULL)
-		, usage(TEXTURE_NORMAL)
-		, Format(COLOR_FORMAT_UNKNOWN)
-		, bDeleteMemoryAfterLoading(false)
-	{
-	}
 
-	RESOURCE_TYPE	Type() override { return RESOURCE_TEXTURE; }
+	eRESOURCE_TYPE	Type() override { return RESOURCE_TEXTURE; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_TEXTURE); }
 };
 
-struct CResourceGeometry : CResourceBase
+class CResourceGeometry : public CResourceBase
 {
-	CVERTEX_TYPE	eVertexType;
-	UINT			vertexCount;
-	void*			pVertexBuffer;
-	void*			pGraphicMemoryVertexBuffer; 
-	void*			pGraphicMemoryVertexBufferOut; 
-
-	CINDEX_TYPE		eIndexType;
-	UINT			primitiveCount;
-	void*			pIndexBuffer;
-	void*			pGraphicMemoryIndexBuffer;
-
-	long		defaultMtrl;
-
-	char	mtrlName[MAX_NAME];
-
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceGeometry>;
 	CResourceGeometry()
 		: pVertexBuffer(NULL)
 		, pIndexBuffer(NULL)
@@ -326,62 +318,91 @@ struct CResourceGeometry : CResourceBase
 
 	~CResourceGeometry()
 	{
+		Destroy();
+	}
+
+	void Destroy()
+	{
 		SAFE_DELETE_ARRAY(pVertexBuffer);
 		SAFE_DELETE_ARRAY(pIndexBuffer);
 	}
 
-	RESOURCE_TYPE	Type() override { return RESOURCE_GEOMETRY; }
+public:
+	eCVERTEX_TYPE	eVertexType;
+	UINT			vertexCount;
+	void*			pVertexBuffer;
+	void*			pGraphicMemoryVertexBuffer; 
+	void*			pGraphicMemoryVertexBufferOut; 
+
+	eCINDEX_TYPE	eIndexType;
+	UINT			primitiveCount;
+	void*			pIndexBuffer;
+	void*			pGraphicMemoryIndexBuffer;
+
+	long			defaultMtrl;
+
+	char			mtrlName[MAX_NAME];
+
+	eRESOURCE_TYPE	Type() override { return RESOURCE_GEOMETRY; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_GEOMETRY); }
 };
 
-struct CResourceMesh : CResourceBase
+class CResourceMesh : public CResourceBase
 {
-	uint8	geometryNum;
-	long	goemetries[MAX_GEOMETRY];
-
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceMesh>;
 	CResourceMesh()
 		: geometryNum(0)
 	{
 	}
+	~CResourceMesh(){}
+public:
 
-	RESOURCE_TYPE	Type() override { return RESOURCE_MESH; }
+	uint8			geometryNum;
+	long			goemetries[MAX_GEOMETRY];
+
+	eRESOURCE_TYPE	Type() override { return RESOURCE_MESH; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MESH); }
 };
 
-struct CResourceLODMesh : CResourceBase
+class CResourceActor : public CResourceBase
 {
-	uint8	LOD;
-	long	RID_mesh[MAX_MESH_LOD];
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceActor>;
+	CResourceActor(){}
+	~CResourceActor(){}
+public:
 
-	RESOURCE_TYPE	Type() override { return RESOURCE_LOD_MESH; }
-	std::string		strType() override { return ENUMSTR(RESOURCE_LOD_MESH); }
-};
-
-struct CResourceActor : CResourceBase
-{
-	RESOURCE_TYPE	Type() override { return RESOURCE_ACTOR; }
+	eRESOURCE_TYPE	Type() override { return RESOURCE_ACTOR; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_ACTOR); }
 };
 
-struct CResourceMotion : CResourceBase
+class CResourceMotion : public CResourceBase
 {
-	RESOURCE_TYPE	Type() override { return RESOURCE_MOTION; }
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceMotion>;
+	CResourceMotion(){}
+	~CResourceMotion(){}
+public:
+
+	eRESOURCE_TYPE	Type() override { return RESOURCE_MOTION; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MOTION); }
 };
 
-struct CResourceMtrl : CResourceBase
+class CResourceMtrl : public CResourceBase
 {
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceMtrl>;
+	CResourceMtrl(){}
+	~CResourceMtrl(){}
+
+public:
 	long		RID_textures[NUM_TEXTURE_TYPE];
 
-	RESOURCE_TYPE	Type() override { return RESOURCE_MATERIAL; }
+	eRESOURCE_TYPE	Type() override { return RESOURCE_MATERIAL; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MATERIAL); }
 };
 
-struct CResourceShader : CResourceBase
-{
-	RESOURCE_TYPE	Type() override { return RESOURCE_SHADER; }
-	std::string		strType() override { return ENUMSTR(RESOURCE_SHADER); }
-};
 
 inline long GET_HASH_KEY( std::string name )
 {
