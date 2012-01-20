@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CDefine.h"
-#include "IResource.h"
+#include "CResource.h"
 
 
 #define E_TRYAGAIN MAKE_HRESULT(1,FACILITY_WIN32,123456)
@@ -47,8 +47,8 @@ struct RESOURCE_REQUEST
 
 struct ILoader
 {
-	virtual CResourceBase*	LoadForward(char* fileName, char* name, RESOURCE_FILE_TYPE type) = 0;
-	virtual void			LoadBackword(char* fileName, char* name, RESOURCE_FILE_TYPE type) = 0;
+	virtual CResourceBase*	LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type) = 0;
+	virtual void			LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type) = 0;
 	virtual void			WaitForAllItems() = 0;
 	virtual void			CompleteWork( UINT CurrentNumResourcesToService ) = 0;
 };

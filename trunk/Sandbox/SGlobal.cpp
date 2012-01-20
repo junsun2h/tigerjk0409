@@ -26,13 +26,15 @@ namespace GLOBAL
 	void SetupScene(int nWidth, int nHeight)
 	{
 		IEntityMgr* entityMgr = g_Eng->EntityMgr();
+		IEntityProxyMgr* pEntityProxyMgr = g_Eng->EntityProxyMgr();
 
 		g_SceneRoot = entityMgr->SpawnEntity( "Root" );
 
 		//////////////////////////////////////////////////////////////////////////
 		// Setup Camera
 		IEntity* pCameraEntity = entityMgr->SpawnEntity( "Observer" );
-		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)entityMgr->SpawnEntityProxy("Main Camera" , ENTITY_PROXY_CAMERA);
+
+		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pEntityProxyMgr->SpawnEntityProxy("Main Camera" , ENTITY_PROXY_CAMERA);
 		pCameraEntity->SetProxy( pCamera );
 
 		pCamera->SetProjParam( XM_PIDIV4,  nWidth, nHeight, 1, 10000);

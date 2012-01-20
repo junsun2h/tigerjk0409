@@ -38,14 +38,14 @@ HRESULT DXUTSnapD3D11Screenshot( LPCTSTR szFileName,
 	// special case msaa textures
 	ID3D11Texture2D *pCompatableTexture = pBackBuffer;
 	if ( dsc.SampleDesc.Count > 1) {
-		D3D11_TEXTURE2D_DESC dsc_new = dsc;
-		dsc_new.SampleDesc.Count = 1;
-		dsc_new.SampleDesc.Quality = 0;
-		dsc_new.Usage = D3D11_USAGE_DEFAULT;
-		dsc_new.BindFlags = 0;
-		dsc_new.CPUAccessFlags = 0;
+		D3D11_TEXTURE2D_DESC newdsc = dsc;
+		newdsc.SampleDesc.Count = 1;
+		newdsc.SampleDesc.Quality = 0;
+		newdsc.Usage = D3D11_USAGE_DEFAULT;
+		newdsc.BindFlags = 0;
+		newdsc.CPUAccessFlags = 0;
 		ID3D11Texture2D *resolveTexture;
-		hr = pDevice->CreateTexture2D(&dsc_new, NULL, &resolveTexture);
+		hr = pDevice->CreateTexture2D(&newdsc, NULL, &resolveTexture);
 		if ( SUCCEEDED(hr) )
 		{
 			DXUT_SetDebugName(resolveTexture, "DXUT");

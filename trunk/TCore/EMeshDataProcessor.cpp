@@ -56,21 +56,6 @@ bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	{
 		PT_ReadMesh(&pSrcBits, m_name);
 	}
-	else
-	{
-		CResourceLODMesh* pResource = new CResourceLODMesh;
-		pResource->RID = GET_HASH_KEY(m_name);	
-		pResource->LOD = levelOfDetail;
-		char s[25];
-
-		for( int i =0; i < levelOfDetail; ++i)
-		{
-			_itoa_s(i, s, 10);
-			pResource->RID_mesh[i] = PT_ReadMesh(&pSrcBits, m_name + s );
-		}
-
-		m_pResources.push_back( pResource );
-	}
 	
 	return true;
 }
@@ -82,7 +67,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 
 	BYTE* pSrcBits = *ppSrcBits;
 	
-	CResourceMesh* pMesh = new CResourceMesh;
+	CResourceMesh* pMesh = (CResourceMesh*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
 	pMesh->RID = GET_HASH_KEY(name);
 	strcpy_s( pMesh->name, m_name.c_str() );
 
@@ -90,7 +75,7 @@ long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
 
 	for( int i=0; pMesh->geometryNum; ++i )
 	{
-		CResourceGeometry* pGeometry = new CResourceGeometry;
+		CResourceGeometry* pGeometry = (CResourceGeometry*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
 		
 		ECopyString(&pGeometry->name, &pSrcBits );
 		pGeometry->RID = GET_HASH_KEY( pGeometry->name);

@@ -20,8 +20,8 @@ public:
 	static	bool				IsDataProcThread();
 
 public:
-	virtual CResourceBase*		LoadForward(char* fileName, char* name, RESOURCE_FILE_TYPE type) override;
-	virtual void				LoadBackword(char* fileName, char* name, RESOURCE_FILE_TYPE type) override;
+	virtual CResourceBase*		LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type) override;
+	virtual void				LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type) override;
 	virtual void				WaitForAllItems() override;
 	virtual void				CompleteWork( UINT CurrentNumResourcesToService ) override;
 

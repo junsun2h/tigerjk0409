@@ -1,63 +1,54 @@
 #include "EEntityMgr.h"
+#include "EEngine.h"
 
 
 IEntity* EEntityMgr::SpawnEntity(std::string name)
 {
-	return m_EntityMap.SPawn(name);
-}
-
-IEntityProxy* EEntityMgr::SpawnEntityProxy(std::string name, ENTITY_PROXY_TYPE type)
-{
-	switch(type)
+	long newID = GET_HASH_KEY( name );
+	ENTITY_MAP::CPair* pObject = m_EntityMap.Lookup( newID );
+	if( pObject != NULL )
 	{
-	case ENTITY_PROXY_ACTOR: return m_ActorMap.SPawn(name);
-	case ENTITY_PROXY_RENDER: return m_RendererMap.SPawn(name);
-	case ENTITY_PROXY_CAMERA: return m_CameraMap.SPawn(name);
-	default:
-		return NULL;
-	}
-	return NULL;
+		assert(0);
+		return pObject->m_value;
+	} 
+
+	EEntity* newObject = g_Engine.EngMemoryPoolMgr()->GetNewEntity();
+	newObject->Init(name, newID);
+	m_EntityMap.SetAt( newID, (EEntity*)newObject );
+
+	return newObject;
 }
 
 void EEntityMgr::RemoveEntity(long id)
 {	 
-	m_EntityMap.Remove(id);	 
-}	 
-	 
-void EEntityMgr::RemoveEntityProxy(long id, ENTITY_PROXY_TYPE type)
-{	 
-	switch(type)
+	ENTITY_MAP::CPair* pObject = m_EntityMap.Lookup( id );
+	if( pObject != NULL )
 	{
-	case ENTITY_PROXY_ACTOR: return m_ActorMap.Remove(id);
-	case ENTITY_PROXY_RENDER: return m_RendererMap.Remove(id);
-	case ENTITY_PROXY_CAMERA: return m_CameraMap.Remove(id);
-	default:
-		assert(0);
+		g_Engine.EngMemoryPoolMgr()->RemoveEntity(pObject->m_value);
+		m_EntityMap.RemoveKey(id);
 	}
 }	 
-	 
+	 	 
 void EEntityMgr::RemoveAllEntity()
 {	 
+	POSITION pos = m_EntityMap.GetStartPosition();
+	ENTITY_MAP::CPair* itr = NULL;
+
+	while (pos)
+	{
+		itr = m_EntityMap.GetNext(pos);
+		g_Engine.EngMemoryPoolMgr()->RemoveEntity(itr->m_value);
+	}
+
 	m_EntityMap.RemoveAll();
 }	 
 	 
-void EEntityMgr::RemoveAllEntityProxy(ENTITY_PROXY_TYPE type)
-{
-	switch(type)
-	{
-	case ENTITY_PROXY_ACTOR: return m_ActorMap.RemoveAll();
-	case ENTITY_PROXY_RENDER: return m_RendererMap.RemoveAll();
-	case ENTITY_PROXY_CAMERA: return m_CameraMap.RemoveAll();
-	default:
-		assert(0);
-	}
-}
-
 void EEntityMgr::Destroy()
 {
-	m_ActorMap.RemoveAll();
-	m_RendererMap.RemoveAll();
-	m_CameraMap.RemoveAll();
 	RemoveAllEntity();
 }
 
+IEntity* EEntityMgr::GetEntity(long id) 
+{
+	return NULL; 
+}

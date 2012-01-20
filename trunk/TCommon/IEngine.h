@@ -4,6 +4,7 @@
 #include "IRDevice.h"
 #include "IActorMgr.h"
 #include "IEntityMgr.h"
+#include "IEntityProxy.h"
 #include "IAssetMgr.h"
 #include "ISceneMgr.h"
 #include "IRenderCallback.h"
@@ -11,6 +12,7 @@
 #include "CText.h"
 #include "IFileUtility.h"
 #include "ILoader.h"
+#include "IEngineMemoryMgr.h"
 
 
 struct CENGINE_INIT_PARAM
@@ -23,7 +25,7 @@ struct CENGINE_INIT_PARAM
 		, numOfProcessThread(1)
 		, resourceFolder(NULL)
 	{
-	}
+	}	
 
 	void*			hWnd;
 	int				width;
@@ -37,18 +39,21 @@ struct CENGINE_INIT_PARAM
 
 struct IEngine
 {
-	virtual bool			StartUp(const CENGINE_INIT_PARAM &param) = 0;
-	virtual bool			ShutDown() = 0;
-	virtual void			Resize(UINT width, UINT height) = 0;
+	virtual bool				StartUp(const CENGINE_INIT_PARAM &param) = 0;
+	virtual bool				ShutDown() = 0;
+	virtual void				Resize(UINT width, UINT height) = 0;
 
-	virtual IRDevice*		RDevice() = 0;
-	virtual IAssetMgr*		AssetMgr() = 0;
-	virtual ISceneMgr*		SceneMgr() = 0;
-	virtual IEntityMgr*		EntityMgr() =0;
-	virtual IRenderHelper*	RenderHelper() =0;
-	virtual CTimer*			GlobalTimer() = 0;
-	virtual IFileUtility*	FileUtility() = 0;
-	virtual ILoader*		Loader() = 0;
+	virtual IRDevice*			RDevice() = 0;
+	virtual IAssetMgr*			AssetMgr() = 0;
+	virtual ISceneMgr*			SceneMgr() = 0;
+	virtual IEntityMgr*			EntityMgr() =0;
+	virtual IEntityProxyMgr*	EntityProxyMgr() = 0;
 
-	virtual void			UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
+	virtual IRenderHelper*		RenderHelper() =0;
+	virtual CTimer*				GlobalTimer() = 0;
+	virtual IFileUtility*		FileUtility() = 0;
+	virtual ILoader*			Loader() = 0;
+	virtual IEngineMemoryMgr*	EngineMemoryMgr() =0;
+
+	virtual void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
 };

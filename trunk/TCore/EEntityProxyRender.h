@@ -2,6 +2,7 @@
 
 
 #include "IEntityProxy.h"
+#include "CUnitPool.h"
 #include <atlcoll.h>
 
 
@@ -13,8 +14,14 @@ struct ERenderItem
 
 class EEntityProxyRender : public IEntityProxyRender
 {
+	// only object pool can make&delete this class
+	friend CObjectPool<EEntityProxyRender>;
+	EEntityProxyRender(){}
+	~EEntityProxyRender(){}
+
 public:
-	EEntityProxyRender(std::string& name, long id );
+	void			Init(std::string& name, long id );
+	void			Destroy();
 
 	long			GetID()	override							{ return m_ID; }
 	IEntity*		GetEntity()	override						{ return m_pEntity;}
@@ -25,6 +32,7 @@ public:
 	int				GetTotalSlot() override						{ return m_RenderItems.GetCount(); }
 	bool			AddGeometry(int slot, long geometryID, long mtrlID ) override;
 	void			Remove(long slot) override;
+
 
 private:
 	long				m_ID;

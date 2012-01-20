@@ -26,7 +26,7 @@ bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 {
 	assert( ELoader::IsDataProcThread() );
 
-	m_pResource = new CResourceTexture;
+	m_pResource = g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_TEXTURE);
 	m_pResource->RID = GET_HASH_KEY(m_Name);	
 
 //	m_pRDevice->PT_CreateGraphicBuffer( m_pResource);

@@ -1,5 +1,5 @@
 #include "SMeshImportor.h"
-#include "IResource.h"
+#include "CResource.h"
 
 
 namespace SMESH_LOADER
@@ -345,10 +345,11 @@ void CreateVertexBuffer(CResourceGeometry* pGeometry, TRAW_MESH* pRawMesh, UNIFI
 CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap, std::vector<int>* pMtrlIDList, wxString geometryName)
 {
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+	IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
 
 	//////////////////////////////////////////////////////////////////////////
 	// set geometry info
-	CResourceGeometry* pGeometry = new CResourceGeometry;
+	CResourceGeometry* pGeometry = (CResourceGeometry*)pMemoryPoolMgr->GetNewResource(RESOURCE_GEOMETRY);
 	strcpy_s( pGeometry->name, geometryName.char_str() );
 	strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
 	const CResourceBase* pMtrl = pAssetMgr->GetResource( RESOURCE_MATERIAL, pGeometry->mtrlName );
@@ -416,9 +417,10 @@ CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& verte
 //------------------------------------------------------------------------------------------------------
 void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
 {
-	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+	IAssetMgr*			pAssetMgr		= GLOBAL::Engine()->AssetMgr();
+	IEngineMemoryMgr*	pEngineMemMgr	= GLOBAL::Engine()->EngineMemoryMgr();
 
-	CResourceMesh* pMesh = new CResourceMesh;
+	CResourceMesh* pMesh = (CResourceMesh*)pEngineMemMgr->GetNewResource(RESOURCE_TEXTURE);
 	strcpy_s( pMesh->name, name.char_str() );
 
 	UNIFIED_VERTEX_MAP vertexMap;

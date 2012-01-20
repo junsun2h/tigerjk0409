@@ -3,9 +3,9 @@
 #include "RDefine.h"
 #include <CGuid.h>
 #include <atlcoll.h>
+#include "RDX11Shader.h"
+#include "CUnitPool.h"
 
-
-class RDX11Shader;
 
 
 enum EFFECT_TYPE
@@ -58,6 +58,9 @@ enum SHADER_CONST_BUFFER_SLOT
 class RDX11ShaderMgr
 {
 public:
+	RDX11ShaderMgr();
+	~RDX11ShaderMgr();
+
 	void			init();
 	void			Destroy();
 
@@ -77,4 +80,6 @@ private:
 
 	typedef ATL::CAtlMap<long, RDX11Shader*>	SHADER_MAP;
 	SHADER_MAP			m_ShaderMap;
+
+	CObjectPool<RDX11Shader>	m_MemPoolShader;
 };

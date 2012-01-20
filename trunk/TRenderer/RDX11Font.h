@@ -3,7 +3,7 @@
 
 #include "RDefine.h"
 #include "CGrowableArray.h"
-#include "IResource.h"
+#include "CResource.h"
 #include "CText.h"
 
 

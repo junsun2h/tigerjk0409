@@ -4,86 +4,94 @@
     <ClInclude Include="CThreadSafeQueue.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="CTimer.h">
-      <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="CThread.h">
-      <Filter>Util</Filter>
-    </ClInclude>
     <ClInclude Include="CGrowableArray.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="CDefine.h" />
     <ClInclude Include="xnamath.h">
       <Filter>3rdParty\xnamath</Filter>
     </ClInclude>
     <ClInclude Include="CMathType.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="IRDevice.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IEngine.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IResource.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntity.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntityProxy.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IMotionMgr.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntityMgr.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IActorMgr.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IRenderHelper.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IRenderCallback.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="ISceneMgr.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
     <ClInclude Include="CColor.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="CText.h">
-      <Filter>Util</Filter>
+    <ClInclude Include="CUnitPool.h">
+      <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="IFileUtility.h">
-      <Filter>Interface</Filter>
+    <ClInclude Include="IActorMgr.h">
+      <Filter>Interface_Engine</Filter>
     </ClInclude>
     <ClInclude Include="IAssetMgr.h">
-      <Filter>Interface</Filter>
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngine.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntity.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntityMgr.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntityProxy.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IFileUtility.h">
+      <Filter>Interface_Engine</Filter>
     </ClInclude>
     <ClInclude Include="ILoader.h">
-      <Filter>Interface</Filter>
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngineMemoryMgr.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IMotionMgr.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ISceneMgr.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderHelper.h">
+      <Filter>Interface_Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="IRDevice.h">
+      <Filter>Interface_Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderCallback.h">
+      <Filter>Interface_Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="CTimer.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CText.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CThread.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CResource.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CDefine.h">
+      <Filter>DataStructure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">
       <UniqueIdentifier>{ccf5d848-30a0-4ed3-80be-93a79aa124bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util">
-      <UniqueIdentifier>{40f2e0fe-0064-4696-8ae4-f665846136be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interface">
-      <UniqueIdentifier>{2d81bcfa-4e57-4f35-b616-9357d77c6321}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParty">
       <UniqueIdentifier>{f54b609a-b5c7-43aa-a37f-fd4813f7c6bb}</UniqueIdentifier>
     </Filter>
     <Filter Include="3rdParty\xnamath">
       <UniqueIdentifier>{67b9e097-a762-422f-979a-30a1af10ddc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface_Engine">
+      <UniqueIdentifier>{ce05e76d-47ed-4db3-8c3f-a500dfe75778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface_Renderer">
+      <UniqueIdentifier>{6c45c971-f053-411a-8ca6-5a598fc84f9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 #include "RDX11RenderHelper.h"
-#include "IResource.h"
+#include "CResource.h"
 #include "RDX11Device.h"
 
 
@@ -173,44 +173,3 @@ void RDX11RenderHelper::RenderText(RENDER_TEXT_BUFFER& text)
 	m_FontRenderer.Render(text);
 }
 
-bool RDX11RenderHelper::SaveTextureToFile(const CResourceTexture* pTexture, IMAGE_FILE_FORMAT format, const char* fileName)
-{
-	ID3D11Resource* pResource = (ID3D11Resource*)pTexture->pTextureSource;
-
-	HRESULT hr = S_OK;
-
-	hr = D3DX11SaveTextureToFileA( GLOBAL::GetD3DContext(), pResource,  D3DX11_IMAGE_FILE_FORMAT(format), fileName );
-
-	if( FAILED(hr) )
-	{
-		assert(0);
-		return false;
-	}
-
-	return true;
-}
-
-bool RDX11RenderHelper::SaveTextureToMemory(const CResourceTexture* pTexture, IMAGE_FILE_FORMAT format, uint8** ppDest, size_t& size)
-{
-	ID3D10Blob* pDXBuf = NULL;
-
-	ID3D11Resource* pResource = (ID3D11Resource*)pTexture->pTextureSource;
-
-	D3DX11SaveTextureToMemory( GLOBAL::GetD3DContext(), pResource,  D3DX11_IMAGE_FILE_FORMAT(format), &pDXBuf, 0);
-
-	if( pDXBuf == NULL )
-	{
-		assert(0);
-		return false;
-	}
-
-	uint8* pCopiedData = new uint8[ pDXBuf->GetBufferSize()];
-	memcpy( pCopiedData, pDXBuf->GetBufferPointer(), pDXBuf->GetBufferSize() );
-	*ppDest = pCopiedData;
-	
-	size = pDXBuf->GetBufferSize();
-
-	pDXBuf->Release();
-
-	return true;
-}

@@ -1,11 +1,15 @@
 #include "EEntityProxyRender.h"
 
-EEntityProxyRender::EEntityProxyRender(std::string& name, long id )
-	: m_Name(name)
-	, m_ID(id)
-	, m_pEntity(NULL)
+void EEntityProxyRender::Init(std::string& name, long id )
 {
+	m_Name = name;
+	m_ID = id;
+	m_pEntity =NULL;
+}
 
+void EEntityProxyRender::Destroy()
+{
+	m_RenderItems.RemoveAll();
 }
 
 void EEntityProxyRender::SetEntity(IEntity* pEntity)

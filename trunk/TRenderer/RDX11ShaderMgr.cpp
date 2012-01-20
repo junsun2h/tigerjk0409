@@ -1,9 +1,17 @@
 #include "RDX11ShaderMgr.h"
-#include "RDX11Shader.h"
 #include "simpleFx.h"
 #include "RDX11Device.h"
 
 
+RDX11ShaderMgr::RDX11ShaderMgr()
+	: m_MemPoolShader(20)
+{
+
+}
+
+RDX11ShaderMgr::~RDX11ShaderMgr()
+{
+}
 
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::init()
@@ -34,7 +42,7 @@ void RDX11ShaderMgr::Destroy()
 	while (pos)
 	{
 		itr = m_ShaderMap.GetNext(pos);
-		SAFE_DELETE( itr->m_value );
+		m_MemPoolShader.Remove(itr->m_value );
 	}
 
 	m_ShaderMap.RemoveAll();
@@ -68,7 +76,7 @@ void RDX11ShaderMgr::CreateFontShader()
 	if( pShader != NULL )
 		return;
 
-	RDX11Shader* pFontShader = new RDX11Shader;
+	RDX11Shader* pFontShader = m_MemPoolShader.GetNew();
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -101,7 +109,7 @@ void RDX11ShaderMgr::CreateLineShader()
 	if( pShader != NULL )
 		return;
 
-	RDX11Shader* pLineShader = new RDX11Shader;
+	RDX11Shader* pLineShader = m_MemPoolShader.GetNew();
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{

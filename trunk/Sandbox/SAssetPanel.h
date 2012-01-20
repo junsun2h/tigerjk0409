@@ -30,7 +30,7 @@ public:
 	void	Reload();
 
 private:
-	RESOURCE_FILE_TYPE		GetAssetType();
+	eRESOURCE_FILE_TYPE		GetAssetType();
 
 	wxTreeItemId			m_SeletedItem;
 	STexturePopupWindow*	m_pTexturePopupWindow;

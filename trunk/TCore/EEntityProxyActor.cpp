@@ -1,17 +1,11 @@
 #include "EEntityProxyActor.h"
 
 
-EEntityProxyActor::EEntityProxyActor(std::string& name, long id)
-	: m_Name(name)
-	, m_ID(id)
-	, m_pEntity(NULL)
+void EEntityProxyActor::Init(std::string& name, long id)
 {
-
-}
-
-EEntityProxyActor::~EEntityProxyActor()
-{
-
+	m_Name = name;
+	m_ID = id;
+	m_pEntity = NULL;
 }
 
 const CResourceActor* EEntityProxyActor::GetActorInfo()
@@ -35,11 +29,6 @@ void EEntityProxyActor::SetEntity(IEntity* pEntity)
 }
 
 void EEntityProxyActor::Update(float deltaTime)
-{
-
-}
-
-void EEntityProxyActor::Init(std::string strResource)
 {
 
 }

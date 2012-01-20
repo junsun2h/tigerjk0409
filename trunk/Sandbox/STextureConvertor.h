@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IResource.h"
+#include "CResource.h"
 
 
 

@@ -4,19 +4,24 @@
 #include <atlcoll.h>
 #include "IEntity.h"
 #include "CGrowableArray.h"
-
+#include "CUnitPool.h"
 
 class EEntity : public IEntity
 {
-public:
-	EEntity(std::string& name, UINT id);
+	// only object pool can make&delete this class
+	friend CObjectPool<EEntity>;
+	EEntity();
 	virtual ~EEntity();
+
+public:
+	void			Init(std::string& name, UINT id);
 
 	UINT			GetID() override			{ return m_ID; };
 	std::string		GetName() override			{ return m_Name; }
 
+	void			Destroy();
 	void			SendEvent( EntityEvent &e ) override;
-
+	
 private:
 	UINT			m_ID;
 	std::string		m_Name;
@@ -26,11 +31,12 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
-	IEntityProxy*	GetProxy( ENTITY_PROXY_TYPE type ) override;
+	IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type ) override;
 	void			SetProxy( IEntityProxy *pProxy) override;
+	void			DeleteAllPrxoy() override;
 
 private:
-	typedef ATL::CAtlMap<ENTITY_PROXY_TYPE, IEntityProxy*>	ENEITY_PROXY_MAP;
+	typedef ATL::CAtlMap<eENTITY_PROXY_TYPE, IEntityProxy*>	ENEITY_PROXY_MAP;
 	ENEITY_PROXY_MAP	m_ProxyMap;
 
 public:
@@ -66,7 +72,6 @@ private:
 	XMMATRIX		m_LocalTM;
 
 	CVector3		m_WorldPos;
-	CVector3		m_WorldScale;
 	CQuat			m_WorldRotation;
 	XMMATRIX		m_WorldTM;
 	

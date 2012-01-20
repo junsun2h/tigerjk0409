@@ -44,7 +44,7 @@ void SPropertyTreeCtrl::SetEntity(IEntity* pEntity)
 
 	for( int i=0 ; i < NUM_ENTITY_PROXY_TYPE; ++i )
 	{
-		IEntityProxy* pEntityProxy = m_pEntity->GetProxy( ENTITY_PROXY_TYPE(i) );
+		IEntityProxy* pEntityProxy = m_pEntity->GetProxy( eENTITY_PROXY_TYPE(i) );
 		if( pEntityProxy != NULL )
 			AppendItem(rootItem,pEntityProxy->GetTypeString() );
 	}

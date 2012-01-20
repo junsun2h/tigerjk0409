@@ -19,26 +19,11 @@
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
     <ClCompile Include="ERenderer.cpp" />
-    <ClCompile Include="EEntity.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityMgr.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
     <ClCompile Include="EOctreeNode.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="ESceneMgr.cpp">
       <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityProxyActor.cpp">
-      <Filter>Entity\EntityProxy</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityProxyRender.cpp">
-      <Filter>Entity\EntityProxy</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityProxyCamera.cpp">
-      <Filter>Entity\EntityProxy</Filter>
     </ClCompile>
     <ClCompile Include="EFileUtility.cpp">
       <Filter>Utility</Filter>
@@ -46,6 +31,25 @@
     <ClCompile Include="ELoader.cpp">
       <Filter>Asset</Filter>
     </ClCompile>
+    <ClCompile Include="EEntity.cpp">
+      <Filter>EntitySystem\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyMgr.cpp">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityMgr.cpp">
+      <Filter>EntitySystem\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyActor.cpp">
+      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyCamera.cpp">
+      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyRender.cpp">
+      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
+    </ClCompile>
+    <ClCompile Include="EEngineMemoryMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -57,17 +61,23 @@
     <Filter Include="Asset\ResourceDataProcessor">
       <UniqueIdentifier>{ca07cc05-6db3-4247-8263-797bb4fdd57c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity">
-      <UniqueIdentifier>{3df464fc-5f10-4a0a-adb6-1f94092d9355}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{f7dcaa6b-df82-4bda-b7f9-faa93db27732}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity\EntityProxy">
-      <UniqueIdentifier>{4b97673d-bc29-4f8f-8564-ff8a69709117}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{df16fbb4-5d0c-4391-a232-fb208aa6985a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EntitySystem">
+      <UniqueIdentifier>{3df464fc-5f10-4a0a-adb6-1f94092d9355}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EntitySystem\EntityProxy">
+      <UniqueIdentifier>{4b97673d-bc29-4f8f-8564-ff8a69709117}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EntitySystem\Entity">
+      <UniqueIdentifier>{3233ff8f-79dd-44c9-99f1-181a16294344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EntitySystem\EntityProxy\Proxy">
+      <UniqueIdentifier>{98858ab3-9c92-4c61-ae84-58ca5ab115a7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,30 +100,12 @@
     <ClInclude Include="EActorDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
-    <ClInclude Include="EMeshDataProcessor.h">
-      <Filter>Asset\ResourceDataProcessor</Filter>
-    </ClInclude>
     <ClInclude Include="ERenderer.h" />
-    <ClInclude Include="EEntityMgr.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntity.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
     <ClInclude Include="EOctreeNode.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="ESceneMgr.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntityProxyActor.h">
-      <Filter>Entity\EntityProxy</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntityProxyRender.h">
-      <Filter>Entity\EntityProxy</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntityProxyCamera.h">
-      <Filter>Entity\EntityProxy</Filter>
     </ClInclude>
     <ClInclude Include="EFileUtility.h">
       <Filter>Utility</Filter>
@@ -121,5 +113,27 @@
     <ClInclude Include="ELoader.h">
       <Filter>Asset</Filter>
     </ClInclude>
+    <ClInclude Include="EMeshDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntity.h">
+      <Filter>EntitySystem\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyMgr.h">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityMgr.h">
+      <Filter>EntitySystem\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyActor.h">
+      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyCamera.h">
+      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyRender.h">
+      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
+    </ClInclude>
+    <ClInclude Include="EEngineMemoryMgr.h" />
   </ItemGroup>
 </Project>

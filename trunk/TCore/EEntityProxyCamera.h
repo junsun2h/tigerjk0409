@@ -1,11 +1,19 @@
 #pragma once
 
 #include "IEntityProxy.h"
+#include "CUnitPool.h"
+
 
 class EEntityProxyCamera : public IEntityProxyCamera
 {
+	// only object pool can make&delete this class
+	friend CObjectPool<EEntityProxyCamera>;
+	EEntityProxyCamera(){}
+	~EEntityProxyCamera(){}
+
 public:
-	EEntityProxyCamera(std::string& name, long id );
+	void					Init(std::string& name, long id );
+	void					Destroy(){}
 
 	long					GetID()	override							{ return m_ID; }
 	IEntity*				GetEntity()	override						{ return m_pEntity;}
@@ -17,7 +25,7 @@ public:
 	const CCAMERA_DESC&		GetDesc() override		{ return m_Desc; }
 
 	long					GetLastTransformChangedFrame() override	{ return m_FrameTransformChanged; }
-
+	
 private:
 	void					SetViewDescFromWorldMatrix();
 

@@ -4,7 +4,7 @@
 #include "CGrowableArray.h"
 
 
-enum RENDER_BUFFER
+enum eRENDER_BUFFER
 {
 	RENDER_BUFFER_0,
 	RENDER_BUFFER_1,
@@ -13,7 +13,7 @@ enum RENDER_BUFFER
 
 class ERenderer
 {
-	CGrowableArray <RENDER_COMMAND> m_Jobs;
+	CGrowableArray <eRENDER_COMMAND> m_Jobs;
 	CRITICAL_SECTION			m_csRenderQueue;
 	HANDLE						m_hRenderThread;
 	HANDLE						m_hRenderQueueSemaphore;
@@ -48,7 +48,7 @@ private:
 	bool						IsRenderThread();
 	bool						IsMainThread();
 
-	byte*						AddCommand(RENDER_COMMAND cmd, size_t bufBytes);
+	byte*						AddCommand(eRENDER_COMMAND cmd, size_t bufBytes);
 
 	void						FlushAndWait();
 	void						FlushWithoutWait();
