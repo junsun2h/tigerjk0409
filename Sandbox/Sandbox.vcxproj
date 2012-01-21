@@ -87,7 +87,6 @@
     <ClInclude Include="SMainToolBar.h" />
     <ClInclude Include="SMeshImportor.h" />
     <ClInclude Include="SPropertyGrid.h" />
-    <ClInclude Include="SPropertyGridReflection.h" />
     <ClInclude Include="SPropertyPanel.h" />
     <ClInclude Include="SMainFrame.h" />
     <ClInclude Include="SMainMenuBar.h" />
@@ -104,7 +103,6 @@
     <ClCompile Include="SMainToolBar.cpp" />
     <ClCompile Include="SMeshImportor.cpp" />
     <ClCompile Include="SPropertyGrid.cpp" />
-    <ClCompile Include="SPropertyGridReflection.cpp" />
     <ClCompile Include="SPropertyPanel.cpp" />
     <ClCompile Include="SSceneHierarchyPanel.cpp" />
     <ClCompile Include="STextureConvertor.cpp" />

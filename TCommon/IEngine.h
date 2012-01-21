@@ -6,7 +6,6 @@
 #include "IEntityMgr.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
-#include "ISceneMgr.h"
 #include "IRenderCallback.h"
 #include "CTimer.h"
 #include "CText.h"
@@ -45,7 +44,6 @@ struct IEngine
 
 	virtual IRDevice*			RDevice() = 0;
 	virtual IAssetMgr*			AssetMgr() = 0;
-	virtual ISceneMgr*			SceneMgr() = 0;
 	virtual IEntityMgr*			EntityMgr() =0;
 	virtual IEntityProxyMgr*	EntityProxyMgr() = 0;
 

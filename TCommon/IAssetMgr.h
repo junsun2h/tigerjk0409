@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CResource.h"
-
+#include <atlcoll.h>
 
 
 typedef	ATL::CAtlMap<long, CResourceBase*>	TYPE_RESOURCE_MAP;

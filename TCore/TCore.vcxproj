@@ -80,6 +80,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="EAABB.cpp" />
     <ClCompile Include="EActorDataProcessor.cpp" />
     <ClCompile Include="EEntityProxyMgr.cpp" />
     <ClCompile Include="EEngineMemoryMgr.cpp" />
@@ -93,13 +94,14 @@
     <ClCompile Include="EFileUtility.cpp" />
     <ClCompile Include="ELoader.cpp" />
     <ClCompile Include="EMeshDataProcessor.cpp" />
-    <ClCompile Include="ESceneMgr.cpp" />
-    <ClCompile Include="EOctreeNode.cpp" />
+    <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
+    <ClCompile Include="EQuadSpaceTreeNode.cpp" />
     <ClCompile Include="ERenderer.cpp" />
     <ClCompile Include="ETextureDataProcessor.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EAABB.h" />
     <ClInclude Include="EActorDataProcessor.h" />
     <ClInclude Include="EEntityProxyMgr.h" />
     <ClInclude Include="EEngineMemoryMgr.h" />
@@ -115,8 +117,8 @@
     <ClInclude Include="EMeshDataProcessor.h" />
     <ClInclude Include="EMotionDataProcessor.h" />
     <ClInclude Include="EMtrlDataProcessor.h" />
-    <ClInclude Include="ESceneMgr.h" />
-    <ClInclude Include="EOctreeNode.h" />
+    <ClInclude Include="EQuadSpaceTreeMgr.h" />
+    <ClInclude Include="EQuadSpaceTreeNode.h" />
     <ClInclude Include="ERenderer.h" />
     <ClInclude Include="EWinFileLoader.h" />
     <ClInclude Include="ETextureDataProcessor.h" />

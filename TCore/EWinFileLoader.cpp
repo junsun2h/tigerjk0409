@@ -19,7 +19,7 @@ bool EWinFileLoader::GetData( void** ppData, SIZE_T* pcBytes )
 {
 	*ppData = m_pData;
 	*pcBytes = m_cBytes;
-	return false;
+	return true;
 }
 
 
@@ -37,7 +37,10 @@ bool EWinFileLoader::IOT_Load()
 							NULL );
 
 	if( INVALID_HANDLE_VALUE == m_hFile )
+	{
+		assert(0);
 		return false;
+	}
 
 	DWORD size = GetFileSize(m_hFile, NULL );
 	m_pData = new BYTE[size];
@@ -45,7 +48,10 @@ bool EWinFileLoader::IOT_Load()
 	// read the header
 	DWORD dwRead;
 	if( !ReadFile( m_hFile, m_pData, size, &dwRead, NULL ) )
+	{
+		assert(0);
 		return false;
+	}
 
 	return true;
 }
@@ -61,7 +67,11 @@ bool EWinFileLoader::Load()
 		NULL );
 
 	if( INVALID_HANDLE_VALUE == m_hFile )
+	{
+		assert(0);
 		return false;
+	}
+
 
 	DWORD size = GetFileSize(m_hFile, NULL );
 	m_pData = new BYTE[size];
@@ -69,7 +79,11 @@ bool EWinFileLoader::Load()
 	// read the header
 	DWORD dwRead;
 	if( !ReadFile( m_hFile, m_pData, size, &dwRead, NULL ) )
+	{
+		assert(0);
 		return false;
+	}
+
 
 	return true;
 }

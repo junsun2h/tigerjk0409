@@ -192,7 +192,7 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 		if( pGeometry->vertexCount <= 0)
 			return;
 
-		size_t size = SIZE_OF_VERTEX(pGeometry->eVertexType) * pGeometry->vertexCount;
+		size_t size = VERTEX_STRIDE(pGeometry->eVertexType) * pGeometry->vertexCount;
 		pGeometry->pGraphicMemoryVertexBuffer = CreateBuffer(pGeometry->pVertexBuffer, size, D3D11_BIND_VERTEX_BUFFER);
 
 		if( pGeometry->primitiveCount > 0)

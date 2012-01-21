@@ -1,10 +1,12 @@
 #pragma once
 
-#include "CDefine.h"
+#include "CVertex.h"
 #include "CUnitPool.h"
 #include <string>
 #include <locale>
-#include <atlcoll.h>
+
+
+#define MESH_FILE_VERSION	1
 
 #define MAX_GEOMETRY	5
 #define MAX_NAME		64
@@ -56,72 +58,6 @@ enum eTEXTURE_TYPE
 };
 
 
-enum eCVERTEX_TYPE
-{
-	FVF_3FP,
-	FVF_3FP_1DC,		// 3 float position + 1 DWORD Color
-	FVF_3FP_1DC_2HT,
-	FVF_3FP_4BN_2HT,
-	FVF_3FP_4BN_2HT_4BW,
-
-	FVF_INVALID
-};
-
-
-struct CVertexP 
-{
-	CVector3		vPos;
-
-	static size_t Size()	{ return 12; }
-};
-
-struct CVertexPC 
-{
-	CVector3		vPos;
-	uint32			color;
-
-	static size_t Size()	{ return 16; }
-};
-
-struct CVertexPCT
-{
-	CVector3	vPos;
-	DWORD		vColor;
-	XMHALF2		vTex;
-
-	static size_t Size()	{ return 20; }
-};
-
-struct CVertexPNT
-{
-	CVector3	vPos;
-	XMBYTE4		vNormal;
-	XMHALF2		vTex;
-
-	static size_t Size()	{ return 20; }
-};
-
-struct CVertexPNTW
-{
-	CVector3	vPos;
-	XMBYTE4		vNormal;
-	XMHALF2		vTex;
-	XMUBYTE4	boneIDs;
-	XMUBYTE4	fWeight;
-
-	static size_t Size()	{ return 28; }
-};
-
-inline size_t SIZE_OF_VERTEX(eCVERTEX_TYPE type)
-{
-	if( type == FVF_3FP ) return CVertexP::Size();
-	else if( type == FVF_3FP_1DC ) return CVertexPC::Size();
-	else if( type == FVF_3FP_1DC_2HT ) return CVertexPCT::Size();
-	else if( type == FVF_3FP_4BN_2HT ) return CVertexPNT::Size();
-	else if( type == FVF_3FP_4BN_2HT_4BW ) return CVertexPNTW::Size();
-
-	return 0;
-};
 
 enum eCINDEX_TYPE
 {
@@ -270,12 +206,6 @@ class CResourceTexture : public CResourceBase
 	// only object pool can make&delete this class
 	friend CObjectPool<CResourceTexture>;
 	CResourceTexture()
-		: pShaderResourceView(NULL)
-		, pRenderTargetView(NULL)
-		, pTextureSource(NULL)
-		, usage(TEXTURE_NORMAL)
-		, Format(COLOR_FORMAT_UNKNOWN)
-		, bDeleteMemoryAfterLoading(false)
 	{
 	}
 
@@ -293,6 +223,16 @@ public:
 	UINT				Width;
 	UINT				height;
 	UINT				MipLevels;
+
+	void Init()
+	{
+		pShaderResourceView = NULL;
+		pRenderTargetView = NULL;
+		pTextureSource = NULL;
+		usage = TEXTURE_NORMAL;
+		Format = COLOR_FORMAT_UNKNOWN;
+		bDeleteMemoryAfterLoading = false;
+	}
 
 	eRESOURCE_TYPE	Type() override { return RESOURCE_TEXTURE; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_TEXTURE); }

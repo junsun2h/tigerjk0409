@@ -14,6 +14,7 @@ IEntity* EEntityMgr::SpawnEntity(std::string name)
 
 	EEntity* newObject = g_Engine.EngMemoryPoolMgr()->GetNewEntity();
 	newObject->Init(name, newID);
+
 	m_EntityMap.SetAt( newID, (EEntity*)newObject );
 
 	return newObject;

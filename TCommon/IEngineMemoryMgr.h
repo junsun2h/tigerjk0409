@@ -10,4 +10,5 @@
 struct IEngineMemoryMgr
 {
 	virtual CResourceBase*	GetNewResource(eRESOURCE_TYPE type) = 0;
+	virtual void			RemoveResource(CResourceBase* pResource) = 0;
 };

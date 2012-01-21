@@ -23,7 +23,12 @@ EEngineMemoryMgr::~EEngineMemoryMgr()
 CResourceBase*	EEngineMemoryMgr::GetNewResource(eRESOURCE_TYPE type)
 {
 	if( type == RESOURCE_GEOMETRY )			{	return m_MemPoolGeometry.GetNew();	}
-	else if( type == RESOURCE_TEXTURE )		{	return m_MemPoolTexture.GetNew();	}
+	else if( type == RESOURCE_TEXTURE )		
+	{
+		CResourceTexture* pTexture = m_MemPoolTexture.GetNew();
+		pTexture->Init();
+		return pTexture;	
+	}
 	else if( type == RESOURCE_MESH )		{	return m_MemPoolMesh.GetNew();	}
 	else if( type == RESOURCE_ACTOR )		{	return m_MemPoolActor.GetNew();	}
 	else if( type == RESOURCE_MOTION )		{	return m_MemPoolMotion.GetNew();	}

@@ -49,9 +49,6 @@
     <ClInclude Include="IMotionMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
-    <ClInclude Include="ISceneMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
     <ClInclude Include="IRenderHelper.h">
       <Filter>Interface_Renderer</Filter>
     </ClInclude>
@@ -74,6 +71,21 @@
       <Filter>DataStructure</Filter>
     </ClInclude>
     <ClInclude Include="CDefine.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CVertex.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="IAABB.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="CLine.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlane.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CFrustrum.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
   </ItemGroup>

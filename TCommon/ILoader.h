@@ -29,9 +29,9 @@ struct IDataLoader
 struct IDataProcessor
 {
 	virtual ~IDataProcessor()	{}
-	virtual bool	PopData() = 0;
-	virtual bool	PT_Process( void* pData, SIZE_T cBytes ) = 0;
-	virtual bool	Process( void* pData, SIZE_T cBytes ) = 0;
+	virtual bool			PopData() = 0;
+	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) = 0;
+	virtual CResourceBase*	Process( void* pData, SIZE_T cBytes ) = 0;
 };
 
 

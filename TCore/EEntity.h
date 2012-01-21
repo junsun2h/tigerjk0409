@@ -5,6 +5,11 @@
 #include "IEntity.h"
 #include "CGrowableArray.h"
 #include "CUnitPool.h"
+#include "EAABB.h"
+
+
+typedef std::list<UINT>	TYPE_SPACE_IDS;
+
 
 class EEntity : public IEntity
 {
@@ -19,12 +24,18 @@ public:
 	UINT			GetID() override			{ return m_ID; };
 	std::string		GetName() override			{ return m_Name; }
 
+	TYPE_SPACE_IDS*	GetSpaceIDList()			{ return &m_SpaceIDList;}
+	void			AddSpaceID(UINT id);
+	void			RemoveSpaceID(UINT id);
+
 	void			Destroy();
 	void			SendEvent( EntityEvent &e ) override;
-	
+	bool			IsVisible() override;
+
 private:
 	UINT			m_ID;
 	std::string		m_Name;
+	std::list<UINT>	m_SpaceIDList;
 
 	CGrowableArray<EntityEvent> m_EventQueue;	// event stack for additional events while event is processing
 
@@ -66,6 +77,9 @@ public:
 	void			UpdateWorldTM() override;
 
 private:
+	void			UpdateLocalFromWorld();
+	void			OnTransformChanged();
+
 	CVector3		m_LocalPos;
 	CVector3		m_LocalScale;
 	CQuat			m_LocalRotation;
@@ -89,12 +103,18 @@ public:
 
 private:
 	IEntity*				m_pParent;
-	std::vector<IEntity*>	m_Children;
 
-	//////////////////////////////////////////////////////////////////////////
-	// Culling information
+	typedef std::vector<EEntity*>	TYPE_ENTITY_LIST;
+	TYPE_ENTITY_LIST		m_Children;
+
 public:
+	//////////////////////////////////////////////////////////////////////////
 	// AABB
-	bool			m_OffScreen;
+	const IAABB*	GetWorldAABB() override		{ return &m_WorldAABB; }
+	const IAABB*	GetLocalAABB() override		{ return &m_LocalAABB; }
+
+private:
+	EAABB			m_WorldAABB;
+	EAABB			m_LocalAABB;
 };
 

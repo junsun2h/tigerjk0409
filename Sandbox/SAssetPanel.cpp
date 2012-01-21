@@ -76,6 +76,18 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 		pPropertyPanel->SetObject( (CResourceTexture*)pTexture );
 	}
+	else if( fileType == RESOURCE_FILE_MESH )
+	{
+		const CResourceBase* pMesh = pAssetMgr->GetResource(RESOURCE_MESH, strItem.c_str().AsChar() );
+
+		if( pMesh == NULL )
+		{
+			wxString fullPath = wxString(m_Path) + wxString("\\Data\\mesh\\") + strItem + wxString(".tmesh");
+			pMesh = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_MESH );
+		}
+
+		pPropertyPanel->SetObject( (CResourceMesh*)pMesh );
+	}
 }
 
 

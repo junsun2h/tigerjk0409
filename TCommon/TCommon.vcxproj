@@ -63,10 +63,15 @@
   <ItemGroup>
     <ClInclude Include="CColor.h" />
     <ClInclude Include="CDefine.h" />
+    <ClInclude Include="CFrustrum.h" />
     <ClInclude Include="CGrowableArray.h" />
+    <ClInclude Include="CLine.h" />
+    <ClInclude Include="CPlane.h" />
     <ClInclude Include="CResource.h" />
     <ClInclude Include="CText.h" />
     <ClInclude Include="CUnitPool.h" />
+    <ClInclude Include="CVertex.h" />
+    <ClInclude Include="IAABB.h" />
     <ClInclude Include="IActorMgr.h" />
     <ClInclude Include="IAssetMgr.h" />
     <ClInclude Include="IEngine.h" />
@@ -84,7 +89,6 @@
     <ClInclude Include="CMathType.h" />
     <ClInclude Include="IRenderCallback.h" />
     <ClInclude Include="IRenderHelper.h" />
-    <ClInclude Include="ISceneMgr.h" />
     <ClInclude Include="xnamath.h" />
   </ItemGroup>
   <ItemGroup>

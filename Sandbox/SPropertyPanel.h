@@ -50,6 +50,7 @@ public:
 
 	void					SetObject( IEntity* pEntity );
 	void					SetObject( const CResourceTexture* pResource );
+	void					SetObject( const CResourceMesh* pResource );
 	void					SetEmpty();
 
 private:

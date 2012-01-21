@@ -3,7 +3,7 @@
 #include "CDefine.h"
 #include "CMathType.h"
 #include "IEntityProxy.h"
-
+#include "IAABB.h"
 
 
 enum eENTITY_TYPE
@@ -32,6 +32,7 @@ struct IEntity
 {
 	virtual	UINT			GetID()	= 0;
 	virtual std::string		GetName() = 0;
+	virtual	bool			IsVisible() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// entity properties
@@ -79,5 +80,9 @@ struct IEntity
 	virtual int			GetChildCount()	 = 0;
 	virtual IEntity*	GetParent() = 0;
 
+	//////////////////////////////////////////////////////////////////////////
+	// AABB
+	virtual const IAABB*	GetWorldAABB() = 0;
+	virtual const IAABB*	GetLocalAABB() = 0;
 };
 

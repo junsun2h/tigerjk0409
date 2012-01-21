@@ -16,10 +16,9 @@ public:
 	~EEngineMemoryMgr();
 
 	virtual CResourceBase*	GetNewResource(eRESOURCE_TYPE type) override;
+	virtual void			RemoveResource(CResourceBase* pResource) override;
 
 public:
-	void					RemoveResource(CResourceBase* pResource);
-
 	EEntity*				GetNewEntity();
 	void					RemoveEntity(IEntity* pEntity);
 

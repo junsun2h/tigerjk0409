@@ -20,6 +20,9 @@ void EEntity::Init(std::string& name, UINT id)
 
 	m_LocalTM = XMMatrixIdentity();
 	m_WorldTM = XMMatrixIdentity();
+
+	m_LocalAABB.Reset();
+	m_WorldAABB.Reset();
 }
 
 EEntity::~EEntity()
@@ -41,6 +44,45 @@ void EEntity::Destroy()
 		m_ProxyMap.GetCount() > 0 || 
 		m_Children.size() > 0)
 		assert(0);
+
+	m_SpaceIDList.clear();
+	m_ID = -1;
+
+	m_LocalAABB.Reset();
+	m_WorldAABB.Reset();
+}
+
+void EEntity::AddSpaceID(UINT id)
+{
+	TYPE_SPACE_IDS::iterator itr = m_SpaceIDList.begin();
+	for( ; itr != m_SpaceIDList.end(); itr++ )
+	{
+		if( *itr == id)
+			return;
+	}
+
+	m_SpaceIDList.push_back(id);
+}
+
+void EEntity::RemoveSpaceID(UINT id)
+{
+	TYPE_SPACE_IDS::iterator itr = m_SpaceIDList.begin();
+	for( ; itr != m_SpaceIDList.end(); itr++ )
+	{
+		if( *itr == id)
+		{
+			m_SpaceIDList.erase(itr);
+			return;
+		}
+	}
+}
+
+bool EEntity::IsVisible()
+{
+	if( GetProxy(ENTITY_PROXY_RENDER) == NULL )
+		return false;
+
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -81,26 +123,27 @@ inline void EEntity::SetLocalTM(const XMMATRIX& tm)
 	UpdateWorldTM();
 }
 
+inline void EEntity::UpdateLocalTM()
+{
+	m_LocalTM = XMMATRIX_UTIL::TransformationAffine(m_LocalScale, m_LocalRotation, m_LocalPos);
+	UpdateWorldTM();
+
+	int count = m_Children.size();
+	for(int i= 0; i < count; i++)
+	{
+		m_Children[i]->UpdateWorldTM();
+	}
+}
+
 void EEntity::SetWorldPos(const CVector3& _pos)
 {
 	m_WorldTM._41 = _pos.x;
 	m_WorldTM._42 = _pos.y;
 	m_WorldTM._43 = _pos.z;
-
 	m_WorldPos = _pos;
 
-	if( m_pParent )
-	{
-		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
-		m_LocalTM =  parentWorldInverse * m_WorldTM;		
-		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
-	}
-	else
-	{
-		m_LocalTM =  m_WorldTM;		
-		m_LocalPos = m_WorldPos;
-		m_LocalRotation = m_WorldRotation;
-	}
+	UpdateLocalFromWorld();
+	OnTransformChanged();
 }
 
 inline void EEntity::SetWorldRot(const CQuat& _rot)
@@ -108,18 +151,8 @@ inline void EEntity::SetWorldRot(const CQuat& _rot)
 	m_WorldRotation = _rot;
 	m_WorldTM = XMMATRIX_UTIL::TransformationAffine( CVector3(1,1,1), m_WorldRotation, m_WorldPos);
 	
-	if( m_pParent )
-	{
-		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
-		m_LocalTM =  parentWorldInverse * m_WorldTM;		
-		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
-	}
-	else
-	{
-		m_LocalTM =  m_WorldTM;		
-		m_LocalPos = m_WorldPos;
-		m_LocalRotation = m_WorldRotation;
-	}
+	UpdateLocalFromWorld();
+	OnTransformChanged();
 }
 
 inline void EEntity::SetWorldTM(const XMMATRIX& tm)
@@ -127,44 +160,8 @@ inline void EEntity::SetWorldTM(const XMMATRIX& tm)
 	m_WorldTM = tm;
 	XMMATRIX_UTIL::Decompose(NULL, &m_WorldRotation, &m_WorldPos, m_WorldTM);
 
-	if( m_pParent )
-	{
-		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
-		m_LocalTM =  parentWorldInverse * m_WorldTM;		
-		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
-
-		EntityEvent e;
-		e.type = E_EVENT_TRANSFORM_CHANGED;
-		SendEvent(e);
-
-		int count = m_Children.size();
-		for(int i= 0; i < count; i++)
-		{
-			m_Children[i]->UpdateWorldTM();
-		}
-	}
-	else
-	{
-		m_LocalTM =  m_WorldTM;		
-		m_LocalPos = m_WorldPos;
-		m_LocalRotation = m_WorldRotation;
-		
-		EntityEvent e;
-		e.type = E_EVENT_TRANSFORM_CHANGED;
-		SendEvent(e);
-	}
-}
-
-inline void EEntity::UpdateLocalTM()
-{
-	m_LocalTM = XMMATRIX_UTIL::TransformationAffine(m_LocalScale, m_LocalRotation, m_LocalPos);
-	UpdateWorldTM();
-	
-	int count = m_Children.size();
-	for(int i= 0; i < count; i++)
-	{
-		m_Children[i]->UpdateWorldTM();
-	}
+	UpdateLocalFromWorld();
+	OnTransformChanged();
 }
 
 inline void EEntity::UpdateWorldTM()
@@ -181,20 +178,57 @@ inline void EEntity::UpdateWorldTM()
 	}
 	else
 	{
-		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetLocalTM());
+		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetWorldTM());
 		XMMATRIX_UTIL::Decompose(NULL, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+	}
 
-		EntityEvent e;
-		e.type = E_EVENT_TRANSFORM_CHANGED;
-		SendEvent(e);
+	OnTransformChanged();
+}
 
-		int count = m_Children.size();
-		for(int i= 0; i < count; i++)
-		{
-			m_Children[i]->UpdateWorldTM();
-		}
+void EEntity::UpdateLocalFromWorld()
+{
+	if( m_pParent )
+	{
+		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
+		m_LocalTM =  parentWorldInverse * m_WorldTM;		
+		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+	}
+	else
+	{
+		m_LocalTM =  m_WorldTM;		
+		m_LocalPos = m_WorldPos;
+		m_LocalRotation = m_WorldRotation;	
 	}
 }
+
+void EEntity::OnTransformChanged()
+{
+	int count = m_Children.size();
+
+	for(int i= 0; i < count; i++)
+	{
+		m_Children[i]->UpdateWorldTM();
+
+		const IAABB* pChildAABB = m_Children[i]->GetLocalAABB();
+		if( pChildAABB->IsValid() )
+		{
+			m_LocalAABB.AddAABB( m_LocalTM, pChildAABB->GetMin(), pChildAABB->GetMax() );
+		}
+	}
+
+	if( m_LocalAABB.IsValid() )
+	{
+		m_WorldAABB.Reset();
+		m_WorldAABB.AddAABB( m_WorldTM, m_LocalAABB.GetMin(), m_LocalAABB.GetMax() );
+
+		g_Engine.QuadSpaceMgr()->Update(this);
+	}
+	
+	EntityEvent e;
+	e.type = E_EVENT_TRANSFORM_CHANGED;
+	SendEvent(e);
+}
+
 
 void EEntity::MoveLocalAxis(float x, float y, float z)
 {
@@ -261,7 +295,7 @@ void EEntity::AttachChild( IEntity* pChild )
 			return;
 	}
 
-	m_Children.push_back( pChild );
+	m_Children.push_back( (EEntity*)pChild );
 	pChild->Reparent( this );
 }
 
@@ -270,7 +304,7 @@ void EEntity::DetachChild( IEntity* _pChild )
 	if( _pChild == this )
 		return;
 
-	std::vector<IEntity*>::iterator itr = m_Children.begin();
+	TYPE_ENTITY_LIST::iterator itr = m_Children.begin();
 
 	for( ; itr != m_Children.end(); itr++ )
 	{
@@ -287,7 +321,7 @@ void EEntity::DetachChild( IEntity* _pChild )
 
 void EEntity::DetachAllChild()
 {
-	std::vector<IEntity*>::iterator itr = m_Children.begin();
+	TYPE_ENTITY_LIST::iterator itr = m_Children.begin();
 
 	for( ; itr != m_Children.end(); itr++ )
 	{
