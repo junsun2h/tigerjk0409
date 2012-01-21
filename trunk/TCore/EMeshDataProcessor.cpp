@@ -51,6 +51,9 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	}
 	
 	CResourceMesh* pMesh = (CResourceMesh*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
+
+	ECopyData( &pMesh->min, &pSrcBits,  12 );
+	ECopyData( &pMesh->max, &pSrcBits,  12 );
 	ECopyData( &pMesh->geometryNum, &pSrcBits,  1 );
 
 
