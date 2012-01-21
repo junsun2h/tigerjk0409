@@ -1,5 +1,4 @@
 #include "EMeshDataProcessor.h"
-#include "IRDevice.h"
 #include "EEngine.h"
 
 
@@ -9,17 +8,17 @@ void ECopyData(void* dest, BYTE** src, int size)
 	*src += size;
 }
 
-void ECopyString(void* dest, BYTE** src)
+void ECopyString(char* dest, BYTE** src)
 {
 	BYTE nameLength;
 	ECopyData(&nameLength, src, 1);
-	ECopyData(&dest, src, nameLength);
+	strcpy_s( dest, 64, (char*)*src);
+	*src += nameLength;
 }
 
 
-EMeshDataProcessor::EMeshDataProcessor( IRDevice* pRDevice, std::string name )
-	: m_pRDevice(pRDevice)
-	, m_name(name)
+EMeshDataProcessor::EMeshDataProcessor( std::string name )
+	: m_name(name)
 {
 }
 
@@ -38,79 +37,59 @@ bool EMeshDataProcessor::PopData()
 	return true;
 }
 
+CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
+{
+	BYTE* pSrcBits = ( BYTE* )pData;
+
+	UINT version;
+	ECopyData( &version, &pSrcBits,  4 );
+
+	if( version != MESH_FILE_VERSION )
+	{
+		assert(0);
+		return NULL;
+	}
+	
+	CResourceMesh* pMesh = (CResourceMesh*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
+	ECopyData( &pMesh->geometryNum, &pSrcBits,  1 );
+
+
+	for(int i=0; i< pMesh->geometryNum; ++i)
+	{
+		CResourceGeometry* pGeometry = (CResourceGeometry*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
+
+		ECopyData( &pGeometry->eVertexType, &pSrcBits,  4 );
+		ECopyData( &pGeometry->vertexCount, &pSrcBits,  4 );
+
+		pGeometry->pVertexBuffer = NEW_VERTEX( pGeometry->eVertexType, pGeometry->vertexCount); 
+		ECopyData( pGeometry->pVertexBuffer, &pSrcBits, VERTEX_STRIDE(pGeometry->eVertexType) * pGeometry->vertexCount );
+
+		ECopyData( &pGeometry->eIndexType, &pSrcBits,  4 );
+		ECopyData( &pGeometry->primitiveCount, &pSrcBits,  4 );
+
+		if( pGeometry->eIndexType == INDEX_16BIT_TYPE)
+		{
+			pGeometry->pIndexBuffer = new uint16[ pGeometry->primitiveCount * 3 ]; 
+			ECopyData( pGeometry->pIndexBuffer, &pSrcBits, 2 * pGeometry->primitiveCount * 3);
+		}
+		else
+		{
+			pGeometry->pIndexBuffer = new UINT[ pGeometry->primitiveCount * 3 ]; 
+			ECopyData( pGeometry->pIndexBuffer, &pSrcBits, 4 * pGeometry->primitiveCount * 3);
+		}
+
+		ECopyString(pGeometry->mtrlName, &pSrcBits);
+
+		pMesh->goemetries[i] = g_Engine.AssetMgr()->Insert( pGeometry );
+	}
+
+	g_Engine.AssetMgr()->Insert( pMesh );
+	return pMesh;
+}
+
 bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 {
 	assert ( ELoader::IsDataProcThread() );
-
-	byte ptr = NULL;
-
-	BYTE* pSrcBits = ( BYTE* )pData;
-
-	uint16 version;
-	uint8 levelOfDetail;
-
-	ECopyData(&version, &pSrcBits, 2);
-	ECopyData(&levelOfDetail, &pSrcBits, 2);
-
-	if( levelOfDetail = 1 )
-	{
-		PT_ReadMesh(&pSrcBits, m_name);
-	}
-	
+			
 	return true;
-}
-
-
-long EMeshDataProcessor::PT_ReadMesh(BYTE** ppSrcBits, std::string name)
-{
-	assert ( ELoader::IsDataProcThread() );
-
-	BYTE* pSrcBits = *ppSrcBits;
-	
-	CResourceMesh* pMesh = (CResourceMesh*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
-	pMesh->RID = GET_HASH_KEY(name);
-	strcpy_s( pMesh->name, m_name.c_str() );
-
-	ECopyData(&pMesh->geometryNum, &pSrcBits, 1);
-
-	for( int i=0; pMesh->geometryNum; ++i )
-	{
-		CResourceGeometry* pGeometry = (CResourceGeometry*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
-		
-		ECopyString(&pGeometry->name, &pSrcBits );
-		pGeometry->RID = GET_HASH_KEY( pGeometry->name);
-
-		{	// default material
-			ECopyString(&pGeometry->mtrlName, &pSrcBits );
-			pGeometry->defaultMtrl = GET_HASH_KEY( pGeometry->mtrlName);
-		}
-		
-		{	// vertex information
-			ECopyData(&pGeometry->eVertexType, &pSrcBits, 2);
-			ECopyData(&pGeometry->vertexCount, &pSrcBits, 2);
-
-			memcpy(pGeometry->pVertexBuffer, pSrcBits, SIZE_OF_VERTEX(pGeometry->eVertexType) * pGeometry->vertexCount );
-			*ppSrcBits += pGeometry->vertexCount;
-		}
-		
-		{	// index information
-			ECopyData(&pGeometry->eIndexType, &pSrcBits, 2);
-			ECopyData(&pGeometry->primitiveCount, &pSrcBits, 2);
-
-			if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
-				memcpy(pGeometry->pIndexBuffer, pSrcBits, 2 * 3 * pGeometry->primitiveCount );
-			else
-				memcpy(pGeometry->pIndexBuffer, pSrcBits, 4 * 3 * pGeometry->primitiveCount );
-			*ppSrcBits += pGeometry->primitiveCount;	
-		}
-		m_pRDevice->PT_CreateGraphicBuffer( pGeometry );
-
-		pMesh->goemetries[i] = pGeometry->RID;
-
-		m_pResources.push_back( pGeometry );
-	}
-
-	m_pResources.push_back( pMesh );
-
-	return pMesh->RID;
 }

@@ -8,16 +8,16 @@ struct IRDevice;
 
 class EMeshDataProcessor : public IDataProcessor
 {
-	IRDevice*				m_pRDevice;
 	std::string				m_name;
 	std::vector<CResourceBase*>	m_pResources;
 	
 	long					PT_ReadMesh(BYTE** ppSrcBits, std::string name);
 
 public:
-	EMeshDataProcessor( IRDevice* pRDevice, std::string name );
+	EMeshDataProcessor(std::string name );
 	~EMeshDataProcessor();
 
 	virtual bool			PopData() override;
 	virtual bool			PT_Process( void* pData, SIZE_T cBytes ) override;
+	virtual CResourceBase*	Process( void* pData, SIZE_T cBytes ) override;
 };

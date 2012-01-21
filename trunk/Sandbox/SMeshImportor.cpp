@@ -1,460 +1,493 @@
 #include "SMeshImportor.h"
 #include "CResource.h"
-
+#include <iostream>
+#include <fstream>
 
 namespace SMESH_LOADER
 {
-	
-TRAW_MESH::TRAW_MESH()
-	: BBoxMin(FLT_MAX, FLT_MAX, FLT_MAX)
-	, BBoxMax(-FLT_MAX, -FLT_MAX, -FLT_MAX)
-	, coordSys(COODSYS_RAW)
-{
-}
+	typedef std::vector<CResourceGeometry*>	GEOMETRY_LIST;
 
-TRAW_MESH::~TRAW_MESH()
-{
-	MTRL_FACE_MAP::iterator itr = faceMtrlID.begin();
-	while (itr != faceMtrlID.end())
+	TRAW_MESH::TRAW_MESH()
+		: BBoxMin(FLT_MAX, FLT_MAX, FLT_MAX)
+		, BBoxMax(-FLT_MAX, -FLT_MAX, -FLT_MAX)
+		, coordSys(COODSYS_RAW)
 	{
-		SAFE_DELETE(itr->second);
-		itr++;
 	}
-}
 
-void TRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_)
-{
-	// max coordinate -> directx coordinate
-	if( coordSys == COODSYS_RAW && coodSys_ == COODSYS_DIRECTX )
+	TRAW_MESH::~TRAW_MESH()
 	{
-		coordSys = coodSys_;
-		int posCount = posList.size();
-		for( int i=0; i < posCount; ++i)
-			TSWAP( posList[i].y, posList[i].z );
-
-		int normalCount = normalList.size();
-		for( int i=0; i < normalCount; ++i)
-			TSWAP( normalList[i].y, normalList[i].z );
-
-		int uvCount = uvList.size();
-		for( int i=0; i < uvCount; ++i)
-			uvList[i].y = 1 - uvList[i].y;
-
-		TSWAP( postion.y,  postion.z);
-
-		rotation.x *= -1;
-		rotation.y *= -1;
-		rotation.z *= -1;
-		TSWAP( rotation.y,  rotation.z);
-	}
-}
-
-
-
-//------------------------------------------------------------------------------------------------------
-bool LoadRawMesh(const char* strFileName, TRAW_MESH& RawMesh)
-{
-	char* delimiters = " ";
-	char* pContext = NULL;
-
-#define READ_BUFFER_SIZE 256
-	FILE *fp;
-
-	char buf[READ_BUFFER_SIZE];
-	if( fopen_s( &fp, strFileName, "rb") != 0)
-		return false;
-
-	while (!feof (fp))
-	{
-		fgets (buf, sizeof (buf), fp);
-
-		if( strncmp( buf, "transform",  9) == 0 )
+		MTRL_FACE_MAP::iterator itr = faceMtrlID.begin();
+		while (itr != faceMtrlID.end())
 		{
-			fgets (buf, sizeof (buf), fp);
-
-			RawMesh.postion.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
-			RawMesh.postion.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-			RawMesh.postion.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
-
-			fgets (buf, sizeof (buf), fp);
-
-			RawMesh.rotation.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );		
-			RawMesh.rotation.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
-			RawMesh.rotation.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-			RawMesh.rotation.w = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+			SAFE_DELETE(itr->second);
+			itr++;
 		}
-		else if( strncmp( buf, "material",  8) == 0 )
+	}
+
+	void TRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_)
+	{
+		// max coordinate -> directx coordinate
+		if( coordSys == COODSYS_RAW && coodSys_ == COODSYS_DIRECTX )
+		{
+			coordSys = coodSys_;
+			int posCount = posList.size();
+			for( int i=0; i < posCount; ++i)
+				TSWAP( posList[i].y, posList[i].z );
+
+			int normalCount = normalList.size();
+			for( int i=0; i < normalCount; ++i)
+				TSWAP( normalList[i].y, normalList[i].z );
+
+			int uvCount = uvList.size();
+			for( int i=0; i < uvCount; ++i)
+				uvList[i].y = 1 - uvList[i].y;
+
+			TSWAP( postion.y,  postion.z);
+
+			rotation.x *= -1;
+			rotation.y *= -1;
+			rotation.z *= -1;
+			TSWAP( rotation.y,  rotation.z);
+		}
+	}
+
+
+
+	//------------------------------------------------------------------------------------------------------
+	bool LoadRawMesh(const char* strFileName, TRAW_MESH& RawMesh)
+	{
+		char* delimiters = " ";
+		char* pContext = NULL;
+
+	#define READ_BUFFER_SIZE 256
+		FILE *fp;
+
+		char buf[READ_BUFFER_SIZE];
+		if( fopen_s( &fp, strFileName, "rb") != 0)
+			return false;
+
+		while (!feof (fp))
 		{
 			fgets (buf, sizeof (buf), fp);
-			if( strncmp( buf, "Multimaterial" ,13) == 0 )
+
+			if( strncmp( buf, "transform",  9) == 0 )
 			{
 				fgets (buf, sizeof (buf), fp);
-				int count = atoi( buf );
-				for( int i=0; i< count; ++i)
+
+				RawMesh.postion.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
+				RawMesh.postion.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+				RawMesh.postion.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+
+				fgets (buf, sizeof (buf), fp);
+
+				RawMesh.rotation.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );		
+				RawMesh.rotation.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+				RawMesh.rotation.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+				RawMesh.rotation.w = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+			}
+			else if( strncmp( buf, "material",  8) == 0 )
+			{
+				fgets (buf, sizeof (buf), fp);
+				if( strncmp( buf, "Multimaterial" ,13) == 0 )
 				{
 					fgets (buf, sizeof (buf), fp);
+					int count = atoi( buf );
+					for( int i=0; i< count; ++i)
+					{
+						fgets (buf, sizeof (buf), fp);
+						RawMesh.mtrlList.push_back( std::string(buf) );
+					}
+				}
+				else
+				{
 					RawMesh.mtrlList.push_back( std::string(buf) );
 				}
 			}
-			else
+			else if( strncmp( buf, "position",  8) == 0 )
 			{
-				RawMesh.mtrlList.push_back( std::string(buf) );
-			}
-		}
-		else if( strncmp( buf, "position",  8) == 0 )
-		{
-			int count = atoi( &buf[9] );
-			RawMesh.posList.reserve( count );
-			for( int i=0; i< count; ++i)
-			{
-				fgets (buf, sizeof (buf), fp);
-				CVector3 pos;
-
-				pos.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
-				pos.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-				pos.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-
-				if( RawMesh.BBoxMin.x > pos.x )
-					RawMesh.BBoxMin.x = pos.x;
-				else if( RawMesh.BBoxMax.x < pos.x)
-					RawMesh.BBoxMax.x = pos.x;
-
-				if( RawMesh.BBoxMin.y > pos.y )
-					RawMesh.BBoxMin.y = pos.y;
-				else if( RawMesh.BBoxMax.y < pos.y)
-					RawMesh.BBoxMax.y = pos.y;
-
-				if( RawMesh.BBoxMin.z > pos.z )
-					RawMesh.BBoxMin.z = pos.z;
-				else if( RawMesh.BBoxMax.z < pos.z)
-					RawMesh.BBoxMax.z = pos.z;
-
-				RawMesh.posList.push_back( pos );
-			}
-		}
-		else if( strncmp( buf, "normal", 6) == 0 )
-		{
-			int count = atoi( &buf[7] );
-			RawMesh.normalList.reserve( count );
-			for( int i=0; i< count; ++i)
-			{
-				fgets (buf, sizeof (buf), fp);
-				CVector3 normal;
-
-				normal.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
-				normal.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-				normal.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-
-				RawMesh.normalList.push_back( normal );
-			}
-		}
-		else if( strncmp( buf, "uv", 2 ) == 0 )
-		{
-			int count = atoi( &buf[3] );
-			RawMesh.uvList.reserve( count );
-			for( int i=0; i< count; ++i)
-			{
-				fgets (buf, sizeof (buf), fp);
-				CVector2 uv;
-
-				uv.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
-				uv.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
-
-				RawMesh.uvList.push_back( uv );
-			}
-		}
-		else if( strncmp( buf, "facePos", 7 ) == 0 )
-		{
-			int count = atoi( &buf[8] );
-			RawMesh.facePos.reserve( count );
-			for( int i=0; i< count; ++i)
-			{
-				fgets (buf, sizeof (buf), fp);
-
-				RawMesh.facePos.push_back( atoi( strtok_s( buf, delimiters , &pContext ) ) );				
-				RawMesh.facePos.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );	
-				RawMesh.facePos.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );
-			}
-		}
-		else if( strncmp( buf, "faceUV", 6 ) == 0 )
-		{
-			int count = atoi( &buf[7] );
-			RawMesh.faceUV.reserve( count );
-			for( int i=0; i< count; ++i)
-			{
-				fgets (buf, sizeof (buf), fp);
-
-				RawMesh.faceUV.push_back( atoi( strtok_s( buf, delimiters , &pContext ) ) );				
-				RawMesh.faceUV.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );	
-				RawMesh.faceUV.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );
-			}
-		}
-		else if( strncmp( buf, "faceNormal", 10 ) == 0 )
-		{
-			int count = atoi( &buf[11] );
-			RawMesh.faceNormal.reserve( count );
-			for( int i=0; i< count; ++i)
-			{
-				fgets (buf, sizeof (buf), fp);
-
-				RawMesh.faceNormal.push_back( atoi( strtok_s( buf, delimiters , &pContext ) ) );				
-				RawMesh.faceNormal.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );	
-				RawMesh.faceNormal.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );
-			}
-		}
-		else if( strncmp( buf, "faceID", 6 ) == 0 )
-		{
-			int mtrlCount = RawMesh.mtrlList.size();
-			for( int i=0; i < mtrlCount ; ++i)
-			{
-				RawMesh.faceMtrlID.insert( MTRL_FACE_MAP::value_type( i, new std::vector<int> ));
-			}
-
-			int count = atoi( &buf[7] );
-			for( int i=0; i < count; ++i )
-			{
-				fgets (buf, sizeof (buf), fp);
-				int mtrlID = atoi(buf) - 1;
-				RawMesh.faceMtrlID.find( mtrlID )->second->push_back( i );
-			}
-		}
-		else if( strncmp( buf, "weight", 6 ) == 0 )
-		{
-			int count = atoi( &buf[7] );	
-			RawMesh.weightList.reserve( count );
-			for( int i=0; i < count; ++i )
-			{
-				fgets (buf, sizeof (buf), fp);
-				RAW_WEIGHT w;
-				w.count = atoi( strtok_s( buf, delimiters , &pContext ) );
-				if( w.count > 4)
-					w.count = 4;
-
-				for(int j=0 ; j < w.count ; ++j )
+				int count = atoi( &buf[9] );
+				RawMesh.posList.reserve( count );
+				for( int i=0; i< count; ++i)
 				{
-					w.bone[j] = atoi( strtok_s( NULL, delimiters , &pContext ) );
-					if ( j < 3 )
-						w.weight[j] = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+					fgets (buf, sizeof (buf), fp);
+					CVector3 pos;
+
+					pos.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
+					pos.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+					pos.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+
+					if( RawMesh.BBoxMin.x > pos.x )
+						RawMesh.BBoxMin.x = pos.x;
+					else if( RawMesh.BBoxMax.x < pos.x)
+						RawMesh.BBoxMax.x = pos.x;
+
+					if( RawMesh.BBoxMin.y > pos.y )
+						RawMesh.BBoxMin.y = pos.y;
+					else if( RawMesh.BBoxMax.y < pos.y)
+						RawMesh.BBoxMax.y = pos.y;
+
+					if( RawMesh.BBoxMin.z > pos.z )
+						RawMesh.BBoxMin.z = pos.z;
+					else if( RawMesh.BBoxMax.z < pos.z)
+						RawMesh.BBoxMax.z = pos.z;
+
+					RawMesh.posList.push_back( pos );
+				}
+			}
+			else if( strncmp( buf, "normal", 6) == 0 )
+			{
+				int count = atoi( &buf[7] );
+				RawMesh.normalList.reserve( count );
+				for( int i=0; i< count; ++i)
+				{
+					fgets (buf, sizeof (buf), fp);
+					CVector3 normal;
+
+					normal.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
+					normal.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+					normal.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+
+					RawMesh.normalList.push_back( normal );
+				}
+			}
+			else if( strncmp( buf, "uv", 2 ) == 0 )
+			{
+				int count = atoi( &buf[3] );
+				RawMesh.uvList.reserve( count );
+				for( int i=0; i< count; ++i)
+				{
+					fgets (buf, sizeof (buf), fp);
+					CVector2 uv;
+
+					uv.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
+					uv.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+
+					RawMesh.uvList.push_back( uv );
+				}
+			}
+			else if( strncmp( buf, "facePos", 7 ) == 0 )
+			{
+				int count = atoi( &buf[8] );
+				RawMesh.facePos.reserve( count );
+				for( int i=0; i< count; ++i)
+				{
+					fgets (buf, sizeof (buf), fp);
+
+					RawMesh.facePos.push_back( atoi( strtok_s( buf, delimiters , &pContext ) ) );				
+					RawMesh.facePos.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );	
+					RawMesh.facePos.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );
+				}
+			}
+			else if( strncmp( buf, "faceUV", 6 ) == 0 )
+			{
+				int count = atoi( &buf[7] );
+				RawMesh.faceUV.reserve( count );
+				for( int i=0; i< count; ++i)
+				{
+					fgets (buf, sizeof (buf), fp);
+
+					RawMesh.faceUV.push_back( atoi( strtok_s( buf, delimiters , &pContext ) ) );				
+					RawMesh.faceUV.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );	
+					RawMesh.faceUV.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );
+				}
+			}
+			else if( strncmp( buf, "faceNormal", 10 ) == 0 )
+			{
+				int count = atoi( &buf[11] );
+				RawMesh.faceNormal.reserve( count );
+				for( int i=0; i< count; ++i)
+				{
+					fgets (buf, sizeof (buf), fp);
+
+					RawMesh.faceNormal.push_back( atoi( strtok_s( buf, delimiters , &pContext ) ) );				
+					RawMesh.faceNormal.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );	
+					RawMesh.faceNormal.push_back( atoi( strtok_s( NULL, delimiters , &pContext ) ) );
+				}
+			}
+			else if( strncmp( buf, "faceID", 6 ) == 0 )
+			{
+				int mtrlCount = RawMesh.mtrlList.size();
+				for( int i=0; i < mtrlCount ; ++i)
+				{
+					RawMesh.faceMtrlID.insert( MTRL_FACE_MAP::value_type( i, new std::vector<int> ));
 				}
 
-				RawMesh.weightList.push_back( w );
+				int count = atoi( &buf[7] );
+				for( int i=0; i < count; ++i )
+				{
+					fgets (buf, sizeof (buf), fp);
+					int mtrlID = atoi(buf) - 1;
+					RawMesh.faceMtrlID.find( mtrlID )->second->push_back( i );
+				}
 			}
-		}
-	} // while (!feof (fp))
+			else if( strncmp( buf, "weight", 6 ) == 0 )
+			{
+				int count = atoi( &buf[7] );	
+				RawMesh.weightList.reserve( count );
+				for( int i=0; i < count; ++i )
+				{
+					fgets (buf, sizeof (buf), fp);
+					RAW_WEIGHT w;
+					w.count = atoi( strtok_s( buf, delimiters , &pContext ) );
+					if( w.count > 4)
+						w.count = 4;
 
-	return true;
-}
+					for(int j=0 ; j < w.count ; ++j )
+					{
+						w.bone[j] = atoi( strtok_s( NULL, delimiters , &pContext ) );
+						if ( j < 3 )
+							w.weight[j] = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+					}
 
+					RawMesh.weightList.push_back( w );
+				}
+			}
+		} // while (!feof (fp))
 
-
-//------------------------------------------------------------------------------------------------------
-struct TVertexKey 
-{
-	int	p,n,t;
-
-	bool operator <(const struct TVertexKey& in) const
-	{
-		if (p == in.p)
-		{
-			if (n == in.n)
-				return t < in.t;
-
-			return n < in.n;
-		}
-
-		return p < in.p;
+		return true;
 	}
-};
-typedef	std::map<TVertexKey, uint16>	UNIFIED_VERTEX_MAP;
 
 
 
-
-//------------------------------------------------------------------------------------------------------
-void CreateVertexBuffer(CResourceGeometry* pGeometry, TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap)
-{
-	pGeometry->vertexCount = vertexMap.size();
-
-	if( pRawMesh->weightList.size() > 0 )
+	//------------------------------------------------------------------------------------------------------
+	struct TVertexKey 
 	{
-		CVertexPNTW* pVertexBuf = new CVertexPNTW[ pGeometry->vertexCount ];
-		pGeometry->eVertexType = FVF_3FP_4BN_2HT_4BW;
+		int	p,n,t;
 
-		for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
+		bool operator <(const struct TVertexKey& in) const
 		{
-			CVertexPNTW* pVertex = &pVertexBuf[itrVertex->second];
+			if (p == in.p)
+			{
+				if (n == in.n)
+					return t < in.t;
 
-			pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
+				return n < in.n;
+			}
+
+			return p < in.p;
+		}
+	};
+	typedef	std::map<TVertexKey, uint16>	UNIFIED_VERTEX_MAP;
+
+
+
+
+	//------------------------------------------------------------------------------------------------------
+	void CreateVertexBuffer(CResourceGeometry* pGeometry, TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap)
+	{
+		pGeometry->vertexCount = vertexMap.size();
+
+		if( pRawMesh->weightList.size() > 0 )
+		{
+			CVertexPNTW* pVertexBuf = new CVertexPNTW[ pGeometry->vertexCount ];
+			pGeometry->eVertexType = FVF_3FP_4BN_2HT_4BW;
+
+			for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
+			{
+				CVertexPNTW* pVertex = &pVertexBuf[itrVertex->second];
+
+				pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
 			
-			CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
-			pVertex->vTex = XMHALF2( uv.x, uv.y );
+				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
+				pVertex->vTex = XMHALF2( uv.x, uv.y );
 
-			CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
-			pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
+				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
+				pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
 			
-			RAW_WEIGHT& w = pRawMesh->weightList[itrVertex->first.p];
+				RAW_WEIGHT& w = pRawMesh->weightList[itrVertex->first.p];
 
-			if( w.count == 1 )
-			{
-				pVertex->fWeight = XMUBYTE4( w.weight[0], 0, 0, 0);
-				pVertex->boneIDs = XMUBYTE4( w.bone[0], 0, 0, 0);
+				if( w.count == 1 )
+				{
+					pVertex->fWeight = XMUBYTE4( w.weight[0], 0, 0, 0);
+					pVertex->boneIDs = XMUBYTE4( w.bone[0], 0, 0, 0);
+				}
+				else if( w.count == 2 )
+				{
+					pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], 0, 0);
+					pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], 0, 0);
+				}
+				else if( w.count == 3 )
+				{
+					pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], w.weight[2], 0);
+					pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], 0);
+				}
+				else if( w.count == 4 )
+				{
+					pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], w.weight[2], w.weight[3]);
+					pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], w.bone[3]);
+				}
 			}
-			else if( w.count == 2 )
-			{
-				pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], 0, 0);
-				pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], 0, 0);
-			}
-			else if( w.count == 3 )
-			{
-				pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], w.weight[2], 0);
-				pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], 0);
-			}
-			else if( w.count == 4 )
-			{
-				pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], w.weight[2], w.weight[3]);
-				pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], w.bone[3]);
-			}
+
+			pGeometry->pVertexBuffer = pVertexBuf;
 		}
-
-		pGeometry->pVertexBuffer = pVertexBuf;
-	}
-	else
-	{
-		CVertexPNT* pVertexBuf = new CVertexPNT[ pGeometry->vertexCount ];
-		pGeometry->eVertexType = FVF_3FP_4BN_2HT;
-
-		for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
+		else
 		{
-			CVertexPNT* pVertex = &pVertexBuf[itrVertex->second];
+			CVertexPNT* pVertexBuf = new CVertexPNT[ pGeometry->vertexCount ];
+			pGeometry->eVertexType = FVF_3FP_4BN_2HT;
 
-			pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
+			for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
+			{
+				CVertexPNT* pVertex = &pVertexBuf[itrVertex->second];
 
-			CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
-			pVertex->vTex = XMHALF2( uv.x, uv.y );
+				pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
 
-			CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
-			pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
+				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
+				pVertex->vTex = XMHALF2( uv.x, uv.y );
+
+				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
+				pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
+			}
+
+			pGeometry->pVertexBuffer = pVertexBuf;
 		}
-
-		pGeometry->pVertexBuffer = pVertexBuf;
 	}
-}
 
 
-//------------------------------------------------------------------------------------------------------
-CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap, std::vector<int>* pMtrlIDList, wxString geometryName)
-{
-	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
-	IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
-
-	//////////////////////////////////////////////////////////////////////////
-	// set geometry info
-	CResourceGeometry* pGeometry = (CResourceGeometry*)pMemoryPoolMgr->GetNewResource(RESOURCE_GEOMETRY);
-	strcpy_s( pGeometry->name, geometryName.char_str() );
-	strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
-	const CResourceBase* pMtrl = pAssetMgr->GetResource( RESOURCE_MATERIAL, pGeometry->mtrlName );
-
-	if( pMtrl !=  NULL )
-		pGeometry->defaultMtrl = pMtrl->RID;
-
-	//////////////////////////////////////////////////////////////////////////
-	// set index buffer info
-	if( pMtrlIDList == NULL )
-		pGeometry->primitiveCount = pRawMesh->facePos.size()/3;
-	else
-		pGeometry->primitiveCount = pMtrlIDList->size();
-
-	pGeometry->eIndexType = INDEX_16BIT_TYPE;
-	uint16* pData = new uint16[ pRawMesh->facePos.size() ];
-
-	for ( UINT primitiveNum = 0; primitiveNum < pGeometry->primitiveCount; ++primitiveNum)
+	//------------------------------------------------------------------------------------------------------
+	CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, std::vector<int>* pMtrlIDList )
 	{
-		for( int j = 0; j < 3; ++j )
+		UNIFIED_VERTEX_MAP vertexMap;
+		IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
+
+		//////////////////////////////////////////////////////////////////////////
+		// set geometry info
+		CResourceGeometry* pGeometry = (CResourceGeometry*)pMemoryPoolMgr->GetNewResource(RESOURCE_GEOMETRY);
+		strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
+
+		//////////////////////////////////////////////////////////////////////////
+		// set index buffer info
+		if( pMtrlIDList == NULL )
+			pGeometry->primitiveCount = pRawMesh->facePos.size()/3;
+		else
+			pGeometry->primitiveCount = pMtrlIDList->size();
+
+		pGeometry->eIndexType = INDEX_16BIT_TYPE;
+		uint16* pData = new uint16[ pRawMesh->facePos.size() ];
+
+		for ( UINT primitiveNum = 0; primitiveNum < pGeometry->primitiveCount; ++primitiveNum)
 		{
-			TVertexKey v;
-
-			if( pMtrlIDList == NULL )
+			for( int j = 0; j < 3; ++j )
 			{
-				v.p = pRawMesh->facePos[ primitiveNum + j ] -1;
-				v.t = pRawMesh->faceUV[ primitiveNum + j] - 1;
-				v.n = pRawMesh->faceNormal[ primitiveNum + j] -1;
-			}
-			else
-			{
-				int faceNum = (*pMtrlIDList)[primitiveNum] * 3;
+				TVertexKey v;
 
-				v.p = pRawMesh->facePos[ faceNum + j ] -1;
-				v.t = pRawMesh->faceUV[ faceNum + j] - 1;
-				v.n = pRawMesh->faceNormal[ faceNum + j] -1;
-			}
+				if( pMtrlIDList == NULL )
+				{
+					v.p = pRawMesh->facePos[ primitiveNum + j ] -1;
+					v.t = pRawMesh->faceUV[ primitiveNum + j] - 1;
+					v.n = pRawMesh->faceNormal[ primitiveNum + j] -1;
+				}
+				else
+				{
+					int faceNum = (*pMtrlIDList)[primitiveNum] * 3;
+
+					v.p = pRawMesh->facePos[ faceNum + j ] -1;
+					v.t = pRawMesh->faceUV[ faceNum + j] - 1;
+					v.n = pRawMesh->faceNormal[ faceNum + j] -1;
+				}
 
 
-			UNIFIED_VERTEX_MAP::iterator itr = vertexMap.find(v);
+				UNIFIED_VERTEX_MAP::iterator itr = vertexMap.find(v);
 
-			if( itr == vertexMap.end() )
-			{
-				pData[ primitiveNum * 3 + j ] = vertexMap.size();
-				vertexMap.insert( UNIFIED_VERTEX_MAP::value_type( v, vertexMap.size() ) );
-			}
-			else
-			{				
-				pData[ primitiveNum * 3 + j ] = itr->second;
+				if( itr == vertexMap.end() )
+				{
+					pData[ primitiveNum * 3 + j ] = vertexMap.size();
+					vertexMap.insert( UNIFIED_VERTEX_MAP::value_type( v, vertexMap.size() ) );
+				}
+				else
+				{				
+					pData[ primitiveNum * 3 + j ] = itr->second;
+				}
 			}
 		}
-	}
 
-	pGeometry->pIndexBuffer = pData;
+		pGeometry->pIndexBuffer = pData;
 	
 
-	//////////////////////////////////////////////////////////////////////////
-	// set vertex buffer info
-	CreateVertexBuffer(pGeometry, pRawMesh, vertexMap);
+		//////////////////////////////////////////////////////////////////////////
+		// set vertex buffer info
+		CreateVertexBuffer(pGeometry, pRawMesh, vertexMap);
 
-	return pGeometry;
-}
-
-
-//------------------------------------------------------------------------------------------------------
-void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
-{
-	IAssetMgr*			pAssetMgr		= GLOBAL::Engine()->AssetMgr();
-	IEngineMemoryMgr*	pEngineMemMgr	= GLOBAL::Engine()->EngineMemoryMgr();
-
-	CResourceMesh* pMesh = (CResourceMesh*)pEngineMemMgr->GetNewResource(RESOURCE_TEXTURE);
-	strcpy_s( pMesh->name, name.char_str() );
-
-	UNIFIED_VERTEX_MAP vertexMap;
-
-	int mtrlCount = pRawMesh->faceMtrlID.size();
-
-	if( mtrlCount == 0 )
-	{
-		wxString geometryName = name + "_Geometry";
-
-		CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , vertexMap, NULL, geometryName);
-		pMesh->goemetries[0] = pAssetMgr->Insert( pGeometry );
-		pMesh->geometryNum++;
+		return pGeometry;
 	}
-	else // split mesh per material
+
+	void WriteString(std::fstream* file, std::string str )
 	{
-		for( int i = 0; i < mtrlCount; ++i)
+		uint8 strLength = str.length() + 1;
+		file->write( (char*)&strLength, 1);
+
+		if( strLength > 0 )
+			file->write( (char*)str.c_str(), strLength);
+	}
+
+	//------------------------------------------------------------------------------------------------------
+	void SaveMeshToFile(GEOMETRY_LIST& geometries, wxString name)
+	{
+		using namespace std;
+
+		fstream file;
+		file.open( name.char_str(), ios_base::out | ios_base::binary | ios_base::trunc );
+
+		UINT version = MESH_FILE_VERSION;
+		file.write( (char*)&version, 4);
+
+		UINT size = geometries.size();
+		file.write( (char*)&size, 1);
+
+		for (UINT i=0; i < size; ++i)
 		{
-			MTRL_FACE_MAP::iterator itr = pRawMesh->faceMtrlID.find(i);
+			CResourceGeometry* pGeometry = geometries[i];
 
-			std::vector<int>* pMtrlIDList = itr->second;
-			if( pMtrlIDList->size() == 0 )
-				continue;
+			file.write( (char*)&pGeometry->eVertexType, 4);
+			file.write( (char*)&pGeometry->vertexCount, 4);		
+			file.write( (char*)pGeometry->pVertexBuffer, VERTEX_STRIDE(pGeometry->eVertexType) * pGeometry->vertexCount );
 
-			char s[25];
-			_itoa_s(i, s, 10);
-			wxString geometryName = name + "_Geometry" + s;
+			file.write( (char*)&pGeometry->eIndexType, 4);
+			file.write( (char*)&pGeometry->primitiveCount, 4);		
 
-			CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , vertexMap, pMtrlIDList, geometryName);
-			pMesh->goemetries[i] = pAssetMgr->Insert( pGeometry );
-			pMesh->geometryNum++;
+			if( pGeometry->eIndexType == INDEX_16BIT_TYPE)
+				file.write( (char*)pGeometry->pIndexBuffer, 2 * pGeometry->primitiveCount * 3 );
+			else
+				file.write( (char*)pGeometry->pIndexBuffer, 4 * pGeometry->primitiveCount * 3 );
+
+			WriteString( &file, pGeometry->mtrlName );
+		}
+
+		file.close();
+	}
+
+
+	//------------------------------------------------------------------------------------------------------
+	void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
+	{
+		GEOMETRY_LIST	vecGeometries;
+
+		int mtrlCount = pRawMesh->faceMtrlID.size();
+
+		if( mtrlCount == 0 )
+		{
+			CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , NULL);
+			vecGeometries.push_back(pGeometry);
+		}
+		else // split mesh per material
+		{
+			for( int i = 0; i < mtrlCount; ++i)
+			{
+				MTRL_FACE_MAP::iterator itr = pRawMesh->faceMtrlID.find(i);
+
+				std::vector<int>* pMtrlIDList = itr->second;
+				if( pMtrlIDList->size() == 0 )
+					continue;
+
+				CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , pMtrlIDList);
+				vecGeometries.push_back(pGeometry);
+			}
+		}
+
+		SaveMeshToFile(vecGeometries, name);
+
+		for (UINT i=0; i < vecGeometries.size(); ++i)
+		{
+			GLOBAL::Engine()->EngineMemoryMgr()->RemoveResource( vecGeometries[i] );
 		}
 	}
-
-	pAssetMgr->Insert( pMesh );
-}
 }

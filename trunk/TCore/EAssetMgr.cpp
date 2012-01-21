@@ -93,7 +93,7 @@ void EAssetMgr::Clear()
 	for( int i = 0; i < NUM_RESOURCE_TYPE; ++i )
 	{
 		if( i == RESOURCE_GEOMETRY )
-			continue; // it will be deleted when deletes mesh.
+			continue; // it will be deleted when mesh is deleted.
 
 		POSITION pos = m_Resources[i].GetStartPosition();
 		TYPE_RESOURCE_MAP::CPair* itr = NULL;

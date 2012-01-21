@@ -4,7 +4,13 @@
 #include "wx/wx.h"
 #include "wx/propgrid/manager.h"
 #include "wx/propgrid/advprops.h"
-#include "SPropertyGridReflection.h"
+
+class wxVectorProperty;
+
+enum ePROPERTY_GRID_TYPE
+{
+	ENTITY_PROPERTY
+};
 
 
 class SPropertyGrid : public wxPropertyGridManager
@@ -17,17 +23,23 @@ public:
 	SPropertyGrid(wxWindow* parent);
 	~SPropertyGrid(){}
 
-	void			SetProperty( IEntity* pEntity );
-	void			SetProperty( IEntityProxy* pEntityProxy );
-	void			SetProperty( const CResourceTexture* pTexture );
+	void			Set( IEntity* pEntity );
+	void			Set( IEntityProxy* pEntityProxy );
+	void			Set( const CResourceTexture* pTexture );
+	void			Set( const CResourceMesh* pMesh );
+
 	void			ClearProperties();
 
 private:
 	void			OnPropertyChanged(wxPropertyGridEvent& event);
+
+	void			OnEntityPropertyChanged(wxString& propertyName, wxVectorProperty* pPg);
 	void			RefreshAllProperties();
 
-	PROPERTY_GRID_TYPE			m_CurrentPropertyType;
-	SPRopertyGridReflection		m_PropertyReflection;
+	ePROPERTY_GRID_TYPE			m_CurrentPropertyType;
+
+	IEntity*					m_pEntity;
+	IEntityProxy*				m_pEntityProxy;
 
 	DECLARE_EVENT_TABLE()
 };

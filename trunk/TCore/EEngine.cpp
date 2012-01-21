@@ -42,12 +42,14 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	// initialize Asset manager
 	m_AssetMgr.Init( param );
 	m_Loader.Init( param.numOfProcessThread );
+	m_QuadSpaceMgr.Init( 10000, 10);
 
 	return true;
 }
 
 bool EEngine::ShutDown()
 {
+	m_QuadSpaceMgr.Destroy();
 	m_AssetMgr.Clear();
 	m_pRenderer->ShutDown();
 	m_EntityMgr.Destroy();
@@ -74,7 +76,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list if camera is moved
 	if( pCamera != NULL && pCamera->GetLastTransformChangedFrame() == m_CurrentFrame )
-		m_SceneMgr.UpdateVisibleOctreeNodeList(pCamera);
+		m_QuadSpaceMgr.UpdateVisibleSpaceList(pCamera);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system
@@ -82,11 +84,9 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	//////////////////////////////////////////////////////////////////////////
 	// 4) make render object list
-	m_SceneMgr.UpdateRenderObjectList();
 
 	//////////////////////////////////////////////////////////////////////////
 	// 5) render current frame
-
 	if( pRenderCallback )
 		pRenderCallback->PreRender();
 

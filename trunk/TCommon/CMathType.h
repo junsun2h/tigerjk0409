@@ -206,6 +206,7 @@ struct CVector4{
 	static CVector4		Min(const CVector4& v1, const CVector4& v2)		{ return XMVectorMin( v1.m128, v2.m128 ); }
 	static CVector4		Max(const CVector4& v1, const CVector4& v2)		{ return XMVectorMax( v1.m128, v2.m128 ); }
 
+	static CVector4		Transform(const CVector4& v, const XMMATRIX& mt )			{	return XMVector4Transform( v.m128, mt);  }
 	static CVector4		Lerp(const CVector4& v1, const CVector4& v2, float ratio)	{	return XMVectorLerp(v1.m128, v2.m128, ratio);	}
 
 	// assignment operators

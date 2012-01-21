@@ -25,7 +25,7 @@ void SPropertyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 	if( m_SeletedItem == GetRootItem() )
 	{
-		m_pGrid->SetProperty(m_pEntity);
+		m_pGrid->Set(m_pEntity);
 	}
 }
 
@@ -98,7 +98,7 @@ void SPropertyPanel::SetObject( IEntity* pEntity )
 
 void SPropertyPanel::SetObject( const CResourceTexture* pResource )
 {
-	m_pGridMgr->SetProperty( pResource );
+	m_pGridMgr->Set( pResource );
 
 	SaveTextureToPNGFile( pResource, COLOR_FORMAT_R8G8B8A8_TYPELESS);
 
@@ -107,6 +107,17 @@ void SPropertyPanel::SetObject( const CResourceTexture* pResource )
 	m_pTextureCanvas->Show();
 	m_pGridMgr->Show();
 	m_pEntityTreeCtrl->Hide();
+
+	OrganizeInside();
+}
+
+void SPropertyPanel::SetObject( const CResourceMesh* pResource )
+{
+	m_pGridMgr->Set( pResource );
+
+	m_pTextureCanvas->Hide();
+	m_pEntityTreeCtrl->Hide();
+	m_pGridMgr->Show();
 
 	OrganizeInside();
 }

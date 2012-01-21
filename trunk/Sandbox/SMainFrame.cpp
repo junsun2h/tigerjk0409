@@ -29,7 +29,14 @@ public:
 				SMESH_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
 
 				rawMesh.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
-				SMESH_LOADER::ImportRawMesh( &rawMesh , fn.GetName().char_str() );
+
+				wchar_t path[MAX_PATH];
+				GetCurrentDirectory( MAX_PATH, path);
+
+				wxString saveFile = wxString(path) + wxString("\\Data\\mesh\\") + fn.GetName() + wxString(".tmesh");
+				DeleteFile(path);
+				
+				SMESH_LOADER::ImportRawMesh( &rawMesh , saveFile );
 
 				wxCommandEvent e;
 				GLOBAL::AssetPanel()->OnReload(e);

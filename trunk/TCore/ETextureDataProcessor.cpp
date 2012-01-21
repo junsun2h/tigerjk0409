@@ -34,8 +34,7 @@ bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	return true;
 }
 
-bool ETextureDataProcessor::Process( void* pData, SIZE_T cBytes )
+CResourceBase* ETextureDataProcessor::Process( void* pData, SIZE_T cBytes )
 {
-
-	return true;
+	return NULL;
 }

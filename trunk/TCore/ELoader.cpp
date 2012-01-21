@@ -1,5 +1,7 @@
 #include "ELoader.h"
 #include "EEngine.h"
+#include "EWinFileLoader.h"
+#include "EMeshDataProcessor.h"
 #include <process.h>
 
 
@@ -264,6 +266,19 @@ CResourceBase* ELoader::LoadForward(char* fileName, char* name, eRESOURCE_FILE_T
 	if(RESOURCE_FILE_ACTOR == type )
 	{
 
+	}
+	else if( RESOURCE_FILE_MESH == type)
+	{
+		EWinFileLoader loader(fileName);
+		EMeshDataProcessor dataProcessor(name);
+
+		void* pData;
+		SIZE_T size;
+
+		loader.Load();
+		loader.GetData(&pData , &size);
+
+		return dataProcessor.Process(pData, size);
 	}
 	else if(RESOURCE_FILE_MOTION == type )
 	{

@@ -15,20 +15,22 @@ template<class T>
 class CObjectPool
 {
 public:
+	CObjectPool()
+		: m_nUsingCount(0)
+		, m_nReservedCount(0)
+		, m_pData(NULL)
+		, m_bInitialized(false)
+	{
+	}
+
+
 	CObjectPool(UINT reserveCount)
 		: m_nUsingCount(0)
 		, m_nReservedCount(reserveCount)
 		, m_pData(NULL)
+		, m_bInitialized(false)
 	{
-		m_pData = new T[reserveCount];
-
-		for(UINT i= 0; i<reserveCount ;i++)
-		{
-			m_UnusingList.push_back(i);
-			CHandleInfo info;
-			info.m_bUsed = false;
-			m_vecInfo.push_back(info);
-		}
+		Init(reserveCount);
 	}
 
 	~CObjectPool()
@@ -39,7 +41,29 @@ public:
 		SAFE_DELETE_ARRAY(m_pData);	
 	}
 
-	T*					GetNew()
+	void Init(UINT reserveCount)
+	{
+		if( m_bInitialized == true)
+		{
+			assert(0);
+			return;
+		}
+
+		m_pData = new T[reserveCount];
+
+		for(UINT i= 0; i<reserveCount ;i++)
+		{
+			m_UnusingList.push_back(i);
+			CHandleInfo info;
+			info.m_bUsed = false;
+			m_vecInfo.push_back(info);
+		}
+		m_nReservedCount = reserveCount;
+
+		m_bInitialized = true;
+	}
+	
+	T* GetNew()
 	{
 		if( m_nUsingCount >= m_nReservedCount)
 		{
@@ -71,14 +95,14 @@ public:
 	void				Remove(void* pItem)			{ Remove( GetHandle(pItem) );	}
 
 private:
-	UINT				GetHandle(void* pItem)
+	UINT GetHandle(void* pItem)
 	{
 		int address = UINT(pItem) - UINT(m_pData);
 		int handle = address / sizeof(T);
 		return handle;
 	}
 
-	void				Remove(UINT nHandle)
+	void Remove(UINT nHandle)
 	{
 		assert(IsUsed(nHandle));
 
@@ -105,6 +129,8 @@ protected:
 
 	std::list<unsigned int>		m_UnusingList;
 	std::list<unsigned int>		m_UsingList;
+
+	bool						m_bInitialized;
 };
 
 
