@@ -84,6 +84,8 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 {
 	AddPage();
 
+	Append( new wxVectorProperty( "BoundingBox Min", wxPG_LABEL, pMesh->min) );
+	Append( new wxVectorProperty( "BoundingBox Max", wxPG_LABEL, pMesh->max) );
 	Append( new wxIntProperty( "Geometry Count", wxPG_LABEL, pMesh->geometryNum) );
 
 	char buf[32];

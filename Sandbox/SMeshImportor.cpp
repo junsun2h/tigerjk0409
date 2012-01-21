@@ -420,7 +420,7 @@ namespace SMESH_LOADER
 	}
 
 	//------------------------------------------------------------------------------------------------------
-	void SaveMeshToFile(GEOMETRY_LIST& geometries, wxString name)
+	void SaveMeshToFile(GEOMETRY_LIST& geometries, CVector3& min, CVector3& max, wxString name)
 	{
 		using namespace std;
 
@@ -429,6 +429,9 @@ namespace SMESH_LOADER
 
 		UINT version = MESH_FILE_VERSION;
 		file.write( (char*)&version, 4);
+
+		file.write( (char*)&min, 12);
+		file.write( (char*)&max, 12);
 
 		UINT size = geometries.size();
 		file.write( (char*)&size, 1);
@@ -483,7 +486,7 @@ namespace SMESH_LOADER
 			}
 		}
 
-		SaveMeshToFile(vecGeometries, name);
+		SaveMeshToFile(vecGeometries, pRawMesh->BBoxMin, pRawMesh->BBoxMax, name);
 
 		for (UINT i=0; i < vecGeometries.size(); ++i)
 		{

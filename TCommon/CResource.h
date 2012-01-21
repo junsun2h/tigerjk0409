@@ -300,6 +300,8 @@ public:
 
 	uint8			geometryNum;
 	long			goemetries[MAX_GEOMETRY];
+	CVector3		min;
+	CVector3		max;
 
 	eRESOURCE_TYPE	Type() override { return RESOURCE_MESH; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MESH); }
