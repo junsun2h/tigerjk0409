@@ -4,13 +4,9 @@
 #include "IEntityProxy.h"
 #include "CUnitPool.h"
 #include <atlcoll.h>
+#include "EEntity.h"
 
-
-struct ERenderItem
-{
-	long	geometryID;
-	long	mtrlID;
-};
+class EEntity;
 
 class EEntityProxyRender : public IEntityProxyRender
 {
@@ -20,27 +16,20 @@ class EEntityProxyRender : public IEntityProxyRender
 	~EEntityProxyRender(){}
 
 public:
-	void			Init(std::string& name, long id );
-	void			Destroy();
+	void					Init(IEntity* pEntity) override;
+	void					Destroy();
 
-	long			GetID()	override							{ return m_ID; }
-	IEntity*		GetEntity()	override						{ return m_pEntity;}
-	void			SetEntity(IEntity* pEntity) override;
+	IEntity*				GetEntity()	override						{ return m_pEntity;}
+	void					ProcessEvent( EntityEvent &event ) override;
 
-	void			ProcessEvent( EntityEvent &event ) override;
+	bool					Insert(long meshID ) override;
+	void					Remove(long slot) override;
 
-	int				GetTotalSlot() override						{ return m_RenderItems.GetCount(); }
-	bool			AddGeometry(int slot, long geometryID, long mtrlID ) override;
-	void			Remove(long slot) override;
+	const RENDER_ELEMENT_LIST&	GetRenderElements() override		{ return m_vecRenderElement; }
 
-
-private:
-	long				m_ID;
-	IEntity*			m_pEntity;
-	std::string			m_Name;
+	bool					IsRenderGeometry(long geometryID );
 
 private:
-	typedef	ATL::CAtlMap<int, ERenderItem>	RENDER_ITEM_MAP;
-
-	RENDER_ITEM_MAP		m_RenderItems;
+	EEntity*				m_pEntity;
+	RENDER_ELEMENT_LIST		m_vecRenderElement;
 };

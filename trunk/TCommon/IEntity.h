@@ -41,8 +41,9 @@ struct IEntity
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
 	virtual IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type ) = 0;
-	virtual void			SetProxy( IEntityProxy *pProxy) = 0;
-	virtual void			DeleteAllPrxoy() = 0;
+	virtual	IEntityProxy*	CreateProxy( eENTITY_PROXY_TYPE type ) = 0;
+	virtual	bool			DeleteProxy( eENTITY_PROXY_TYPE type ) = 0;
+	virtual void			DeleteAllProxy() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// transform functions

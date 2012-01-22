@@ -24,6 +24,9 @@ enum MAIN_FRAME_WIDGET_ID
 	ID_MENU_VIEW_ASSET,
 
 	ID_MENU_ENTITY_NEW,
+
+	ID_MENU_COMPONENT_CREATE_CAMERA,
+	ID_MENU_COMPONENT_CREATE_RENDERER,
 };
 
 
@@ -45,6 +48,9 @@ public:
 	void	OnSaveLayout(wxCommandEvent& event);
 
 	void	OnCreateEntity(wxCommandEvent& event);
+
+	void	OnCreateCamera(wxCommandEvent& event);
+	void	OnCreateRenderer(wxCommandEvent& event);
 
 private:
 	void	InitLayout();

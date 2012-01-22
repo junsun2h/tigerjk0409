@@ -45,7 +45,6 @@ struct IEngine
 	virtual IRDevice*			RDevice() = 0;
 	virtual IAssetMgr*			AssetMgr() = 0;
 	virtual IEntityMgr*			EntityMgr() =0;
-	virtual IEntityProxyMgr*	EntityProxyMgr() = 0;
 
 	virtual IRenderHelper*		RenderHelper() =0;
 	virtual CTimer*				GlobalTimer() = 0;

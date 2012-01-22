@@ -28,20 +28,8 @@
     <ClCompile Include="EEntity.cpp">
       <Filter>EntitySystem\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="EEntityProxyMgr.cpp">
-      <Filter>EntitySystem\EntityProxy</Filter>
-    </ClCompile>
     <ClCompile Include="EEntityMgr.cpp">
       <Filter>EntitySystem\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityProxyActor.cpp">
-      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityProxyCamera.cpp">
-      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
-    </ClCompile>
-    <ClCompile Include="EEntityProxyRender.cpp">
-      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
     </ClCompile>
     <ClCompile Include="EEngineMemoryMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp">
@@ -52,6 +40,15 @@
     </ClCompile>
     <ClCompile Include="EAABB.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyActor.cpp">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyCamera.cpp">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClCompile>
+    <ClCompile Include="EEntityProxyRender.cpp">
+      <Filter>EntitySystem\EntityProxy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,9 +72,6 @@
     </Filter>
     <Filter Include="EntitySystem\Entity">
       <UniqueIdentifier>{3233ff8f-79dd-44c9-99f1-181a16294344}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="EntitySystem\EntityProxy\Proxy">
-      <UniqueIdentifier>{98858ab3-9c92-4c61-ae84-58ca5ab115a7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Space">
       <UniqueIdentifier>{f7dcaa6b-df82-4bda-b7f9-faa93db27732}</UniqueIdentifier>
@@ -116,20 +110,8 @@
     <ClInclude Include="EEntity.h">
       <Filter>EntitySystem\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="EEntityProxyMgr.h">
-      <Filter>EntitySystem\EntityProxy</Filter>
-    </ClInclude>
     <ClInclude Include="EEntityMgr.h">
       <Filter>EntitySystem\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntityProxyActor.h">
-      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntityProxyCamera.h">
-      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
-    </ClInclude>
-    <ClInclude Include="EEntityProxyRender.h">
-      <Filter>EntitySystem\EntityProxy\Proxy</Filter>
     </ClInclude>
     <ClInclude Include="EEngineMemoryMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h">
@@ -140,6 +122,15 @@
     </ClInclude>
     <ClInclude Include="EAABB.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyRender.h">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyActor.h">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="EEntityProxyCamera.h">
+      <Filter>EntitySystem\EntityProxy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

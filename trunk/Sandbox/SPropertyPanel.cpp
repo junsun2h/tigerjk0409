@@ -17,6 +17,18 @@ SPropertyTreeCtrl::SPropertyTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, con
 {
 }
 
+inline const char* PROXY_TYPE_STRING(eENTITY_PROXY_TYPE type)
+{
+	if( type == ENTITY_PROXY_ACTOR )		return ENUMSTR(ENTITY_PROXY_ACTOR);
+	else if( type == ENTITY_PROXY_RENDER)	return ENUMSTR(ENTITY_PROXY_RENDER);
+	else if( type == ENTITY_PROXY_CAMERA)	return ENUMSTR(ENTITY_PROXY_CAMERA);
+	else
+		assert(0);
+
+	return "";
+}
+
+
 void SPropertyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
 	m_SeletedItem = event.GetItem();
@@ -26,6 +38,16 @@ void SPropertyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	if( m_SeletedItem == GetRootItem() )
 	{
 		m_pGrid->Set(m_pEntity);
+	}
+	else
+	{
+		wxString strItem = GetItemText(m_SeletedItem);
+		
+		for( int i=0 ; i < NUM_ENTITY_PROXY_TYPE; ++i )
+		{
+			if( strItem == PROXY_TYPE_STRING( eENTITY_PROXY_TYPE(i)) )
+				m_pGrid->Set( m_pEntity->GetProxy( eENTITY_PROXY_TYPE(i) ) );
+		}
 	}
 }
 
@@ -89,9 +111,9 @@ void SPropertyPanel::SetObject( IEntity* pEntity )
 	m_pEntityTreeCtrl->SetEntity(pEntity);
 	m_pGridMgr->Clear();
 
+	m_pTextureCanvas->Hide();
 	m_pEntityTreeCtrl->Show();
 	m_pGridMgr->Show();
-	m_pTextureCanvas->Hide();
 
 	OrganizeInside();
 }

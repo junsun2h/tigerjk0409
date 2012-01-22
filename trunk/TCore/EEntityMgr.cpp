@@ -5,27 +5,27 @@
 IEntity* EEntityMgr::SpawnEntity(std::string name)
 {
 	long newID = GET_HASH_KEY( name );
-	ENTITY_MAP::CPair* pObject = m_EntityMap.Lookup( newID );
-	if( pObject != NULL )
+	ENTITY_MAP::CPair* pEntity = m_EntityMap.Lookup( newID );
+	if( pEntity != NULL )
 	{
 		assert(0);
-		return pObject->m_value;
+		return pEntity->m_value;
 	} 
 
-	EEntity* newObject = g_Engine.EngMemoryPoolMgr()->GetNewEntity();
-	newObject->Init(name, newID);
+	EEntity* pNewEntity = g_Engine.EngMemoryPoolMgr()->GetNewEntity();
+	pNewEntity->Init(name, newID);
 
-	m_EntityMap.SetAt( newID, (EEntity*)newObject );
+	m_EntityMap.SetAt( newID, (EEntity*)pNewEntity );
 
-	return newObject;
+	return pNewEntity;
 }
 
 void EEntityMgr::RemoveEntity(long id)
 {	 
-	ENTITY_MAP::CPair* pObject = m_EntityMap.Lookup( id );
-	if( pObject != NULL )
+	ENTITY_MAP::CPair* pEntity = m_EntityMap.Lookup( id );
+	if( pEntity != NULL )
 	{
-		g_Engine.EngMemoryPoolMgr()->RemoveEntity(pObject->m_value);
+		g_Engine.EngMemoryPoolMgr()->RemoveEntity(pEntity->m_value);
 		m_EntityMap.RemoveKey(id);
 	}
 }	 
@@ -51,5 +51,9 @@ void EEntityMgr::Destroy()
 
 IEntity* EEntityMgr::GetEntity(long id) 
 {
-	return NULL; 
+	ENTITY_MAP::CPair* pEntity = m_EntityMap.Lookup( id );
+	if( pEntity != NULL )
+		return pEntity->m_value;
+
+	return NULL;
 }

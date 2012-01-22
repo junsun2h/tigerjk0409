@@ -2,18 +2,14 @@
 #include "EEngine.h"
 
 
-void EEntityProxyCamera::Init(std::string& name, long id )
-{
-	m_Name = name;
-	m_ID = id;
-	m_pEntity = NULL;
-	m_FrameTransformChanged = false;
-}
-
-void EEntityProxyCamera::SetEntity(IEntity* pEntity)
+void EEntityProxyCamera::Init(IEntity* pEntity)
 {
 	m_pEntity = pEntity;
-	m_Desc.ViewTM = XMMATRIX_UTIL::Inverse( NULL, pEntity->GetLocalTM() );
+	m_FrameTransformChanged = false;
+
+	// default setting
+	SetProjParam(XM_PIDIV4, 800, 600, 1.0f, 1000.0f );
+	SetViewDescFromWorldMatrix();
 }
 
 void EEntityProxyCamera::ProcessEvent( EntityEvent &event )

@@ -11,6 +11,7 @@ enum SCENE_WIDGET_ID
 	ID_SCENE_FILTER_TEXTCTRL,
 	ID_SCENE_TREECTRL,
 	ID_SCENE_DELETE,
+	ID_SCENE_ADD_COMPONENT,
 };
 
 class SSceneHierarchyTreeCtrl : public wxTreeCtrl
@@ -22,6 +23,7 @@ public:
 	void	OnSelChanged(wxTreeEvent& event);
 	void	OnItemMenu(wxTreeEvent& event);
 	void	OnDelete(wxCommandEvent& event);
+	void	OnAddComponent(wxCommandEvent& event);
 
 	void	Reload();
 

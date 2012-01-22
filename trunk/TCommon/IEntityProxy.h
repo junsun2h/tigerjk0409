@@ -26,8 +26,7 @@ struct IEntityProxy
 	virtual eENTITY_PROXY_TYPE	GetType() = 0;
 	virtual const char*			GetTypeString() = 0;
 	virtual IEntity*			GetEntity() = 0;
-	virtual void				SetEntity(IEntity* pEntity) = 0;
-	virtual long				GetID()	= 0;
+	virtual void				Init(IEntity* pEntity) =0;
 
 	virtual	void				ProcessEvent( EntityEvent &event ) = 0;
 };
@@ -69,12 +68,22 @@ struct IEntityProxyCamera : IEntityProxy
 	virtual	const CCAMERA_DESC&		GetDesc() =0;
 };
 
+
+struct ERenderItem
+{
+	CResourceGeometry*	pGeometry;
+	CResourceMtrl*		pMtrl;
+};
+
+typedef	std::vector<ERenderItem>	RENDER_ELEMENT_LIST;
+
 struct IEntityProxyRender : IEntityProxy
 {
 	virtual eENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_RENDER; };
 	virtual const char*				GetTypeString()					{ return "ENTITY_PROXY_RENDER"; }
 
-	virtual int						GetTotalSlot() = 0;
-	virtual	bool					AddGeometry(int slot, long geometryID, long mtrlID ) = 0;
+	virtual const RENDER_ELEMENT_LIST&	GetRenderElements() = 0;
+	
+	virtual	bool					Insert( long meshID ) = 0;
 	virtual void					Remove(long slot) = 0;
 };

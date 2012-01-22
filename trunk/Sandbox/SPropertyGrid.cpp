@@ -57,10 +57,51 @@ void SPropertyGrid::Set( IEntity* pEntity )
 	Append( new wxVectorProperty( strProLocalScale, wxPG_LABEL, pEntity->GetLocalScale()) );
 	Append( new wxVectorProperty( strProWorldPos, wxPG_LABEL, pEntity->GetWorldPos()) );
 	Append( new wxVectorProperty( strProWorldRot, wxPG_LABEL, worldRot) );
+
+	if( pEntity->GetWorldAABB()->IsValid() )
+	{
+		Append( new wxVectorProperty( "BoundingBox Min (Local)", wxPG_LABEL, pEntity->GetLocalAABB()->GetMin()) );
+		Append( new wxVectorProperty( "BoundingBox Max (Local)", wxPG_LABEL, pEntity->GetLocalAABB()->GetMax()) );
+		Append( new wxVectorProperty( "BoundingBox Min (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMin()) );
+		Append( new wxVectorProperty( "BoundingBox Max (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMax()) );
+	}
+	else
+	{
+		Append( new wxStringProperty( "BoundingBox", wxPG_LABEL, "No volume") );
+	}
 }
 
 void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 {
+	ClearProperties();
+	AddPage();
+
+	eENTITY_PROXY_TYPE type = pEntityProxy->GetType();
+
+	if( type == ENTITY_PROXY_CAMERA )
+	{
+		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pEntityProxy;
+		const CCAMERA_DESC& desc = pCamera->GetDesc();
+
+		Append(new wxFloatProperty( "Near Clip", wxPG_LABEL, desc.nearClip) );
+		Append(new wxFloatProperty( "Far Clip", wxPG_LABEL, desc.farClip) );
+		Append(new wxFloatProperty( "Fovy", wxPG_LABEL, desc.Fovy) );
+		Append(new wxFloatProperty( "Aspect", wxPG_LABEL, desc.aspect) );
+	}
+	else if( type == ENTITY_PROXY_RENDER )
+	{
+		IEntityProxyRender* pRenderer = (IEntityProxyRender*)pEntityProxy;
+		const RENDER_ELEMENT_LIST& vecRenderList = pRenderer->GetRenderElements();
+		
+		char buf[32];
+		for( UINT i=0; i< vecRenderList.size(); ++i )
+		{
+			_itoa(i, buf, 32);
+			Append(new wxPropertyCategory(  wxString("Geometry") + wxString(buf) ));
+			Append( new wxStringProperty( wxString("Name"), wxPG_LABEL, vecRenderList[i].pGeometry->name) );
+			Append( new wxStringProperty( wxString("Material"), wxPG_LABEL, vecRenderList[i].pMtrl->name) );
+		}
+	}
 }
 
 void SPropertyGrid::Set(const CResourceTexture* pTexture)

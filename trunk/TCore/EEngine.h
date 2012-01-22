@@ -2,7 +2,6 @@
 
 #include "IEngine.h"
 #include "EEntityMgr.h"
-#include "EEntityProxyMgr.h"
 #include "EAssetMgr.h"
 #include "CTimer.h"
 #include "ELoader.h"
@@ -29,7 +28,6 @@ public:
 	
 	IAssetMgr*			AssetMgr() override			{ return &m_AssetMgr; }
 	IEntityMgr*			EntityMgr() override		{ return &m_EntityMgr; }
-	IEntityProxyMgr*	EntityProxyMgr() override	{ return &m_EntityProxyMgr; }
 
 	IRenderHelper*		RenderHelper() override		{ return m_pRenderer->GetRenderHelper(); }
 	CTimer*				GlobalTimer() override		{ return &m_GlobalTimer; }
@@ -40,9 +38,9 @@ public:
 	void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
 
 public:
-	EEngineMemoryMgr*	EngMemoryPoolMgr()		{ return &m_EngineMemoryMgr; }
-	long				GetCurrentFrame()		{ return m_CurrentFrame; }
-	EQuadSpaceTreeMgr*	QuadSpaceMgr()			{ return &m_QuadSpaceMgr; }
+	EEngineMemoryMgr*	EngMemoryPoolMgr()			{ return &m_EngineMemoryMgr; }
+	long				GetCurrentFrame()			{ return m_CurrentFrame; }
+	EQuadSpaceTreeMgr*	QuadSpaceMgr()				{ return &m_QuadSpaceMgr; }
 
 private:
 	IRDevice*			m_pRenderer;
@@ -51,7 +49,6 @@ private:
 	EAssetMgr			m_AssetMgr;
 
 	EEntityMgr			m_EntityMgr;
-	EEntityProxyMgr		m_EntityProxyMgr;
 
 	ELoader				m_Loader;
 	EEngineMemoryMgr	m_EngineMemoryMgr;

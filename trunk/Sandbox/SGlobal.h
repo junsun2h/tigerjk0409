@@ -1,13 +1,14 @@
 #pragma once
 
 #include "IEngine.h"
-
+#include <vector>
 
 class SAssetPanel;
 class SPropertyPanel;
 class SSceneHierarchyPanel;
 class SMainFrame;
 class S3DViewPanel;
+class SEntitySelection;
 
 
 namespace GLOBAL
@@ -22,6 +23,7 @@ namespace GLOBAL
 	SPropertyPanel*			PropertyPanel();
 	SSceneHierarchyPanel*	SceneHierarchyPanel();
 	SMainFrame*				MainFrame();
+	SEntitySelection*		EntitySelection();
 }
 
 

@@ -42,6 +42,10 @@
     <ClInclude Include="SPropertyGrid.h">
       <Filter>MainFrame\Panels\Property</Filter>
     </ClInclude>
+    <ClInclude Include="SEntitySelection.h" />
+    <ClInclude Include="SNameDlg.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SApp.cpp" />
@@ -77,6 +81,7 @@
     <ClCompile Include="SPropertyGrid.cpp">
       <Filter>MainFrame\Panels\Property</Filter>
     </ClCompile>
+    <ClCompile Include="SEntitySelection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Importor">
@@ -96,9 +101,6 @@
     </Filter>
     <Filter Include="MainFrame\Panels\Property\data">
       <UniqueIdentifier>{b8e458cb-a2eb-4792-8a28-e6de902532e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MainFrame\Panels\Property\PropertyGrid">
-      <UniqueIdentifier>{c625b0f8-0768-42ee-8518-a20b6af81d49}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
