@@ -82,7 +82,6 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EAABB.cpp" />
     <ClCompile Include="EActorDataProcessor.cpp" />
-    <ClCompile Include="EEntityProxyMgr.cpp" />
     <ClCompile Include="EEngineMemoryMgr.cpp" />
     <ClCompile Include="EAssetMgr.cpp" />
     <ClCompile Include="EEngine.cpp" />
@@ -103,7 +102,6 @@
   <ItemGroup>
     <ClInclude Include="EAABB.h" />
     <ClInclude Include="EActorDataProcessor.h" />
-    <ClInclude Include="EEntityProxyMgr.h" />
     <ClInclude Include="EEngineMemoryMgr.h" />
     <ClInclude Include="EAssetMgr.h" />
     <ClInclude Include="EEngine.h" />

@@ -1,20 +1,14 @@
 #include "EEntityProxyRender.h"
-
-void EEntityProxyRender::Init(std::string& name, long id )
-{
-	m_Name = name;
-	m_ID = id;
-	m_pEntity =NULL;
-}
+#include "EEngine.h"
 
 void EEntityProxyRender::Destroy()
 {
-	m_RenderItems.RemoveAll();
+	m_vecRenderElement.clear();
 }
 
-void EEntityProxyRender::SetEntity(IEntity* pEntity)
+void EEntityProxyRender::Init(IEntity* pEntity)
 {
-	m_pEntity = pEntity;
+	m_pEntity = (EEntity*)pEntity;
 }
 
 void EEntityProxyRender::ProcessEvent( EntityEvent &event )
@@ -22,27 +16,41 @@ void EEntityProxyRender::ProcessEvent( EntityEvent &event )
 
 }
 
-bool EEntityProxyRender::AddGeometry(int slot, long geometryID, long mtrlID )
+bool EEntityProxyRender::Insert(long meshID )
 {
-	if( m_RenderItems.Lookup(slot)  == NULL )
+	IAssetMgr* pAssetMgr = g_Engine.AssetMgr();
+	CResourceMesh* pMesh = (CResourceMesh*)g_Engine.AssetMgr()->GetResource(RESOURCE_MESH, meshID);
+
+	for( int i=0; i < pMesh->geometryNum ; ++i )
 	{
-		assert(0);
-		return false;
+		ERenderItem item;
+		
+		item.pGeometry = (CResourceGeometry*)pAssetMgr->GetResource( RESOURCE_GEOMETRY, pMesh->goemetries[i] );
+
+		if( IsRenderGeometry( item.pGeometry->RID ) )
+			continue;
+
+		item.pMtrl = (CResourceMtrl*)pAssetMgr->GetResource( RESOURCE_MATERIAL, item.pGeometry->defaultMtrl);
+
+		m_vecRenderElement.push_back( item );
 	}
 
-	ERenderItem newItem;
-	newItem.geometryID = geometryID;
-	newItem.mtrlID = mtrlID;
-
-	m_RenderItems.SetAt(slot, newItem);
+	m_pEntity->GetLocalAABBUnsafe()->AddAABB( pMesh->min, pMesh->max );
 
 	return true;
 }
 
 void EEntityProxyRender::Remove(long slot)
 {
-	if( m_RenderItems.Lookup(slot)  == NULL )
-		return;
+}
 
-	m_RenderItems.RemoveKey(slot);
+bool EEntityProxyRender::IsRenderGeometry(long geometryID )
+{
+	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
+	{
+		if( m_vecRenderElement[i].pGeometry->RID == geometryID )
+			return true;
+	}
+
+	return false;
 }

@@ -1,7 +1,7 @@
 #include "SSceneHierarchyPanel.h"
 #include "wx/treectrl.h"
 #include "SPropertyPanel.h"
-
+#include "SEntitySelection.h"
 
 IMPLEMENT_DYNAMIC_CLASS(SSceneHierarchyTreeCtrl, wxTreeCtrl)
 	BEGIN_EVENT_TABLE(SSceneHierarchyTreeCtrl, wxTreeCtrl)
@@ -26,6 +26,7 @@ void SSceneHierarchyTreeCtrl::OnItemMenu(wxTreeEvent& event)
 
 	wxMenu menu( GetItemText(m_SeletedItem) );
 	menu.Append(ID_SCENE_DELETE, wxT("&Delete"));
+	menu.Append(ID_SCENE_ADD_COMPONENT, wxT("&ADD Component"));
 
 	PopupMenu(&menu, event.GetPoint());
 }
@@ -42,7 +43,7 @@ void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 		return;
 
 	IEntity* pEntity = GLOBAL::Engine()->EntityMgr()->GetEntity( strItem.c_str().AsChar() );
-	GLOBAL::PropertyPanel()->SetObject(pEntity );
+	GLOBAL::EntitySelection()->Select(pEntity);
 }
 
 void SSceneHierarchyTreeCtrl::OnDelete(wxCommandEvent& event)
@@ -52,6 +53,11 @@ void SSceneHierarchyTreeCtrl::OnDelete(wxCommandEvent& event)
 	GLOBAL::Engine()->EntityMgr()->RemoveEntity( strItem );
 
 	Reload();
+}
+
+void SSceneHierarchyTreeCtrl::OnAddComponent(wxCommandEvent& event)
+{
+
 }
 
 void SSceneHierarchyTreeCtrl::AddEntity(wxTreeItemId parent, IEntity* pEntity)

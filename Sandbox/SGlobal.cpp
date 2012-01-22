@@ -1,6 +1,7 @@
 #include "SGlobal.h"
 #include "SSceneHierarchyPanel.h"
 #include "SAssetPanel.h"
+#include "SEntitySelection.h"
 
 
 namespace GLOBAL
@@ -13,6 +14,7 @@ namespace GLOBAL
 	SPropertyPanel*			g_PropertyPanel = NULL;
 	SSceneHierarchyPanel*	g_SceneHierarchyPanel = NULL;
 	S3DViewPanel*			g_ViewPanel = NULL;
+	SEntitySelection		g_EntitySelection;
 
 	IEntity*				SceneRoot()				{ return g_SceneRoot; }
 	IEngine*				Engine()				{ return g_Eng; }
@@ -22,11 +24,12 @@ namespace GLOBAL
 	SSceneHierarchyPanel*	SceneHierarchyPanel()	{ return g_SceneHierarchyPanel; }
 	SMainFrame*				MainFrame()				{ return g_MainFrame; }
 	S3DViewPanel*			ViewPanel()				{ return g_ViewPanel; }
-	
+	SEntitySelection*		EntitySelection()		{ return &g_EntitySelection; }
+
+
 	void SetupScene(int nWidth, int nHeight)
 	{
 		IEntityMgr* entityMgr = g_Eng->EntityMgr();
-		IEntityProxyMgr* pEntityProxyMgr = g_Eng->EntityProxyMgr();
 
 		g_SceneRoot = entityMgr->SpawnEntity( "Root" );
 
@@ -34,8 +37,7 @@ namespace GLOBAL
 		// Setup Camera
 		IEntity* pCameraEntity = entityMgr->SpawnEntity( "Observer" );
 
-		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pEntityProxyMgr->SpawnEntityProxy("Main Camera" , ENTITY_PROXY_CAMERA);
-		pCameraEntity->SetProxy( pCamera );
+		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pCameraEntity->CreateProxy(ENTITY_PROXY_CAMERA);
 
 		pCamera->SetProjParam( XM_PIDIV4,  nWidth, nHeight, 1, 10000);
 		pCamera->SetViewParam( CVector3(1000, 1000, 1000), CVector3(0, 0, 0), CVector3(0.0f, 0.0f, 1.0f) );

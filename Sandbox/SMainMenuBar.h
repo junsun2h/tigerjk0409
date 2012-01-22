@@ -48,12 +48,33 @@ public:
 
 			Append(viewMenu, "Entity(&E)");
 		}
+		// Component
+		{
+			wxMenu* viewMenu = new wxMenu;
+
+			m_pComponetCamera = viewMenu->Append(ID_MENU_COMPONENT_CREATE_CAMERA, "ADD Camera");
+			m_pComponetRenderer = viewMenu->Append(ID_MENU_COMPONENT_CREATE_RENDERER, "ADD Renderer");
+
+			Append(viewMenu, "Component(&C)");
+
+			EnableComponent( false );
+		}
 	}
 
-	void UpdateMenuBarCheckStatus(wxFrame* pFrame)
+	void UpdateLayoutMenuItemCheckStatus(wxFrame* pFrame)
 	{
 		Check(ID_MENU_VIEW_PROPERTY, pFrame->FindWindow(ID_PANEL_PROPERTY)->IsShown());
 		Check(ID_MENU_VIEW_SCENE_HIERARCHY, pFrame->FindWindow(ID_PANEL_SCENE_HIERARCHY)->IsShown());
 		Check(ID_MENU_VIEW_ASSET, pFrame->FindWindow(ID_PANEL_ASSET)->IsShown());
 	}
+
+	void EnableComponent(bool b)
+	{
+		m_pComponetCamera->Enable(b);
+		m_pComponetRenderer->Enable(b); 
+	}
+
+private:
+	wxMenuItem* m_pComponetCamera;
+	wxMenuItem* m_pComponetRenderer; 	
 };

@@ -11,6 +11,7 @@
 #include "SPropertyPanel.h"
 #include "SCreateEntityDlg.h"
 #include "SMeshImportor.h"
+#include "SEntitySelection.h"
 
 
 class SMainDragAndDrop : public wxFileDropTarget
@@ -50,6 +51,7 @@ public:
 //-------------------------------------------------------------------------------------------------------------------
 namespace GLOBAL
 {
+	extern SMainFrame* g_MainFrame;
 	extern SAssetPanel*	g_AssetPanel;
 	extern SPropertyPanel* g_PropertyPanel;
 	extern SSceneHierarchyPanel* g_SceneHierarchyPanel;
@@ -69,8 +71,12 @@ BEGIN_EVENT_TABLE(SMainFrame, wxFrame)
 	EVT_MENU(ID_MENU_DEFAULT_LAYOUT, SMainFrame::OnDefaultLayout)
 	EVT_MENU(ID_MENU_LOAD_SAVED_LAYOUT, SMainFrame::OnLoadSavedLayout)
 	EVT_MENU(ID_MENU_SAVE_LAYOUT, SMainFrame::OnSaveLayout)
-	EVT_MENU(ID_MENU_ENTITY_NEW, SMainFrame::OnCreateEntity)
 	
+	EVT_MENU(ID_MENU_ENTITY_NEW, SMainFrame::OnCreateEntity)
+
+	EVT_MENU(ID_MENU_COMPONENT_CREATE_CAMERA, SMainFrame::OnCreateCamera)
+	EVT_MENU(ID_MENU_COMPONENT_CREATE_RENDERER, SMainFrame::OnCreateRenderer)
+
 	EVT_AUI_PANE_CLOSE(SMainFrame::OnPanelClose)
 END_EVENT_TABLE()
 
@@ -97,7 +103,7 @@ SMainFrame::SMainFrame(const wxString& title, const wxPoint& pos, const wxSize& 
 	SMainMenuBar* pMainMenu = new SMainMenuBar;
 
 	SetMenuBar( pMainMenu );
-	pMainMenu->UpdateMenuBarCheckStatus(this);
+	pMainMenu->UpdateLayoutMenuItemCheckStatus(this);
 	
 	SetDropTarget( new SMainDragAndDrop );
 	SetStatusText( _("") );
@@ -128,6 +134,8 @@ void SMainFrame::InitLayout()
 
 	GLOBAL::g_PropertyPanel = new SPropertyPanel(this);
 	auiManager->AddPane(GLOBAL::g_PropertyPanel, wxAuiPaneInfo().Name(g_strProperty).Show().PinButton().Caption("Properties").Right().Layer(1).Position(0).FloatingSize(250, 500));
+
+	GLOBAL::g_MainFrame = this;
 
 	auiManager->Update();
 	m_LayoutDefault = auiManager->SavePerspective();
@@ -198,7 +206,7 @@ void SMainFrame::OnLoadSavedLayout(wxCommandEvent& event)
 	wxAuiManager::GetManager(this)->LoadPerspective(buff);
 
 	SMainMenuBar* pMainMenuBar = wxDynamicCast( GetMenuBar(), SMainMenuBar );
-	pMainMenuBar->UpdateMenuBarCheckStatus(this);
+	pMainMenuBar->UpdateLayoutMenuItemCheckStatus(this);
 }
 
 void SMainFrame::OnSaveLayout(wxCommandEvent& event)
@@ -231,4 +239,34 @@ void SMainFrame::OnCreateEntity(wxCommandEvent& event)
 		GLOBAL::SceneRoot()->AttachChild( pEntity );
 		GLOBAL::SceneHierarchyPanel()->Reload();
 	}
+}
+
+void SMainFrame::OnCreateCamera(wxCommandEvent& event)
+{
+	IEntity* pEntity = GLOBAL::EntitySelection()->First();
+	IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pEntity->GetProxy(ENTITY_PROXY_CAMERA);
+	
+	if( pCamera != NULL)
+	{
+		wxMessageBox("Entity already has Camera");
+		return;
+	}
+
+	pEntity->CreateProxy(ENTITY_PROXY_CAMERA);
+	GLOBAL::PropertyPanel()->SetObject(pEntity);
+}
+
+void SMainFrame::OnCreateRenderer(wxCommandEvent& event)
+{
+	IEntity* pEntity = GLOBAL::EntitySelection()->First();
+	IEntityProxyRender* pRenderer = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER);
+
+	if( pRenderer != NULL)
+	{
+		wxMessageBox("Entity already has Renderer");
+		return;
+	}
+
+	pEntity->CreateProxy(ENTITY_PROXY_RENDER);
+	GLOBAL::PropertyPanel()->SetObject(pEntity);
 }

@@ -88,6 +88,9 @@
     <ClInclude Include="CFrustrum.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
+    <ClInclude Include="CMaterial.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

@@ -32,6 +32,15 @@ void EAABB::AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max)
 	m_IsValid = true;
 }
 
+void EAABB::AddAABB(CVector3& min, CVector3& max)
+{
+	m_Min = CVector3::Min( m_Min, min );
+	m_Max = CVector3::Max( m_Max, max );
+
+	m_IsValid = true;
+}
+
+
 void EAABB::AddAABB(IAABB* pAABB)
 {
 	if( pAABB->IsValid() == false )

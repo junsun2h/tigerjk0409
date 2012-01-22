@@ -32,7 +32,7 @@ EEntity::~EEntity()
 
 void EEntity::Destroy()
 {
-	DeleteAllPrxoy();
+	DeleteAllProxy();
 	DetachAllChild();
 	m_EventQueue.RemoveAll();
 
@@ -341,6 +341,10 @@ IEntity* EEntity::GetChild(UINT index )
 	return m_Children[index]; 
 }
 
+//////////////////////////////////////////////////////////////////////////
+//   proxy
+//////////////////////////////////////////////////////////////////////////
+
 IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type )
 {
 	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
@@ -350,23 +354,38 @@ IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type )
 	return NULL;
 }
 
-void EEntity::SetProxy( IEntityProxy *pProxy)
+IEntityProxy* EEntity::CreateProxy( eENTITY_PROXY_TYPE type )
 {
-	eENTITY_PROXY_TYPE type = pProxy->GetType();
+	EEngineMemoryMgr* pPool = g_Engine.EngMemoryPoolMgr();
 
-	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
-	if( pEntityProxy != NULL )
-	{
-		assert(0);
-		return;
-	}
+	IEntityProxy* pProxy = GetProxy( type );
+	if( pProxy != NULL)
+		return pProxy;
 
+	if( type == ENTITY_PROXY_ACTOR)			{	pProxy = pPool->GetNewProxy( ENTITY_PROXY_ACTOR );	}
+	else if( type == ENTITY_PROXY_CAMERA)	{	pProxy = pPool->GetNewProxy( ENTITY_PROXY_CAMERA );	}
+	else if( type == ENTITY_PROXY_RENDER )	{	pProxy = pPool->GetNewProxy( ENTITY_PROXY_RENDER );	}
+
+	pProxy->Init(this);
 	m_ProxyMap.SetAt( type, pProxy );
-	pProxy->SetEntity(this);
+	return pProxy;
 }
 
-void EEntity::DeleteAllPrxoy()
+bool EEntity::DeleteProxy( eENTITY_PROXY_TYPE type )
 {
+	IEntityProxy* pProxy = GetProxy(type);
+
+	if( pProxy == NULL )
+		return false;
+
+	g_Engine.EngMemoryPoolMgr()->RemoveProxy( pProxy );
+	return true;
+}
+
+void EEntity::DeleteAllProxy()
+{
+	EEngineMemoryMgr* pPool = g_Engine.EngMemoryPoolMgr();
+
 	POSITION pos = m_ProxyMap.GetStartPosition();
 	ENEITY_PROXY_MAP::CPair* itr = NULL;
 
@@ -374,7 +393,7 @@ void EEntity::DeleteAllPrxoy()
 	{
 		itr = m_ProxyMap.GetNext(pos);
 		IEntityProxy* pProxy = itr->m_value;
-		g_Engine.EntityProxyMgr()->RemoveEntityProxy( pProxy->GetID(), itr->m_value->GetType() );
+		pPool->RemoveProxy(itr->m_value );
 		m_ProxyMap.RemoveKey( itr->m_key );
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CVertex.h"
+#include "CMaterial.h"
 #include "CUnitPool.h"
 #include <string>
 #include <locale>
@@ -45,16 +46,6 @@ enum eRESOURCE_LOAD_STATE
 	RESOURCE_LOAD_NONE,
 	RESOURCE_LOAD_STARTED,
 	RESOURCE_LOAD_FINISHED
-};
-
-enum eTEXTURE_TYPE
-{
-	PARAM_DIFFISE,
-	PARAM_SPECULAR,
-	PARAM_NORMAL,
-	PARAM_TRANSPARENCY,
-
-	NUM_TEXTURE_TYPE
 };
 
 

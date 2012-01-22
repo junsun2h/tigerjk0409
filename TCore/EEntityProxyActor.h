@@ -12,22 +12,18 @@ class EEntityProxyActor : public IEntityProxyActor
 	~EEntityProxyActor(){}
 
 public:
-	void					Init(std::string& name, long id);
 	void					Destroy(){}
 
 	const CResourceActor*	GetActorInfo() override;
 	IMotionMgr*				GetMotionMgr() override;
 
-	long					GetID()	override			{ return m_ID; }
 	IEntity*				GetEntity() override		{ return m_pEntity; }
 	
 	void					ProcessEvent( EntityEvent &event ) override;
-	void					SetEntity(IEntity* pEntity) override;
+	void					Init(IEntity* pEntity) override;
 
 	void					Update(float deltaTime) override;
 
 private:
-	long					m_ID;
 	IEntity*				m_pEntity;
-	std::string				m_Name;
 };

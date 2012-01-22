@@ -12,12 +12,10 @@ class EEntityProxyCamera : public IEntityProxyCamera
 	~EEntityProxyCamera(){}
 
 public:
-	void					Init(std::string& name, long id );
+	void					Init(IEntity* pEntity) override;
 	void					Destroy(){}
 
-	long					GetID()	override							{ return m_ID; }
 	IEntity*				GetEntity()	override						{ return m_pEntity;}
-	void					SetEntity(IEntity* pEntity) override;
 	void					ProcessEvent( EntityEvent &event ) override;
 
 	void					SetProjParam(float fovy, int width, int height, float nearPlane, float farPlane) override;
@@ -29,11 +27,7 @@ public:
 private:
 	void					SetViewDescFromWorldMatrix();
 
-	long					m_ID;
 	IEntity*				m_pEntity;
-	std::string				m_Name;
-
-private:
 	CCAMERA_DESC			m_Desc;
 	long					m_FrameTransformChanged;
 };

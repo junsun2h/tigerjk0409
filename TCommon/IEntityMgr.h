@@ -16,13 +16,3 @@ struct IEntityMgr
 
 	virtual	void			Destroy() = 0;
 };
-
-
-struct IEntityProxyMgr
-{
-	virtual IEntityProxy*	SpawnEntityProxy(std::string name, eENTITY_PROXY_TYPE type)  =0;
-	virtual void			RemoveEntityProxy(long id, eENTITY_PROXY_TYPE type)  =0;
-	virtual void			RemoveAllEntityProxy(eENTITY_PROXY_TYPE type)  =0;
-
-	virtual	void			Destroy() = 0;
-};

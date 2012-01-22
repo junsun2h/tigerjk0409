@@ -43,8 +43,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
 	IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type ) override;
-	void			SetProxy( IEntityProxy *pProxy) override;
-	void			DeleteAllPrxoy() override;
+	IEntityProxy*	CreateProxy( eENTITY_PROXY_TYPE type ) override;
+	bool			DeleteProxy( eENTITY_PROXY_TYPE type ) override;
+	void			DeleteAllProxy() override;
 
 private:
 	typedef ATL::CAtlMap<eENTITY_PROXY_TYPE, IEntityProxy*>	ENEITY_PROXY_MAP;
@@ -112,6 +113,7 @@ public:
 	// AABB
 	const IAABB*	GetWorldAABB() override		{ return &m_WorldAABB; }
 	const IAABB*	GetLocalAABB() override		{ return &m_LocalAABB; }
+	IAABB*			GetLocalAABBUnsafe()		{ return &m_LocalAABB; }
 
 private:
 	EAABB			m_WorldAABB;

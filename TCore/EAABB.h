@@ -7,6 +7,7 @@ class EAABB : public IAABB
 public:
 	EAABB();
 	void		AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max) override;
+	void		AddAABB(CVector3& min, CVector3& max ) override;
 	void		AddAABB(IAABB* pAABB) override;
 	void		GetAABBPoints(CVector3 vPoints[], const XMMATRIX& tm) override;
 	void		Reset() override;
