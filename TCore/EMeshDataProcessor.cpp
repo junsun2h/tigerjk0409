@@ -56,9 +56,10 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	ECopyData( &pMesh->max, &pSrcBits,  12 );
 	ECopyData( &pMesh->geometryNum, &pSrcBits,  1 );
 
-
+	char buf[32];
 	for(int i=0; i< pMesh->geometryNum; ++i)
 	{
+		_itoa_s( i, buf, 32);
 		CResourceGeometry* pGeometry = (CResourceGeometry*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
 
 		ECopyData( &pGeometry->eVertexType, &pSrcBits,  4 );
@@ -83,6 +84,9 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		ECopyString(pGeometry->mtrlName, &pSrcBits);
 
+
+		std::string geometryName = m_name + "Geometry" + buf;
+		strcpy_s( pGeometry->name, geometryName.c_str());
 		pMesh->goemetries[i] = g_Engine.AssetMgr()->Insert( pGeometry );
 	}
 

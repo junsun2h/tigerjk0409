@@ -23,14 +23,15 @@ public:
 	void	OnSelChanged(wxTreeEvent& event);
 	void	OnItemMenu(wxTreeEvent& event);
 	void	OnDelete(wxCommandEvent& event);
-	void	OnAddComponent(wxCommandEvent& event);
+	void	OnFocusGot(wxFocusEvent& event);
 
 	void	Reload();
+	void	OnDrop(wxPoint point, const wxString& text);
+    void	OnBeginDrag(wxTreeEvent& event);
 
 private:
-	void	AddEntity(wxTreeItemId parent, IEntity* pEntity);
-
-	wxTreeItemId	m_SeletedItem;
+	IEntity*	GetSelectedEntity();
+	void		AddEntity(wxTreeItemId parent, IEntity* pEntity);
 
 	DECLARE_DYNAMIC_CLASS(SSceneHierarchyTreeCtrl)
 	DECLARE_EVENT_TABLE()

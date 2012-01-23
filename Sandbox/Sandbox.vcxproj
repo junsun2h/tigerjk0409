@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="S3DViewPanel.h" />
     <ClInclude Include="SAssetPanel.h" />
+    <ClInclude Include="SDragAndDropState.h" />
     <ClInclude Include="SEntitySelection.h" />
     <ClInclude Include="SNameDlg.h" />
     <ClInclude Include="STextureConvertor.h" />
@@ -100,6 +101,7 @@
     <ClCompile Include="S3DViewPanel.cpp" />
     <ClCompile Include="SApp.cpp" />
     <ClCompile Include="SAssetPanel.cpp" />
+    <ClCompile Include="SDragAndDropState.cpp" />
     <ClCompile Include="SEntitySelection.cpp" />
     <ClCompile Include="SGlobal.cpp" />
     <ClCompile Include="SMainFrame.cpp" />

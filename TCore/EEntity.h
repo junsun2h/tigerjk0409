@@ -42,7 +42,7 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
-	IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type ) override;
+	IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type, bool bCreate = false ) override;
 	IEntityProxy*	CreateProxy( eENTITY_PROXY_TYPE type ) override;
 	bool			DeleteProxy( eENTITY_PROXY_TYPE type ) override;
 	void			DeleteAllProxy() override;
@@ -103,7 +103,7 @@ public:
 	IEntity*		GetParent()	override		{ return m_pParent; }
 
 private:
-	IEntity*				m_pParent;
+	EEntity*				m_pParent;
 
 	typedef std::vector<EEntity*>	TYPE_ENTITY_LIST;
 	TYPE_ENTITY_LIST		m_Children;
@@ -111,12 +111,17 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// AABB
-	const IAABB*	GetWorldAABB() override		{ return &m_WorldAABB; }
-	const IAABB*	GetLocalAABB() override		{ return &m_LocalAABB; }
-	IAABB*			GetLocalAABBUnsafe()		{ return &m_LocalAABB; }
+	const IAABB*	GetWorldAABB() override			{ return &m_WorldAABB; }
+	const IAABB*	GetLocalAABB() override			{ return &m_LocalAABB; }
+	const IAABB*	GetLocalEntityAABB() override	{ return &m_LocalEntityAABB; }
+	void			ADDLocalEntityAABB(CVector3 min, CVector3 max);
+	
+	void			UpdateLocalAABB();
+	void			ReverseUpdateWorldAABB();
 
 private:
-	EAABB			m_WorldAABB;
-	EAABB			m_LocalAABB;
+	EAABB			m_WorldAABB;		// localAABB in world coordinates system
+	EAABB			m_LocalAABB;		// including child's Bounding box
+	EAABB			m_LocalEntityAABB;	// only this entity
 };
 

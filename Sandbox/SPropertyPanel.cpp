@@ -161,6 +161,8 @@ void SPropertyPanel::OrganizeInside()
 	int nWidth = 100;
 	int nHeight = 100;
 	GetSize(&nWidth, &nHeight);
+//DoMoveSibling( GetHWND(), nWidth, nHeight, )
+
 	SetSize(nWidth + 1, nHeight);
 	SetSize(nWidth - 1, nHeight);
 }

@@ -99,7 +99,11 @@ void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 			_itoa(i, buf, 32);
 			Append(new wxPropertyCategory(  wxString("Geometry") + wxString(buf) ));
 			Append( new wxStringProperty( wxString("Name"), wxPG_LABEL, vecRenderList[i].pGeometry->name) );
-			Append( new wxStringProperty( wxString("Material"), wxPG_LABEL, vecRenderList[i].pMtrl->name) );
+
+			if( vecRenderList[i].pMtrl )
+				Append( new wxStringProperty( wxString("Material"), wxPG_LABEL, vecRenderList[i].pMtrl->name) );
+			else
+				Append( new wxStringProperty( wxString("Material"), wxPG_LABEL, "") );
 		}
 	}
 }
@@ -117,8 +121,6 @@ void SPropertyGrid::Set(const CResourceTexture* pTexture)
 	Append( new wxIntProperty( "Width", wxPG_LABEL, pTexture->Width) );
 	Append( new wxIntProperty( "Height", wxPG_LABEL, pTexture->height) );
 	Append( new wxIntProperty( "MipLevel", wxPG_LABEL, pTexture->MipLevels) );
-
-	Disable();
 }
 
 void SPropertyGrid::Set(const CResourceMesh* pMesh)
@@ -147,8 +149,6 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 		Append(new wxIntProperty(  "Polygon Count", wxPG_LABEL, pGeometry->primitiveCount) );
 		Append(new wxFileProperty(  "Default Material", wxString(pGeometry->mtrlName)) );
 	}
-
-	Disable();
 }
 
 void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)

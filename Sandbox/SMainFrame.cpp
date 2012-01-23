@@ -1,4 +1,3 @@
-#include "wx/dnd.h"
 #include "wx/filename.h"
 
 
@@ -10,45 +9,10 @@
 #include "SMainToolBar.h"
 #include "SPropertyPanel.h"
 #include "SCreateEntityDlg.h"
-#include "SMeshImportor.h"
 #include "SEntitySelection.h"
 
 
-class SMainDragAndDrop : public wxFileDropTarget
-{
-public:
-	bool SMainDragAndDrop::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
-	{
-		size_t nFiles = filenames.GetCount();
 
-		for( UINT i=0; i < filenames.Count(); ++i)
-		{
-			wxFileName fn = filenames[i];
-			if( fn.GetExt() == "mesh" )
-			{
-				SMESH_LOADER::TRAW_MESH rawMesh;
-				SMESH_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
-
-				rawMesh.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
-
-				wchar_t path[MAX_PATH];
-				GetCurrentDirectory( MAX_PATH, path);
-
-				wxString saveFile = wxString(path) + wxString("\\Data\\mesh\\") + fn.GetName() + wxString(".tmesh");
-				DeleteFile(path);
-				
-				SMESH_LOADER::ImportRawMesh( &rawMesh , saveFile );
-
-				wxCommandEvent e;
-				GLOBAL::AssetPanel()->OnReload(e);
-			}
-		}
-
-		return true;
-	}
-};
-
-//-------------------------------------------------------------------------------------------------------------------
 namespace GLOBAL
 {
 	extern SMainFrame* g_MainFrame;
@@ -105,7 +69,6 @@ SMainFrame::SMainFrame(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetMenuBar( pMainMenu );
 	pMainMenu->UpdateLayoutMenuItemCheckStatus(this);
 	
-	SetDropTarget( new SMainDragAndDrop );
 	SetStatusText( _("") );
 }
 
@@ -230,10 +193,16 @@ void SMainFrame::OnCreateEntity(wxCommandEvent& event)
 		
 		dlg.GetNameAndPosition( name, pos );
 		
-		IEntityMgr* entityMgr = GLOBAL::Engine()->EntityMgr();
+		IEntityMgr* pEntityMgr = GLOBAL::Engine()->EntityMgr();
 
-		
-		IEntity* pEntity = entityMgr->SpawnEntity( name.c_str().AsChar() );
+		IEntity* pEntity = pEntityMgr->GetEntity( name.c_str().AsChar() );
+		if( pEntity != NULL )
+		{
+			wxMessageBox("There is already same name!");
+			return;
+		}
+
+		pEntity = pEntityMgr->SpawnEntity( name.c_str().AsChar() );
 		pEntity->SetLocalPos( pos );
 
 		GLOBAL::SceneRoot()->AttachChild( pEntity );

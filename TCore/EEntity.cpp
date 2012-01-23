@@ -21,6 +21,7 @@ void EEntity::Init(std::string& name, UINT id)
 	m_LocalTM = XMMatrixIdentity();
 	m_WorldTM = XMMatrixIdentity();
 
+	m_LocalEntityAABB.Reset();
 	m_LocalAABB.Reset();
 	m_WorldAABB.Reset();
 }
@@ -48,6 +49,7 @@ void EEntity::Destroy()
 	m_SpaceIDList.clear();
 	m_ID = -1;
 
+	m_LocalEntityAABB.Reset();
 	m_LocalAABB.Reset();
 	m_WorldAABB.Reset();
 }
@@ -203,8 +205,11 @@ void EEntity::UpdateLocalFromWorld()
 
 void EEntity::OnTransformChanged()
 {
-	int count = m_Children.size();
+	m_LocalAABB.Reset();
+	if( m_LocalEntityAABB.IsValid() )
+		m_LocalAABB.AddAABB( &m_LocalEntityAABB );
 
+	int count = m_Children.size();
 	for(int i= 0; i < count; i++)
 	{
 		m_Children[i]->UpdateWorldTM();
@@ -212,16 +217,22 @@ void EEntity::OnTransformChanged()
 		const IAABB* pChildAABB = m_Children[i]->GetLocalAABB();
 		if( pChildAABB->IsValid() )
 		{
-			m_LocalAABB.AddAABB( m_LocalTM, pChildAABB->GetMin(), pChildAABB->GetMax() );
+			CVector3 min = CVector3::Transform( pChildAABB->GetMin() , m_Children[i]->GetLocalTM() ); 
+			CVector3 max = CVector3::Transform( pChildAABB->GetMax() , m_Children[i]->GetLocalTM() );
+
+			m_LocalAABB.AddAABB( min, max );
 		}
 	}
 
 	if( m_LocalAABB.IsValid() )
 	{
+		EAABB temp = m_WorldAABB;
+
 		m_WorldAABB.Reset();
 		m_WorldAABB.AddAABB( m_WorldTM, m_LocalAABB.GetMin(), m_LocalAABB.GetMax() );
 
-		g_Engine.QuadSpaceMgr()->Update(this);
+		if( temp != m_WorldAABB )
+			g_Engine.QuadSpaceMgr()->Update(this);
 	}
 	
 	EntityEvent e;
@@ -279,7 +290,7 @@ void EEntity::Reparent( IEntity* _pNewParent )
 	{
 		XMMATRIX worldTM = GetWorldTM();
 
-		m_pParent = _pNewParent;
+		m_pParent = (EEntity*)_pNewParent;
 		SetWorldTM(worldTM);
 	}
 }
@@ -297,6 +308,20 @@ void EEntity::AttachChild( IEntity* pChild )
 
 	m_Children.push_back( (EEntity*)pChild );
 	pChild->Reparent( this );
+
+	const IAABB* pChildAABB = pChild->GetLocalAABB();
+	if( pChildAABB->IsValid() )
+	{
+		EAABB temp = m_LocalAABB;
+
+		CVector3 min = CVector3::Transform( pChildAABB->GetMin() , pChild->GetLocalTM() ); 
+		CVector3 max = CVector3::Transform( pChildAABB->GetMax() , pChild->GetLocalTM() );
+
+		m_LocalAABB.AddAABB( min, max );
+
+		if( temp != m_LocalAABB )
+			ReverseUpdateWorldAABB();
+	}
 }
 
 void EEntity::DetachChild( IEntity* _pChild )
@@ -313,7 +338,7 @@ void EEntity::DetachChild( IEntity* _pChild )
 		{
 			itr = m_Children.erase(itr);
 			_pChild->Reparent( NULL );
-
+			UpdateLocalAABB();
 			return;
 		}
 	}
@@ -328,9 +353,12 @@ void EEntity::DetachAllChild()
 		IEntity* pChild = *itr;
 		itr = m_Children.erase(itr);
 		pChild->Reparent( NULL );
+
+		if( itr == m_Children.end() )
+			break;
 	}
 
-	m_Children.clear();
+	UpdateLocalAABB();
 }
 
 IEntity* EEntity::GetChild(UINT index )
@@ -345,12 +373,15 @@ IEntity* EEntity::GetChild(UINT index )
 //   proxy
 //////////////////////////////////////////////////////////////////////////
 
-IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type )
+IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type, bool bCreate )
 {
 	ENEITY_PROXY_MAP::CPair* pEntityProxy = m_ProxyMap.Lookup( type );
 	if( pEntityProxy != NULL )
 		return pEntityProxy->m_value;
 
+	if( bCreate )
+		return CreateProxy(type);
+	
 	return NULL;
 }
 
@@ -411,5 +442,60 @@ void EEntity::SendEvent( EntityEvent &e )
 		itr = m_ProxyMap.GetNext(pos);
 		IEntityProxy* pProxy = itr->m_value;
 		pProxy->ProcessEvent(e);
+	}
+}
+
+void EEntity::ADDLocalEntityAABB(CVector3 min, CVector3 max)
+{
+	m_LocalEntityAABB.AddAABB(min, max);
+
+	UpdateLocalAABB();
+}
+
+void EEntity::UpdateLocalAABB()
+{
+	EAABB temp = m_LocalAABB;
+
+	m_LocalAABB.Reset();
+	m_LocalAABB.AddAABB( &m_LocalEntityAABB );
+
+	int count = m_Children.size();
+	for(int i= 0; i < count; i++)
+	{
+		const IAABB* pChildAABB = m_Children[i]->GetLocalAABB();
+		if( pChildAABB->IsValid() )
+		{
+			CVector3 min = CVector3::Transform( pChildAABB->GetMin() , m_Children[i]->GetLocalTM() ); 
+			CVector3 max = CVector3::Transform( pChildAABB->GetMax() , m_Children[i]->GetLocalTM() );
+
+			m_LocalAABB.AddAABB( min, max );
+		}
+	}
+
+	if( temp != m_LocalAABB )
+		ReverseUpdateWorldAABB();
+}
+
+void EEntity::ReverseUpdateWorldAABB()
+{
+	if( m_LocalAABB.IsValid() )
+	{
+		EAABB temp = m_WorldAABB;
+
+		m_WorldAABB.Reset();
+		m_WorldAABB.AddAABB( m_WorldTM, m_LocalAABB.GetMin(), m_LocalAABB.GetMax() );
+
+		if( temp != m_WorldAABB )
+		{
+			g_Engine.QuadSpaceMgr()->Update(this);
+
+			if( m_pParent != NULL )
+			{
+				CVector3 min = CVector3::Transform( m_LocalAABB.GetMin() , m_LocalTM ); 
+				CVector3 max = CVector3::Transform( m_LocalAABB.GetMax() , m_LocalTM );
+
+				m_pParent->ADDLocalEntityAABB( min, max );
+			}
+		}
 	}
 }

@@ -1,4 +1,7 @@
 #include "S3DViewPanel.h"
+#include "SEntitySelection.h"
+
+
 
 BEGIN_EVENT_TABLE(S3DViewPanel, wxPanel)
 	EVT_IDLE(S3DViewPanel::OnIdle)
@@ -71,6 +74,23 @@ void S3DViewPanel::PostRender()
 
 	pEngine->RenderHelper()->RenderText(textFPS);
 	pEngine->RenderHelper()->RenderGrid( XMMatrixIdentity(), 5000, 100 );
+
+	TYPE_SELECTED_ENTITIES*	selcetedEntities =	GLOBAL::EntitySelection()->List();
+
+	for( UINT i=0; i< selcetedEntities->size() ; ++i)
+	{
+		IEntity* pEntity = (*selcetedEntities)[i];
+		const IAABB* pWorldAABB = pEntity->GetWorldAABB();
+
+		if( pWorldAABB->IsValid() )
+		{
+			pEngine->RenderHelper()->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
+			
+			const IAABB* pLocalEntityAABB = pEntity->GetLocalEntityAABB();
+			if( pLocalEntityAABB->IsValid() )
+				pEngine->RenderHelper()->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
+		}
+	}
 }
 
 void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)

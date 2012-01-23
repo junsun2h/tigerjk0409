@@ -2,15 +2,55 @@
 #include "wx/treectrl.h"
 #include "wx/filename.h"
 #include "SPropertyPanel.h"
+#include "SEntitySelection.h"
+#include "wx/dnd.h"
+#include "SMeshImportor.h"
+#include "SDragAndDropState.h"
+
+class SFileDragAndDrop : public wxFileDropTarget
+{
+public:
+	bool SFileDragAndDrop::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
+	{
+		size_t nFiles = filenames.GetCount();
+
+		for( UINT i=0; i < filenames.Count(); ++i)
+		{
+			wxFileName fn = filenames[i];
+			if( fn.GetExt() == "mesh" )
+			{
+				SMESH_LOADER::TRAW_MESH rawMesh;
+				SMESH_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
+
+				rawMesh.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+
+				wchar_t path[MAX_PATH];
+				GetCurrentDirectory( MAX_PATH, path);
+
+				wxString saveFile = wxString(path) + wxString("\\Data\\mesh\\") + fn.GetName() + wxString(".tmesh");
+				DeleteFile(path);
+
+				SMESH_LOADER::ImportRawMesh( &rawMesh , saveFile );
+
+				wxCommandEvent e;
+				GLOBAL::AssetPanel()->OnReload(e);
+			}
+		}
+
+		return true;
+	}
+};
 
 
-
+//-------------------------------------------------------------------------------------------------------------------
 
 IMPLEMENT_DYNAMIC_CLASS(SAssetTreeCtrl, wxTreeCtrl)
 BEGIN_EVENT_TABLE(SAssetTreeCtrl, wxTreeCtrl)
 	EVT_TREE_SEL_CHANGED(ID_ASSET_TREECTRL, SAssetTreeCtrl::OnSelChanged)
 	EVT_TREE_ITEM_MENU(ID_ASSET_TREECTRL, SAssetTreeCtrl::OnItemMenu)
+	EVT_TREE_BEGIN_DRAG(wxID_ANY, SAssetTreeCtrl::OnBeginDrag)
 	EVT_MENU(ID_ASSET_DELETE, SAssetTreeCtrl::OnDelete)
+    EVT_SET_FOCUS(SAssetTreeCtrl::OnFocusGot)
 END_EVENT_TABLE()
 
 
@@ -26,16 +66,15 @@ wxString strAssetType[] =
 
 SAssetTreeCtrl::SAssetTreeCtrl(wxWindow *parent, const wxWindowID id)
 	: wxTreeCtrl(parent, id)
-	, m_pTexturePopupWindow(NULL)
 {
 	GetCurrentDirectory( MAX_PATH, m_Path);
 }
 
 void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)
 {
-	m_SeletedItem = event.GetItem();
+	wxTreeItemId seletedItem = event.GetItem();
 	
-	wxString strItem = GetItemText(m_SeletedItem);
+	wxString strItem = GetItemText(seletedItem);
 
 	if( strItem == "Root" ) 
 		return;
@@ -44,12 +83,23 @@ void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)
 		if( strItem == strAssetType[i])
 			return;
 
-	wxMenu menu( GetItemText(m_SeletedItem) );
+	wxMenu menu( GetItemText(seletedItem) );
 	menu.Append(ID_ASSET_DELETE, wxT("&Delete"));
 
 	PopupMenu(&menu, event.GetPoint());
 }
 
+void SAssetTreeCtrl::OnFocusGot(wxFocusEvent& event)
+{
+	wxTreeItemId pSelectedID = GetSelection();
+
+	if( pSelectedID.IsOk() )
+	{
+		wxTreeEvent e;
+		e.SetItem(pSelectedID);
+		OnSelChanged(e);
+	}
+}
 
 void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
@@ -57,12 +107,13 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	IAssetMgr*		pAssetMgr		= GLOBAL::Engine()->AssetMgr();
 	ILoader*		pLoader			= GLOBAL::Engine()->Loader();
 
-	m_SeletedItem		= event.GetItem();
-	wxString strItem	= GetItemText(m_SeletedItem);
+	wxTreeItemId seletedItem		= event.GetItem();
+	wxString strItem	= GetItemText(seletedItem);
 
-	eRESOURCE_FILE_TYPE fileType = GetAssetType();
+	eRESOURCE_FILE_TYPE fileType = GetAssetType(seletedItem);
 
 	pPropertyPanel->SetEmpty();
+	GLOBAL::EntitySelection()->Clear();
 
 	if( fileType == RESOURCE_FILE_TEXTURE )
 	{
@@ -93,9 +144,14 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 {
+	wxTreeItemId pSelectedID = GetSelection();
+
+	if( !pSelectedID.IsOk() )
+		return;
+
 	IAssetMgr*			pAssetMgr	= GLOBAL::Engine()->AssetMgr();
-	wxString			strItem		= GetItemText(m_SeletedItem);
-	eRESOURCE_FILE_TYPE	fileType	= GetAssetType();
+	wxString			strItem		= GetItemText(pSelectedID);
+	eRESOURCE_FILE_TYPE	fileType	= GetAssetType(pSelectedID);
 
 	if( fileType == RESOURCE_FILE_TEXTURE )
 	{
@@ -103,12 +159,34 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 		DeleteFile( fullPath );
 
 		pAssetMgr->Remove( RESOURCE_TEXTURE, (char*)strItem.char_str() );
-		Delete(m_SeletedItem);
+		Delete(pSelectedID);
 	}
 
 	Reload();
 }
 
+void SAssetTreeCtrl::OnBeginDrag(wxTreeEvent& WXUNUSED(event))
+{
+	wxTreeItemId pSelectedID = GetSelection();
+
+	if( pSelectedID.IsOk() )
+	{
+		eRESOURCE_FILE_TYPE	fileType	= GetAssetType(pSelectedID);
+		
+		if( fileType == RESOURCE_FILE_INVALID )
+			return;
+
+		SDragAndDragDesc desc;
+		
+		if( fileType == RESOURCE_FILE_ACTOR )		{	desc.type = DND_ACTOR;	}
+		else if( fileType == RESOURCE_FILE_MESH )	{	desc.type = DND_MESH;	}
+		else
+			return;
+
+		desc.strParam = GetItemText(pSelectedID);
+		SDragAndDropState::Do(desc, this);
+	}
+}
 
 void SAssetTreeCtrl::Reload()
 {
@@ -156,14 +234,14 @@ void SAssetTreeCtrl::Reload()
 	}
 }
 
-eRESOURCE_FILE_TYPE SAssetTreeCtrl::GetAssetType()
+eRESOURCE_FILE_TYPE SAssetTreeCtrl::GetAssetType(wxTreeItemId seletedItem)
 {
-	wxString strItem = GetItemText(m_SeletedItem);
+	wxString strItem = GetItemText(seletedItem);
 
 	if( strItem == "Asset" )
 		return RESOURCE_FILE_INVALID;
 
-	wxString strParent = GetItemText( GetItemParent(m_SeletedItem) );
+	wxString strParent = GetItemText( GetItemParent(seletedItem) );
 
 	if( strParent == strAssetType[RESOURCE_FILE_TEXTURE] )		return RESOURCE_FILE_TEXTURE;
 	else if( strParent == strAssetType[RESOURCE_FILE_ACTOR] )	return RESOURCE_FILE_ACTOR;
@@ -199,6 +277,7 @@ SAssetPanel::SAssetPanel(wxWindow* parent)
 		pRootSizer->Add(m_pTreeCtrl, wxSizerFlags(1).Center().Border().Expand());
 	}
 	SetSizerAndFit(pRootSizer);
+	SetDropTarget( new SFileDragAndDrop );
 }
 
 
