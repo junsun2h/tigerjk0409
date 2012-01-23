@@ -40,7 +40,7 @@ struct IEntity
 
 	//////////////////////////////////////////////////////////////////////////
 	// proxy functions
-	virtual IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type ) = 0;
+	virtual IEntityProxy*	GetProxy( eENTITY_PROXY_TYPE type, bool bCreate = false ) = 0;
 	virtual	IEntityProxy*	CreateProxy( eENTITY_PROXY_TYPE type ) = 0;
 	virtual	bool			DeleteProxy( eENTITY_PROXY_TYPE type ) = 0;
 	virtual void			DeleteAllProxy() = 0;
@@ -85,5 +85,6 @@ struct IEntity
 	// AABB
 	virtual const IAABB*	GetWorldAABB() = 0;
 	virtual const IAABB*	GetLocalAABB() = 0;
+	virtual const IAABB*	GetLocalEntityAABB() = 0;
 };
 

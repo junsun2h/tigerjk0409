@@ -35,7 +35,7 @@ bool EEntityProxyRender::Insert(long meshID )
 		m_vecRenderElement.push_back( item );
 	}
 
-	m_pEntity->GetLocalAABBUnsafe()->AddAABB( pMesh->min, pMesh->max );
+	m_pEntity->ADDLocalEntityAABB( pMesh->min, pMesh->max );
 
 	return true;
 }

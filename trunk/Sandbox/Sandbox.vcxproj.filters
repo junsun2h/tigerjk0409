@@ -2,16 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="S3DViewPanel.h">
-      <Filter>MainFrame\Panels</Filter>
+      <Filter>Panels</Filter>
     </ClInclude>
     <ClInclude Include="SAssetPanel.h">
-      <Filter>MainFrame\Panels</Filter>
+      <Filter>Panels</Filter>
     </ClInclude>
     <ClInclude Include="SSceneHierarchyPanel.h">
-      <Filter>MainFrame\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="SMeshImportor.h">
-      <Filter>Importor</Filter>
+      <Filter>Panels</Filter>
     </ClInclude>
     <ClInclude Include="SMainFrame.h">
       <Filter>MainFrame</Filter>
@@ -27,39 +24,46 @@
       <Filter>Dialog</Filter>
     </ClInclude>
     <ClInclude Include="SVectorProperty.h">
-      <Filter>MainFrame\Panels\Property\data</Filter>
+      <Filter>Panels\Property\data</Filter>
     </ClInclude>
     <ClInclude Include="STextureFormatString.h">
-      <Filter>MainFrame\Panels\Property\data</Filter>
+      <Filter>Panels\Property\data</Filter>
     </ClInclude>
     <ClInclude Include="SPropertyPanel.h">
-      <Filter>MainFrame\Panels\Property</Filter>
+      <Filter>Panels\Property</Filter>
     </ClInclude>
     <ClInclude Include="STexturePopupWindow.h">
-      <Filter>MainFrame\Panels</Filter>
+      <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="STextureConvertor.h" />
     <ClInclude Include="SPropertyGrid.h">
-      <Filter>MainFrame\Panels\Property</Filter>
+      <Filter>Panels\Property</Filter>
     </ClInclude>
-    <ClInclude Include="SEntitySelection.h" />
     <ClInclude Include="SNameDlg.h">
       <Filter>Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SDragAndDropState.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="SMeshImportor.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="SEntitySelection.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="STextureConvertor.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SApp.cpp" />
     <ClCompile Include="S3DViewPanel.cpp">
-      <Filter>MainFrame\Panels</Filter>
+      <Filter>Panels</Filter>
     </ClCompile>
     <ClCompile Include="SAssetPanel.cpp">
-      <Filter>MainFrame\Panels</Filter>
+      <Filter>Panels</Filter>
     </ClCompile>
     <ClCompile Include="SSceneHierarchyPanel.cpp">
-      <Filter>MainFrame\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="SMeshImportor.cpp">
-      <Filter>Importor</Filter>
+      <Filter>Panels</Filter>
     </ClCompile>
     <ClCompile Include="SMainFrame.cpp">
       <Filter>MainFrame</Filter>
@@ -69,37 +73,47 @@
     </ClCompile>
     <ClCompile Include="SGlobal.cpp" />
     <ClCompile Include="SVectorProperty.cpp">
-      <Filter>MainFrame\Panels\Property\data</Filter>
+      <Filter>Panels\Property\data</Filter>
     </ClCompile>
     <ClCompile Include="SPropertyPanel.cpp">
-      <Filter>MainFrame\Panels\Property</Filter>
+      <Filter>Panels\Property</Filter>
     </ClCompile>
     <ClCompile Include="STexturePopupWindow.cpp">
-      <Filter>MainFrame\Panels</Filter>
+      <Filter>Panels</Filter>
     </ClCompile>
-    <ClCompile Include="STextureConvertor.cpp" />
     <ClCompile Include="SPropertyGrid.cpp">
-      <Filter>MainFrame\Panels\Property</Filter>
+      <Filter>Panels\Property</Filter>
     </ClCompile>
-    <ClCompile Include="SEntitySelection.cpp" />
+    <ClCompile Include="SDragAndDropState.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SMeshImportor.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SEntitySelection.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="STextureConvertor.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Importor">
-      <UniqueIdentifier>{b4fa715c-a253-4687-990c-8ab26981da73}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MainFrame">
       <UniqueIdentifier>{72b3fb9c-24a9-4509-bb63-36c6920881a6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Dialog">
       <UniqueIdentifier>{752c1083-137a-4204-ad56-a78770ebe3ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MainFrame\Panels">
+    <Filter Include="Utility">
+      <UniqueIdentifier>{b6a61538-a0de-49a3-8728-25e5a066cae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels">
       <UniqueIdentifier>{b685312c-241b-4fea-a71a-9aa279e4e398}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MainFrame\Panels\Property">
+    <Filter Include="Panels\Property">
       <UniqueIdentifier>{d40ca6ac-ed5f-4ec7-89a5-e8456bfa790e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MainFrame\Panels\Property\data">
+    <Filter Include="Panels\Property\data">
       <UniqueIdentifier>{b8e458cb-a2eb-4792-8a28-e6de902532e2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

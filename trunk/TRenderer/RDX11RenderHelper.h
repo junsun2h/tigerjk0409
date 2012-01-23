@@ -13,7 +13,7 @@ public:
 	RDX11RenderHelper();
 
 public:
-	void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max) override;
+	void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) override;
 	void	RenderGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
 	void	RenderText(RENDER_TEXT_BUFFER& text) override;
 	
@@ -23,6 +23,8 @@ public:
 	void	ApplyRenderState();
 
 private:
+	void	DrawLine();
+
 	UINT						m_LineBufferBytes;
 	CGrowableArray<CVertexPC>	m_LineVertices;
 	ID3D11Buffer*				m_pLineBuffer;

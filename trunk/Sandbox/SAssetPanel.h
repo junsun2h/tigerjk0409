@@ -26,14 +26,13 @@ public:
 	void	OnSelChanged(wxTreeEvent& event);
 	void	OnItemMenu(wxTreeEvent& event);
 	void	OnDelete(wxCommandEvent& event);
+	void	OnFocusGot(wxFocusEvent& event);
+    void	OnBeginDrag(wxTreeEvent& event);
 
 	void	Reload();
 
 private:
-	eRESOURCE_FILE_TYPE		GetAssetType();
-
-	wxTreeItemId			m_SeletedItem;
-	STexturePopupWindow*	m_pTexturePopupWindow;
+	eRESOURCE_FILE_TYPE		GetAssetType(wxTreeItemId seletedItem);
 
 	wchar_t					m_Path[MAX_PATH];
 
