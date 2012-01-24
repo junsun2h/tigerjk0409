@@ -6,7 +6,7 @@ namespace GLOBAL
 	ID3D11Device*			g_D3Device = NULL;
 	ID3D11DeviceContext*	g_D3DeviceContext = NULL;
 	RDX11Device*			g_RDX11Device = NULL;
-	RDX11Setting			g_DeviceSetting;
+	RDeviceDesc				g_DeviceSetting;
 	RDX11RenderStateMgr		g_StateRepository;
 	RDX11MainFrameBuffer	g_MainWindow;
 	RDX11RenderHelper		g_RenderHelper;
@@ -19,7 +19,7 @@ namespace GLOBAL
 	ID3D11DeviceContext*	GetD3DContext()		{ return g_D3DeviceContext; }
 	RDX11Device*			GetRDX11Device()	{ return g_RDX11Device; }
 	RDX11RenderStateMgr*	GetD3DStateMgr()	{ return &g_StateRepository; }
-	const RDX11Setting&		GetDeviceInfo()		{ return g_DeviceSetting; }
+	const RDeviceDesc&		GetDeviceInfo()		{ return g_DeviceSetting; }
 	RDX11ShaderMgr*			GetShaderMgr()		{ return &g_ShaderMgr; }
 	const CCAMERA_DESC&		GetCameraDesc()		{ return g_pCurrentCameraDesc; }
 };
@@ -41,6 +41,11 @@ RDX11Device::~RDX11Device()
 IRenderHelper* RDX11Device::GetRenderHelper()
 {
 	return &g_RenderHelper;
+}
+
+RDeviceDesc	RDX11Device::GetDeviceSetting()
+{
+	return GLOBAL::GetDeviceInfo();
 }
 
 
@@ -90,9 +95,18 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
 #endif
 	for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
 	{
-		g_DeviceSetting.driverType = driverTypes[driverTypeIndex];
-		hr = D3D11CreateDeviceAndSwapChain( NULL, g_DeviceSetting.driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-			D3D11_SDK_VERSION, &swapChainDesc, &g_MainWindow.pSwapChain, &m_pD3Device, &g_DeviceSetting.featureLevel, &m_pContext );
+		hr = D3D11CreateDeviceAndSwapChain( NULL, 
+											driverTypes[driverTypeIndex], 
+											NULL, 
+											createDeviceFlags, 
+											featureLevels, 
+											numFeatureLevels,
+											D3D11_SDK_VERSION, 
+											&swapChainDesc, 
+											&g_MainWindow.pSwapChain, 
+											&m_pD3Device, 
+											&m_FeatureLevel, 
+											&m_pContext );
 		if( SUCCEEDED( hr ) )
 			break;
 	}

@@ -22,12 +22,13 @@ public:
 	void					SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector) override;
 	const CCAMERA_DESC&		GetDesc() override		{ return m_Desc; }
 
-	long					GetLastTransformChangedFrame() override	{ return m_FrameTransformChanged; }
-	
+	long					GetLastTransformChangedFrame() override		{ return m_FrustrumChanged; }
+	void					GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction) override;
+
 private:
 	void					SetViewDescFromWorldMatrix();
 
 	IEntity*				m_pEntity;
 	CCAMERA_DESC			m_Desc;
-	long					m_FrameTransformChanged;
+	long					m_FrustrumChanged;
 };

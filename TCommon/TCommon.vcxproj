@@ -61,6 +61,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CColiision.h" />
     <ClInclude Include="CColor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CFrustrum.h" />

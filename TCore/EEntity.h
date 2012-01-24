@@ -103,10 +103,8 @@ public:
 	IEntity*		GetParent()	override		{ return m_pParent; }
 
 private:
-	EEntity*				m_pParent;
-
-	typedef std::vector<EEntity*>	TYPE_ENTITY_LIST;
-	TYPE_ENTITY_LIST		m_Children;
+	EEntity*			m_pParent;
+	TYPE_ENTITY_LIST	m_Children;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -114,14 +112,17 @@ public:
 	const IAABB*	GetWorldAABB() override			{ return &m_WorldAABB; }
 	const IAABB*	GetLocalAABB() override			{ return &m_LocalAABB; }
 	const IAABB*	GetLocalEntityAABB() override	{ return &m_LocalEntityAABB; }
+	void			ADDLocalAABB(CVector3 min, CVector3 max);
 	void			ADDLocalEntityAABB(CVector3 min, CVector3 max);
-	
-	void			UpdateLocalAABB();
-	void			ReverseUpdateWorldAABB();
+
+	void			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) override;
+	void			UpdateWorldAABB();
 
 private:
-	EAABB			m_WorldAABB;		// localAABB in world coordinates system
-	EAABB			m_LocalAABB;		// including child's Bounding box
-	EAABB			m_LocalEntityAABB;	// only this entity
+	void			UpdateLocalAABB();
+
+	EAABB			m_WorldAABB;		// including child's Bounding box in world coordinates system
+	EAABB			m_LocalAABB;		// including child's Bounding box in local coordinates system
+	EAABB			m_LocalEntityAABB;	// this entity's Bounding box in local coordinates system
 };
 

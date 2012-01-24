@@ -13,6 +13,16 @@ enum eRENDER_COMMAND
 	RC_RESET_DEVICE,
 };
 
+struct IRenderStrategy
+{
+	virtual void Render(const CCAMERA_DESC& cameraDesc) = 0;
+};
+
+struct RDeviceDesc
+{
+	int					width;
+	int					height;
+};
 
 struct IRDevice  
 {
@@ -27,6 +37,7 @@ struct IRDevice
 	virtual bool			Resize(int width, int height) = 0;
 
 	virtual IRenderHelper*	GetRenderHelper() = 0;
+	virtual	RDeviceDesc		GetDeviceSetting() = 0;
 
 	// Device Dependent Resources ( ex: Texture, VB, IB, Shader )
 	virtual void			PT_CreateGraphicBuffer(CResourceBase* pResource) = 0;

@@ -91,6 +91,9 @@
     <ClInclude Include="CMaterial.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
+    <ClInclude Include="CColiision.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">
