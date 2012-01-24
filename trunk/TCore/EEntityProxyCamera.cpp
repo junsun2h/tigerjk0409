@@ -5,7 +5,7 @@
 void EEntityProxyCamera::Init(IEntity* pEntity)
 {
 	m_pEntity = pEntity;
-	m_FrameTransformChanged = false;
+	m_FrustrumChanged = false;
 
 	// default setting
 	SetProjParam(XM_PIDIV4, 800, 600, 1.0f, 1000.0f );
@@ -16,7 +16,7 @@ void EEntityProxyCamera::ProcessEvent( EntityEvent &event )
 {
 	if( event.type == E_EVENT_TRANSFORM_CHANGED )
 	{
-		m_FrameTransformChanged = g_Engine.GetCurrentFrame();
+		m_FrustrumChanged = g_Engine.GetCurrentFrame();
 		SetViewDescFromWorldMatrix();
 	}
 }
@@ -38,7 +38,11 @@ void EEntityProxyCamera::SetViewParam(CVector3& eyePos, CVector3& targetPos, CVe
 	if( m_pEntity != NULL)
 		m_pEntity->SetLocalTM( XMMATRIX_UTIL::Inverse( NULL,  m_Desc.ViewTM ) );
 	
-	SetViewDescFromWorldMatrix();
+	XMMATRIX worldTM = m_pEntity->GetWorldTM();
+
+	m_Desc.eyePos = CVector3( worldTM.r[3] );
+	m_Desc.eyeDirection = CVector3( worldTM.r[2] );
+	m_Desc.upVector = CVector3( worldTM.r[1] );
 }
 
 void EEntityProxyCamera::SetViewDescFromWorldMatrix()
@@ -49,4 +53,29 @@ void EEntityProxyCamera::SetViewDescFromWorldMatrix()
 	m_Desc.eyePos = CVector3( worldTM.r[3] );
 	m_Desc.eyeDirection = CVector3( worldTM.r[2] );
 	m_Desc.upVector = CVector3( worldTM.r[1] );
+}
+
+void EEntityProxyCamera::GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction)
+{
+	RDeviceDesc deviceDesc = g_Engine.RDevice()->GetDeviceSetting();
+
+	// Compute the vector of the pick ray in screen space
+	CVector3 v;
+	v.x = ( ( ( 2.0f * screenX ) / deviceDesc.width ) - 1 ) / m_Desc.ProjTM._11;
+	v.y = -( ( ( 2.0f * screenY ) / deviceDesc.height ) - 1 ) / m_Desc.ProjTM._22;
+	v.z = m_Desc.nearClip;
+
+	// Get the inverse view matrix
+	XMMATRIX InvView = XMMATRIX_UTIL::Inverse( NULL, m_Desc.ViewTM);
+
+	// Transform the screen space pick ray into 3D space
+	direction.x = v.x * InvView._11 + v.y * InvView._21 + v.z * InvView._31;
+	direction.y = v.x * InvView._12 + v.y * InvView._22 + v.z * InvView._32;
+	direction.z = v.x * InvView._13 + v.y * InvView._23 + v.z * InvView._33;
+
+	direction = CVector3::Normalize( direction);
+
+	origin.x = InvView._41;
+	origin.y = InvView._42;
+	origin.z = InvView._43;
 }

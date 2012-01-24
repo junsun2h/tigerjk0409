@@ -98,6 +98,8 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	if( GLOBAL::ObserverCamera() == NULL )
 		return;
 
+	#define IsKeyDown(key) ((GetAsyncKeyState(key) & 0x8000)!=0)
+
 	static CVector2 point;
 
 	long x = 0;
@@ -112,10 +114,29 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	if( event.LeftIsDown() )
 	{
 		SetFocus();
-		if( fabs(dPoint.x) > fabs(dPoint.y) )
-			pCamera->RotateLocalAxis( CVector3(0,0,1), dPoint.x * 0.005f );
+		if(IsKeyDown(VK_SHIFT))
+		{
+			if( fabs(dPoint.x) > fabs(dPoint.y) )
+				pCamera->RotateLocalAxis( CVector3(0,0,1), dPoint.x * 0.005f );
+			else
+				pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
+		}
 		else
-			pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
+		{
+			CVector3 origin;
+			CVector3 direction;
+			GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
+			CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
+
+			TYPE_ENTITY_LIST list;
+			CCollisionDescLine desc;
+			desc.from = origin;
+			desc.to = to;
+			GLOBAL::SceneRoot()->Pick( desc, list);
+
+			if( list.size() > 0 )
+				int fea = 0;
+		}
 	}
 	else if( event.RightIsDown() )
 	{

@@ -320,7 +320,7 @@ void EEntity::AttachChild( IEntity* pChild )
 		m_LocalAABB.AddAABB( min, max );
 
 		if( temp != m_LocalAABB )
-			ReverseUpdateWorldAABB();
+			UpdateWorldAABB();
 	}
 }
 
@@ -448,7 +448,6 @@ void EEntity::SendEvent( EntityEvent &e )
 void EEntity::ADDLocalEntityAABB(CVector3 min, CVector3 max)
 {
 	m_LocalEntityAABB.AddAABB(min, max);
-
 	UpdateLocalAABB();
 }
 
@@ -473,10 +472,20 @@ void EEntity::UpdateLocalAABB()
 	}
 
 	if( temp != m_LocalAABB )
-		ReverseUpdateWorldAABB();
+		UpdateWorldAABB();
 }
 
-void EEntity::ReverseUpdateWorldAABB()
+void EEntity::ADDLocalAABB(CVector3 min, CVector3 max)
+{
+	EAABB temp = m_LocalAABB;
+
+	m_LocalAABB.AddAABB( min, max );
+
+	if( temp != m_LocalAABB )
+		UpdateWorldAABB();
+}
+
+void EEntity::UpdateWorldAABB()
 {
 	if( m_LocalAABB.IsValid() )
 	{
@@ -494,8 +503,26 @@ void EEntity::ReverseUpdateWorldAABB()
 				CVector3 min = CVector3::Transform( m_LocalAABB.GetMin() , m_LocalTM ); 
 				CVector3 max = CVector3::Transform( m_LocalAABB.GetMax() , m_LocalTM );
 
-				m_pParent->ADDLocalEntityAABB( min, max );
+				m_pParent->ADDLocalAABB( min, max );
 			}
+		}
+	}
+}
+
+void EEntity::Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list)
+{
+	if( m_LocalEntityAABB.IsValid() )
+	{
+		if( m_LocalEntityAABB.IsLineInBox( desc.from, desc.to, &m_WorldTM ) )
+			list.push_back(this);
+	}
+
+	if( m_WorldAABB.IsValid() && m_WorldAABB.IsLineInBox( desc.from, desc.to ) )
+	{
+		int count = m_Children.size();
+		for(int i= 0; i < count; i++)
+		{
+			m_Children[i]->Pick(desc, list);
 		}
 	}
 }

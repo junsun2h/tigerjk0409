@@ -66,6 +66,8 @@ struct IEntityProxyCamera : IEntityProxy
 
 	virtual long					GetLastTransformChangedFrame() =0;
 	virtual	const CCAMERA_DESC&		GetDesc() =0;
+
+	virtual void					GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction) = 0;
 };
 
 

@@ -14,13 +14,7 @@
 
 
 
-struct RDX11Setting
-{
-	D3D_FEATURE_LEVEL	featureLevel;
-	D3D_DRIVER_TYPE		driverType;
-	int					width;
-	int					height;
-};
+
 
 
 
@@ -46,11 +40,12 @@ public:
 	void		PT_CreateGraphicBuffer(CResourceBase* pResource) override;
 	void		CreateGraphicBuffer(CResourceBase* pResource) override;
 	void		RemoveGraphicBuffer(CResourceBase* pResource) override;
-
+	
 	CResourceTexture*	CreateTextureFromFile(const char* fileName) override;
 	bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) override;
 
 	IRenderHelper*	GetRenderHelper() override;
+	RDeviceDesc		GetDeviceSetting() override;
 
 public:
 	void			SetViewport(float width, float height, float MinDepth = 0.0f, float MaxDepth = 1.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
@@ -58,12 +53,11 @@ public:
 	void			RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
 
 private:
-
-
 	HWND					m_HWND;
 	
 	ID3D11Device*			m_pD3Device;
 	ID3D11DeviceContext*	m_pContext;
+	D3D_FEATURE_LEVEL		m_FeatureLevel;
 };
 
 
@@ -74,7 +68,7 @@ namespace GLOBAL
 	ID3D11DeviceContext*	GetD3DContext();
 	RDX11Device*			GetRDX11Device();
 	RDX11RenderStateMgr*	GetD3DStateMgr();
-	const RDX11Setting&		GetDeviceInfo();
+	const RDeviceDesc&		GetDeviceInfo();
 	RDX11ShaderMgr*			GetShaderMgr();
 	const CCAMERA_DESC&		GetCameraDesc();
 };

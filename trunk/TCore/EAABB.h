@@ -11,7 +11,11 @@ public:
 	void		AddAABB(IAABB* pAABB) override;
 	void		GetAABBPoints(CVector3 vPoints[], const XMMATRIX& tm) override;
 	void		Reset() override;
+
 	bool		IsValid() const override;
+	bool		IsPointInBox(const CVector3 &InP, XMMATRIX* pWorld = NULL ) const override;
+	bool		IsSphereInBox( const CVector3 &InP, float fRadius, XMMATRIX* pWorld = NULL ) const override;
+	bool		IsLineInBox( const CVector3& L1, const CVector3& L2, XMMATRIX* pWorld = NULL  ) const override;
 
 	CVector3	GetMax() const override		{ return m_Max; }
 	CVector3	GetMin() const override		{ return m_Min; }
@@ -35,8 +39,9 @@ public:
 	}
 
 protected:
-	bool		m_IsValid;
+	XMMATRIX	CalculateAABBCoordinate() const;
 
+	bool		m_IsValid;
 	CVector3	m_Min;
 	CVector3	m_Max;
 };
