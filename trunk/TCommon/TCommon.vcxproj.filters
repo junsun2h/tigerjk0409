@@ -19,9 +19,6 @@
     <ClInclude Include="CUnitPool.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="IActorMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
     <ClInclude Include="IAssetMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>

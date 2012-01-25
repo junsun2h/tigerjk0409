@@ -74,7 +74,6 @@
     <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="CVertex.h" />
     <ClInclude Include="IAABB.h" />
-    <ClInclude Include="IActorMgr.h" />
     <ClInclude Include="IAssetMgr.h" />
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="CThreadSafeQueue.h" />
