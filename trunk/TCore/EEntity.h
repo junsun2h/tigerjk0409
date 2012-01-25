@@ -115,7 +115,7 @@ public:
 	void			ADDLocalAABB(CVector3 min, CVector3 max);
 	void			ADDLocalEntityAABB(CVector3 min, CVector3 max);
 
-	void			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) override;
+	bool			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) override;
 	void			UpdateWorldAABB();
 
 private:
