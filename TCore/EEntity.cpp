@@ -224,16 +224,7 @@ void EEntity::OnTransformChanged()
 		}
 	}
 
-	if( m_LocalAABB.IsValid() )
-	{
-		EAABB temp = m_WorldAABB;
-
-		m_WorldAABB.Reset();
-		m_WorldAABB.AddAABB( m_WorldTM, m_LocalAABB.GetMin(), m_LocalAABB.GetMax() );
-
-		if( temp != m_WorldAABB )
-			g_Engine.QuadSpaceMgr()->Update(this);
-	}
+	UpdateWorldAABB();
 	
 	EntityEvent e;
 	e.type = E_EVENT_TRANSFORM_CHANGED;
@@ -509,7 +500,8 @@ void EEntity::UpdateWorldAABB()
 	}
 }
 
-void EEntity::Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list)
+
+bool EEntity::Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list)
 {
 	if( m_LocalEntityAABB.IsValid() )
 	{
@@ -525,4 +517,9 @@ void EEntity::Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list)
 			m_Children[i]->Pick(desc, list);
 		}
 	}
+
+	if( list.size() > 0 )
+		return true;
+	else
+		return false;
 }

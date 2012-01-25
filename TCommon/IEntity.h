@@ -88,7 +88,7 @@ struct IEntity
 	virtual const IAABB*	GetLocalAABB() = 0;
 	virtual const IAABB*	GetLocalEntityAABB() = 0;
 
-	virtual void			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) = 0;
+	virtual bool			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) = 0;
 
 };
 
