@@ -9,9 +9,6 @@
     <ClCompile Include="EWinFileLoader.cpp">
       <Filter>Asset\ResourceFileLoader</Filter>
     </ClCompile>
-    <ClCompile Include="ETextureDataProcessor.cpp">
-      <Filter>Asset\ResourceDataProcessor</Filter>
-    </ClCompile>
     <ClCompile Include="EActorDataProcessor.cpp">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
@@ -84,9 +81,6 @@
     </ClInclude>
     <ClInclude Include="EWinFileLoader.h">
       <Filter>Asset\ResourceFileLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="ETextureDataProcessor.h">
-      <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
     <ClInclude Include="EMtrlDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>

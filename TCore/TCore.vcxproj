@@ -96,7 +96,6 @@
     <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
     <ClCompile Include="ERenderer.cpp" />
-    <ClCompile Include="ETextureDataProcessor.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -119,7 +118,6 @@
     <ClInclude Include="EQuadSpaceTreeNode.h" />
     <ClInclude Include="ERenderer.h" />
     <ClInclude Include="EWinFileLoader.h" />
-    <ClInclude Include="ETextureDataProcessor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

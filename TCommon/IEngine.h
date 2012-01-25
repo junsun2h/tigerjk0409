@@ -2,7 +2,6 @@
 
 #include "CDefine.h"
 #include "IRDevice.h"
-#include "IActorMgr.h"
 #include "IEntityMgr.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
