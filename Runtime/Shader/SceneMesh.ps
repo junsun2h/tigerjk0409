@@ -1,0 +1,67 @@
+//--------------------------------------------------------------------------------------
+// Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+Texture2D txDiffuse : register( t0 );
+Texture2D txSpecular : register( t1 );
+Texture2D txTransparency : register( t2 );
+Texture2D txLight : register( t3 );
+Texture2D txSSAO : register( t4 );
+
+SamplerState samLinear : register( s0 );
+SamplerState samPoint : register( s2 );
+
+#define SPECULAR_NONE 0
+#define SPECULAR_PHONG 1
+#define SPECULAR_MAP 2
+
+cbuffer CB_global : register( b0 )
+{
+	int g_ScreenWidth;
+	int g_ScreenHieght;
+};
+
+cbuffer CB_model : register( b1 )
+{
+	uint m_SpecularType;
+	uint m_bhasOpcityMap;
+};
+
+//--------------------------------------------------------------------------------------
+// IO structures
+//--------------------------------------------------------------------------------------
+struct PS_INPUT
+{
+    float4 Pos : SV_POSITION;
+    float2 Tex : TEXCOORD0;
+};
+
+//--------------------------------------------------------------------------------------
+// Pixel Shader
+//--------------------------------------------------------------------------------------
+float4 PS( PS_INPUT In) : SV_Target
+{
+	// Alpha Test
+	if( m_bhasOpcityMap )
+	{	
+		float alphaTest = txTransparency.Sample( samPoint, In.Tex ).r;
+		if( alphaTest < 0.01)
+			discard;	
+	}
+	float2 screenTex = float2( In.Pos.x/g_ScreenWidth, In.Pos.y/g_ScreenHieght);	
+
+	////////////////////////////////////
+	//SSAO
+	float fSSAO = txSSAO.Sample( samPoint, screenTex );
+	
+	////////////////////////////////////
+	// Light
+	float4 light = txLight.Sample( samLinear, screenTex );
+	float3 diffuseColor = txDiffuse.Sample( samLinear, In.Tex ).rgb * light.xyz;
+	float3 specColor = 0;
+	if( m_SpecularType == SPECULAR_MAP)
+		specColor = light.w * txSpecular.Sample( samLinear, In.Tex ).rgb * 2;
+	else if( m_SpecularType == SPECULAR_PHONG)
+		specColor = light.w;
+
+	return fSSAO * float4(specColor + diffuseColor, 1);
+}

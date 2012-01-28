@@ -1,0 +1,129 @@
+//--------------------------------------------------------------------------------------
+// Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+//light
+#define DIRECTION_LIGHT 0
+#define POINT_LIGHT 1
+#define SPOT_LIGHT 2
+
+
+Texture2D txNormal : register( t0 );
+Texture2D txDepth : register( t1 );
+Texture2D txShadow : register( t2 );
+
+
+SamplerState samLinear : register( s0 );
+SamplerState samPoint : register( s2 );
+
+cbuffer CB_global : register( b0 )
+{
+	float g_FarClip;
+	int g_ScreenWidth;
+	int g_ScreenHieght;
+};
+
+cbuffer CB_model : register( b1 )
+{
+	float3 m_LightColor;
+	float m_SpecPower;
+	
+	float3 m_ViewLightPos;
+	uint m_LightType;
+	
+	float3 m_ViewLightDir;	
+	uint m_bShadow;		
+
+	float4 m_vCascadeOffset;	
+    float4 m_vCascadeScale;
+	
+	matrix m_CameraViewToLightProj;	
+
+	float m_DampStart;
+	float m_DampRange;
+	float m_SpotAngle;
+	
+	float m_LightFarClip;
+};
+
+//--------------------------------------------------------------------------------------
+// IO structures
+//--------------------------------------------------------------------------------------
+struct PS_INPUT
+{
+	float4 Pos		: SV_POSITION;
+	float3 ViewPos	: TEXCOORD0;
+};
+
+//--------------------------------------------------------------------------------------
+// Pixel Shader
+//--------------------------------------------------------------------------------------
+void CheapVarianceShadow( in float4 vlightProjSpacePos, in out float fPercentLit ) 
+{
+	//transform from RT space to texture space.
+	float2 ShadowTex = 0.5 * vlightProjSpacePos.xy / vlightProjSpacePos.w + float2( 0.5, 0.5 );	
+	ShadowTex.y = 1.0f - ShadowTex.y;
+		    
+    float2 mapDepth = txShadow.Sample( samLinear, ShadowTex.xy );
+	vlightProjSpacePos.z /= m_LightFarClip;
+    float distance = vlightProjSpacePos.z - mapDepth.x;
+
+	if ( distance > 0 )
+    {
+	    float variance = ( mapDepth.y ) - ( mapDepth.x * mapDepth.x );
+        variance       = min( 1.0f, max( 0.0f, variance + 0.00001f ) );
+        float p_max    = variance / ( variance + distance*distance );
+
+        // To combat light-bleeding, experiment with raising p_max to some power
+        // (Try values from 0.1 to 100.0, if you like.)
+        fPercentLit = pow( p_max, 4); 
+	}
+}
+
+float4 PS( PS_INPUT In) : SV_Target0
+{
+	float2 Tex = float2( In.Pos.x/g_ScreenWidth, In.Pos.y/g_ScreenHieght);
+	float3 viewRay = float3( In.ViewPos.xy * (g_FarClip/In.ViewPos.z), g_FarClip );	
+	float3 viewPos = viewRay * txDepth.Sample( samLinear, Tex ).x;
+	float3 lightDir = m_ViewLightPos - viewPos;
+
+	float distance = length(lightDir);		
+	lightDir = normalize( lightDir );
+
+	float damp = 1;
+	if( m_LightType == POINT_LIGHT )
+	{
+		if( distance > m_DampStart )
+			damp = 1 - (distance - m_DampStart)/m_DampRange;	
+	}
+	else if( m_LightType == SPOT_LIGHT)
+	{
+		float angle = dot( lightDir, -m_ViewLightDir);
+		if( angle < m_SpotAngle )
+			discard;
+		if( angle < m_DampStart )
+			damp = ( angle - m_SpotAngle)/ ( m_DampStart -m_SpotAngle);
+	}		
+
+	// Convert normal back from [0,1] to [-1,1]
+	float3 viewNn = txNormal.Sample( samLinear, Tex ).rgb * 2.0f - 1.0f;
+	
+	// Calculate diffuse Light
+	float NL = saturate( dot(viewNn, lightDir) );
+	
+	// Calculate specular Light
+	float3 camDir = -normalize(viewPos);	
+	float3 Hn = normalize(lightDir + camDir);
+	float spec = pow( saturate( dot(viewNn, Hn) ), m_SpecPower);
+	
+	////////////////////////////////////
+	//Shadow 
+	if( m_bShadow )
+	{
+		float4 lightProjSpacePos = mul( float4(viewPos, 1), m_CameraViewToLightProj);	
+		float fShadowLit = 1.0f;
+		CheapVarianceShadow( lightProjSpacePos, fShadowLit );			
+		NL *= fShadowLit;	
+	}
+	
+	return float4(m_LightColor, spec) * NL * damp;
+}

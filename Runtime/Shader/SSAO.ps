@@ -1,0 +1,168 @@
+//--------------------------------------------------------------------------------------
+// Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+#define M_PI 3.14159265f
+#define MAX_NUM_DIR 16
+
+cbuffer CB_Global : register( b0 )
+{
+    float  g_NumSteps;
+    float  g_NumDir;
+    float  g_R;	
+    float  g_inv_R;
+    float  g_sqr_R;
+    float  g_TanAngleBias;
+    float  g_Attenuation;
+    float  g_Contrast;
+    float2 g_FocalLen;
+    float2 g_InvFocalLen;
+    float2 g_InvResolution;
+    float2 g_Resolution;
+	float g_FarClip;
+};
+
+Texture2D txNormal : register( t0 );
+Texture2D txDepth : register( t1 );
+Texture2D txRandom : register( t2 );
+
+SamplerState samPoint : register( s2 );
+
+//--------------------------------------------------------------------------------------
+// IO structures
+//--------------------------------------------------------------------------------------
+struct PS_INPUT
+{
+    float4 Pos	   : SV_Position;		//Position
+    float2 TexUV   : TEXCOORD;		    //Texture coordinate
+};
+
+//--------------------------------------------------------------------------------------
+// Pixel Shader
+//--------------------------------------------------------------------------------------
+float length2(float3 v) { return dot(v, v); } 
+
+float tangent_vector(float2 deltaUV, float3 dPdu, float3 dPdv)
+{
+	float3 T = deltaUV.x * dPdu + deltaUV.y * dPdv;
+    return -T.z / length(T.xy) + g_TanAngleBias;
+}
+float3 fetch_eye_pos(float2 uv)
+{
+    float z = txDepth.SampleLevel(samPoint, uv, 0);
+	z *= g_FarClip;
+    uv = (uv * float2(2.0, -2.0) - float2(1.0, -1.0));	
+    return float3(uv * g_InvFocalLen * z, z);
+}
+float3 min_diff(float3 P, float3 Pr, float3 Pl)
+{
+    float3 V1 = Pr - P;
+    float3 V2 = P - Pl;
+    return (length2(V1) < length2(V2)) ? V1 : V2;
+}
+float3 tangent_eye_pos(float2 uv, float4 tangentPlane)
+{
+    // view vector going through the surface point at uv
+    float3 V = fetch_eye_pos(uv);
+    float NdotV = dot(tangentPlane.xyz, V);
+    // intersect with tangent plane except for silhouette edges
+    if (NdotV < 0.0) V *= (tangentPlane.w / NdotV);
+    return V;
+}
+
+float AccumulatedHorizonOcclusion(float2 deltaUV, 
+								  float2 uv0, 
+								  float3 P, 
+								  float numSteps, 
+								  float randstep,
+								  float3 dPdu,
+								  float3 dPdv )
+{
+    // Jitter starting point within the first sample distance
+    float2 uv = (uv0 + deltaUV) + randstep * deltaUV;
+    
+    // Snap first sample uv and initialize horizon tangent
+    float2 snapped_duv = round((uv - uv0) * g_Resolution) * g_InvResolution; //snap_uv_offset
+    float tanH = tangent_vector(snapped_duv, dPdu, dPdv);
+
+    float ao = 0;
+    float h0 = 0;
+    for(int j = 0; j < numSteps; ++j) 
+	{
+        float2 snapped_uv = uv - (frac(uv * g_Resolution) - 0.5f) * g_InvResolution;
+        float3 S = fetch_eye_pos(snapped_uv);
+        uv += deltaUV;
+
+        // Ignore any samples outside the radius of influence
+        float d2 = length2(S - P);
+		float tanS = (P.z - S.z) / length(S.xy - P.xy); // tangent
+		
+		[branch]
+        if (d2 < g_sqr_R && tanS > tanH) 
+		{
+			// Compute tangent vector associated with snapped_uv
+			float2 snapped_duv = snapped_uv - uv0;
+			float tanT = tangent_vector(snapped_duv, dPdu, dPdv);
+
+			// Compute AO between tangent T and sample S
+			float sinS = tanS / sqrt(1.0f + tanS*tanS);// tan_to_sin(tanS);
+			float sinT = tanT / sqrt(1.0f + tanT*tanT);// tan_to_sin(tanT);
+
+			float r = sqrt(d2) * g_inv_R;
+			float h = sinS - sinT;
+			ao += (1.0f - g_Attenuation*r*r) * (h - h0);
+			h0 = h;
+
+			// Update the current horizon angle
+			tanH = tanS;
+        }
+    }
+    return ao;
+}
+
+float4 PS( PS_INPUT In ) : SV_Target
+{
+    float3 P = fetch_eye_pos(In.TexUV);
+    	
+    // Project the radius of influence g_R from eye space to texture space.
+    // The scaling by 0.5 is to go from [-1,1] to [0,1].
+    float2 step_size = 0.5 * g_R  * g_FocalLen / P.z;
+
+    // Early out if the projected radius is smaller than 1 pixel.
+    float numSteps = min ( g_NumSteps, min(step_size.x * g_Resolution.x, step_size.y * g_Resolution.y));
+    if( numSteps < 1.0 ) 
+		return 1.0;
+    step_size = step_size / ( numSteps + 1 );
+
+    // Nearest neighbor pixels on the tangent plane
+	float3 N = txNormal.Sample( samPoint, In.TexUV ).rgb * 2.0f - 1.0f;
+	float4 tangentPlane = float4(N, dot(P, N));
+	float3 Pr = tangent_eye_pos(In.TexUV + float2(g_InvResolution.x, 0), tangentPlane);
+	float3 Pl = tangent_eye_pos(In.TexUV + float2(-g_InvResolution.x, 0), tangentPlane);
+	float3 Pt = tangent_eye_pos(In.TexUV + float2(0, g_InvResolution.y), tangentPlane);
+	float3 Pb = tangent_eye_pos(In.TexUV + float2(0, -g_InvResolution.y), tangentPlane);
+    
+    // Screen-aligned basis for the tangent plane
+    float3 dPdu = min_diff(P, Pr, Pl);
+    float3 dPdv = min_diff(P, Pt, Pb) * (g_Resolution.y * g_InvResolution.x);
+
+    // (cos(alpha),sin(alpha),jitter)
+    float3 rand = txRandom.Load(int3((int)In.Pos.x&63, (int)In.Pos.y&63, 0)).xyz;
+
+    float ao = 0;
+    float alpha = 2.0f * M_PI / g_NumDir;
+
+	for (int i = 0; i < g_NumDir; i++) 
+	{
+		if( i == MAX_NUM_DIR)
+			break;
+			
+		float angle = alpha * i;
+		float2 dir = float2(cos(angle), sin(angle));
+		float2 deltaUV = float2(dir.x* rand.x - dir.y* rand.y, dir.x*rand.y + dir.y*rand.x); // rotate_direction
+		deltaUV *= step_size.xy;
+
+		ao += AccumulatedHorizonOcclusion(deltaUV, In.TexUV, P, numSteps, rand.z, dPdu, dPdv);
+	}
+
+    return 1.0 - ao / g_NumDir * g_Contrast;
+}

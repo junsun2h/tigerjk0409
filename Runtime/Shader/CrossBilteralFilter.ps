@@ -1,0 +1,79 @@
+//--------------------------------------------------------------------------------------
+// Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+#define SHARPNESS 16
+
+Texture2D txScreen : register( t0 );
+Texture2D txDepth : register( t1 );
+
+SamplerState samLinear : register( s0 );
+SamplerState samPoint : register( s2 );
+
+cbuffer CB_Global : register( b0 )
+{
+	float2 g_InvResolution;
+	float g_BlurRadius;
+	float g_BlurFalloff;
+};
+
+//--------------------------------------------------------------------------------------
+// IO structures
+//--------------------------------------------------------------------------------------
+struct PS_INPUT
+{
+    float4 Pos	   : SV_Position;		//Position
+    float2 Tex	   : TEXCOORD;		    //Texture coordinate
+};
+
+//-------------------------------------------------------------------------------------
+// Pixel Shader
+//--------------------------------------------------------------------------------------
+float fetch_eye_z(float2 uv)
+{
+    float z = txDepth.Sample(samPoint, uv );
+    return z;
+}
+
+float BlurFunction(float2 uv, float r, float center_c, float center_d, inout float w_total)
+{
+    float c = txScreen.Sample( samPoint, uv );
+    float d = fetch_eye_z(uv);
+
+    float ddiff = d - center_d;
+    float w = exp(-r*r*g_BlurFalloff - ddiff*ddiff*SHARPNESS);
+    w_total += w;
+
+    return w*c;
+}
+
+float4 BlurX( PS_INPUT In ): SV_TARGET
+{
+    float b = 0;
+    float w_total = 0;
+    float center_c = txScreen.Sample( samPoint, In.Tex );
+    float center_d = fetch_eye_z(In.Tex);
+    
+    for (float r = -g_BlurRadius; r <= g_BlurRadius; ++r)
+    {
+        float2 uv = In.Tex.xy + float2(r*g_InvResolution.x , 0);
+        b += BlurFunction(uv, r, center_c, center_d, w_total);	
+    }
+
+    return b/w_total;
+}
+
+float4 BlurY( PS_INPUT In ): SV_TARGET
+{
+    float b = 0;
+    float w_total = 0;
+    float center_c = txScreen.Sample( samPoint, In.Tex );
+    float center_d = fetch_eye_z(In.Tex);
+	
+    for (float r = -g_BlurRadius; r <= g_BlurRadius; ++r)
+    {
+        float2 uv = In.Tex.xy + float2(0, r*g_InvResolution.y); 
+        b += BlurFunction(uv, r, center_c, center_d, w_total);
+    }
+	
+    return b/w_total;	
+}

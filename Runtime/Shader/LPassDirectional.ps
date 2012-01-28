@@ -1,0 +1,151 @@
+//--------------------------------------------------------------------------------------
+// Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+
+//shadow
+#define CASCADE_COUNT_FLAG 8
+#define CASCADE_BLEND_AREA 0.2 //Amount to overlap when blending between cascades.
+
+
+Texture2D txNormal : register( t0 );
+Texture2D txDepth : register( t1 );
+Texture2DArray txShadow : register( t2 );
+
+
+SamplerState samLinear : register( s0 );
+SamplerState samPoint : register( s2 );
+
+cbuffer CB_model : register( b0 )
+{
+	float3 m_LightColor;
+	float m_SpecPower;
+	float3 m_ViewLightDir;
+	uint m_bShadow;	
+	
+	float4 m_vCascadeOffset[8];	
+    float4 m_vCascadeScale[8];
+	
+	matrix m_CameraViewToLightView;	
+
+    float m_fMinBorderPadding;     
+    float m_fMaxBorderPadding;
+};
+
+static const float4 vCascadeColorsMultiplier[8] = 
+{
+    float4 ( 1.5f, 0.0f, 0.0f, 1.0f ),
+    float4 ( 0.0f, 1.5f, 0.0f, 1.0f ),
+    float4 ( 0.0f, 0.0f, 5.5f, 1.0f ),
+    float4 ( 1.5f, 0.0f, 5.5f, 1.0f ),
+    float4 ( 1.5f, 1.5f, 0.0f, 1.0f ),
+    float4 ( 1.0f, 1.0f, 1.0f, 1.0f ),
+    float4 ( 0.0f, 1.0f, 5.5f, 1.0f ),
+    float4 ( 0.5f, 3.5f, 0.75f, 1.0f )
+};
+//--------------------------------------------------------------------------------------
+// IO structures
+//--------------------------------------------------------------------------------------
+struct PS_INPUT
+{
+	float4 Pos		: SV_POSITION;
+	float2 Tex		: TEXCOORD0;
+ 	float3 ViewRay	: TEXCOORD1;
+};
+
+//--------------------------------------------------------------------------------------
+// Pixel Shader
+//--------------------------------------------------------------------------------------
+float CSMVarianceShadow ( in float4 vLightProjSpacePos, in float4 vlightViewSpacePos, int iCascade) 
+{
+	float fPercentLit = 1;
+	
+    float3 vShadowTexDDX = ddx(vlightViewSpacePos ) * m_vCascadeScale[iCascade].xyz;
+    float3 vShadowTexDDY = ddy(vlightViewSpacePos ) * m_vCascadeScale[iCascade].xyz;
+    
+    float2 mapDepth = txShadow.SampleGrad( samLinear, float3( vLightProjSpacePos.xy, iCascade), vShadowTexDDX, vShadowTexDDY);
+    float distance = vLightProjSpacePos.z - mapDepth.x;
+		 
+	if ( distance > 0)
+    {
+	    float variance = ( mapDepth.y ) - ( mapDepth.x * mapDepth.x );
+        variance       = min( 1.0f, max( 0.0f, variance + 0.00001f ) );
+        float p_max    = variance / ( variance + distance*distance );
+
+        // To combat light-bleeding, experiment with raising p_max to some power
+        // (Try values from 0.1 to 100.0, if you like.)
+        fPercentLit = pow( p_max, 4 ); 
+	}
+	
+	return fPercentLit;
+}
+
+void CSMShadow(in float4 vlightViewSpacePos, out float fShadowLit )
+{
+    float4 vLightProjSpacePos = 0.0f;
+	int CascadeIndex = -1;
+	
+	for( int i = 0; i < CASCADE_COUNT_FLAG; ++i ) 
+	{
+		vLightProjSpacePos = vlightViewSpacePos * m_vCascadeScale[i] + m_vCascadeOffset[i];
+
+		if ( min( vLightProjSpacePos.x, vLightProjSpacePos.y ) > m_fMinBorderPadding 
+			&& max( vLightProjSpacePos.x, vLightProjSpacePos.y ) < m_fMaxBorderPadding )
+		{ 				
+			CascadeIndex = i; // Found the correct map.		
+			break; 
+		}
+	}
+	
+    if( CascadeIndex == -1)
+		return;
+		
+	fShadowLit = CSMVarianceShadow ( vLightProjSpacePos, vlightViewSpacePos, CascadeIndex );
+
+	// Calcaulte the blend band for the map based selection.
+    float2 distanceToOne = float2 ( 1.0f - vLightProjSpacePos.x, 1.0f - vLightProjSpacePos.y );
+    float fBlendLocation = min( min( vLightProjSpacePos.x, vLightProjSpacePos.y ), min( distanceToOne.x, distanceToOne.y ) );
+	
+	if( fBlendLocation < CASCADE_BLEND_AREA ) 
+	{
+		// The next cascade index is used for blurring between maps.
+		int CascadeIndex2 = min ( CASCADE_COUNT_FLAG - 1, CascadeIndex + 1 );
+		float4 vLightProjSpacePos2 = vlightViewSpacePos * m_vCascadeScale[CascadeIndex2] + m_vCascadeOffset[CascadeIndex2];
+		float fShadowLitBlend = 0.0f;
+		fShadowLitBlend = CSMVarianceShadow ( vLightProjSpacePos2, vlightViewSpacePos, CascadeIndex2);
+
+		// Blend the two calculated shadows by the blend amount.
+		float blendAmount = fBlendLocation/CASCADE_BLEND_AREA; 
+		fShadowLit = lerp( fShadowLitBlend, fShadowLit, blendAmount); 
+	}
+}
+
+float4 PS( PS_INPUT In) : SV_Target0
+{
+	float depth = txDepth.Sample( samPoint, In.Tex ).x;
+	
+	if( depth >= 1 )
+		discard;
+		
+	float3 viewPos = In.ViewRay * depth;	
+	float3 viewNn = txNormal.Sample( samPoint, In.Tex ).rgb * 2.0f - 1.0f;	// Convert normal back from [0,1] to [-1,1]
+	
+	// Calculate diffuse Light
+	float NL = saturate( dot(viewNn, m_ViewLightDir) ); 
+	
+	// Calculate specular Light
+	float3 camDir = -normalize(viewPos);	
+	float3 Hn = normalize(m_ViewLightDir + camDir);
+	float spec = pow( saturate( dot(viewNn, Hn) ), m_SpecPower);
+	
+	////////////////////////////////////
+	//Shadow 
+	if( m_bShadow )
+	{
+		float4 lightViewSpacePos = mul( float4(viewPos, 1),m_CameraViewToLightView );
+		float fShadowLit = 1.0f;
+		CSMShadow( lightViewSpacePos, fShadowLit );
+		NL *= fShadowLit;	
+	}
+	
+	return float4(m_LightColor, spec) * NL;
+}
