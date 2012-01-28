@@ -1,0 +1,35 @@
+//--------------------------------------------------------------------------------------
+// Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+cbuffer CB_Model : register( b0 )
+{
+	uint m_bhasOpcityMap;	
+};
+
+Texture2D txTransparency : register( t0 );
+SamplerState samPoint : register( s2 );
+
+//--------------------------------------------------------------------------------------
+// IO structures
+//--------------------------------------------------------------------------------------
+struct PS_INPUT
+{
+	float4 Pos	: SV_POSITION;
+    float2 Tex : TEXCOORD0;	
+};
+
+//-------------------------------------------------------------------------------------
+// Pixel Shader
+//--------------------------------------------------------------------------------------
+float2 PS (PS_INPUT In) : SV_TARGET 
+{
+	// Alpha Test
+	if( m_bhasOpcityMap )
+	{	
+		float alphaTest = txTransparency.Sample( samPoint, In.Tex ).r;
+		if( alphaTest < 0.01)
+			discard;	
+	}
+	
+    return float2( In.Pos.z, In.Pos.z * In.Pos.z );
+}
