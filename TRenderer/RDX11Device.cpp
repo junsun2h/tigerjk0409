@@ -130,7 +130,7 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
 
 	// initialize subsystem
 	g_ShaderMgr.init();
-	g_RenderHelper.Init( "Font.dds");
+	g_RenderHelper.Init( "Data\\font\\Font.dds");
 
 	SetRenderStrategy(RS_DEFFERED);
 
