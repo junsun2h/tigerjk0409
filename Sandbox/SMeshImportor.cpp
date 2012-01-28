@@ -38,6 +38,9 @@ namespace SMESH_LOADER
 			for( int i=0; i < normalCount; ++i)
 				TSWAP( normalList[i].y, normalList[i].z );
 
+			TSWAP( BBoxMin.y, BBoxMin.z );
+			TSWAP( BBoxMax.y, BBoxMax.z );
+
 			int uvCount = uvList.size();
 			for( int i=0; i < uvCount; ++i)
 				uvList[i].y = 1 - uvList[i].y;
@@ -48,6 +51,16 @@ namespace SMESH_LOADER
 			rotation.y *= -1;
 			rotation.z *= -1;
 			TSWAP( rotation.y,  rotation.z);
+
+			int faceCount = facePos.size();
+			for( int i=0; i < faceCount; i += 3)
+			{
+				TSWAP( facePos[i], facePos[i+2] );
+				TSWAP( faceNormal[i], faceNormal[i+2] );
+				TSWAP( faceUV[i], faceUV[i+2] );
+			}
+
+			TSWAP( BBoxMax.y, BBoxMax.z );
 		}
 	}
 
@@ -243,6 +256,7 @@ namespace SMESH_LOADER
 				}
 			}
 		} // while (!feof (fp))
+		fclose(fp);
 
 		return true;
 	}
@@ -322,20 +336,23 @@ namespace SMESH_LOADER
 		}
 		else
 		{
-			CVertexPNT* pVertexBuf = new CVertexPNT[ pGeometry->vertexCount ];
-			pGeometry->eVertexType = FVF_3FP_4BN_2HT;
+			CVertexHPNT* pVertexBuf = new CVertexHPNT[ pGeometry->vertexCount ];
+			pGeometry->eVertexType = FVF_4HP_4BN_2HT;
 
 			for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
 			{
-				CVertexPNT* pVertex = &pVertexBuf[itrVertex->second];
+				CVertexHPNT* pVertex = &pVertexBuf[itrVertex->second];
 
-				pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
+				CVector3& vec3 = pRawMesh->posList[itrVertex->first.p];
+				pVertex->vPos = XMHALF4( vec3.x, vec3.y, vec3.z, 1);
 
 				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
 				pVertex->vTex = XMHALF2( uv.x, uv.y );
 
 				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
-				pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
+				pVertex->vNormal.x = normal.x * 127;
+				pVertex->vNormal.y = normal.y * 127;
+				pVertex->vNormal.z = normal.z * 127;
 			}
 
 			pGeometry->pVertexBuffer = pVertexBuf;
@@ -372,9 +389,9 @@ namespace SMESH_LOADER
 
 				if( pMtrlIDList == NULL )
 				{
-					v.p = pRawMesh->facePos[ primitiveNum + j ] -1;
-					v.t = pRawMesh->faceUV[ primitiveNum + j] - 1;
-					v.n = pRawMesh->faceNormal[ primitiveNum + j] -1;
+					v.p = pRawMesh->facePos[ primitiveNum *3 + j ] -1;
+					v.t = pRawMesh->faceUV[ primitiveNum *3 + j] - 1;
+					v.n = pRawMesh->faceNormal[ primitiveNum *3 + j] -1;
 				}
 				else
 				{

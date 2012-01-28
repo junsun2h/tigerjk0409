@@ -107,6 +107,7 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	event.GetPosition( &x, &y );
 
 	CVector2 dPoint = CVector2( point.x - x, point.y - y);
+	
 	point.x = x;
 	point.y = y;
 
@@ -114,15 +115,16 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	if( event.LeftIsDown() )
 	{
 		SetFocus();
-		if(IsKeyDown(VK_SHIFT))
+		if( fabs(dPoint.x) > fabs(dPoint.y) )
 		{
-			if( fabs(dPoint.x) > fabs(dPoint.y) )
-				pCamera->RotateLocalAxis( CVector3(0,0,1), dPoint.x * 0.005f );
-			else
-				pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
+			XMMATRIX rotTM = XMMatrixRotationAxis( CVector3(0,0,1).ToXMVEECTOR(), dPoint.x * 0.005f );
+			rotTM = XMMatrixMultiply( pCamera->GetWorldTM(), rotTM );
+			pCamera->SetWorldTM( rotTM );
 		}
 		else
-		{
+			pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
+		
+		/*
 			CVector3 origin;
 			CVector3 direction;
 			GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
@@ -136,7 +138,7 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 
 			if( list.size() > 0 )
 				int fea = 0;
-		}
+		*/
 	}
 	else if( event.RightIsDown() )
 	{

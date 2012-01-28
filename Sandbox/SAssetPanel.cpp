@@ -156,9 +156,19 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 	if( fileType == RESOURCE_FILE_TEXTURE )
 	{
 		wxString fullPath = wxString(m_Path) + wxString("\\Data\\texture\\") + strItem + wxString(".dds");
-		DeleteFile( fullPath );
+		if ( !DeleteFile( fullPath ) )
+			assert(0);
 
 		pAssetMgr->Remove( RESOURCE_TEXTURE, (char*)strItem.char_str() );
+		Delete(pSelectedID);
+	}
+	else if( fileType == RESOURCE_FILE_MESH )
+	{
+		wxString fullPath = wxString(m_Path) + wxString("\\Data\\mesh\\") + strItem + wxString(".tmesh");
+		if ( !DeleteFile( fullPath ) )
+			assert(0);
+
+		pAssetMgr->Remove( RESOURCE_MESH, (char*)strItem.char_str() );
 		Delete(pSelectedID);
 	}
 

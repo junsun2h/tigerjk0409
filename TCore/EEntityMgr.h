@@ -20,6 +20,8 @@ public:
 	void				RemoveAllEntity() override;
 	void				Destroy() override;
 
+	void				SaveXML(IEntity* pEntity);
+
 private:
 	typedef ATL::CAtlMap<long, EEntity*>	ENTITY_MAP;
 	

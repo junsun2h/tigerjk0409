@@ -1,4 +1,5 @@
 #include "RDX11Device.h"
+#include "RDX11RenderStrategeDeffered.h"
 
 
 namespace GLOBAL
@@ -22,6 +23,7 @@ namespace GLOBAL
 	const RDeviceDesc&		GetDeviceInfo()		{ return g_DeviceSetting; }
 	RDX11ShaderMgr*			GetShaderMgr()		{ return &g_ShaderMgr; }
 	const CCAMERA_DESC&		GetCameraDesc()		{ return g_pCurrentCameraDesc; }
+	RDX11MainFrameBuffer*	GetMainFrameRenderTarget(){ return &g_MainWindow; }
 };
 
 
@@ -30,6 +32,7 @@ using namespace GLOBAL;
 
 RDX11Device::RDX11Device()
 	: m_pD3Device(NULL)
+	, m_pCurrentRenderStrategy(NULL)
 {
 }
 
@@ -129,6 +132,8 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
 	g_ShaderMgr.init();
 	g_RenderHelper.Init( "Font.dds");
 
+	SetRenderStrategy(RS_DEFFERED);
+
 	return true;
 }
 
@@ -161,14 +166,50 @@ void RDX11Device::SetViewport(float width, float height, float MinDepth, float M
 }
 
 //----------------------------------------------------------------------------------------------------------
-void RDX11Device::Render(const CCAMERA_DESC& cameraDesc)
+void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
 {
 	g_pCurrentCameraDesc = cameraDesc;
 
-	m_pContext->OMSetRenderTargets( 1, &g_MainWindow.pRTV, g_MainWindow.pDSV );
-	m_pContext->ClearRenderTargetView( g_MainWindow.pRTV, g_MainWindow.clearColor);
-	m_pContext->ClearDepthStencilView( g_MainWindow.pDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0, 0 );
+	// update global shader constant
+	CCAMERA_DESC cameraConstant = cameraDesc;
+	cameraConstant.ViewTM = XMMatrixTranspose( cameraDesc.ViewTM );
+	cameraConstant.ProjTM = XMMatrixTranspose( cameraDesc.ProjTM );
+	GLOBAL::GetShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), SM_BUF12_192BYTE_SLOT1, PS_SHADER );
+
+	m_pCurrentRenderStrategy->RenderScene();
 }
+
+
+//----------------------------------------------------------------------------------------------------------
+void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy)
+{
+	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl, pRenderProxy);
+	
+	UINT offset[1] = { 0 };
+	UINT stride[1];
+
+	if( pGeometry->pGraphicMemoryVertexBufferOut != NULL)
+	{
+		stride[0] = VERTEX_STRIDE(pGeometry->eVertexType) + 4;
+		m_pContext->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBufferOut, stride, offset );
+	}
+	else
+	{
+		stride[0] = VERTEX_STRIDE(pGeometry->eVertexType);
+		m_pContext->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBuffer, stride, offset );
+	}
+
+	if( pGeometry->pIndexBuffer != NULL)
+	{
+		if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
+			m_pContext->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
+		else
+			m_pContext->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R32_UINT, 0 );
+
+		m_pContext->DrawIndexed( pGeometry->primitiveCount * 3, 0, 0 );
+	}
+}
+
 
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::Present()
@@ -410,4 +451,12 @@ bool RDX11Device::SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FIL
 	}
 
 	return true;
+}
+
+void RDX11Device::SetRenderStrategy(eRENDER_STRATEGY strategy)
+{
+	static RDX11RenderStrategeDeffered s_DefferedStrategy;
+
+	if( strategy == RS_DEFFERED )
+		m_pCurrentRenderStrategy = &s_DefferedStrategy;
 }

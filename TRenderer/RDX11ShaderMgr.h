@@ -4,7 +4,7 @@
 #include <CGuid.h>
 #include <atlcoll.h>
 #include "RDX11Shader.h"
-#include "CUnitPool.h"
+#include "CMaterial.h"
 
 
 
@@ -12,6 +12,7 @@ enum EFFECT_TYPE
 {
 	EFFECT_FONT,
 	EFFECT_LINE,
+	EFFECT_GPASS_LAMBERT,
 
 	NUM_EFFECT_TYPE
 };
@@ -54,6 +55,14 @@ enum SHADER_CONST_BUFFER_SLOT
 	SM_BUF13_256BYTE_SLOT0,
 };
 
+enum SHADER_RESOURCE_VIEW_SLOT
+{
+	SHADER_RESOURCE_VIEW_DIFFISE,
+	SHADER_RESOURCE_VIEW_SPECULAR,
+	SHADER_RESOURCE_VIEW_NORMAL,
+	SHADER_RESOURCE_VIEW_TRANSPARENCY,
+};
+
 
 class RDX11ShaderMgr
 {
@@ -65,21 +74,21 @@ public:
 	void			Destroy();
 
 	RDX11Shader*	GetShader(EFFECT_TYPE type);
-	void			BeginShader(EFFECT_TYPE type);
+	void			SetCurrentShader(RDX11Shader* pShader)	{ m_pCurrentShader = pShader; }
+	RDX11Shader*	GetCurrentShader()						{ return m_pCurrentShader; }
+
 	void			UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_BUFFER_SLOT slot, SHADER_TYPE type);
+	void			UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYPE textureType);
 
 private:
-	void			CreateFontShader();
-	void			CreateLineShader();
-
 	UINT			GetDXBufSize(SHADER_CONST_BUFFER_SLOT slot);
 
-	
+
 	typedef ATL::CAtlMap<UINT, ID3D11Buffer*>	CONST_BUFFER_MAP;
 	CONST_BUFFER_MAP	m_ConstBufferMap[NUM_SHADER_TYPE];
 
 	typedef ATL::CAtlMap<long, RDX11Shader*>	SHADER_MAP;
 	SHADER_MAP			m_ShaderMap;
 
-	CObjectPool<RDX11Shader>	m_MemPoolShader;
+	RDX11Shader*		m_pCurrentShader;
 };

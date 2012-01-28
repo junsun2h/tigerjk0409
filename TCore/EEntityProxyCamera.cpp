@@ -29,6 +29,8 @@ void EEntityProxyCamera::SetProjParam(float fovy, int width, int height, float n
 	m_Desc.Fovy = fovy;
 	
 	m_Desc.ProjTM = XMMatrixPerspectiveFovLH( m_Desc.Fovy, m_Desc.aspect, nearPlane, farPlane);
+
+	m_FrustrumChanged = g_Engine.GetCurrentFrame();
 }
 
 void EEntityProxyCamera::SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector)
@@ -40,9 +42,11 @@ void EEntityProxyCamera::SetViewParam(CVector3& eyePos, CVector3& targetPos, CVe
 	
 	XMMATRIX worldTM = m_pEntity->GetWorldTM();
 
-	m_Desc.eyePos = CVector3( worldTM.r[3] );
-	m_Desc.eyeDirection = CVector3( worldTM.r[2] );
-	m_Desc.upVector = CVector3( worldTM.r[1] );
+	m_Desc.eyePos = worldTM.r[3];
+	m_Desc.eyeDirection = worldTM.r[2];
+	m_Desc.upVector = worldTM.r[1];
+
+	m_FrustrumChanged = g_Engine.GetCurrentFrame();
 }
 
 void EEntityProxyCamera::SetViewDescFromWorldMatrix()
@@ -50,9 +54,9 @@ void EEntityProxyCamera::SetViewDescFromWorldMatrix()
 	XMMATRIX worldTM = m_pEntity->GetWorldTM();
 
 	m_Desc.ViewTM =  XMMATRIX_UTIL::Inverse( NULL, worldTM );
-	m_Desc.eyePos = CVector3( worldTM.r[3] );
-	m_Desc.eyeDirection = CVector3( worldTM.r[2] );
-	m_Desc.upVector = CVector3( worldTM.r[1] );
+	m_Desc.eyePos = worldTM.r[3];
+	m_Desc.eyeDirection = worldTM.r[2];
+	m_Desc.upVector = worldTM.r[1];
 }
 
 void EEntityProxyCamera::GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction)

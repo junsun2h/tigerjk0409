@@ -11,6 +11,7 @@
 #include "IFileUtility.h"
 #include "ILoader.h"
 #include "IEngineMemoryMgr.h"
+#include "ISpaceMgr.h"
 
 
 struct CENGINE_INIT_PARAM
@@ -50,6 +51,7 @@ struct IEngine
 	virtual IFileUtility*		FileUtility() = 0;
 	virtual ILoader*			Loader() = 0;
 	virtual IEngineMemoryMgr*	EngineMemoryMgr() =0;
+	virtual ISpaceMgr*			SpaceMgr() =0;
 
 	virtual void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
 };

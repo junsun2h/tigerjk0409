@@ -97,6 +97,10 @@
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
     <ClCompile Include="ERenderer.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
+    <ClCompile Include="ThirdParty\tinyxml\tinystr.cpp" />
+    <ClCompile Include="ThirdParty\tinyxml\tinyxml.cpp" />
+    <ClCompile Include="ThirdParty\tinyxml\tinyxmlerror.cpp" />
+    <ClCompile Include="ThirdParty\tinyxml\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EAABB.h" />
@@ -112,12 +116,12 @@
     <ClInclude Include="EFileUtility.h" />
     <ClInclude Include="ELoader.h" />
     <ClInclude Include="EMeshDataProcessor.h" />
-    <ClInclude Include="EMotionDataProcessor.h" />
-    <ClInclude Include="EMtrlDataProcessor.h" />
     <ClInclude Include="EQuadSpaceTreeMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h" />
     <ClInclude Include="ERenderer.h" />
     <ClInclude Include="EWinFileLoader.h" />
+    <ClInclude Include="ThirdParty\tinyxml\tinystr.h" />
+    <ClInclude Include="ThirdParty\tinyxml\tinyxml.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

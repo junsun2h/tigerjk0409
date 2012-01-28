@@ -318,8 +318,25 @@ class CResourceMotion : public CResourceBase
 	~CResourceMotion(){}
 public:
 
-	eRESOURCE_TYPE	Type() override { return RESOURCE_MOTION; }
-	std::string		strType() override { return ENUMSTR(RESOURCE_MOTION); }
+	eRESOURCE_TYPE	Type() override		{ return RESOURCE_MOTION; }
+	std::string		strType() override	{ return ENUMSTR(RESOURCE_MOTION); }
+};
+
+enum eSHADER_TYPE
+{
+	SHADER_SKIN_MESH_PASS,
+	SHADER_SHADOWMAP_PASS,
+	SHADER_CSM_SHADOWMAP_PASS,
+	SHADER_SHADOW_BLUR_PASS,
+	SHADER_LIGHT_PASS1_LAMBERT,
+	SHADER_LIGHT_PASS1_NORMALMAP,
+	SHADER_LIGHT_PASS2,
+	SHADER_LIGHT_PASS2_DIRECTIONAL,
+	SHADER_SSAO,
+	SHADER_SSAO_BLUR,
+	SHADER_SCENE_2D,
+	SHADER_SCENE_LINE,
+	SHADER_SCENE_MESH,
 };
 
 class CResourceMtrl : public CResourceBase
@@ -330,10 +347,11 @@ class CResourceMtrl : public CResourceBase
 	~CResourceMtrl(){}
 
 public:
-	long		RID_textures[NUM_TEXTURE_TYPE];
+	long			RID_textures[NUM_TEXTURE_TYPE];
+	eSHADER_TYPE	shaderType;
 
-	eRESOURCE_TYPE	Type() override { return RESOURCE_MATERIAL; }
-	std::string		strType() override { return ENUMSTR(RESOURCE_MATERIAL); }
+	eRESOURCE_TYPE	Type() override		{ return RESOURCE_MATERIAL; }
+	std::string		strType() override	{ return ENUMSTR(RESOURCE_MATERIAL); }
 };
 
 

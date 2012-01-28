@@ -32,7 +32,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	bool		StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine) override;
 	void		ShutDown() override;
-	void		Render(const CCAMERA_DESC& cameraDesc) override;
+
+	void		RenderFrame(const CCAMERA_DESC& cameraDesc) override;
+	void		RenderElement(	CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy) override;
 	void		Present() override;
 
 	bool		Resize(int width, int height) override;
@@ -46,6 +48,12 @@ public:
 
 	IRenderHelper*	GetRenderHelper() override;
 	RDeviceDesc		GetDeviceSetting() override;
+	
+	eRENDER_PASS	GetCurrentPass() override			{ return m_currentRenderPass; }
+	eRENDER_PASS	SetCurrentPass(eRENDER_PASS pass)	{ m_currentRenderPass = pass; }
+
+
+	void			SetRenderStrategy(eRENDER_STRATEGY strategy);
 
 public:
 	void			SetViewport(float width, float height, float MinDepth = 0.0f, float MaxDepth = 1.0f, float TopLeftX = 0.0f, float TopLeftY= 0.0f);
@@ -58,9 +66,11 @@ private:
 	ID3D11Device*			m_pD3Device;
 	ID3D11DeviceContext*	m_pContext;
 	D3D_FEATURE_LEVEL		m_FeatureLevel;
+	eRENDER_PASS			m_currentRenderPass;
+	IRenderStrategy*		m_pCurrentRenderStrategy;
 };
 
-
+	
 namespace GLOBAL
 {
 	IEngine*				Engine();
@@ -71,4 +81,5 @@ namespace GLOBAL
 	const RDeviceDesc&		GetDeviceInfo();
 	RDX11ShaderMgr*			GetShaderMgr();
 	const CCAMERA_DESC&		GetCameraDesc();
+	RDX11MainFrameBuffer*	GetMainFrameRenderTarget();
 };

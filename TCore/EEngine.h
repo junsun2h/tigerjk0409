@@ -36,11 +36,11 @@ public:
 	IEngineMemoryMgr*	EngineMemoryMgr() override	{ return &m_EngineMemoryMgr; }
 
 	void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
+	ISpaceMgr*			SpaceMgr() override			{ return &m_QuadSpaceMgr; }
 
 public:
 	EEngineMemoryMgr*	EngMemoryPoolMgr()			{ return &m_EngineMemoryMgr; }
 	long				GetCurrentFrame()			{ return m_CurrentFrame; }
-	EQuadSpaceTreeMgr*	QuadSpaceMgr()				{ return &m_QuadSpaceMgr; }
 
 private:
 	IRDevice*			m_pRenderer;

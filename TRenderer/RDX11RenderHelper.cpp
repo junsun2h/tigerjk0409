@@ -227,7 +227,7 @@ void RDX11RenderHelper::DrawLine()
 		pContext->Unmap(m_pLineBuffer, 0);
 	}
 
-	GLOBAL::GetShaderMgr()->BeginShader(EFFECT_LINE);
+	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Draw

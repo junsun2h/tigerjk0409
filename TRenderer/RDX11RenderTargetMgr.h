@@ -21,6 +21,7 @@ struct RDX11MainFrameBuffer
 	bool	Resize(int cx, int cy, bool bFullScreen);
 	void	Present();
 	void	Destroy();
+	void	ClearAndSet();
 
 	CResourceTexture*			m_RenderTargets[3];
 };

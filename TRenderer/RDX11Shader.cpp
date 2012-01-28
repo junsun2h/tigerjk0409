@@ -2,6 +2,43 @@
 #include "RDX11Device.h"
 
 
+//--------------------------------------------------------------------------------------------------------
+HRESULT CompileShaderFromFile(SHADER_COMPILE_DESC& desc, ID3DBlob** ppBlobOut )
+{
+#if defined( DEBUG ) || defined( _DEBUG )
+	desc.flag |= D3DCOMPILE_DEBUG;
+#endif
+
+	ID3DBlob* pErrorBlob;
+	TDXERROR( D3DX11CompileFromFileA( desc.szFileName, NULL, NULL, desc.szEntrypoint, desc.szShaderModel, desc.flag, 0, NULL, ppBlobOut, &pErrorBlob, NULL ) );
+
+	if( pErrorBlob ) 
+		pErrorBlob->Release();
+
+	return S_OK;
+}
+
+
+
+//--------------------------------------------------------------------------------------------------------
+HRESULT CompileShader( SHADER_COMPILE_DESC& desc, ID3DBlob** ppBlobOut )
+{
+	HRESULT hr = S_OK;
+#if defined( DEBUG ) || defined( _DEBUG )
+	desc.flag |= D3DCOMPILE_DEBUG;
+#endif
+	ID3DBlob* pErrorBlob = NULL;
+
+	V_RETURN( D3DCompile( desc.pSrc, desc.SrcDataSize, "none", NULL, NULL, desc.szEntrypoint, desc.szShaderModel, desc.flag, 0, ppBlobOut, NULL ) );
+
+	if( pErrorBlob ) 
+		pErrorBlob->Release();
+
+	return S_OK;
+}
+
+
+//--------------------------------------------------------------------------------------------------------
 RDX11Shader::RDX11Shader()
 	: m_pVertexShader(NULL)
 	, m_pPixelShader(NULL)	
@@ -15,13 +52,24 @@ RDX11Shader::RDX11Shader()
 
 }
 
+
 RDX11Shader::~RDX11Shader()
 {
 	Destroy();
 }
 
+
+//--------------------------------------------------------------------------------------------------------
 void RDX11Shader::Begin()
 {
+	GLOBAL::GetShaderMgr()->SetCurrentShader(this);
+	GLOBAL::GetD3DStateMgr()->ApplyRenderState(	m_DepthStencilState,
+												m_RasterizerState,
+												m_BlendState,
+												m_StencilRef,
+												m_BlendFactor,
+												m_SampleMask);
+
 	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
 
 	if( m_pVertexShader != NULL )
@@ -38,13 +86,14 @@ void RDX11Shader::Begin()
 		pContext->PSSetShader( m_pPixelShader, NULL, 0 );
 	else
 		pContext->PSSetShader( NULL, NULL, 0 );
-
-	ApplyRenderState();
+	
 
 	pContext->IASetPrimitiveTopology( m_Topology );
 	pContext->IASetInputLayout( m_pVertexLayout	);
 }
 
+
+//--------------------------------------------------------------------------------------------------------
 void RDX11Shader::SetRenderState(	DEPTH_STENCIL_TYPE DepthStencilState,
 									RASTERIZER_TYPE RasterizerState,
 									ALPHA_BLEND_TYPE BlendState,
@@ -65,16 +114,8 @@ void RDX11Shader::SetRenderState(	DEPTH_STENCIL_TYPE DepthStencilState,
 	m_SampleMask = sampleMask;
 }
 
-void RDX11Shader::ApplyRenderState()
-{
-	GLOBAL::GetD3DStateMgr()->ApplyRenderState(	m_DepthStencilState,
-												m_RasterizerState,
-												m_BlendState,
-												m_StencilRef,
-												m_BlendFactor,
-												m_SampleMask);
-}
 
+//--------------------------------------------------------------------------------------------------------
 void RDX11Shader::Destroy()
 {
 	SAFE_RELEASE(m_pVertexShader)
@@ -85,75 +126,48 @@ void RDX11Shader::Destroy()
 }
 
 
-HRESULT CompileShader( void* pSrc, 
-						SIZE_T SrcDataSize, 
-						LPCSTR szEntryPoint, 
-						LPCSTR szShaderModel, 
-						UINT flag,
-						ID3DBlob** ppBlobOut )
-{
-	HRESULT hr = S_OK;
-#if defined( DEBUG ) || defined( _DEBUG )
-	// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-	// Setting this flag improves the shader debugging experience, but still allows 
-	// the shaders to be optimized and to run exactly the way they will run in 
-	// the release configuration of this program.
-	flag |= D3DCOMPILE_DEBUG;
-#endif
-	ID3DBlob* pErrorBlob = NULL;
-
-	V_RETURN( D3DCompile( pSrc, SrcDataSize, "none", NULL, NULL, szEntryPoint, szShaderModel, flag, 0, ppBlobOut, NULL ) );
-
-	if( pErrorBlob ) 
-		pErrorBlob->Release();
-
-	return S_OK;
-}
-
-void RDX11Shader::CreateVS( void* pSrc, 
-							SIZE_T SrcDataSize, 
-							LPCSTR pEntrypoint, 
-							LPCSTR pTarget, 
-							UINT flag,
-							D3D11_INPUT_ELEMENT_DESC layout[],
-							UINT layoutSize, 
-							LPCSTR debugName)
+//--------------------------------------------------------------------------------------------------------
+void RDX11Shader::CreateVS( SHADER_COMPILE_DESC& desc)
 {
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
 
-	CompileShader(pSrc, SrcDataSize, pEntrypoint, pTarget, flag, &pBlob);
+	if( desc.szFileName == NULL)
+		CompileShader(desc, &pBlob);
+	else
+		CompileShaderFromFile( desc, &pBlob );
 
 	V( GLOBAL::GetD3DDevice()->CreateVertexShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pVertexShader ) );
 
 #if defined( DEBUG ) || defined( _DEBUG )
-	DXUT_SetDebugName( m_pVertexShader, debugName );
+	if( desc.debugName != 0)
+		DXUT_SetDebugName( m_pVertexShader, desc.debugName );
 #endif
 
-	if( layoutSize != 0 )
+	if( desc.layoutSize != 0 )
 	{
-		V( GLOBAL::GetD3DDevice()->CreateInputLayout( layout, layoutSize, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &m_pVertexLayout ) );
+		V( GLOBAL::GetD3DDevice()->CreateInputLayout( desc.pLayout, desc.layoutSize, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &m_pVertexLayout ) );
 	}
 
 	SAFE_RELEASE( pBlob );
 }
 
-void RDX11Shader::CreatePS( void* pSrc, 
-							SIZE_T SrcDataSize, 
-							LPCSTR pEntrypoint, 
-							LPCSTR pTarget, 
-							UINT flag,
-							LPCSTR debugName)
+
+//--------------------------------------------------------------------------------------------------------
+void RDX11Shader::CreatePS( SHADER_COMPILE_DESC& desc )
 {
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
 
-	CompileShader(pSrc, SrcDataSize, pEntrypoint, pTarget, flag, &pBlob);
+	if( desc.szFileName == NULL)
+		CompileShader(desc, &pBlob);
+	else
+		CompileShaderFromFile( desc, &pBlob );
 
 	V( GLOBAL::GetD3DDevice()->CreatePixelShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pPixelShader ) );
 
 #if defined( DEBUG ) || defined( _DEBUG )
-	DXUT_SetDebugName( m_pPixelShader, debugName );
+	DXUT_SetDebugName( m_pPixelShader, desc.debugName );
 #endif
 
 	SAFE_RELEASE( pBlob );

@@ -11,7 +11,6 @@ private:
 	char				m_szFileName[MAX_PATH];
 	BYTE*				m_pData;
 	UINT				m_cBytes;
-	HANDLE				m_hFile;
 
 public:
 	EWinFileLoader( char* szFileName );

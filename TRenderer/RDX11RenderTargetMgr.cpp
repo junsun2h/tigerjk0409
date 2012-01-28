@@ -107,3 +107,12 @@ void RDX11MainFrameBuffer::Present()
 {
 	pSwapChain->Present(0,0);
 }
+
+void RDX11MainFrameBuffer::ClearAndSet()
+{
+	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+
+	pContext->OMSetRenderTargets( 1, &pRTV, pDSV );
+	pContext->ClearRenderTargetView( pRTV, clearColor);
+	pContext->ClearDepthStencilView( pDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0, 0 );
+}

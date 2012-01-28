@@ -27,38 +27,14 @@ bool EWinFileLoader::IOT_Load()
 {
 	assert ( ELoader::IsIOThread() );
 
-    // Open the file
-	m_hFile = CreateFileA( m_szFileName, 
-							GENERIC_READ, 
-							FILE_SHARE_READ, 
-							NULL, 
-							OPEN_EXISTING, 
-							FILE_ATTRIBUTE_NORMAL,	
-							NULL );
-
-	if( INVALID_HANDLE_VALUE == m_hFile )
-	{
-		assert(0);
-		return false;
-	}
-
-	DWORD size = GetFileSize(m_hFile, NULL );
-	m_pData = new BYTE[size];
-
-	// read the header
-	DWORD dwRead;
-	if( !ReadFile( m_hFile, m_pData, size, &dwRead, NULL ) )
-	{
-		assert(0);
-		return false;
-	}
+	Load();
 
 	return true;
 }
 
 bool EWinFileLoader::Load()
 {
-	m_hFile = CreateFileA( m_szFileName, 
+	HANDLE hFile = CreateFileA( m_szFileName, 
 		GENERIC_READ, 
 		FILE_SHARE_READ, 
 		NULL, 
@@ -66,24 +42,25 @@ bool EWinFileLoader::Load()
 		FILE_ATTRIBUTE_NORMAL,	
 		NULL );
 
-	if( INVALID_HANDLE_VALUE == m_hFile )
+	if( INVALID_HANDLE_VALUE == hFile )
 	{
 		assert(0);
 		return false;
 	}
 
 
-	DWORD size = GetFileSize(m_hFile, NULL );
+	DWORD size = GetFileSize(hFile, NULL );
 	m_pData = new BYTE[size];
 
 	// read the header
 	DWORD dwRead;
-	if( !ReadFile( m_hFile, m_pData, size, &dwRead, NULL ) )
+	if( !ReadFile( hFile, m_pData, size, &dwRead, NULL ) )
 	{
 		assert(0);
 		return false;
 	}
 
+	CloseHandle(hFile);
 
 	return true;
 }

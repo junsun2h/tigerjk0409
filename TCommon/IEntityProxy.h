@@ -51,9 +51,9 @@ struct CCAMERA_DESC
 	float	Fovy;
 	float	aspect;
 
-	CVector3	eyePos;
-	CVector3	eyeDirection;
-	CVector3	upVector;
+	CVector4	eyePos;
+	CVector4	eyeDirection;
+	CVector4	upVector;
 };
 
 struct IEntityProxyCamera : IEntityProxy
@@ -71,13 +71,13 @@ struct IEntityProxyCamera : IEntityProxy
 };
 
 
-struct ERenderItem
+struct CRenderElement
 {
 	CResourceGeometry*	pGeometry;
 	CResourceMtrl*		pMtrl;
 };
 
-typedef	std::vector<ERenderItem>	RENDER_ELEMENT_LIST;
+typedef	std::vector<CRenderElement>	RENDER_ELEMENT_LIST;
 
 struct IEntityProxyRender : IEntityProxy
 {
@@ -88,4 +88,5 @@ struct IEntityProxyRender : IEntityProxy
 	
 	virtual	bool					Insert( long meshID ) = 0;
 	virtual void					Remove(long slot) = 0;
+	virtual void					Render() = 0;
 };

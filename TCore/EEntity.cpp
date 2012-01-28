@@ -487,7 +487,7 @@ void EEntity::UpdateWorldAABB()
 
 		if( temp != m_WorldAABB )
 		{
-			g_Engine.QuadSpaceMgr()->Update(this);
+			g_Engine.SpaceMgr()->UpdateEntitySpace(this);
 
 			if( m_pParent != NULL )
 			{

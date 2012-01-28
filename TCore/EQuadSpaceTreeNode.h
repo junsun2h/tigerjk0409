@@ -2,7 +2,7 @@
 
 #include "CUnitPool.h"
 #include "CText.h"
-#include <set>
+#include <atlcoll.h>
 
 class EEntity;
 struct IAABB;
@@ -22,9 +22,10 @@ public:
 	UINT		GetID()						{ return m_SpaceID; }
 	bool		IsInArea(EEntity* pEntity);
 	CQuad		GetArea()					{ return m_Area; }
+	void		Render();
 
 private:
-	typedef	std::set<long>	TYPE_ENTITY_MAP;
+	typedef	ATL::CAtlMap<long, EEntity*>	TYPE_ENTITY_MAP;
 
 	TYPE_ENTITY_MAP		m_EntityMap;
 	CQuad				m_Area;

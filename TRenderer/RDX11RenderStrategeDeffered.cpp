@@ -1,7 +1,8 @@
 #include "RDX11RenderStrategeDeffered.h"
+#include "RDX11Device.h"
 
 
-void RDX11RenderStrategeDeffered::Render(const CCAMERA_DESC& cameraDesc)
+void RDX11RenderStrategeDeffered::RenderScene()
 {
 	// pre-render Target Drawing
 	SkinPass();
@@ -28,7 +29,12 @@ void RDX11RenderStrategeDeffered::ShadowPass()
 
 void RDX11RenderStrategeDeffered::GeometryPass()
 {
+	GLOBAL::GetMainFrameRenderTarget()->ClearAndSet();
 
+	RDX11Shader* pShader = GLOBAL::GetShaderMgr()->GetShader(EFFECT_GPASS_LAMBERT);
+	
+	pShader->Begin();
+	GLOBAL::Engine()->SpaceMgr()->Render();
 }
 
 void RDX11RenderStrategeDeffered::LightPass()
