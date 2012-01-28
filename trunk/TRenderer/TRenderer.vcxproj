@@ -88,6 +88,9 @@
     <ClCompile Include="RDX11RenderStrategeDeffered.cpp" />
     <ClCompile Include="RDX11RenderTargetMgr.cpp" />
     <ClCompile Include="RDX11Shader.cpp" />
+    <ClCompile Include="RDX11ShaderFont.cpp" />
+    <ClCompile Include="RDX11ShaderGPassLambert.cpp" />
+    <ClCompile Include="RDX11ShaderLine.cpp" />
     <ClCompile Include="RDX11ShaderMgr.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
   </ItemGroup>
@@ -100,12 +103,12 @@
     <ClInclude Include="RDX11RenderStrategeDeffered.h" />
     <ClInclude Include="RDX11RenderTargetMgr.h" />
     <ClInclude Include="RDX11Shader.h" />
+    <ClInclude Include="RDX11ShaderFont.h" />
+    <ClInclude Include="RDX11ShaderGPassLambert.h" />
+    <ClInclude Include="RDX11ShaderLine.h" />
     <ClInclude Include="RDX11ShaderMgr.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />
     <ClInclude Include="RDefine.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="simpleFx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

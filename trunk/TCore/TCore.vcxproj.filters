@@ -47,6 +47,18 @@
     <ClCompile Include="EEntityProxyRender.cpp">
       <Filter>EntitySystem\EntityProxy</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\tinyxml\tinystr.cpp">
+      <Filter>3rdParty\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\tinyxml\tinyxml.cpp">
+      <Filter>3rdParty\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\tinyxml\tinyxmlerror.cpp">
+      <Filter>3rdParty\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\tinyxml\tinyxmlparser.cpp">
+      <Filter>3rdParty\TinyXML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -73,6 +85,12 @@
     <Filter Include="Space">
       <UniqueIdentifier>{f7dcaa6b-df82-4bda-b7f9-faa93db27732}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdParty">
+      <UniqueIdentifier>{ee3f65cb-00d5-4949-8ff2-847906a1c35e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParty\TinyXML">
+      <UniqueIdentifier>{81a38de8-364b-4481-b6a3-973813ca5026}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEngine.h" />
@@ -81,12 +99,6 @@
     </ClInclude>
     <ClInclude Include="EWinFileLoader.h">
       <Filter>Asset\ResourceFileLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="EMtrlDataProcessor.h">
-      <Filter>Asset\ResourceDataProcessor</Filter>
-    </ClInclude>
-    <ClInclude Include="EMotionDataProcessor.h">
-      <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
     <ClInclude Include="EActorDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>
@@ -125,6 +137,12 @@
     </ClInclude>
     <ClInclude Include="EEntityProxyCamera.h">
       <Filter>EntitySystem\EntityProxy</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\tinyxml\tinystr.h">
+      <Filter>3rdParty\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\tinyxml\tinyxml.h">
+      <Filter>3rdParty\TinyXML</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

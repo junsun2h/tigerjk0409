@@ -3,6 +3,31 @@
 #include "RDefine.h"
 #include "RDX11RenderStateMgr.h"
 
+class CResourceMtrl;
+struct IEntityProxyRender;
+
+
+struct SHADER_COMPILE_DESC
+{
+	LPCSTR		szFileName; 
+	void*		pSrc; 
+	SIZE_T		SrcDataSize;
+	LPCSTR		szEntrypoint; 
+	LPCSTR		szShaderModel; 
+	UINT		flag;
+
+	D3D11_INPUT_ELEMENT_DESC*	pLayout;
+	UINT						layoutSize; 
+	D3D11_INPUT_ELEMENT_DESC*	pLayoutPos4;
+	UINT						layoutPos4Size; 
+
+	LPCSTR		debugName;
+
+	SHADER_COMPILE_DESC()
+	{
+		memset( this, 0, sizeof(SHADER_COMPILE_DESC));
+	}
+};
 
 class RDX11Shader
 {
@@ -10,39 +35,22 @@ public:
 	RDX11Shader();
 	virtual ~RDX11Shader();
 
-	void		SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)		{ m_Topology = topology; }
-	
-	void		Begin();
-	void		End();
+	virtual void		Begin();
+	virtual void		End(){}
+	virtual void		SetShaderContants(CResourceMtrl* pMaterial, IEntityProxyRender* pRenderProxy){}
 
-	void		CreateVS( void* pSrc, 
-							SIZE_T SrcDataSize,
-							LPCSTR pEntrypoint, 
-							LPCSTR pTarget, 
-							UINT flag,
-							D3D11_INPUT_ELEMENT_DESC layout[], 
-							UINT layoutSize,
-							LPCSTR debugName = "");
+	void				CreateVS( SHADER_COMPILE_DESC& desc);
+	void				CreatePS( SHADER_COMPILE_DESC& desc);
 
+	void				SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)		{ m_Topology = topology; }
+	void				SetRenderState(	DEPTH_STENCIL_TYPE DepthStencilState,
+										RASTERIZER_TYPE RasterizerState,
+										ALPHA_BLEND_TYPE BlendState,
+										UINT StencilRef = NULL,
+										float* blendFactor = NULL,
+										UINT sampleMask = 0xffffffff);
 
-	void		CreatePS( void* pSrc, 
-							SIZE_T SrcDataSize,
-							LPCSTR pEntrypoint, 
-							LPCSTR pTarget, 
-							UINT flag,
-							LPCSTR debugName = "");
-
-
-	void		SetRenderState(	DEPTH_STENCIL_TYPE DepthStencilState,
-								RASTERIZER_TYPE RasterizerState,
-								ALPHA_BLEND_TYPE BlendState,
-								UINT StencilRef = NULL,
-								float* blendFactor = NULL,
-								UINT sampleMask = 0xffffffff);
-	
-	void		ApplyRenderState();
-
-	void		Destroy();
+	void				Destroy();
 
 
 private:

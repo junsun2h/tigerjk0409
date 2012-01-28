@@ -87,6 +87,7 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		std::string geometryName = m_name + "Geometry" + buf;
 		strcpy_s( pGeometry->name, geometryName.c_str());
+
 		pMesh->goemetries[i] = g_Engine.AssetMgr()->Insert( pGeometry );
 	}
 

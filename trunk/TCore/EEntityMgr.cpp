@@ -57,3 +57,8 @@ IEntity* EEntityMgr::GetEntity(long id)
 
 	return NULL;
 }
+
+void EEntityMgr::SaveXML(IEntity* pEntity)
+{
+
+}

@@ -11,6 +11,8 @@ enum eCVERTEX_TYPE
 	FVF_3FP_4BN_2HT,
 	FVF_3FP_4BN_2HT_4BW,
 
+	FVF_4HP_4BN_2HT = 1000,
+
 	FVF_INVALID
 };
 
@@ -40,6 +42,13 @@ struct CVertexPNT
 	XMHALF2		vTex;
 };
 
+struct CVertexHPNT
+{
+	XMHALF4		vPos;
+	XMBYTE4		vNormal;
+	XMHALF2		vTex;
+};
+
 struct CVertexPNTW
 {
 	CVector3	vPos;
@@ -58,6 +67,8 @@ inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)
 	case FVF_3FP_1DC_2HT:		return new CVertexPCT[size];
 	case FVF_3FP_4BN_2HT:		return new CVertexPNT[size];
 	case FVF_3FP_4BN_2HT_4BW:	return new CVertexPNTW[size];
+
+	case FVF_4HP_4BN_2HT:		return new CVertexHPNT[size];
 	}
 
 	assert(0);
@@ -74,6 +85,8 @@ inline size_t VERTEX_STRIDE(eCVERTEX_TYPE type)
 	case FVF_3FP_1DC_2HT:		return 20;
 	case FVF_3FP_4BN_2HT:		return 20;
 	case FVF_3FP_4BN_2HT_4BW:	return 28;
+
+	case FVF_4HP_4BN_2HT:		return 16;
 	}
 
 	assert(0);
@@ -89,6 +102,8 @@ inline const char* VERTEX_TYPE_STRING(eCVERTEX_TYPE type)
 	case FVF_3FP_1DC_2HT:		return ENUMSTR(FVF_3FP_1DC_2HT);
 	case FVF_3FP_4BN_2HT:		return ENUMSTR(FVF_3FP_4BN_2HT);
 	case FVF_3FP_4BN_2HT_4BW:	return ENUMSTR(FVF_3FP_4BN_2HT_4BW);
+
+	case FVF_4HP_4BN_2HT:		return ENUMSTR(FVF_4HP_4BN_2HT);
 	}
 
 	assert(0);

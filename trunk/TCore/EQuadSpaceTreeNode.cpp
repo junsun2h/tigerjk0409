@@ -27,22 +27,22 @@ void EQuadSpaceTreeNode::Destroy()
 
 void EQuadSpaceTreeNode::Register(EEntity* pEntity)
 {
-	if( m_EntityMap.find( pEntity->GetID() ) == m_EntityMap.end() )
+	TYPE_ENTITY_MAP::CPair* itr = m_EntityMap.Lookup( pEntity->GetID() );
+	if( itr == NULL )
 	{
-		m_EntityMap.insert( pEntity->GetID() );
+		m_EntityMap.SetAt( pEntity->GetID(), pEntity );
 		pEntity->AddSpaceID(m_SpaceID);
 	}
 }
 
 void EQuadSpaceTreeNode::UnRegister(EEntity* pEntity)
 {
-	TYPE_ENTITY_MAP::iterator itr = m_EntityMap.find( pEntity->GetID() );
-
-	if( itr == m_EntityMap.end() )
+	TYPE_ENTITY_MAP::CPair* itr = m_EntityMap.Lookup( pEntity->GetID() );
+	if( itr == NULL )
 		assert(0);
 
-	pEntity->RemoveSpaceID(m_SpaceID);
-	m_EntityMap.erase( pEntity->GetID() );
+	itr->m_value->RemoveSpaceID(m_SpaceID);
+	m_EntityMap.RemoveKey( pEntity->GetID() );
 }
 
 bool EQuadSpaceTreeNode::IsInArea(EEntity* pEntity)
@@ -65,4 +65,18 @@ bool EQuadSpaceTreeNode::IsInArea(EEntity* pEntity)
 		return false;
 
 	return true;
+}
+
+void EQuadSpaceTreeNode::Render()
+{
+	POSITION pos = m_EntityMap.GetStartPosition();
+	TYPE_ENTITY_MAP::CPair* itr = NULL;
+
+	while (pos)
+	{
+		itr = m_EntityMap.GetNext(pos);
+		IEntityProxyRender* pProxy = (IEntityProxyRender*)itr->m_value->GetProxy(ENTITY_PROXY_RENDER);
+		if( pProxy != NULL )
+			pProxy->Render();
+	}
 }

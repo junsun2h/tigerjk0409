@@ -111,12 +111,13 @@ void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(IEntityProxyCamera* pCamera)
 	}
 }
 
-void EQuadSpaceTreeMgr::Update(EEntity* pEntity)
+void EQuadSpaceTreeMgr::UpdateEntitySpace(IEntity* pIEntity)
 {	
-	if( pEntity->IsVisible() == false )
+	if( pIEntity->IsVisible() == false )
 		return;
 
 	std::vector<EQuadSpaceTreeNode*> erasingList;
+	EEntity* pEntity = (EEntity*)pIEntity;
 
 	// check former space list
 	TYPE_SPACE_IDS* spaceIDList = pEntity->GetSpaceIDList();
@@ -169,4 +170,10 @@ void EQuadSpaceTreeMgr::AssignSpace(EEntity* pEntity)
 			GetSpace( i + j*m_DivideCount)->Register(pEntity);
 		}
 	}
+}
+
+void EQuadSpaceTreeMgr::Render()
+{
+	for( UINT i=0; i < m_VisibleSpaceList.size(); ++i)
+		m_VisibleSpaceList[i]->Render();
 }

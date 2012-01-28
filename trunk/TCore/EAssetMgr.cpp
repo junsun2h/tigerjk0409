@@ -78,7 +78,10 @@ const CResourceBase* EAssetMgr::GetResource( eRESOURCE_TYPE type, std::string na
 long EAssetMgr::Insert( CResourceBase* pResource)
 {
 	eRESOURCE_TYPE type = pResource->Type();
-	
+
+	if( type == RESOURCE_GEOMETRY || type == RESOURCE_TEXTURE )
+		g_Engine.RDevice()->CreateGraphicBuffer( pResource );
+
 	if( m_Resources[type].Lookup(pResource->RID) == NULL )
 		pResource->RID = GET_HASH_KEY( pResource->name );
 

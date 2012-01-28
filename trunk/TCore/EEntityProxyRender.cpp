@@ -4,10 +4,12 @@
 void EEntityProxyRender::Destroy()
 {
 	m_vecRenderElement.clear();
+	memset( m_RenderedFrame, 0, sizeof(m_RenderedFrame) );
 }
 
 void EEntityProxyRender::Init(IEntity* pEntity)
 {
+	memset( m_RenderedFrame, 0, sizeof(m_RenderedFrame) );
 	m_pEntity = (EEntity*)pEntity;
 }
 
@@ -23,7 +25,7 @@ bool EEntityProxyRender::Insert(long meshID )
 
 	for( int i=0; i < pMesh->geometryNum ; ++i )
 	{
-		ERenderItem item;
+		CRenderElement item;
 		
 		item.pGeometry = (CResourceGeometry*)pAssetMgr->GetResource( RESOURCE_GEOMETRY, pMesh->goemetries[i] );
 
@@ -53,4 +55,23 @@ bool EEntityProxyRender::IsRenderGeometry(long geometryID )
 	}
 
 	return false;
+}
+
+void EEntityProxyRender::Render()
+{
+	IRDevice* pRDevice = g_Engine.RDevice();
+	
+	// don't render if it's already rendered in this frame
+	eRENDER_PASS currentPass = pRDevice->GetCurrentPass();
+	if( m_RenderedFrame[currentPass] == g_Engine.GetCurrentFrame() )
+		return;
+
+	m_RenderedFrame[currentPass] = g_Engine.GetCurrentFrame(); 
+
+	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
+	{
+		pRDevice->RenderElement( m_vecRenderElement[i].pGeometry, 
+								m_vecRenderElement[i].pMtrl,
+								this);
+	}
 }

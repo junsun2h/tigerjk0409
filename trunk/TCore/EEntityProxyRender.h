@@ -5,6 +5,7 @@
 #include "CUnitPool.h"
 #include <atlcoll.h>
 #include "EEntity.h"
+#include "IRDevice.h"
 
 class EEntity;
 
@@ -28,8 +29,10 @@ public:
 	const RENDER_ELEMENT_LIST&	GetRenderElements() override		{ return m_vecRenderElement; }
 
 	bool					IsRenderGeometry(long geometryID );
+	void					Render() override;
 
 private:
 	EEntity*				m_pEntity;
 	RENDER_ELEMENT_LIST		m_vecRenderElement;
+	long					m_RenderedFrame[NUM_RENDER_PASS];
 };

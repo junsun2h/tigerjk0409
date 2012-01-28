@@ -74,9 +74,8 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 
 	//////////////////////////////////////////////////////////////////////////
-	// 2) update culled space list if camera is moved
-	if( pCamera != NULL && pCamera->GetLastTransformChangedFrame() == m_CurrentFrame )
-		m_QuadSpaceMgr.UpdateVisibleSpaceList(pCamera);
+	// 2) update culled space list
+	m_QuadSpaceMgr.UpdateVisibleSpaceList(pCamera);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system
@@ -86,7 +85,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 	if( pRenderCallback )
 		pRenderCallback->PreRender();
 
-	m_pRenderer->Render( pCamera->GetDesc() );
+	m_pRenderer->RenderFrame( pCamera->GetDesc() );
 
 	if( pRenderCallback )
 		pRenderCallback->PostRender();

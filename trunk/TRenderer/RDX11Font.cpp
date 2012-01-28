@@ -168,7 +168,7 @@ void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text)
 	pd3dImmediateContext->PSGetShaderResources( 0, 1, &pOldTexture );
 	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
 
-	GLOBAL::GetShaderMgr()->BeginShader(EFFECT_FONT);
+	GLOBAL::GetShaderMgr()->GetShader(EFFECT_FONT)->Begin();
 
 	// Draw
 	UINT Stride = sizeof( CVertexPCT );

@@ -5,7 +5,7 @@
 
 class RDX11RenderStrategeDeffered : public IRenderStrategy
 {
-	void		Render(const CCAMERA_DESC& cameraDesc) override;
+	void		RenderScene() override;
 
 public:
 	void		SkinPass();

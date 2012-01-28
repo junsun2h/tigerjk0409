@@ -13,7 +13,7 @@ enum eENTITY_TYPE
 
 struct EntityEvent
 {
-	eENTITY_TYPE		type;
+	eENTITY_TYPE	type;
 	byte*			pData;
 	UINT			dataSize;
 	UINT			flags;
@@ -22,8 +22,8 @@ struct EntityEvent
 enum eENTITY_UPDATE_FLAG
 {
 	ENTITY_UPDATE_NONE = 0,
-	ENTITY_PRE_UPDATE = BIT(1),
-	ENTITY_PRO_UPDATE = BIT(2),
+	ENTITY_PRE_UPDATE =	BIT(1),
+	ENTITY_PRO_UPDATE =	BIT(2),
 	ENTITY_UPDATE_BOTH = BIT(3)
 };
 
