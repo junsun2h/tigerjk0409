@@ -232,7 +232,7 @@ void EEntity::OnTransformChanged()
 }
 
 
-void EEntity::MoveLocalAxis(float x, float y, float z)
+void EEntity::MoveOnLocalAxis(float x, float y, float z)
 {
 	m_LocalPos += *(CVector3*)&m_LocalTM._11 * x;
 	m_LocalPos += *(CVector3*)&m_LocalTM._21 * y;
@@ -501,7 +501,7 @@ void EEntity::UpdateWorldAABB()
 }
 
 
-bool EEntity::Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list)
+bool EEntity::Pick(CCollisionLine& desc, TYPE_ENTITY_LIST& list)
 {
 	if( m_LocalEntityAABB.IsValid() )
 	{

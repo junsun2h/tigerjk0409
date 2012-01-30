@@ -35,6 +35,7 @@ public:
 
 	void		RenderFrame(const CCAMERA_DESC& cameraDesc) override;
 	void		RenderElement(	CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy) override;
+	void		RenderGeometry(CResourceGeometry*	pGeometry);
 	void		Present() override;
 
 	bool		Resize(int width, int height) override;
@@ -71,15 +72,18 @@ private:
 };
 
 	
+class RDX11MultyThreadRenderer;
+
 namespace GLOBAL
 {
-	IEngine*				Engine();
-	ID3D11Device*			GetD3DDevice();
-	ID3D11DeviceContext*	GetD3DContext();
-	RDX11Device*			GetRDX11Device();
-	RDX11RenderStateMgr*	GetD3DStateMgr();
-	const RDeviceDesc&		GetDeviceInfo();
-	RDX11ShaderMgr*			GetShaderMgr();
-	const CCAMERA_DESC&		GetCameraDesc();
-	RDX11MainFrameBuffer*	GetMainFrameRenderTarget();
+	IEngine*					Engine();
+	ID3D11Device*				GetD3DDevice();
+	ID3D11DeviceContext*		GetD3DContext();
+	RDX11Device*				GetRDX11Device();
+	RDX11RenderStateMgr*		GetD3DStateMgr();
+	const RDeviceDesc&			GetDeviceInfo();
+	RDX11ShaderMgr*				GetShaderMgr();
+	const CCAMERA_DESC&			GetCameraDesc();
+	RDX11RenderTargetMgr*		GetMainFrameRenderTarget();
+	RDX11MultyThreadRenderer*	GetMultyThreadRenderer();
 };

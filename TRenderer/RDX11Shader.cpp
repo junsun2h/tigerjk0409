@@ -44,7 +44,6 @@ RDX11Shader::RDX11Shader()
 	, m_pPixelShader(NULL)	
 	, m_pGeometryShader(NULL)
 	, m_pVertexLayout(NULL)
-	, m_pVertexLayoutPos4(NULL)
 	, m_DepthStencilState(DEPTH_STENCIL_WRITE)
 	, m_RasterizerState(RASTERIZER_CULL_BACK)
 	, m_BlendState(BLEND_NONE)
@@ -122,7 +121,6 @@ void RDX11Shader::Destroy()
 	SAFE_RELEASE(m_pPixelShader)
 	SAFE_RELEASE(m_pGeometryShader)
 	SAFE_RELEASE(m_pVertexLayout)
-	SAFE_RELEASE(m_pVertexLayoutPos4)
 }
 
 

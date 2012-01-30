@@ -34,34 +34,6 @@ void WINAPI DXUTOutputDebugStringA( LPCSTR strMsg, ... );
 
 
 //--------------------------------------------------------------------------------------
-// Profiling/instrumentation support
-//--------------------------------------------------------------------------------------
-
-// Use DXUT_SetDebugName() to attach names to D3D objects for use by 
-// SDKDebugLayer, PIX's object table, etc.
-#if defined(PROFILE) || defined(DEBUG)
-inline void DXUT_SetDebugName( IDXGIObject* pObj, const CHAR* pstrName )
-{
-	if ( pObj )
-		pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-inline void DXUT_SetDebugName( ID3D11Device* pObj, const CHAR* pstrName )
-{
-	if ( pObj )
-		pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-inline void DXUT_SetDebugName( ID3D11DeviceChild* pObj, const CHAR* pstrName )
-{
-	if ( pObj )
-		pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-#else
-#define DXUT_SetDebugName( pObj, pstrName )
-#endif
-
-
-
-//--------------------------------------------------------------------------------------
 // Multimon handling to support OSes with or without multimon API support.  
 // Purposely avoiding the use of multimon.h so DXUT.lib doesn't require 
 // COMPILE_MULTIMON_STUBS and cause complication with MFC or other users of multimon.h

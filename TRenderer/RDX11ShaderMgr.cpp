@@ -3,7 +3,7 @@
 #include "RDX11ShaderLine.h"
 #include "RDX11ShaderFont.h"
 #include "RDX11ShaderGPassLambert.h"
-
+#include "RDX11ShaderMPassMesh.h"
 
 
 RDX11ShaderMgr::RDX11ShaderMgr()
@@ -22,6 +22,7 @@ void RDX11ShaderMgr::init()
 	m_ShaderMap.SetAt( EFFECT_FONT, new RDX11ShaderFont);
 	m_ShaderMap.SetAt( EFFECT_LINE, new RDX11ShaderLine);
 	m_ShaderMap.SetAt( EFFECT_GPASS_LAMBERT, new RDX11ShaderGPassLambert);
+	m_ShaderMap.SetAt( EFFECT_MPASS_MESH, new RDX11ShaderMPassMesh );
 }
 
 

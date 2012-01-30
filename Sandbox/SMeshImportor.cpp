@@ -10,7 +10,7 @@ namespace SMESH_LOADER
 	TRAW_MESH::TRAW_MESH()
 		: BBoxMin(FLT_MAX, FLT_MAX, FLT_MAX)
 		, BBoxMax(-FLT_MAX, -FLT_MAX, -FLT_MAX)
-		, coordSys(COODSYS_RAW)
+		, coordSys(COODSYS_3DSMAX)
 	{
 	}
 
@@ -27,9 +27,27 @@ namespace SMESH_LOADER
 	void TRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_)
 	{
 		// max coordinate -> directx coordinate
-		if( coordSys == COODSYS_RAW && coodSys_ == COODSYS_DIRECTX )
+		if( coordSys == COODSYS_3DSMAX && coodSys_ == COODSYS_DIRECTX )
 		{
 			coordSys = coodSys_;
+
+			int posCount = posList.size();
+			for( int i=0; i < posCount; ++i)
+				posList[i].y = -posList[i].y;
+
+			int normalCount = normalList.size();
+			for( int i=0; i < normalCount; ++i)
+				normalList[i].y = -normalList[i].y;
+
+			BBoxMin.y = -BBoxMin.y;
+			BBoxMax.y = -BBoxMax.y;
+			postion.y = postion.y;
+
+			rotation.x *= -1;
+			rotation.y *= -1;
+			rotation.z *= -1;
+
+			/*
 			int posCount = posList.size();
 			for( int i=0; i < posCount; ++i)
 				TSWAP( posList[i].y, posList[i].z );
@@ -40,17 +58,18 @@ namespace SMESH_LOADER
 
 			TSWAP( BBoxMin.y, BBoxMin.z );
 			TSWAP( BBoxMax.y, BBoxMax.z );
-
-			int uvCount = uvList.size();
-			for( int i=0; i < uvCount; ++i)
-				uvList[i].y = 1 - uvList[i].y;
-
 			TSWAP( postion.y,  postion.z);
 
 			rotation.x *= -1;
 			rotation.y *= -1;
 			rotation.z *= -1;
 			TSWAP( rotation.y,  rotation.z);
+			*/
+
+			int uvCount = uvList.size();
+			for( int i=0; i < uvCount; ++i)
+				uvList[i].y = 1 - uvList[i].y;
+
 
 			int faceCount = facePos.size();
 			for( int i=0; i < faceCount; i += 3)
@@ -59,8 +78,6 @@ namespace SMESH_LOADER
 				TSWAP( faceNormal[i], faceNormal[i+2] );
 				TSWAP( faceUV[i], faceUV[i+2] );
 			}
-
-			TSWAP( BBoxMax.y, BBoxMax.z );
 		}
 	}
 

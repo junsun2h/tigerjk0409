@@ -40,7 +40,6 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
-	m_AssetMgr.Init( param );
 	m_Loader.Init( param.numOfProcessThread );
 	m_QuadSpaceMgr.Init( 10000, 10);
 
@@ -60,7 +59,6 @@ bool EEngine::ShutDown()
 
 void EEngine::Resize(UINT width, UINT height)
 {
-	m_AssetMgr.ResizeDefferedRenderTarget(width, height);
 	m_pRenderer->Resize(width, height);
 }
 

@@ -4,24 +4,36 @@
 #include "CColor.h"
 #include "CResource.h"
 
-
-struct RDX11MainFrameBuffer
+enum eDEFFERED_RENDER_TARGET
 {
-	RDX11MainFrameBuffer();
-	~RDX11MainFrameBuffer();
+	RT_GPASS1,
+	RT_GPASS2,
+	RT_GPASS3,
+
+	RT_LPASS,
+
+	NUM_DEFFERED_RENDER_TARGET
+};
+
+struct RDX11RenderTargetMgr
+{
+	RDX11RenderTargetMgr();
+	~RDX11RenderTargetMgr();
 
 	IDXGISwapChain*				pSwapChain;
-	ID3D11ShaderResourceView*	pSRV;
-	ID3D11RenderTargetView*		pRTV;
+	ID3D11ShaderResourceView*	pDepthSRV;
+	ID3D11RenderTargetView*		pMainFrameRTV;
 	ID3D11DepthStencilView*		pDSV;
 	CColor						clearColor;
 
-	bool	Create();
+	bool	CreateMainFrameTarget();
+	void	CreateDefferedTarget(int cx, int cy);
+	void	CreateRenderTarget(int width, int height, eTEXTURE_FORMAT format, eDEFFERED_RENDER_TARGET target, const char* name);
 	void	ReleaseTexture();
 	bool	Resize(int cx, int cy, bool bFullScreen);
 	void	Present();
 	void	Destroy();
 	void	ClearAndSet();
 
-	CResourceTexture*			m_RenderTargets[3];
+	CResourceTexture*			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
 };

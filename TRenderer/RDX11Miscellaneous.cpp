@@ -48,7 +48,7 @@ HRESULT DXUTSnapD3D11Screenshot( LPCTSTR szFileName,
 		hr = pDevice->CreateTexture2D(&newdsc, NULL, &resolveTexture);
 		if ( SUCCEEDED(hr) )
 		{
-			DXUT_SetDebugName(resolveTexture, "DXUT");
+			DXUT_SetDebugName(resolveTexture, "screenshotTexture");
 			dc->ResolveSubresource(resolveTexture, 0, pBackBuffer, 0, dsc.Format);
 			pCompatableTexture = resolveTexture;
 		}

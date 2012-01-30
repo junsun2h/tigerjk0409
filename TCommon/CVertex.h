@@ -6,12 +6,16 @@
 enum eCVERTEX_TYPE
 {
 	FVF_3FP,
-	FVF_3FP_1DC,		// 3 float position + 1 DWORD Color
+	FVF_3FP_1DC,
 	FVF_3FP_1DC_2HT,
 	FVF_3FP_4BN_2HT,
 	FVF_3FP_4BN_2HT_4BW,
-
-	FVF_4HP_4BN_2HT = 1000,
+	
+	FVF_4HP,
+	FVF_4HP_1DC,
+	FVF_4HP_1DC_2HT,
+	FVF_4HP_4BN_2HT,
+	FVF_4HP_4BN_2HT_4BW,
 
 	FVF_INVALID
 };
@@ -20,6 +24,11 @@ enum eCVERTEX_TYPE
 struct CVertexP 
 {
 	CVector3		vPos;
+};
+
+struct CVertexHP 
+{
+	XMHALF4			vPos;
 };
 
 struct CVertexPC 
@@ -68,7 +77,10 @@ inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)
 	case FVF_3FP_4BN_2HT:		return new CVertexPNT[size];
 	case FVF_3FP_4BN_2HT_4BW:	return new CVertexPNTW[size];
 
+	case FVF_4HP:				return new CVertexHP[size];
 	case FVF_4HP_4BN_2HT:		return new CVertexHPNT[size];
+	default:
+		assert(0);
 	}
 
 	assert(0);
@@ -86,7 +98,10 @@ inline size_t VERTEX_STRIDE(eCVERTEX_TYPE type)
 	case FVF_3FP_4BN_2HT:		return 20;
 	case FVF_3FP_4BN_2HT_4BW:	return 28;
 
+	case FVF_4HP:				return 8;
 	case FVF_4HP_4BN_2HT:		return 16;
+	default:
+		assert(0);
 	}
 
 	assert(0);
@@ -103,7 +118,10 @@ inline const char* VERTEX_TYPE_STRING(eCVERTEX_TYPE type)
 	case FVF_3FP_4BN_2HT:		return ENUMSTR(FVF_3FP_4BN_2HT);
 	case FVF_3FP_4BN_2HT_4BW:	return ENUMSTR(FVF_3FP_4BN_2HT_4BW);
 
+	case FVF_4HP:				return ENUMSTR(FVF_4HP);
 	case FVF_4HP_4BN_2HT:		return ENUMSTR(FVF_4HP_4BN_2HT);
+	default:
+		assert(0);
 	}
 
 	assert(0);

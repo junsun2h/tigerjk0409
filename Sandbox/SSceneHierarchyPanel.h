@@ -26,6 +26,8 @@ public:
 	void	OnFocusGot(wxFocusEvent& event);
 
 	void	Reload();
+	void	FindItem(wxTreeItemId parent, wxString text);
+
 	void	OnDrop(wxPoint point, const wxString& text);
     void	OnBeginDrag(wxTreeEvent& event);
 
@@ -45,6 +47,7 @@ public:
 	SSceneHierarchyPanel(wxWindow* parent);
 		
 	void	Reload();
+	void	SelectEntity(IEntity* pEntity);
 
 private:
 	void OnFilterChanged(wxCommandEvent& event);

@@ -71,7 +71,7 @@ public:
 	void			SetWorldRot(const CQuat& _rot) override;
 	void			SetWorldTM(const XMMATRIX& tm) override;
 
-	void			MoveLocalAxis(float x, float y, float z) override;
+	void			MoveOnLocalAxis(float x, float y, float z) override;
 	void			RotateLocalAxis(CVector3 axis, float radian) override;
 
 	void			UpdateLocalTM() override;
@@ -115,7 +115,7 @@ public:
 	void			ADDLocalAABB(CVector3 min, CVector3 max);
 	void			ADDLocalEntityAABB(CVector3 min, CVector3 max);
 
-	bool			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) override;
+	bool			Pick(CCollisionLine& desc, TYPE_ENTITY_LIST& list) override;
 	void			UpdateWorldAABB();
 
 private:

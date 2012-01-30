@@ -94,6 +94,9 @@
     <ClInclude Include="ISpaceMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
+    <ClInclude Include="CGeometryConstructor.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

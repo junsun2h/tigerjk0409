@@ -1,31 +1,32 @@
 #include "RDX11RenderTargetMgr.h"
 #include "RDX11Device.h"
 
-RDX11MainFrameBuffer::RDX11MainFrameBuffer()
+RDX11RenderTargetMgr::RDX11RenderTargetMgr()
 	: pSwapChain(NULL)
 	, clearColor(0.25f, 0.25f, 0.55f, 1.0f)
 {
+	memset( m_DefferdRenderTargets, 0, 4*NUM_DEFFERED_RENDER_TARGET );
 }
 
-RDX11MainFrameBuffer::~RDX11MainFrameBuffer()
+RDX11RenderTargetMgr::~RDX11RenderTargetMgr()
 {
 	Destroy();
 }
 
-void RDX11MainFrameBuffer::ReleaseTexture()
+void RDX11RenderTargetMgr::ReleaseTexture()
 {
-	SAFE_RELEASE(pSRV);
+	SAFE_RELEASE(pDepthSRV);
 	SAFE_RELEASE(pDSV);
-	SAFE_RELEASE(pRTV);
+	SAFE_RELEASE(pMainFrameRTV);
 }
 
-void RDX11MainFrameBuffer::Destroy()
+void RDX11RenderTargetMgr::Destroy()
 {
 	ReleaseTexture();
 	SAFE_RELEASE(pSwapChain);
 }
 
-bool RDX11MainFrameBuffer::Create()
+bool RDX11RenderTargetMgr::CreateMainFrameTarget()
 {
 	ID3D11Device* pD3Device = GLOBAL::GetD3DDevice();
 
@@ -35,16 +36,19 @@ bool RDX11MainFrameBuffer::Create()
 		return false;
 	}
 
-	ID3D11Texture2D*			pRT;
 
-	TDXERROR( pSwapChain->GetBuffer( 0, __uuidof( *pRT ), ( LPVOID* )&pRT ) );
-	TDXERROR( pD3Device->CreateRenderTargetView( pRT, NULL, &pRTV ) );
-	SAFE_RELEASE( pRT );
+	ID3D11Texture2D* pMainFrameTexture;
+	TDXERROR( pSwapChain->GetBuffer( 0, __uuidof( *pMainFrameTexture ), ( LPVOID* )&pMainFrameTexture ) );
+	TDXERROR( pD3Device->CreateRenderTargetView( pMainFrameTexture, NULL, &pMainFrameRTV ) );
+	SAFE_RELEASE( pMainFrameTexture );
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	pSwapChain->GetDesc(&swapChainDesc);
 
+	//------------------------------------------------------------------------
 	// Create depth stencil texture
+	ID3D11Texture2D* pDepthTexture;
+
 	D3D11_TEXTURE2D_DESC descDepth;
 	descDepth.Width = swapChainDesc.BufferDesc.Width;
 	descDepth.Height = swapChainDesc.BufferDesc.Height;
@@ -57,7 +61,7 @@ bool RDX11MainFrameBuffer::Create()
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
-	TDXERROR( pD3Device->CreateTexture2D( &descDepth, NULL, &pRT ) );
+	TDXERROR( pD3Device->CreateTexture2D( &descDepth, NULL, &pDepthTexture ) );
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC	depthStencilViewDesc;
 	// Create the depth stencil view
@@ -66,7 +70,7 @@ bool RDX11MainFrameBuffer::Create()
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-	TDXERROR( pD3Device->CreateDepthStencilView( pRT, &depthStencilViewDesc, &pDSV ) );
+	TDXERROR( pD3Device->CreateDepthStencilView( pDepthTexture, &depthStencilViewDesc, &pDSV ) );
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
@@ -74,13 +78,20 @@ bool RDX11MainFrameBuffer::Create()
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	TDXERROR( pD3Device->CreateShaderResourceView( pRT, &shaderResourceViewDesc, &pSRV) );
-	SAFE_RELEASE( pRT );
+	TDXERROR( pD3Device->CreateShaderResourceView( pDepthTexture, &shaderResourceViewDesc, &pDepthSRV) );
+	SAFE_RELEASE( pDepthTexture );
 
 	return true;
 }
 
-bool RDX11MainFrameBuffer::Resize(int cx, int cy, bool bFullScreen)
+void RDX11RenderTargetMgr::CreateDefferedTarget(int cx, int cy)
+{
+	CreateRenderTarget( cx, cy, COLOR_FORMAT_R10G10B10A2_UNORM, RT_GPASS1, "GPassTarget1");
+	CreateRenderTarget( cx, cy, COLOR_FORMAT_R8G8B8A8_UNORM, RT_GPASS3, "GPassTarget3");
+	CreateRenderTarget( cx, cy, COLOR_FORMAT_R8G8B8A8_UNORM, RT_LPASS, "LPassTarget");
+}
+
+bool RDX11RenderTargetMgr::Resize(int cx, int cy, bool bFullScreen)
 {
 	ReleaseTexture();
 
@@ -100,19 +111,47 @@ bool RDX11MainFrameBuffer::Resize(int cx, int cy, bool bFullScreen)
 	TDXERROR(  pSwapChain->ResizeBuffers( desc.BufferCount, cx, cy, desc.BufferDesc.Format, Flags ) );
 	pSwapChain->GetDesc(&desc);
 
-	return Create();
+	if( !CreateMainFrameTarget() )
+		return false;
+	
+	for( int i=0; i < NUM_DEFFERED_RENDER_TARGET; ++i)
+	{
+		GLOBAL::GetRDX11Device()->RemoveGraphicBuffer( m_DefferdRenderTargets[i] );
+		m_DefferdRenderTargets[i]->Width = cx;
+		m_DefferdRenderTargets[i]->height = cy;
+		GLOBAL::GetRDX11Device()->CreateGraphicBuffer( m_DefferdRenderTargets[i] );
+	}
+	
+	return true;
 }
 
-void RDX11MainFrameBuffer::Present()
+void RDX11RenderTargetMgr::Present()
 {
 	pSwapChain->Present(0,0);
 }
 
-void RDX11MainFrameBuffer::ClearAndSet()
+void RDX11RenderTargetMgr::ClearAndSet()
 {
 	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
 
-	pContext->OMSetRenderTargets( 1, &pRTV, pDSV );
-	pContext->ClearRenderTargetView( pRTV, clearColor);
+	pContext->OMSetRenderTargets( 1, &pMainFrameRTV, pDSV );
+	pContext->ClearRenderTargetView( pMainFrameRTV, clearColor);
 	pContext->ClearDepthStencilView( pDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0, 0 );
+}
+
+void RDX11RenderTargetMgr::CreateRenderTarget(int width, int height, eTEXTURE_FORMAT format, eDEFFERED_RENDER_TARGET target, const char* name)
+{
+	IEngineMemoryMgr* pMemoryMgr = GLOBAL::Engine()->EngineMemoryMgr();
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+
+	CResourceTexture* pGeometryTexture = (CResourceTexture*)pMemoryMgr->GetNewResource(RESOURCE_TEXTURE);
+	strcpy_s( pGeometryTexture->name, name);
+	pGeometryTexture->height = height;
+	pGeometryTexture->Width = width;
+	pGeometryTexture->usage = TEXTURE_RENDER_RAGET;
+	pGeometryTexture->Format = format;
+	pGeometryTexture->MipLevels = 1;
+
+	pAssetMgr->Insert( pGeometryTexture );
+	m_DefferdRenderTargets[target] = pGeometryTexture;
 }

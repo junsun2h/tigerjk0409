@@ -28,9 +28,6 @@ public:
 	EAssetMgr();
 	~EAssetMgr();
 
-	void						Init(const CENGINE_INIT_PARAM &param);
-	void						ResizeDefferedRenderTarget(UINT width, UINT height);
-
 public:
 	long						Insert( CResourceBase* pResource) override;
 
@@ -49,5 +46,4 @@ private:
 	void						GenerateMapData(const wchar_t* path);
 
 	TYPE_RESOURCE_MAP			m_Resources[NUM_RESOURCE_TYPE];
-	CResourceTexture*			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
 };

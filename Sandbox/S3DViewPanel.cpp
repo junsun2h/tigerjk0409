@@ -80,6 +80,9 @@ void S3DViewPanel::PostRender()
 	for( UINT i=0; i< selcetedEntities->size() ; ++i)
 	{
 		IEntity* pEntity = (*selcetedEntities)[i];
+
+		pEngine->RenderHelper()->RenderPosMover( pEntity->GetWorldTM());
+
 		const IAABB* pWorldAABB = pEntity->GetWorldAABB();
 
 		if( pWorldAABB->IsValid() )
@@ -98,6 +101,7 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	if( GLOBAL::ObserverCamera() == NULL )
 		return;
 
+	SetFocus();
 	#define IsKeyDown(key) ((GetAsyncKeyState(key) & 0x8000)!=0)
 
 	static CVector2 point;
@@ -111,10 +115,38 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	point.x = x;
 	point.y = y;
 
+	if(  GLOBAL::EntitySelection()->List()->size() == 0 )
+		UpdateFPSCamera(dPoint, x, y, event);
+	else
+		UpdateEntityCamera(dPoint, x, y, event);
+
+	int delta = event.GetWheelRotation();
+}
+
+void S3DViewPanel::UpdateEntityCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event)
+{
 	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
+
 	if( event.LeftIsDown() )
-	{
-		SetFocus();
+	{		
+		CVector3 origin;
+		CVector3 direction;
+		GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
+		CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
+
+		XMMATRIX worldTM = GLOBAL::EntitySelection()->First()->GetWorldTM();
+		eDIRECTION grabDirection;
+
+		if( COLLISION_UTIL::GrabPosMover(worldTM, origin, to, grabDirection) )
+		{
+			if( grabDirection == X_AXIS )
+				int aaa=0;
+			else if( grabDirection == Y_AXIS )
+				int afe = 9;
+			else
+				int fea = 0;
+		}
+
 		if( fabs(dPoint.x) > fabs(dPoint.y) )
 		{
 			XMMATRIX rotTM = XMMatrixRotationAxis( CVector3(0,0,1).ToXMVEECTOR(), dPoint.x * 0.005f );
@@ -122,47 +154,65 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 			pCamera->SetWorldTM( rotTM );
 		}
 		else
-			pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
-		
-		/*
-			CVector3 origin;
-			CVector3 direction;
-			GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
-			CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
-
-			TYPE_ENTITY_LIST list;
-			CCollisionDescLine desc;
-			desc.from = origin;
-			desc.to = to;
-			GLOBAL::SceneRoot()->Pick( desc, list);
-
-			if( list.size() > 0 )
-				int fea = 0;
-		*/
+		{
+			XMMATRIX rot = XMMatrixRotationAxis( pCamera->GetWorldTM().r[0] ,dPoint.y * 0.005f);
+			rot = XMMatrixMultiply( pCamera->GetWorldTM(), rot);
+			pCamera->SetWorldTM(rot);
+		}
 	}
 	else if( event.RightIsDown() )
 	{
-		SetFocus();
-		pCamera->MoveLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
+		pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
 	}
 	else if( event.MiddleIsDown() )
 	{
-		SetFocus();
-		pCamera->MoveLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
+		pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
 	}
-
-	int delta = event.GetWheelRotation();
 }
+
+void S3DViewPanel::UpdateFPSCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event)
+{
+	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
+
+	if( event.LeftIsDown() )
+	{		
+		CVector3 origin;
+		CVector3 direction;
+		GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
+		CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
+
+		TYPE_ENTITY_LIST list;
+		CCollisionLine desc;
+		desc.from = origin;
+		desc.to = to;
+		GLOBAL::SceneRoot()->Pick( desc, list);
+
+		if( list.size() > 0 )
+		{
+			GLOBAL::EntitySelection()->Select( *list.begin());
+			return;
+		}
+
+		if( fabs(dPoint.x) > fabs(dPoint.y) )
+			pCamera->RotateLocalAxis( CVector3(0, 0, 1), dPoint.x * 0.005f);
+		else
+			pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
+	}
+	else if( event.RightIsDown() )
+	{
+		pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
+	}
+	else if( event.MiddleIsDown() )
+	{
+		pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
+	}
+}
+
 
 void S3DViewPanel::OnKeyDown(wxKeyEvent& event)
 {
-	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
-	
+	/*
 	switch( event.GetKeyCode() )
 	{
-	case 'W':	pCamera->MoveLocalAxis( 0, 0, 100 * m_CameraSpeed);		break;
-	case 'S':	pCamera->MoveLocalAxis( 0, 0, -100 * m_CameraSpeed);		break;
-	case 'A':	pCamera->MoveLocalAxis( -100 * m_CameraSpeed, 0, 0);		break;
-	case 'D':	pCamera->MoveLocalAxis( 100 * m_CameraSpeed, 0, 0);		break;
-	}
+	}*/
 }

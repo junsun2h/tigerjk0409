@@ -1,29 +1,31 @@
 #include "RDX11Device.h"
 #include "RDX11RenderStrategeDeffered.h"
-
+#include "RDX11MultiThreadRenderer.h"
 
 namespace GLOBAL
 {
-	ID3D11Device*			g_D3Device = NULL;
-	ID3D11DeviceContext*	g_D3DeviceContext = NULL;
-	RDX11Device*			g_RDX11Device = NULL;
-	RDeviceDesc				g_DeviceSetting;
-	RDX11RenderStateMgr		g_StateRepository;
-	RDX11MainFrameBuffer	g_MainWindow;
-	RDX11RenderHelper		g_RenderHelper;
-	RDX11ShaderMgr			g_ShaderMgr;
-	CCAMERA_DESC			g_pCurrentCameraDesc;
-	IEngine*				g_pEngine = NULL;
-	
-	IEngine*				Engine()			{ return g_pEngine; }
-	ID3D11Device*			GetD3DDevice()		{ return g_D3Device;}
-	ID3D11DeviceContext*	GetD3DContext()		{ return g_D3DeviceContext; }
-	RDX11Device*			GetRDX11Device()	{ return g_RDX11Device; }
-	RDX11RenderStateMgr*	GetD3DStateMgr()	{ return &g_StateRepository; }
-	const RDeviceDesc&		GetDeviceInfo()		{ return g_DeviceSetting; }
-	RDX11ShaderMgr*			GetShaderMgr()		{ return &g_ShaderMgr; }
-	const CCAMERA_DESC&		GetCameraDesc()		{ return g_pCurrentCameraDesc; }
-	RDX11MainFrameBuffer*	GetMainFrameRenderTarget(){ return &g_MainWindow; }
+	ID3D11Device*				g_D3Device = NULL;
+	ID3D11DeviceContext*		g_D3DeviceContext = NULL;
+	RDX11Device*				g_RDX11Device = NULL;
+	RDeviceDesc					g_DeviceSetting;
+	RDX11RenderStateMgr			g_StateRepository;
+	RDX11RenderTargetMgr		g_MainWindow;
+	RDX11RenderHelper			g_RenderHelper;
+	RDX11ShaderMgr				g_ShaderMgr;
+	CCAMERA_DESC				g_pCurrentCameraDesc;
+	IEngine*					g_pEngine = NULL;
+	RDX11MultyThreadRenderer	g_MultyThreadRenderer;
+
+	IEngine*					Engine()					{ return g_pEngine; }
+	ID3D11Device*				GetD3DDevice()				{ return g_D3Device;}
+	ID3D11DeviceContext*		GetD3DContext()				{ return g_D3DeviceContext; }
+	RDX11Device*				GetRDX11Device()			{ return g_RDX11Device; }
+	RDX11RenderStateMgr*		GetD3DStateMgr()			{ return &g_StateRepository; }
+	const RDeviceDesc&			GetDeviceInfo()				{ return g_DeviceSetting; }
+	RDX11ShaderMgr*				GetShaderMgr()				{ return &g_ShaderMgr; }
+	const CCAMERA_DESC&			GetCameraDesc()				{ return g_pCurrentCameraDesc; }
+	RDX11RenderTargetMgr*		GetMainFrameRenderTarget()	{ return &g_MainWindow; }
+	RDX11MultyThreadRenderer*	GetMultyThreadRenderer()	{ return &g_MultyThreadRenderer; }
 };
 
 
@@ -125,10 +127,14 @@ bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
 	g_DeviceSetting.height = param.height;
 
 	g_StateRepository.Init();
-	g_MainWindow.Create();
+
+	g_MainWindow.CreateMainFrameTarget();
+	g_MainWindow.CreateDefferedTarget(param.width, param.height);
+
 	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
 
 	// initialize subsystem
+	g_MultyThreadRenderer.InitAsyncRenderThreadObjects();
 	g_ShaderMgr.init();
 	g_RenderHelper.Init( "Data\\font\\Font.dds");
 
@@ -184,7 +190,11 @@ void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
 void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy)
 {
 	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl, pRenderProxy);
-	
+	RenderGeometry(pGeometry);
+}
+
+void RDX11Device::RenderGeometry(CResourceGeometry*	pGeometry)
+{
 	UINT offset[1] = { 0 };
 	UINT stride[1];
 
@@ -209,7 +219,6 @@ void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pM
 		m_pContext->DrawIndexed( pGeometry->primitiveCount * 3, 0, 0 );
 	}
 }
-
 
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::Present()
@@ -244,7 +253,7 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 	{
 		CResourceGeometry* pGeometry = (CResourceGeometry*)pResource;
 
-		if( pGeometry->vertexCount <= 0)
+		if( pGeometry->vertexCount <= 0 || pGeometry->pGraphicMemoryVertexBuffer != NULL )
 			return;
 
 		size_t size = VERTEX_STRIDE(pGeometry->eVertexType) * pGeometry->vertexCount;
@@ -261,6 +270,9 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 	else if( type == RESOURCE_TEXTURE)
 	{
 		CResourceTexture* pTexture = (CResourceTexture*)pResource;
+
+		if( pTexture->pShaderResourceView != NULL)
+			return;
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroMemory(&textureDesc, sizeof(textureDesc));

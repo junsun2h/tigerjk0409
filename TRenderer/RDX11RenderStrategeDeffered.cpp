@@ -1,5 +1,6 @@
 #include "RDX11RenderStrategeDeffered.h"
 #include "RDX11Device.h"
+#include "RDX11Miscellaneous.h"
 
 
 void RDX11RenderStrategeDeffered::RenderScene()
