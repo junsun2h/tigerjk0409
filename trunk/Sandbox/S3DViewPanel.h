@@ -21,6 +21,9 @@ private:
 	void	OnMouseEvent(wxMouseEvent& event);
 	void	OnKeyDown(wxKeyEvent& event);
 
+	void	UpdateEntityCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event);
+	void	UpdateFPSCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event);
+
 	virtual void PostRender() override;
 	
 	bool	m_bSetup;

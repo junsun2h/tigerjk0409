@@ -166,6 +166,7 @@ void SSceneHierarchyTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 		IEntityProxyRender* pProxy = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
 		pProxy->Insert( pAssetMgr->GetResource(RESOURCE_MESH, desc.strParam.char_str())->RID );
 	}
+
 }
 
 void SSceneHierarchyTreeCtrl::OnBeginDrag(wxTreeEvent& WXUNUSED(event))
@@ -201,21 +202,6 @@ SSceneHierarchyPanel::SSceneHierarchyPanel(wxWindow* parent)
 
 	m_pTreeCtrl = new SSceneHierarchyTreeCtrl(this, ID_SCENE_TREECTRL);
 	pRootSizer->Add(m_pTreeCtrl, wxSizerFlags(1).Center().Border().Expand());
-/*	{
-		wxIcon icons[ICONID_NUM];
-		icons[ICONID_ACTOR] = wxIcon("res/actor.png", wxBITMAP_TYPE_PNG);
-		icons[ICONID_ACTORNODE] = wxIcon("res/actornode.png", wxBITMAP_TYPE_PNG);
-
-		int width = icons[0].GetWidth();
-		int height = icons[0].GetHeight();
-		wxImageList* pImageList = new wxImageList(width, height, true);
-		for( size_t i = 0; i < _countof(icons); ++i )
-		{
-			_ASSERT(icons[i].IsOk());
-			pImageList->Add(icons[i]);
-		}
-		pTreeCtrl->AssignImageList(pImageList);
-	}*/
 
 	SetSizerAndFit(pRootSizer);
 }
@@ -230,4 +216,9 @@ void SSceneHierarchyPanel::OnFilterChanged(wxCommandEvent& event)
 void SSceneHierarchyPanel::Reload()
 {
 	m_pTreeCtrl->Reload();
+}
+
+void SSceneHierarchyPanel::SelectEntity(IEntity* pEntity)
+{
+	//TODO
 }

@@ -21,6 +21,7 @@ enum eIMAGE_FILE_FORMAT
 
 struct IRenderHelper
 {
+	virtual	void	RenderPosMover(XMMATRIX& tm) =0;
 	virtual void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) = 0;
 	virtual void	RenderGrid(XMMATRIX& mtWorld, int size, int segmentCount) = 0;
 	virtual	void	RenderText(RENDER_TEXT_BUFFER& text) = 0;

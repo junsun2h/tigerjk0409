@@ -2,7 +2,7 @@
 
 
 char g_strLineEffectFile[] = \
-	"cbuffer CB_Model : register( b6 )"\
+	"cbuffer CB_Model : register( b11 )"\
 	"{"\
 	"	matrix WVP;	"\
 	"};"\

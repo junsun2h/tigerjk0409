@@ -6,13 +6,6 @@
 
 typedef	ATL::CAtlMap<long, CResourceBase*>	TYPE_RESOURCE_MAP;
 
-enum eDEFFERED_RENDER_TARGET
-{
-	RENDER_TARGET_GEOMERTY,
-	RENDER_TARGET_LIGHT,
-
-	NUM_DEFFERED_RENDER_TARGET
-};
 
 struct IAssetMgr
 {

@@ -7,6 +7,7 @@ class CResourceMtrl;
 struct IEntityProxyRender;
 
 
+
 struct SHADER_COMPILE_DESC
 {
 	LPCSTR		szFileName; 
@@ -17,9 +18,7 @@ struct SHADER_COMPILE_DESC
 	UINT		flag;
 
 	D3D11_INPUT_ELEMENT_DESC*	pLayout;
-	UINT						layoutSize; 
-	D3D11_INPUT_ELEMENT_DESC*	pLayoutPos4;
-	UINT						layoutPos4Size; 
+	UINT						layoutSize;
 
 	LPCSTR		debugName;
 
@@ -38,6 +37,7 @@ public:
 	virtual void		Begin();
 	virtual void		End(){}
 	virtual void		SetShaderContants(CResourceMtrl* pMaterial, IEntityProxyRender* pRenderProxy){}
+	virtual void		SetShaderContants(CResourceMtrl* pMaterial, XMMATRIX& tm){}
 
 	void				CreateVS( SHADER_COMPILE_DESC& desc);
 	void				CreatePS( SHADER_COMPILE_DESC& desc);
@@ -60,7 +60,6 @@ private:
 	ID3D11GeometryShader*		m_pGeometryShader;
 	
 	ID3D11InputLayout*			m_pVertexLayout;
-	ID3D11InputLayout*			m_pVertexLayoutPos4;
 
 	D3D_PRIMITIVE_TOPOLOGY		m_Topology;
 

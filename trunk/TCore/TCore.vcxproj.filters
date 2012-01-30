@@ -15,7 +15,6 @@
     <ClCompile Include="EMeshDataProcessor.cpp">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="ERenderer.cpp" />
     <ClCompile Include="EFileUtility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -103,7 +102,6 @@
     <ClInclude Include="EActorDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
-    <ClInclude Include="ERenderer.h" />
     <ClInclude Include="EFileUtility.h">
       <Filter>Utility</Filter>
     </ClInclude>

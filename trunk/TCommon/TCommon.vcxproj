@@ -63,6 +63,7 @@
   <ItemGroup>
     <ClInclude Include="CColiision.h" />
     <ClInclude Include="CColor.h" />
+    <ClInclude Include="CGeometryConstructor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CFrustrum.h" />
     <ClInclude Include="CGrowableArray.h" />

@@ -14,13 +14,6 @@ RDX11ShaderGPassLambert::RDX11ShaderGPassLambert()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	D3D11_INPUT_ELEMENT_DESC layoutPos4[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
 	SHADER_COMPILE_DESC desc;
 
 	desc.szFileName = "Shader\\GPassLambert.vs";
@@ -28,8 +21,6 @@ RDX11ShaderGPassLambert::RDX11ShaderGPassLambert()
 	desc.szShaderModel = "vs_4_0";
 	desc.pLayout = layout;
 	desc.layoutSize = ARRAYSIZE( layout );
-	desc.pLayoutPos4 = layoutPos4;
-	desc.layoutPos4Size = ARRAYSIZE( layoutPos4 );
 	desc.debugName = "ShaderGPassLambert_VS";
 
 	CreateVS(desc);

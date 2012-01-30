@@ -13,6 +13,7 @@ public:
 	RDX11RenderHelper();
 
 public:
+	void	RenderPosMover(XMMATRIX& tm) override;
 	void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) override;
 	void	RenderGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
 	void	RenderText(RENDER_TEXT_BUFFER& text) override;

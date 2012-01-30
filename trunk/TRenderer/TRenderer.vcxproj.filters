@@ -15,14 +15,18 @@
     </ClCompile>
     <ClCompile Include="RDX11RenderTargetMgr.cpp" />
     <ClCompile Include="RDX11RenderStrategeDeffered.cpp" />
+    <ClCompile Include="RDX11MultiThreadRenderer.cpp" />
     <ClCompile Include="RDX11ShaderGPassLambert.cpp">
-      <Filter>Shader\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="RDX11ShaderLine.cpp">
-      <Filter>Shader\fx</Filter>
+      <Filter>Shader\fx\GPass</Filter>
     </ClCompile>
     <ClCompile Include="RDX11ShaderFont.cpp">
-      <Filter>Shader\fx</Filter>
+      <Filter>Shader\fx\ScreenSpaceDrawing</Filter>
+    </ClCompile>
+    <ClCompile Include="RDX11ShaderLine.cpp">
+      <Filter>Shader\fx\MPass</Filter>
+    </ClCompile>
+    <ClCompile Include="RDX11ShaderMPassMesh.cpp">
+      <Filter>Shader\fx\MPass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,14 +45,18 @@
     <ClInclude Include="RDX11RenderStateMgr.h" />
     <ClInclude Include="RDX11RenderTargetMgr.h" />
     <ClInclude Include="RDX11RenderStrategeDeffered.h" />
+    <ClInclude Include="RDX11MultiThreadRenderer.h" />
     <ClInclude Include="RDX11ShaderGPassLambert.h">
-      <Filter>Shader\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="RDX11ShaderLine.h">
-      <Filter>Shader\fx</Filter>
+      <Filter>Shader\fx\GPass</Filter>
     </ClInclude>
     <ClInclude Include="RDX11ShaderFont.h">
-      <Filter>Shader\fx</Filter>
+      <Filter>Shader\fx\ScreenSpaceDrawing</Filter>
+    </ClInclude>
+    <ClInclude Include="RDX11ShaderLine.h">
+      <Filter>Shader\fx\MPass</Filter>
+    </ClInclude>
+    <ClInclude Include="RDX11ShaderMPassMesh.h">
+      <Filter>Shader\fx\MPass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +65,24 @@
     </Filter>
     <Filter Include="Shader\fx">
       <UniqueIdentifier>{a2f6e5e9-d821-49da-998e-374b27394ce9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx\GPass">
+      <UniqueIdentifier>{3dc9715c-1f4f-465c-a9b0-d1ab4c0eb193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx\LPass">
+      <UniqueIdentifier>{ccd71012-3eb4-4cac-8b63-b3b0f842ac2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx\MPass">
+      <UniqueIdentifier>{54a9c303-7360-4252-9de8-c48a59b29339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx\PostPass">
+      <UniqueIdentifier>{01d7224e-d170-442a-980e-7a460c84be70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx\PrePass">
+      <UniqueIdentifier>{cd5f1681-e1d7-4954-9e89-cfb9a09f8871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fx\ScreenSpaceDrawing">
+      <UniqueIdentifier>{bfa0d8ce-ce5f-4653-b5c2-4b236ad105e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

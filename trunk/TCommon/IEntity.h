@@ -68,7 +68,7 @@ struct IEntity
 	virtual void			UpdateLocalTM() = 0;
 	virtual void			UpdateWorldTM() = 0;
 
-	virtual void			MoveLocalAxis(float x, float y, float z) = 0;
+	virtual void			MoveOnLocalAxis(float x, float y, float z) = 0;
 	virtual void			RotateLocalAxis(CVector3 axis, float radian) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ struct IEntity
 	virtual const IAABB*	GetLocalAABB() = 0;
 	virtual const IAABB*	GetLocalEntityAABB() = 0;
 
-	virtual bool			Pick(CCollisionDescLine& desc, TYPE_ENTITY_LIST& list) = 0;
+	virtual bool			Pick(CCollisionLine& desc, TYPE_ENTITY_LIST& list) = 0;
 
 };
 
