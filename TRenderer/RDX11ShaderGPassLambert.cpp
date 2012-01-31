@@ -35,7 +35,7 @@ RDX11ShaderGPassLambert::RDX11ShaderGPassLambert()
 	SetTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }
 
-void RDX11ShaderGPassLambert::SetShaderContants(CResourceMtrl* pMaterial, IEntityProxyRender* pRenderProxy)
+void RDX11ShaderGPassLambert::SetShaderContants(XMMATRIX& tm)
 {
 	struct TModelVS
 	{
@@ -46,7 +46,7 @@ void RDX11ShaderGPassLambert::SetShaderContants(CResourceMtrl* pMaterial, IEntit
 	
 	const CCAMERA_DESC& camera = GLOBAL::GetCameraDesc();
 
-	modelVS.world = pRenderProxy->GetEntity()->GetWorldTM();
+	modelVS.world = tm;
 	modelVS.wv = XMMatrixMultiply( modelVS.world, camera.ViewTM ); 
 	modelVS.wvp = XMMatrixMultiply( modelVS.wv, camera.ProjTM ); 
 

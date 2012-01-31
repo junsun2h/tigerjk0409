@@ -21,12 +21,13 @@ private:
 	void	OnMouseEvent(wxMouseEvent& event);
 	void	OnKeyDown(wxKeyEvent& event);
 
-	void	UpdateEntityCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event);
-	void	UpdateFPSCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event);
+	void	UpdateObserverCamera(CVector2& dPoint, wxMouseEvent& event);
+	void	UpdateObserverCameraWithoutEntity(CVector2& dPoint, wxMouseEvent& event);
+	bool	UpdateDrag(wxMouseEvent& e);
 
 	virtual void PostRender() override;
 	
-	bool	m_bSetup;
+	bool				m_bSetup;
 
 	DECLARE_EVENT_TABLE()
 };

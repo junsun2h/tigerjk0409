@@ -1,4 +1,5 @@
 #include "RDX11ShaderLine.h"
+#include "RDX11Device.h"
 
 
 char g_strLineEffectFile[] = \
@@ -67,4 +68,21 @@ RDX11ShaderLine::RDX11ShaderLine()
 
 	SetRenderState(DEPTH_STENCIL_ON, RASTERIZER_CULL_BACK, BLEND_NONE);
 	SetTopology( D3D_PRIMITIVE_TOPOLOGY_LINELIST );
+}
+
+
+void RDX11ShaderLine::SetShaderContants(XMMATRIX& tm)
+{
+	struct TModelVS
+	{
+		XMMATRIX wvp;
+	}modelVS;
+
+	const CCAMERA_DESC& camera = GLOBAL::GetCameraDesc();
+
+	modelVS.wvp = XMMatrixMultiply( tm, camera.ViewTM ); 
+	modelVS.wvp = XMMatrixMultiply( modelVS.wvp, camera.ProjTM ); 
+	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
+
+	GLOBAL::GetShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VS_SHADER );
 }

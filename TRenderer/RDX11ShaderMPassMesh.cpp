@@ -34,7 +34,7 @@ RDX11ShaderMPassMesh::RDX11ShaderMPassMesh()
 	SetTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }
 
-void RDX11ShaderMPassMesh::SetShaderContants(CResourceMtrl* pMaterial, XMMATRIX& tm)
+void RDX11ShaderMPassMesh::SetShaderContants(XMMATRIX& tm)
 {
 	struct TModelVS
 	{

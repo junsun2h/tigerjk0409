@@ -1,9 +1,9 @@
 #include "SAssetPanel.h"
 #include "wx/treectrl.h"
 #include "wx/filename.h"
-#include "SPropertyPanel.h"
-#include "SEntitySelection.h"
 #include "wx/dnd.h"
+#include "SPropertyPanel.h"
+#include "SSelectionMgr.h"
 #include "SMeshImportor.h"
 #include "SDragAndDropState.h"
 
@@ -113,7 +113,7 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	eRESOURCE_FILE_TYPE fileType = GetAssetType(seletedItem);
 
 	pPropertyPanel->SetEmpty();
-	GLOBAL::EntitySelection()->Clear();
+	GLOBAL::SelectionMgr()->Clear();
 
 	if( fileType == RESOURCE_FILE_TEXTURE )
 	{

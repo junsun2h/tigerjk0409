@@ -6,4 +6,6 @@ class RDX11ShaderLine : public RDX11Shader
 {
 public:
 	RDX11ShaderLine();
+
+	void		SetShaderContants(XMMATRIX& tm) override;
 };

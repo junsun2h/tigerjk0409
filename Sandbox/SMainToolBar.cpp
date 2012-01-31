@@ -1,5 +1,7 @@
 #include "SMainToolBar.h"
 #include "S3DViewPanel.h"
+#include "SGlobal.h"
+#include "SSelectionMgr.h"
 
 
 SMainToolBar::SMainToolBar(wxWindow *parent, wxWindowID id)
@@ -41,22 +43,22 @@ SMainToolBar::SMainToolBar(wxWindow *parent, wxWindowID id)
 
 void SMainToolBar::OnSelectMode( wxCommandEvent& event )
 {
-
+	GLOBAL::SelectionMgr()->SetTransformMode( TRANSFORM_SELECT );
 }
 
 void SMainToolBar::OnPositionMode( wxCommandEvent& event )
 {
-
+	GLOBAL::SelectionMgr()->SetTransformMode( TRANSFORM_MOVE );
 }
 
 void SMainToolBar::OnRotateMode( wxCommandEvent& event )
 {
-
+	GLOBAL::SelectionMgr()->SetTransformMode( TRANSFORM_ROTATE );
 }
 
 void SMainToolBar::OnScaleMode( wxCommandEvent& event )
 {
-
+	GLOBAL::SelectionMgr()->SetTransformMode( TRANSFORM_SCALE );
 }
 
 void SMainToolBar::OnSelectCameraSpeed( wxCommandEvent& event )

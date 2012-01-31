@@ -2,7 +2,7 @@
 #include "wx/treectrl.h"
 #include "wx/dnd.h"
 #include "SPropertyPanel.h"
-#include "SEntitySelection.h"
+#include "SSelectionMgr.h"
 #include "SDragAndDropState.h"
 
 
@@ -71,7 +71,7 @@ void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	
 	IEntity* pEntity = GetSelectedEntity();
 	if( pEntity != NULL)
-		GLOBAL::EntitySelection()->Select(pEntity);
+		GLOBAL::SelectionMgr()->Select(pEntity);
 }
 
 void SSceneHierarchyTreeCtrl::OnDelete(wxCommandEvent& event)
