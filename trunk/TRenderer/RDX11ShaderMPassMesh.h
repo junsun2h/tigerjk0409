@@ -9,5 +9,5 @@ class RDX11ShaderMPassMesh : public RDX11Shader
 public:
 	RDX11ShaderMPassMesh();
 
-	void		SetShaderContants(CResourceMtrl* pMaterial, XMMATRIX& tm) override;
+	void		SetShaderContants(XMMATRIX& tm) override;
 };

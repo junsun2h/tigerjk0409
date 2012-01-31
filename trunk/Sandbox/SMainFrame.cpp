@@ -9,7 +9,7 @@
 #include "SMainToolBar.h"
 #include "SPropertyPanel.h"
 #include "SCreateEntityDlg.h"
-#include "SEntitySelection.h"
+#include "SSelectionMgr.h"
 
 
 
@@ -212,7 +212,7 @@ void SMainFrame::OnCreateEntity(wxCommandEvent& event)
 
 void SMainFrame::OnCreateCamera(wxCommandEvent& event)
 {
-	IEntity* pEntity = GLOBAL::EntitySelection()->First();
+	IEntity* pEntity = GLOBAL::SelectionMgr()->First();
 	IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pEntity->GetProxy(ENTITY_PROXY_CAMERA);
 	
 	if( pCamera != NULL)
@@ -227,7 +227,7 @@ void SMainFrame::OnCreateCamera(wxCommandEvent& event)
 
 void SMainFrame::OnCreateRenderer(wxCommandEvent& event)
 {
-	IEntity* pEntity = GLOBAL::EntitySelection()->First();
+	IEntity* pEntity = GLOBAL::SelectionMgr()->First();
 	IEntityProxyRender* pRenderer = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER);
 
 	if( pRenderer != NULL)

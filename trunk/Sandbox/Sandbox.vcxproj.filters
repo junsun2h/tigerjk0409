@@ -47,10 +47,10 @@
     <ClInclude Include="SMeshImportor.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="SEntitySelection.h">
+    <ClInclude Include="STextureConvertor.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="STextureConvertor.h">
+    <ClInclude Include="SSelectionMgr.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -90,10 +90,10 @@
     <ClCompile Include="SMeshImportor.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="SEntitySelection.cpp">
+    <ClCompile Include="STextureConvertor.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="STextureConvertor.cpp">
+    <ClCompile Include="SSelectionMgr.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>

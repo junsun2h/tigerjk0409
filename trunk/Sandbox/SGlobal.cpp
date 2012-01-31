@@ -1,7 +1,7 @@
 #include "SGlobal.h"
 #include "SSceneHierarchyPanel.h"
 #include "SAssetPanel.h"
-#include "SEntitySelection.h"
+#include "SSelectionMgr.h"
 
 
 namespace GLOBAL
@@ -14,7 +14,7 @@ namespace GLOBAL
 	SPropertyPanel*			g_PropertyPanel = NULL;
 	SSceneHierarchyPanel*	g_SceneHierarchyPanel = NULL;
 	S3DViewPanel*			g_ViewPanel = NULL;
-	SEntitySelection		g_EntitySelection;
+	SSelectionMgr			g_SelectionMgr;
 
 	IEntity*				SceneRoot()				{ return g_SceneRoot; }
 	IEngine*				Engine()				{ return g_Eng; }
@@ -24,7 +24,7 @@ namespace GLOBAL
 	SSceneHierarchyPanel*	SceneHierarchyPanel()	{ return g_SceneHierarchyPanel; }
 	SMainFrame*				MainFrame()				{ return g_MainFrame; }
 	S3DViewPanel*			ViewPanel()				{ return g_ViewPanel; }
-	SEntitySelection*		EntitySelection()		{ return &g_EntitySelection; }
+	SSelectionMgr*			SelectionMgr()			{ return &g_SelectionMgr; }
 
 
 	void SetupScene(int nWidth, int nHeight)

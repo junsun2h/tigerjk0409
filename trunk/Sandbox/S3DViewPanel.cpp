@@ -1,5 +1,6 @@
 #include "S3DViewPanel.h"
-#include "SEntitySelection.h"
+#include "SSelectionMgr.h"
+
 
 
 
@@ -60,9 +61,10 @@ void S3DViewPanel::OnSize(wxSizeEvent& event)
 
 void S3DViewPanel::PostRender()
 {
-	IEngine* pEngine = GLOBAL::Engine();
+	IRenderHelper* pRenderHelper	= GLOBAL::Engine()->RenderHelper();
+	eTRANSFORM_MODE mode			= GLOBAL::SelectionMgr()->GetTransformMode();
 
-	int FPS = pEngine->GlobalTimer()->GetFPS();
+	int FPS = GLOBAL::Engine()->GlobalTimer()->GetFPS();
 
 	RENDER_TEXT_BUFFER textFPS;
 	_itow_s(FPS, textFPS.strMsg, 5);
@@ -72,26 +74,29 @@ void S3DViewPanel::PostRender()
 	textFPS.rc.bottom = 100;
 	textFPS.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	pEngine->RenderHelper()->RenderText(textFPS);
-	pEngine->RenderHelper()->RenderGrid( XMMatrixIdentity(), 5000, 100 );
+	pRenderHelper->RenderText(textFPS);
+	pRenderHelper->RenderWorldGrid( XMMatrixIdentity(), 5000, 100 );
 
-	TYPE_SELECTED_ENTITIES*	selcetedEntities =	GLOBAL::EntitySelection()->List();
+	TYPE_SELECTED_ENTITIES*	selcetedEntities =	GLOBAL::SelectionMgr()->List();
 
 	for( UINT i=0; i< selcetedEntities->size() ; ++i)
 	{
 		IEntity* pEntity = (*selcetedEntities)[i];
 
-		pEngine->RenderHelper()->RenderPosMover( pEntity->GetWorldTM());
+		if( mode == TRANSFORM_MOVE) pRenderHelper->RenderMover( pEntity->GetWorldTM());
+		else if( mode == TRANSFORM_ROTATE) pRenderHelper->RenderRotator( pEntity->GetWorldTM());
+		else if( mode == TRANSFORM_SCALE) pRenderHelper->RenderScaler( pEntity->GetWorldTM());
+		else pRenderHelper->RenderAxis( pEntity->GetWorldTM());
 
 		const IAABB* pWorldAABB = pEntity->GetWorldAABB();
 
 		if( pWorldAABB->IsValid() )
 		{
-			pEngine->RenderHelper()->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
+			pRenderHelper->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
 			
 			const IAABB* pLocalEntityAABB = pEntity->GetLocalEntityAABB();
 			if( pLocalEntityAABB->IsValid() )
-				pEngine->RenderHelper()->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
+				pRenderHelper->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
 		}
 	}
 }
@@ -101,52 +106,40 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	if( GLOBAL::ObserverCamera() == NULL )
 		return;
 
-	SetFocus();
-	#define IsKeyDown(key) ((GetAsyncKeyState(key) & 0x8000)!=0)
+	if( UpdateDrag(event) )
+		return;
 
-	static CVector2 point;
+	if( event.LeftIsDown() || event.RightIsDown() || event.MiddleIsDown() )
+	{
+		SetFocus();
 
-	long x = 0;
-	long y = 0;
-	event.GetPosition( &x, &y );
+		static CVector2 point;
 
-	CVector2 dPoint = CVector2( point.x - x, point.y - y);
-	
-	point.x = x;
-	point.y = y;
+		long x = event.GetX();
+		long y = event.GetY();
+		CVector2 dPoint = CVector2( point.x - x, point.y - y);
+		point.x = x;
+		point.y = y;
 
-	if(  GLOBAL::EntitySelection()->List()->size() == 0 )
-		UpdateFPSCamera(dPoint, x, y, event);
-	else
-		UpdateEntityCamera(dPoint, x, y, event);
+		if( CVector2::Length(dPoint) > 20 )
+		{
+			dPoint.x = 0;
+			dPoint.y = 0;
+		}
 
-	int delta = event.GetWheelRotation();
+		if(  GLOBAL::SelectionMgr()->List()->size() == 0 )
+			UpdateObserverCameraWithoutEntity(dPoint, event);
+		else
+			UpdateObserverCamera(dPoint, event);
+	}
 }
 
-void S3DViewPanel::UpdateEntityCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event)
+void S3DViewPanel::UpdateObserverCamera(CVector2& dPoint, wxMouseEvent& e)
 {
 	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
 
-	if( event.LeftIsDown() )
+	if( e.LeftIsDown() )
 	{		
-		CVector3 origin;
-		CVector3 direction;
-		GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
-		CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
-
-		XMMATRIX worldTM = GLOBAL::EntitySelection()->First()->GetWorldTM();
-		eDIRECTION grabDirection;
-
-		if( COLLISION_UTIL::GrabPosMover(worldTM, origin, to, grabDirection) )
-		{
-			if( grabDirection == X_AXIS )
-				int aaa=0;
-			else if( grabDirection == Y_AXIS )
-				int afe = 9;
-			else
-				int fea = 0;
-		}
-
 		if( fabs(dPoint.x) > fabs(dPoint.y) )
 		{
 			XMMATRIX rotTM = XMMatrixRotationAxis( CVector3(0,0,1).ToXMVEECTOR(), dPoint.x * 0.005f );
@@ -160,25 +153,25 @@ void S3DViewPanel::UpdateEntityCamera(CVector2& dPoint, long x, long y, wxMouseE
 			pCamera->SetWorldTM(rot);
 		}
 	}
-	else if( event.RightIsDown() )
+	else if( e.RightIsDown() )
 	{
 		pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
 	}
-	else if( event.MiddleIsDown() )
+	else if( e.MiddleIsDown() )
 	{
 		pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
 	}
 }
 
-void S3DViewPanel::UpdateFPSCamera(CVector2& dPoint, long x, long y, wxMouseEvent& event)
+void S3DViewPanel::UpdateObserverCameraWithoutEntity(CVector2& dPoint, wxMouseEvent& e)
 {
 	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
 
-	if( event.LeftIsDown() )
+	if( e.LeftIsDown() )
 	{		
 		CVector3 origin;
 		CVector3 direction;
-		GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
+		GLOBAL::ObserverCamera()->GetPickRayFromScreen( e.GetX(), e.GetY(), origin, direction);
 		CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
 
 		TYPE_ENTITY_LIST list;
@@ -189,7 +182,7 @@ void S3DViewPanel::UpdateFPSCamera(CVector2& dPoint, long x, long y, wxMouseEven
 
 		if( list.size() > 0 )
 		{
-			GLOBAL::EntitySelection()->Select( *list.begin());
+			GLOBAL::SelectionMgr()->Select( *list.begin());
 			return;
 		}
 
@@ -198,11 +191,11 @@ void S3DViewPanel::UpdateFPSCamera(CVector2& dPoint, long x, long y, wxMouseEven
 		else
 			pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
 	}
-	else if( event.RightIsDown() )
+	else if( e.RightIsDown() )
 	{
 		pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
 	}
-	else if( event.MiddleIsDown() )
+	else if( e.MiddleIsDown() )
 	{
 		pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
 	}
@@ -215,4 +208,59 @@ void S3DViewPanel::OnKeyDown(wxKeyEvent& event)
 	switch( event.GetKeyCode() )
 	{
 	}*/
+}
+
+
+bool S3DViewPanel::UpdateDrag(wxMouseEvent& e)
+{
+	enum eDRAG_MODE
+	{
+		DRAG_NONE,
+		DRAG_START,
+		DRAG_DRAGGING
+	};
+
+	static eDRAG_MODE	s_dragMode = DRAG_NONE;
+	static wxPoint		s_dragStartPos;
+
+	if ( e.LeftDown())
+	{
+		if( GLOBAL::SelectionMgr()->GrabHelper( e.GetX(), e.GetY() ) )
+		{
+			s_dragMode = DRAG_START;
+			s_dragStartPos = e.GetPosition();
+		}
+	}
+	else if ( e.LeftUp() && s_dragMode != DRAG_NONE)
+	{
+		s_dragMode = DRAG_NONE;
+	}
+	else if ( e.Dragging() && s_dragMode != DRAG_NONE)
+	{
+		if (s_dragMode == DRAG_START)
+		{
+			// We will start dragging if we've moved beyond a couple of pixels
+			int tolerance = 2;
+			int dx = abs(e.GetPosition().x - s_dragStartPos.x);
+			int dy = abs(e.GetPosition().y - s_dragStartPos.y);
+			if (dx <= tolerance && dy <= tolerance)
+				return true;
+
+			s_dragMode = DRAG_DRAGGING;
+		}
+		else if (s_dragMode == DRAG_DRAGGING)
+		{
+			int dx = abs(e.GetPosition().x - s_dragStartPos.x);
+			int dy = abs(e.GetPosition().y - s_dragStartPos.y);
+
+			s_dragStartPos.x = e.GetPosition().x;
+			s_dragStartPos.y = e.GetPosition().y;
+
+			GLOBAL::SelectionMgr()->GrabUpdate( dx, dy );
+		}
+	}
+	else
+		return false;
+
+	return true;
 }

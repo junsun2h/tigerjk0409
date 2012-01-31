@@ -189,7 +189,8 @@ void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy)
 {
-	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl, pRenderProxy);
+	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl );
+	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pRenderProxy->GetEntity()->GetWorldTM() );
 	RenderGeometry(pGeometry);
 }
 

@@ -36,8 +36,10 @@ public:
 
 	virtual void		Begin();
 	virtual void		End(){}
-	virtual void		SetShaderContants(CResourceMtrl* pMaterial, IEntityProxyRender* pRenderProxy){}
-	virtual void		SetShaderContants(CResourceMtrl* pMaterial, XMMATRIX& tm){}
+
+	virtual void		SetShaderContants(IEntityProxyRender* pRenderProxy){}
+	virtual void		SetShaderContants(CResourceMtrl* pMaterial){}
+	virtual void		SetShaderContants(XMMATRIX& tm){}
 
 	void				CreateVS( SHADER_COMPILE_DESC& desc);
 	void				CreatePS( SHADER_COMPILE_DESC& desc);

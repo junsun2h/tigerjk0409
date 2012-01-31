@@ -8,7 +8,7 @@ class SPropertyPanel;
 class SSceneHierarchyPanel;
 class SMainFrame;
 class S3DViewPanel;
-class SEntitySelection;
+class SSelectionMgr;
 
 
 namespace GLOBAL
@@ -23,7 +23,7 @@ namespace GLOBAL
 	SPropertyPanel*			PropertyPanel();
 	SSceneHierarchyPanel*	SceneHierarchyPanel();
 	SMainFrame*				MainFrame();
-	SEntitySelection*		EntitySelection();
+	SSelectionMgr*			SelectionMgr();
 }
 
 
