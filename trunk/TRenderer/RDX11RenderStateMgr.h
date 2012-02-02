@@ -11,7 +11,9 @@ enum ALPHA_BLEND_TYPE
 	BLEND_ADD_BY_COLOR,
 	BLEND_ADD_BY_ALPHA,
 
-	NUM_ALPHA_BLEND_TYPE
+	NUM_ALPHA_BLEND_TYPE,
+
+	BLEND_INVALID
 };
 
 enum RASTERIZER_TYPE
@@ -21,7 +23,9 @@ enum RASTERIZER_TYPE
 	RASTERIZER_WIRE,
 	RASTERIZER_SHADOW,
 
-	NUM_RASTERIZER_TYPE
+	NUM_RASTERIZER_TYPE,
+
+	RASTERIZER_INVALID,
 };
 
 enum DEPTH_STENCIL_TYPE
@@ -32,7 +36,9 @@ enum DEPTH_STENCIL_TYPE
 	DEPTH_STENCIL_WRITE,
 	DEPTH_STENCIL_REVERSE_WRITE,
 
-	NUM_DEPTH_STENCIL
+	NUM_DEPTH_STENCIL,
+
+	DEPTH_STENCIL_INVALID
 };
 
 enum TSAMPLER_TYPE
@@ -60,11 +66,15 @@ public:
 	void		RestoreSavedState();
 
 	void		ApplyRenderState(DEPTH_STENCIL_TYPE DepthStencilState,
-		RASTERIZER_TYPE RasterizerState,
-		ALPHA_BLEND_TYPE BlendState,
-		UINT StencilRef = NULL,
-		float* blendFactor = NULL,
-		UINT sampleMask = 0xffffffff);
+								RASTERIZER_TYPE RasterizerState,
+								ALPHA_BLEND_TYPE BlendState,
+								UINT StencilRef = NULL,
+								float* blendFactor = NULL,
+								UINT sampleMask = 0xffffffff);
+
+	void		SetRasterizer(RASTERIZER_TYPE RasterizerState);
+	void		SetBlend(ALPHA_BLEND_TYPE BlendState, float* pblendFactor = NULL, UINT sampleMask = 0xffffffff);
+	void		SetDepthStancil(DEPTH_STENCIL_TYPE DepthStencilState, UINT StencilRef = NULL);
 
 private:
 	void		CreateSampler(ID3D11Device* pD3Device);
@@ -79,7 +89,16 @@ private:
 	ID3D11DepthStencilState*	m_pDepthStencilType[NUM_DEPTH_STENCIL];
 	ID3D11SamplerState*			m_SamplerStates[NUM_SAMPLER_TYPE];
 
+	// current device states
+	ALPHA_BLEND_TYPE			m_CurrentBlend;
+	RASTERIZER_TYPE				m_CurrentRasterizer;
+	DEPTH_STENCIL_TYPE			m_CurrentDepthStencil;
+	UINT						m_CurrentStencilRef;
+	float*						m_CurrentblendFactor;
+	UINT						m_CurrentsampleMask;
 
+
+	// temporary object to save device states
 	ID3D11DepthStencilState*	m_pStoredDepthStencil;
 	UINT						m_StoredStencilRef;
 	ID3D11RasterizerState*		m_pStoredRasterizer;

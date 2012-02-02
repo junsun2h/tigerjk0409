@@ -40,7 +40,7 @@ namespace GLOBAL
 		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pCameraEntity->CreateProxy(ENTITY_PROXY_CAMERA);
 
 		pCamera->SetProjParam( XM_PIDIV4,  nWidth, nHeight, 1, 10000);
-		pCamera->SetViewParam( CVector3(1000.0f, 1000.0f, 1000.0f), CVector3(0, 0, 0), CVector3(0.0f, 0.0f, 1.0f) );
+		pCamera->SetViewParam( CVector3(500.0f, 500.0f, 500.0f), CVector3(0, 0, 0), CVector3(0.0f, 0.0f, 1.0f) );
 
 		g_Observer = pCamera;
 

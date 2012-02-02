@@ -52,6 +52,7 @@ public:
 										float* blendFactor = NULL,
 										UINT sampleMask = 0xffffffff);
 
+	void				ApplyRenderState();
 	void				Destroy();
 
 

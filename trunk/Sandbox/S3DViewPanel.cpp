@@ -83,10 +83,24 @@ void S3DViewPanel::PostRender()
 	{
 		IEntity* pEntity = (*selcetedEntities)[i];
 
-		if( mode == TRANSFORM_MOVE) pRenderHelper->RenderMover( pEntity->GetWorldTM());
-		else if( mode == TRANSFORM_ROTATE) pRenderHelper->RenderRotator( pEntity->GetWorldTM());
-		else if( mode == TRANSFORM_SCALE) pRenderHelper->RenderScaler( pEntity->GetWorldTM());
-		else pRenderHelper->RenderAxis( pEntity->GetWorldTM());
+		CQuat rot;
+		XMMATRIX tm  = XMMatrixIdentity();
+		tm.r[3] = pEntity->GetWorldTM().r[3];
+
+		if( mode == TRANSFORM_MOVE) 
+		{
+			pRenderHelper->RenderMover( tm, TRANSFORM_HELPER_EXTENT );
+		}
+		else if( mode == TRANSFORM_ROTATE) 
+		{
+			pRenderHelper->RenderRotator( tm, TRANSFORM_HELPER_EXTENT);
+		}
+		else if( mode == TRANSFORM_SCALE)
+		{
+			pRenderHelper->RenderScaler( tm, TRANSFORM_HELPER_EXTENT );
+		}
+		
+		pRenderHelper->RenderAxis( pEntity->GetWorldTM() , TRANSFORM_HELPER_EXTENT);
 
 		const IAABB* pWorldAABB = pEntity->GetWorldAABB();
 
@@ -250,13 +264,7 @@ bool S3DViewPanel::UpdateDrag(wxMouseEvent& e)
 		}
 		else if (s_dragMode == DRAG_DRAGGING)
 		{
-			int dx = abs(e.GetPosition().x - s_dragStartPos.x);
-			int dy = abs(e.GetPosition().y - s_dragStartPos.y);
-
-			s_dragStartPos.x = e.GetPosition().x;
-			s_dragStartPos.y = e.GetPosition().y;
-
-			GLOBAL::SelectionMgr()->GrabUpdate( dx, dy );
+			GLOBAL::SelectionMgr()->GrabUpdate( e.GetX(), e.GetY() );
 		}
 	}
 	else

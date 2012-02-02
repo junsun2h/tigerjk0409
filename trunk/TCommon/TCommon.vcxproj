@@ -68,6 +68,7 @@
     <ClInclude Include="CFrustrum.h" />
     <ClInclude Include="CGrowableArray.h" />
     <ClInclude Include="CLine.h" />
+    <ClInclude Include="CLog.h" />
     <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CPlane.h" />
     <ClInclude Include="CResource.h" />
