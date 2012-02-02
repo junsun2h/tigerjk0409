@@ -22,6 +22,8 @@ public:
 	void		Normalize();
 	float		Dot(const CVector3& v)					{ return a * v.x + b * v.y + c * v.z + d; }
 	bool		IntersectPlane(CPlane& p, CLine* pLine);
+	bool		IntersectLine(CVector3& from, CVector3& to, CVector3* pCrossPoint);
+	float		DistanceTo(CVector3& point);
 
 	// casting
 	operator float* ()								{ return (float *) &a; }
@@ -171,4 +173,29 @@ inline bool CPlane::IntersectPlane(CPlane& plane, CLine* pLine)
 	pLine->p0 = iP;
 	pLine->p1 = iP + u;
 	return true;
+}
+
+
+bool CPlane::IntersectLine(CVector3& from, CVector3& to, CVector3* pCrossPoint)
+{
+	float d1 = DistanceTo(from);
+	float d2 = DistanceTo(to);
+
+	if ( d1*d2 > 0.0f )
+		return false;
+
+	d1 = fabs(d1);
+	d2 = fabs(d2);
+
+	CVector3 vL = to - from;
+
+	if( pCrossPoint != NULL )
+		*pCrossPoint = from + vL*(d1/(d1+d2));
+
+	return true;
+}
+
+float CPlane::DistanceTo(CVector3& point)
+{
+	return point.x*a + point.y*b + point.z*c + d;
 }

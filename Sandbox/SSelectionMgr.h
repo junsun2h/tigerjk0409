@@ -2,6 +2,7 @@
 
 #include "SGlobal.h"
 
+#define  TRANSFORM_HELPER_EXTENT	50
 
 typedef std::vector<IEntity*>	TYPE_SELECTED_ENTITIES;
 
@@ -34,5 +35,9 @@ public:
 private:
 	eTRANSFORM_MODE				m_TransformMode;
 	eDIRECTION					m_TransformAxis;
+	
+	XMMATRIX					m_GrabedTransform;
+	CVector3 					m_GrabedPoint;
+
 	TYPE_SELECTED_ENTITIES		m_SelctionList;
 };

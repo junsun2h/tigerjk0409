@@ -31,8 +31,9 @@ void RDX11RenderHelper::Destroy()
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
+void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 {
+	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
 
 	CVertexPC v1;
@@ -41,7 +42,7 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 	v1.color = COLOR_RED;
 	m_LineVertices.Add(v1);
 
-	v1.vPos = CVector3(50, 0.0f, 0.0f);
+	v1.vPos = CVector3(scale, 0.0f, 0.0f);
 	v1.color = COLOR_RED;
 	m_LineVertices.Add(v1);
 
@@ -49,7 +50,7 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 	v1.color = COLOR_BLUE;
 	m_LineVertices.Add(v1);
 
-	v1.vPos = CVector3(0.0f, 0.0f, 50);
+	v1.vPos = CVector3(0.0f, 0.0f, scale);
 	v1.color = COLOR_BLUE;
 	m_LineVertices.Add(v1);
 
@@ -57,15 +58,16 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	v1.vPos = CVector3(0.0f, 50, 0.0f);
+	v1.vPos = CVector3(0.0f, scale, 0.0f);
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
+	GLOBAL::GetD3DStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 	DrawLine();
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
+void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 {
 	IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
 	RDX11Shader* pShader = GLOBAL::GetShaderMgr()->GetShader(EFFECT_MPASS_MESH);
@@ -85,17 +87,17 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 	param.color = COLOR_RED;
 	param.min = CVector3(-5.f,-5.f,-5.f);
 	param.max = CVector3(5.f,5.f,5.f);
-	param.offset = CVector3(50, 0, 0);
+	param.offset = CVector3(scale, 0, 0);
 
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxX, param);
 
 	param.color = COLOR_GREEN;
-	param.offset = CVector3(0, 50, 0);
+	param.offset = CVector3(0, scale, 0);
 
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxY, param);
 
 	param.color = COLOR_BLUE;
-	param.offset = CVector3(0, 0, 50);
+	param.offset = CVector3(0, 0, scale);
 
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxZ, param);
 
@@ -124,17 +126,18 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 	pMemoryPoolMgr->RemoveResource(pBoxZ);
 	pMemoryPoolMgr->RemoveResource(pBoxCenter);
 
-	RenderAxis(tm);
+	RenderAxis(tm, scale);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
+void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 {
+	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
 
 	CVertexPC v1;
 
-	UINT radius =50;
+	UINT radius = scale;
 	UINT segment = 20;
 
 	v1.vPos.x = 0.0f;
@@ -190,7 +193,7 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
+void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 {
 	IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
 	RDX11Shader* pShader = GLOBAL::GetShaderMgr()->GetShader(EFFECT_MPASS_MESH);
@@ -210,20 +213,20 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 	param.radius = 5;
 	param.height = 15;
 	param.direction = X_AXIS;
-	param.offset = CVector3(50, 0, 0);
+	param.offset = CVector3(scale, 0, 0);
 	param.segment = 10;
 
 	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeX, param);
 
 	param.color = COLOR_GREEN;
 	param.direction = Y_AXIS;
-	param.offset = CVector3(0, 50, 0);
+	param.offset = CVector3(0, scale, 0);
 
 	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeY, param);
 
 	param.color = COLOR_BLUE;
 	param.direction = Z_AXIS;
-	param.offset = CVector3(0, 0, 50);
+	param.offset = CVector3(0, 0, scale);
 
 	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeZ, param);
 	
@@ -243,7 +246,7 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 	pMemoryPoolMgr->RemoveResource(pConeY);
 	pMemoryPoolMgr->RemoveResource(pConeZ);
 
-	RenderAxis(tm);
+	RenderAxis(tm, scale);
 }
 
 
@@ -265,6 +268,7 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
+	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
 	DrawLine();
 }
@@ -354,6 +358,7 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
+	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
 	DrawLine();
 }
@@ -395,8 +400,6 @@ void RDX11RenderHelper::DrawLine()
 		CopyMemory( MappedResource.pData, (void*)m_LineVertices.GetData(), dataBytes );
 		pContext->Unmap(m_pLineBuffer, 0);
 	}
-
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Draw

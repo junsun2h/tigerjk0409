@@ -1,7 +1,7 @@
 #include "EEngine.h"
 #include "EEntityProxyCamera.h"
 #include "IRDevice.h"
-
+#include "CLog.h"
 #include <windows.h>
 
 
@@ -42,6 +42,7 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 	// initialize Asset manager
 	m_Loader.Init( param.numOfProcessThread );
 	m_QuadSpaceMgr.Init( 10000, 10);
+	CLOG::InitLogSystem();
 
 	return true;
 }
