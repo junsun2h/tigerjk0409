@@ -134,62 +134,67 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 {
 	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
 	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	GLOBAL::GetD3DStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
 
-	UINT radius = scale;
-	UINT segment = 20;
-
-	v1.vPos.x = 0.0f;
-	v1.color = COLOR_RED;
-	for( UINT i= 0; i < segment ; ++i)
+	for( int iRing = 0; iRing < 2; ++iRing )
 	{
-		float angle = XM_2PI * i/float(segment);
-		v1.vPos.y = radius * cos( angle);
-		v1.vPos.z = radius * sin( angle);
-		m_LineVertices.Add(v1);
+		float radius = scale + iRing * 2;
+		UINT segment = 20;
 
-		angle = XM_2PI * (i +1)/float(segment);
-		v1.vPos.y = radius * cos( angle);
-		v1.vPos.z = radius * sin( angle);
-		m_LineVertices.Add(v1);
+		v1.vPos.x = 0.0f;
+		v1.color = COLOR_RED;
+		for( UINT i= 0; i < segment ; ++i)
+		{
+			float angle = XM_2PI * i/float(segment);
+			v1.vPos.y = radius * cos( angle);
+			v1.vPos.z = radius * sin( angle);
+			m_LineVertices.Add(v1);
+
+			angle = XM_2PI * (i +1)/float(segment);
+			v1.vPos.y = radius * cos( angle);
+			v1.vPos.z = radius * sin( angle);
+			m_LineVertices.Add(v1);
+		}
+		DrawLine();
+
+		v1.vPos.y = 0.0f;
+		v1.color = COLOR_GREEN;
+		for( UINT i= 0; i < segment ; ++i)
+		{
+			float angle = XM_2PI * i/float(segment);
+			v1.vPos.z = radius * cos( angle);
+			v1.vPos.x = radius * sin( angle);
+			m_LineVertices.Add(v1);
+
+			angle = XM_2PI * (i +1)/float(segment);
+			v1.vPos.z = radius * cos( angle);
+			v1.vPos.x = radius * sin( angle);
+			m_LineVertices.Add(v1);
+		}
+
+		DrawLine();
+
+		v1.vPos.z = 0.0f;
+		v1.color = COLOR_BLUE;
+		for( UINT i= 0; i < segment ; ++i)
+		{
+			float angle = XM_2PI * i/float(segment);
+			v1.vPos.x = radius * cos( angle);
+			v1.vPos.y = radius * sin( angle);
+			m_LineVertices.Add(v1);
+
+			angle = XM_2PI * (i +1)/float(segment);
+			v1.vPos.x = radius * cos( angle);
+			v1.vPos.y = radius * sin( angle);
+			m_LineVertices.Add(v1);
+		}
+
+		DrawLine();
 	}
-	
-	DrawLine();
 
-	v1.vPos.y = 0.0f;
-	v1.color = COLOR_GREEN;
-	for( UINT i= 0; i < segment ; ++i)
-	{
-		float angle = XM_2PI * i/float(segment);
-		v1.vPos.z = radius * cos( angle);
-		v1.vPos.x = radius * sin( angle);
-		m_LineVertices.Add(v1);
-
-		angle = XM_2PI * (i +1)/float(segment);
-		v1.vPos.z = radius * cos( angle);
-		v1.vPos.x = radius * sin( angle);
-		m_LineVertices.Add(v1);
-	}
-
-	DrawLine();
-
-	v1.vPos.z = 0.0f;
-	v1.color = COLOR_BLUE;
-	for( UINT i= 0; i < segment ; ++i)
-	{
-		float angle = XM_2PI * i/float(segment);
-		v1.vPos.x = radius * cos( angle);
-		v1.vPos.y = radius * sin( angle);
-		m_LineVertices.Add(v1);
-
-		angle = XM_2PI * (i +1)/float(segment);
-		v1.vPos.x = radius * cos( angle);
-		v1.vPos.y = radius * sin( angle);
-		m_LineVertices.Add(v1);
-	}
-	
-	DrawLine();
+	RenderAxis(tm, scale);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
