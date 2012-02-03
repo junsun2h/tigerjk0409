@@ -40,7 +40,7 @@ void EAABB::AddAABB(CVector3& min, CVector3& max)
 }
 
 
-void EAABB::AddAABB(IAABB* pAABB)
+void EAABB::AddAABB(const IAABB* pAABB)
 {
 	if( pAABB->IsValid() == false )
 		return;

@@ -60,8 +60,8 @@ void SPropertyGrid::Set( IEntity* pEntity )
 
 	if( pEntity->GetWorldAABB()->IsValid() )
 	{
-		Append( new wxVectorProperty( "BoundingBox Min (Local)", wxPG_LABEL, pEntity->GetLocalAABB()->GetMin()) );
-		Append( new wxVectorProperty( "BoundingBox Max (Local)", wxPG_LABEL, pEntity->GetLocalAABB()->GetMax()) );
+		Append( new wxVectorProperty( "BoundingBox Min (Local)", wxPG_LABEL, pEntity->GetLocalEntityAABB()->GetMin()) );
+		Append( new wxVectorProperty( "BoundingBox Max (Local)", wxPG_LABEL, pEntity->GetLocalEntityAABB()->GetMax()) );
 		Append( new wxVectorProperty( "BoundingBox Min (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMin()) );
 		Append( new wxVectorProperty( "BoundingBox Max (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMax()) );
 	}

@@ -283,8 +283,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 	{
 		if( m_TransformAxis == X_AXIS )
 		{
-			CVector3 XAxisEnd = m_GrabedTransform.r[0] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], XAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(1000000,0,0), pickFrom, pickTo, &pa, &pb );
 
 			CVector3 pos = m_GrabedTransform.r[3];
 			pos.x = pa.x - TRANSFORM_HELPER_EXTENT;
@@ -292,8 +291,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		}
 		else if( m_TransformAxis == Y_AXIS )
 		{
-			CVector3 YAxisEnd = m_GrabedTransform.r[1] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], YAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(0,1000000,0), pickFrom, pickTo, &pa, &pb );
 
 			CVector3 pos = m_GrabedTransform.r[3];
 			pos.y = pa.y - TRANSFORM_HELPER_EXTENT;
@@ -301,8 +299,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		}
 		else
 		{
-			CVector3 ZAxisEnd = m_GrabedTransform.r[2] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], ZAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(0,0,1000000), pickFrom, pickTo, &pa, &pb );
 
 			CVector3 pos = m_GrabedTransform.r[3];
 			pos.z = pa.z - TRANSFORM_HELPER_EXTENT;
@@ -414,8 +411,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 
 		if( m_TransformAxis == X_AXIS )
 		{
-			CVector3 XAxisEnd = m_GrabedTransform.r[0] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], XAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(1000000,0,0), pickFrom, pickTo, &pa, &pb );
 			
 			float offset = m_GrabedTransform.r[3].x + TRANSFORM_HELPER_EXTENT;
 			float dx = pa.x - offset;
@@ -426,8 +422,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		}
 		else if( m_TransformAxis == Y_AXIS )
 		{
-			CVector3 XAxisEnd = m_GrabedTransform.r[1] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], XAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(0,1000000,0), pickFrom, pickTo, &pa, &pb );
 
 			float offset = m_GrabedTransform.r[3].y + TRANSFORM_HELPER_EXTENT;
 			float dy = pa.y - offset;
@@ -438,8 +433,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		}
 		else if( m_TransformAxis == Z_AXIS )
 		{
-			CVector3 XAxisEnd = m_GrabedTransform.r[2] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], XAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(0,0,1000000), pickFrom, pickTo, &pa, &pb );
 
 			float offset = m_GrabedTransform.r[3].z + TRANSFORM_HELPER_EXTENT;
 			float dz = pa.z - offset;
@@ -450,8 +444,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		}
 		else if( m_TransformAxis == CENTER)
 		{
-			CVector3 XAxisEnd = m_GrabedTransform.r[0] * 1000000;
-			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], XAxisEnd, pickFrom, pickTo, &pa, &pb );
+			COLLISION_UTIL::LineLineIntersect( m_GrabedTransform.r[3], CVector3(1000000,0,0), pickFrom, pickTo, &pa, &pb );
 
 			float offset = m_GrabedTransform.r[3].x + TRANSFORM_HELPER_EXTENT;
 			float d = pa.x - offset;
