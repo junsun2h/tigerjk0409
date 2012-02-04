@@ -15,6 +15,14 @@ enum PROPERTY_WIDGET_ID
 	ID_PROPERTY_GRID
 };
 
+enum PROPERTY_SUB_WINDOWS
+{
+	TEXTURE_CANVAS	= BIT(1),
+	PROPERTY_GRID	= BIT(2),
+	ENTITY_TREE_CTRL = BIT(3),
+	SCENE_TREE_CTRL	= BIT(4)
+};
+
 class SPropertyGrid;
 
 class SPropertyPanel : public wxPanel
@@ -34,7 +42,7 @@ public:
 	void					Empty();
 
 private:
-	void					OrganizeInside();
+	void					OrganizeInside(DWORD flag);
 
 	SCanvas*				m_pTextureCanvas;
 	SPropertyGrid*			m_pGridMgr;

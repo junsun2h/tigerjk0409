@@ -41,26 +41,16 @@ void SPropertyPanel::SetObject( IEntity* pEntity )
 	m_pEntityTreeCtrl->SetEntity(pEntity);
 	m_pGridMgr->Clear();
 
-	m_pTextureCanvas->Hide();
-	m_pEntityTreeCtrl->Show();
-	m_pGridMgr->Show();
-
-	OrganizeInside();
+	OrganizeInside( ENTITY_TREE_CTRL | PROPERTY_GRID );
 }
 
 void SPropertyPanel::SetObject( const CResourceTexture* pResource )
 {
 	m_pGridMgr->Set( pResource );
-
 	SaveTextureToPNGFile( pResource, COLOR_FORMAT_R8G8B8A8_TYPELESS);
-
 	m_pTextureCanvas->SetImage( &wxImage("temp.png") );
 
-	m_pTextureCanvas->Show();
-	m_pGridMgr->Show();
-	m_pEntityTreeCtrl->Hide();
-
-	OrganizeInside();
+	OrganizeInside( PROPERTY_GRID | TEXTURE_CANVAS );
 }
 
 void SPropertyPanel::SetObject( const CResourceMesh* pResource )
@@ -69,9 +59,10 @@ void SPropertyPanel::SetObject( const CResourceMesh* pResource )
 
 	m_pTextureCanvas->Hide();
 	m_pEntityTreeCtrl->Hide();
+	m_pSceneTreeCtrl->Hide();
 	m_pGridMgr->Show();
 
-	OrganizeInside();
+	OrganizeInside( PROPERTY_GRID );
 }
 
 void SPropertyPanel::SetObject( const CResourceActor* pResource )
@@ -87,12 +78,7 @@ void SPropertyPanel::SetObject( const CResourceActor* pResource )
 		}
 	}
 
-	m_pTextureCanvas->Hide();
-	m_pEntityTreeCtrl->Hide();
-	m_pSceneTreeCtrl->Show();
-	m_pGridMgr->Show();
-
-	OrganizeInside();
+	OrganizeInside( PROPERTY_GRID | SCENE_TREE_CTRL );
 }
 
 void SPropertyPanel::Empty()
@@ -100,15 +86,32 @@ void SPropertyPanel::Empty()
 	m_pGridMgr->Clear();
 	m_pEntityTreeCtrl->SetEntity(NULL);
 
-	m_pEntityTreeCtrl->Hide();
-	m_pGridMgr->Hide();
-	m_pTextureCanvas->Hide();
-
-	OrganizeInside();
+	OrganizeInside( 0 );
 }
 
-void SPropertyPanel::OrganizeInside()
+void SPropertyPanel::OrganizeInside(DWORD flag)
 {
+	if( ( flag & TEXTURE_CANVAS ) == TEXTURE_CANVAS )
+		m_pTextureCanvas->Show();
+	else
+		m_pTextureCanvas->Hide();
+
+	if( ( flag & SCENE_TREE_CTRL ) == SCENE_TREE_CTRL )
+		m_pSceneTreeCtrl->Show();
+	else
+		m_pSceneTreeCtrl->Hide();
+
+	if( ( flag & ENTITY_TREE_CTRL ) == ENTITY_TREE_CTRL )
+		m_pEntityTreeCtrl->Show();
+	else
+		m_pEntityTreeCtrl->Hide();
+
+	if( ( flag & PROPERTY_GRID ) == PROPERTY_GRID )
+		m_pGridMgr->Show();
+	else
+		m_pGridMgr->Hide();
+
+
 	GetSizer()->FitInside( this );
 	GetSizer()->RecalcSizes();
 }
