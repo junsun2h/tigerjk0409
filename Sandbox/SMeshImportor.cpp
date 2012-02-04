@@ -7,14 +7,14 @@ namespace SMESH_LOADER
 {
 	typedef std::vector<CResourceGeometry*>	GEOMETRY_LIST;
 
-	TRAW_MESH::TRAW_MESH()
+	SRAW_MESH::SRAW_MESH()
 		: BBoxMin(FLT_MAX, FLT_MAX, FLT_MAX)
 		, BBoxMax(-FLT_MAX, -FLT_MAX, -FLT_MAX)
 		, coordSys(COODSYS_3DSMAX)
 	{
 	}
 
-	TRAW_MESH::~TRAW_MESH()
+	SRAW_MESH::~SRAW_MESH()
 	{
 		MTRL_FACE_MAP::iterator itr = faceMtrlID.begin();
 		while (itr != faceMtrlID.end())
@@ -24,7 +24,7 @@ namespace SMESH_LOADER
 		}
 	}
 
-	void TRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_)
+	void SRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_)
 	{
 		// max coordinate -> directx coordinate
 		if( coordSys == COODSYS_3DSMAX && coodSys_ == COODSYS_DIRECTX )
@@ -41,30 +41,14 @@ namespace SMESH_LOADER
 
 			BBoxMin.y = -BBoxMin.y;
 			BBoxMax.y = -BBoxMax.y;
-			postion.y = postion.y;
+			
+			TSWAP( BBoxMin.y, BBoxMax.y );
+
+			postion.y = -postion.y;
 
 			rotation.x *= -1;
 			rotation.y *= -1;
 			rotation.z *= -1;
-
-			/*
-			int posCount = posList.size();
-			for( int i=0; i < posCount; ++i)
-				TSWAP( posList[i].y, posList[i].z );
-
-			int normalCount = normalList.size();
-			for( int i=0; i < normalCount; ++i)
-				TSWAP( normalList[i].y, normalList[i].z );
-
-			TSWAP( BBoxMin.y, BBoxMin.z );
-			TSWAP( BBoxMax.y, BBoxMax.z );
-			TSWAP( postion.y,  postion.z);
-
-			rotation.x *= -1;
-			rotation.y *= -1;
-			rotation.z *= -1;
-			TSWAP( rotation.y,  rotation.z);
-			*/
 
 			int uvCount = uvList.size();
 			for( int i=0; i < uvCount; ++i)
@@ -81,10 +65,64 @@ namespace SMESH_LOADER
 		}
 	}
 
-
+	void SRAW_ACTOR::ChangeCoordsys(TCOODSYS coodSys_)
+	{
+		if( coordSys == COODSYS_3DSMAX && coodSys_ == COODSYS_DIRECTX )
+		{
+			for( UINT i= 0; i < joints.size(); ++i)
+			{
+				joints[i].pos.y = -joints[i].pos.y;
+				joints[i].rot.y = -joints[i].rot.y;
+			}
+		}
+	}
 
 	//------------------------------------------------------------------------------------------------------
-	bool LoadRawMesh(const char* strFileName, TRAW_MESH& RawMesh)
+	bool LoadRawActor(const char* strFileName, SRAW_ACTOR& rawActor)
+	{
+		char delimiters[2] = { ' ', char(13) };
+		char* pContext = NULL;
+
+#define READ_BUFFER_SIZE 256
+		FILE *fp;
+
+		char buf[READ_BUFFER_SIZE];
+		if( fopen_s( &fp, strFileName, "rb") != 0)
+			return false;
+
+		while (!feof (fp))
+		{
+			fgets (buf, sizeof (buf), fp);
+
+			if( strncmp( buf, "node", 4) == 0 )
+			{
+				RAW_TRANSFORM transform;
+
+				transform.name = strtok_s( &buf[4], delimiters , &pContext );
+				transform.parentName = strtok_s( NULL, delimiters , &pContext );
+
+				fgets (buf, sizeof (buf), fp);
+
+				transform.pos.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
+				transform.pos.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+				transform.pos.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+
+				transform.rot.x = (float)atof( strtok_s( NULL, delimiters , &pContext ) );				
+				transform.rot.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+				transform.rot.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+				transform.rot.w = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+
+				rawActor.joints.push_back( transform);
+			}
+		}
+
+		fclose(fp);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------------
+	bool LoadRawMesh(const char* strFileName, SRAW_MESH& RawMesh)
 	{
 		char* delimiters = " ";
 		char* pContext = NULL;
@@ -304,7 +342,7 @@ namespace SMESH_LOADER
 
 
 	//------------------------------------------------------------------------------------------------------
-	void CreateVertexBuffer(CResourceGeometry* pGeometry, TRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap)
+	void CreateVertexBuffer(CResourceGeometry* pGeometry, SRAW_MESH* pRawMesh, UNIFIED_VERTEX_MAP& vertexMap)
 	{
 		pGeometry->vertexCount = vertexMap.size();
 
@@ -378,7 +416,7 @@ namespace SMESH_LOADER
 
 
 	//------------------------------------------------------------------------------------------------------
-	CResourceGeometry* CreateGeometry(TRAW_MESH* pRawMesh, std::vector<int>* pMtrlIDList )
+	CResourceGeometry* CreateGeometry(SRAW_MESH* pRawMesh, std::vector<int>* pMtrlIDList )
 	{
 		UNIFIED_VERTEX_MAP vertexMap;
 		IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
@@ -494,7 +532,7 @@ namespace SMESH_LOADER
 
 
 	//------------------------------------------------------------------------------------------------------
-	void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name )
+	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name )
 	{
 		GEOMETRY_LIST	vecGeometries;
 
@@ -526,5 +564,66 @@ namespace SMESH_LOADER
 		{
 			GLOBAL::Engine()->EngineMemoryMgr()->RemoveResource( vecGeometries[i] );
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------------
+	void SaveRawActorToFile( SRAW_ACTOR* pRawActor, wxString name )
+	{
+		std::vector<CJoint>		jointList;
+
+		for( UINT i= 0; i < pRawActor->joints.size(); ++i)
+		{
+			CJoint joint;
+
+			strcpy_s( joint.name , pRawActor->joints[i].name.c_str() );
+			strcpy_s( joint.parentName , pRawActor->joints[i].parentName.c_str() );
+
+			joint.pos = pRawActor->joints[i].pos;
+			joint.rot = pRawActor->joints[i].rot;
+			joint.parentIndex = -1;
+
+			// find parent index
+			if( strcmp( joint.parentName, "NONE" ) != 0 )
+			{
+				for( UINT iJoint = 0; iJoint < jointList.size(); ++iJoint )
+				{
+					if( strcmp( jointList[iJoint].name, joint.parentName) == 0 )
+					{
+						joint.parentIndex = iJoint;
+						break;
+					}
+				}
+
+				if( joint.parentIndex == -1)
+					assert(0);
+			}
+
+			jointList.push_back(joint);
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		// save actor as binary file
+		using namespace std;
+
+		fstream file;
+		file.open( name.char_str(), ios_base::out | ios_base::binary | ios_base::trunc );
+
+		UINT version = ACTOR_FILE_VERSION;
+		file.write( (char*)&version, 4);
+
+		UINT size = jointList.size();
+		file.write( (char*)&size, 1);
+
+		for (UINT i=0; i < size; ++i)
+		{
+			CJoint& joint = jointList[i];
+
+			file.write( (char*)&joint, 32);
+
+			WriteString( &file, joint.name );
+			WriteString( &file, joint.parentName );
+		}
+
+		file.close();
 	}
 }

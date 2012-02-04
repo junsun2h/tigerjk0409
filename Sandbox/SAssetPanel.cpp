@@ -12,29 +12,45 @@ class SFileDragAndDrop : public wxFileDropTarget
 public:
 	bool SFileDragAndDrop::OnDropFiles(wxCoord x, wxCoord y, const wxArrayString& filenames)
 	{
+		wchar_t path[MAX_PATH];
+		GetCurrentDirectory( MAX_PATH, path);
+
 		size_t nFiles = filenames.GetCount();
 
+		bool bImported = false;
 		for( UINT i=0; i < filenames.Count(); ++i)
 		{
 			wxFileName fn = filenames[i];
 			if( fn.GetExt() == "mesh" )
 			{
-				SMESH_LOADER::TRAW_MESH rawMesh;
+				SMESH_LOADER::SRAW_MESH rawMesh;
 				SMESH_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
 
 				rawMesh.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
 
-				wchar_t path[MAX_PATH];
-				GetCurrentDirectory( MAX_PATH, path);
-
 				wxString saveFile = wxString(path) + wxString("\\Data\\mesh\\") + fn.GetName() + wxString(".tmesh");
-				DeleteFile(path);
+				SMESH_LOADER::SaveRawMeshToFile( &rawMesh , saveFile );
 
-				SMESH_LOADER::ImportRawMesh( &rawMesh , saveFile );
-
-				wxCommandEvent e;
-				GLOBAL::AssetPanel()->OnReload(e);
+				bImported = true;
 			}
+			else if( fn.GetExt() == "actor" )
+			{
+				SMESH_LOADER::SRAW_ACTOR rawActor;
+				SMESH_LOADER::LoadRawActor(  fn.GetFullPath().char_str() , rawActor);
+
+				rawActor.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+
+				wxString saveFile = wxString(path) + wxString("\\Data\\actor\\") + fn.GetName() + wxString(".tac");
+				SMESH_LOADER::SaveRawActorToFile( &rawActor , saveFile );
+
+				bImported = true;
+			}
+		}
+
+		if( bImported )
+		{
+			wxCommandEvent e;
+			GLOBAL::AssetPanel()->OnReload(e);
 		}
 
 		return true;
@@ -112,7 +128,7 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 	eRESOURCE_FILE_TYPE fileType = GetAssetType(seletedItem);
 
-	pPropertyPanel->SetEmpty();
+	pPropertyPanel->Empty();
 	GLOBAL::SelectionMgr()->Clear();
 
 	if( fileType == RESOURCE_FILE_TEXTURE )
@@ -138,6 +154,18 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 		}
 
 		pPropertyPanel->SetObject( (CResourceMesh*)pMesh );
+	}
+	else if( fileType == RESOURCE_FILE_ACTOR )
+	{
+		const CResourceBase* pActor = pAssetMgr->GetResource(RESOURCE_ACTOR, strItem.c_str().AsChar() );
+
+		if( pActor == NULL )
+		{
+			wxString fullPath = wxString(m_Path) + wxString("\\Data\\actor\\") + strItem + wxString(".tac");
+			pActor = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_ACTOR );
+		}
+
+		pPropertyPanel->SetObject( (CResourceActor*)pActor );
 	}
 }
 

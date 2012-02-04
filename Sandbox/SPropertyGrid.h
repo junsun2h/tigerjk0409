@@ -27,6 +27,7 @@ public:
 	void			Set( IEntityProxy* pEntityProxy );
 	void			Set( const CResourceTexture* pTexture );
 	void			Set( const CResourceMesh* pMesh );
+	void			Set( const CResourceActor* pActor );
 
 	void			ClearProperties();
 
@@ -34,7 +35,6 @@ private:
 	void			OnPropertyChanged(wxPropertyGridEvent& event);
 
 	void			OnEntityPropertyChanged(wxString& propertyName, wxVectorProperty* pPg);
-	void			RefreshAllProperties();
 
 	ePROPERTY_GRID_TYPE			m_CurrentPropertyType;
 

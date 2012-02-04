@@ -67,7 +67,7 @@ void SSceneHierarchyTreeCtrl::OnFocusGot(wxFocusEvent& event)
 
 void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
-	GLOBAL::PropertyPanel()->SetEmpty();
+	GLOBAL::PropertyPanel()->Empty();
 	
 	IEntity* pEntity = GetSelectedEntity();
 	if( pEntity != NULL)

@@ -81,7 +81,9 @@
     <ClInclude Include="S3DViewPanel.h" />
     <ClInclude Include="SAssetPanel.h" />
     <ClInclude Include="SDragAndDropState.h" />
+    <ClInclude Include="SEntityTreeCtrl.h" />
     <ClInclude Include="SNameDlg.h" />
+    <ClInclude Include="SSceneTreeCtrl.h" />
     <ClInclude Include="SSelectionMgr.h" />
     <ClInclude Include="STextureConvertor.h" />
     <ClInclude Include="STexturePopupWindow.h" />
@@ -102,6 +104,7 @@
     <ClCompile Include="SApp.cpp" />
     <ClCompile Include="SAssetPanel.cpp" />
     <ClCompile Include="SDragAndDropState.cpp" />
+    <ClCompile Include="SEntityTreeCtrl.cpp" />
     <ClCompile Include="SGlobal.cpp" />
     <ClCompile Include="SMainFrame.cpp" />
     <ClCompile Include="SMainToolBar.cpp" />
@@ -109,6 +112,7 @@
     <ClCompile Include="SPropertyGrid.cpp" />
     <ClCompile Include="SPropertyPanel.cpp" />
     <ClCompile Include="SSceneHierarchyPanel.cpp" />
+    <ClCompile Include="SSceneTreeCtrl.cpp" />
     <ClCompile Include="SSelectionMgr.cpp" />
     <ClCompile Include="STextureConvertor.cpp" />
     <ClCompile Include="STexturePopupWindow.cpp" />

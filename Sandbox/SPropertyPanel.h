@@ -6,38 +6,16 @@
 
 
 class SCanvas;
-
+class SEntityTreeCtrl;
 
 enum PROPERTY_WIDGET_ID
 {
-	ID_PROPERTY_TREECTRL,
+	ID_PROPERTY_ENTITY_TREECTRL,
+	ID_PROPERTY_SCENE_TREECTRL,
 	ID_PROPERTY_GRID
 };
 
 class SPropertyGrid;
-
-class SPropertyTreeCtrl : public wxTreeCtrl
-{
-public:
-	SPropertyTreeCtrl(){}
-	SPropertyTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id);
-
-	void			OnSelChanged(wxTreeEvent& event);
-
-	void			SetEntity(IEntity* pEntity);
-
-private:
-	wxTreeItemId	m_SeletedItem;
-	IEntity*		m_pEntity;
-	SPropertyGrid*	m_pGrid;
-
-	DECLARE_DYNAMIC_CLASS(SPropertyTreeCtrl)
-	DECLARE_EVENT_TABLE()
-};
-
-
-
-
 
 class SPropertyPanel : public wxPanel
 {
@@ -51,14 +29,17 @@ public:
 	void					SetObject( IEntity* pEntity );
 	void					SetObject( const CResourceTexture* pResource );
 	void					SetObject( const CResourceMesh* pResource );
-	void					SetEmpty();
+	void					SetObject( const CResourceActor* pResource );
+
+	void					Empty();
 
 private:
 	void					OrganizeInside();
 
 	SCanvas*				m_pTextureCanvas;
 	SPropertyGrid*			m_pGridMgr;
-	SPropertyTreeCtrl*		m_pEntityTreeCtrl;
+	SEntityTreeCtrl*		m_pEntityTreeCtrl;
+	wxTreeCtrl*				m_pSceneTreeCtrl;
 
 	DECLARE_EVENT_TABLE()
 };

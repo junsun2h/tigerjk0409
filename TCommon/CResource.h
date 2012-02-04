@@ -8,9 +8,10 @@
 
 
 #define MESH_FILE_VERSION	1
+#define ACTOR_FILE_VERSION	1
 
 #define MAX_GEOMETRY	5
-#define MAX_NAME		64
+#define MAX_NAME_LENGTH		64
 
 
 enum eRESOURCE_TYPE
@@ -64,13 +65,13 @@ struct CResourceBase
 	long					RID;	// resource ID, hash Key fron resource name
 	eRESOURCE_LOAD_STATE	state;
 	double					loadBeginTime;
-	char					name[MAX_NAME];
+	char					name[MAX_NAME_LENGTH];
 
 	virtual eRESOURCE_TYPE	Type()	{ return RESOURCE_INVALID; }
 	virtual std::string		strType()  { return ""; }
 	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(state)); }
 
-	void					Destroy(){}
+	virtual void			Destroy(){}
 
 	CResourceBase()
 		: RID(-1)
@@ -196,18 +197,14 @@ class CResourceTexture : public CResourceBase
 {
 	// only object pool can make&delete this class
 	friend CObjectPool<CResourceTexture>;
-	CResourceTexture()
-	{
-	}
-
-	void Destroy()	{}
+	CResourceTexture(){}
 
 public:
-	void* pShaderResourceView;
-	void* pRenderTargetView;
-	void* pTextureSource;
+	void*				pShaderResourceView;
+	void*				pRenderTargetView;
+	void*				pTextureSource;
 
-	bool bDeleteMemoryAfterLoading;
+	bool				bDeleteMemoryAfterLoading;
 
 	eTEXTURE_USAGE		usage;
 	eTEXTURE_FORMAT		Format;
@@ -225,8 +222,8 @@ public:
 		bDeleteMemoryAfterLoading = false;
 	}
 
-	eRESOURCE_TYPE	Type() override { return RESOURCE_TEXTURE; }
-	std::string		strType() override { return ENUMSTR(RESOURCE_TEXTURE); }
+	eRESOURCE_TYPE	Type() override		{ return RESOURCE_TEXTURE; }
+	std::string		strType() override	{ return ENUMSTR(RESOURCE_TEXTURE); }
 };
 
 class CResourceGeometry : public CResourceBase
@@ -252,7 +249,7 @@ class CResourceGeometry : public CResourceBase
 		Destroy();
 	}
 
-	void Destroy()
+	void Destroy() override
 	{
 		SAFE_DELETE_ARRAY(pVertexBuffer);
 		SAFE_DELETE_ARRAY(pIndexBuffer);
@@ -272,7 +269,7 @@ public:
 
 	long			defaultMtrl;
 
-	char			mtrlName[MAX_NAME];
+	char			mtrlName[MAX_NAME_LENGTH];
 
 	eRESOURCE_TYPE	Type() override { return RESOURCE_GEOMETRY; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_GEOMETRY); }
@@ -298,16 +295,35 @@ public:
 	std::string		strType() override { return ENUMSTR(RESOURCE_MESH); }
 };
 
+struct CJoint
+{
+	CQuat			rot;
+	CVector3		pos;
+	int				parentIndex;
+
+	char			name[MAX_NAME_LENGTH];
+	char			parentName[MAX_NAME_LENGTH];
+};
+
 class CResourceActor : public CResourceBase
 {
 	// only object pool can make&delete this class
 	friend CObjectPool<CResourceActor>;
 	CResourceActor(){}
-	~CResourceActor(){}
-public:
+	~CResourceActor()
+	{
+		Destroy();
+	}
+	void Destroy() override	
+	{
+		jointList.clear();	
+	}
 
-	eRESOURCE_TYPE	Type() override { return RESOURCE_ACTOR; }
-	std::string		strType() override { return ENUMSTR(RESOURCE_ACTOR); }
+public:
+	std::vector<CJoint>		jointList;
+
+	eRESOURCE_TYPE	Type() override		{ return RESOURCE_ACTOR; }
+	std::string		strType() override	{ return ENUMSTR(RESOURCE_ACTOR); }
 };
 
 class CResourceMotion : public CResourceBase

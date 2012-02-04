@@ -18,6 +18,14 @@ namespace SMESH_LOADER
 		float	weight[3];
 		uint8	bone[4];
 	};
+	
+	struct RAW_TRANSFORM
+	{
+		CQuat			rot;
+		CVector3		pos;
+		std::string		name;
+		std::string		parentName;
+	};
 
 	enum TCOODSYS
 	{
@@ -27,11 +35,11 @@ namespace SMESH_LOADER
 	};
 
 
-	struct TRAW_MESH
+	struct SRAW_MESH
 	{
-		TRAW_MESH();
-		~TRAW_MESH();
-		void TRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_);
+		SRAW_MESH();
+		~SRAW_MESH();
+		void SRAW_MESH::ChangeCoordsys(TCOODSYS coodSys_);
 
 		CVector3	postion;
 		CQuat		rotation;
@@ -53,9 +61,24 @@ namespace SMESH_LOADER
 		std::vector<wxString> mtrlList;
 	};
 
+	struct SRAW_ACTOR
+	{
+		SRAW_ACTOR()
+		{
+			coordSys = COODSYS_3DSMAX;
+		}
 
-	bool LoadRawMesh(const char* strFileName, TRAW_MESH& RawMesh);
-	void ImportRawMesh( TRAW_MESH* pRawMesh, wxString name );
+		void ChangeCoordsys(TCOODSYS coodSys_);
+
+		TCOODSYS	coordSys;
+		std::vector<RAW_TRANSFORM>	joints;
+	};
+
+	bool LoadRawMesh(const char* strFileName, SRAW_MESH& RawMesh);
+	bool LoadRawActor(const char* strFileName, SRAW_ACTOR& RawMesh);
+
+	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name );
+	void SaveRawActorToFile( SRAW_ACTOR* pRawActor, wxString name );
 };
 
 

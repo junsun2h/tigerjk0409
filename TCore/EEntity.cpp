@@ -456,20 +456,20 @@ void EEntity::UpdateWorldAABB()
 }
 
 
-bool EEntity::Pick(CCollisionLine& desc, TYPE_ENTITY_LIST& list)
+bool EEntity::Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list)
 {
 	if( m_LocalEntityAABB.IsValid() )
 	{
-		if( m_LocalEntityAABB.IsLineInBox( desc.from, desc.to, &m_WorldTM ) )
+		if( m_LocalEntityAABB.IsLineInBox( from, to, &m_WorldTM ) )
 			list.push_back(this);
 	}
 
-	if( m_WorldAABB.IsValid() && m_WorldAABB.IsLineInBox( desc.from, desc.to ) )
+	if( m_WorldAABB.IsValid() && m_WorldAABB.IsLineInBox( from, to ) )
 	{
 		int count = m_Children.size();
 		for(int i= 0; i < count; i++)
 		{
-			m_Children[i]->Pick(desc, list);
+			m_Children[i]->Pick(from, to, list);
 		}
 	}
 

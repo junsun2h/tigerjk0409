@@ -16,27 +16,6 @@ enum eCOLLISION_CHECK_OPTION
 	LINE_COLLISION
 };
 
-struct CCollisionBase
-{
-	virtual	eCOLLISION_CHECK_OPTION Type() = 0; 
-
-	ePICK_LEVEL	pickLevel;
-
-	CCollisionBase()
-		: pickLevel(PICK_POLYGON)
-	{
-	}
-};
-
-struct CCollisionLine : CCollisionBase
-{
-	eCOLLISION_CHECK_OPTION Type() override { return LINE_COLLISION; };
-
-	CVector3	from;
-	CVector3	to;
-};
-
-
 
 namespace COLLISION_UTIL
 {

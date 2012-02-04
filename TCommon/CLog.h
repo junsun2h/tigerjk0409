@@ -12,7 +12,10 @@ namespace CLOG
 {
 	void InitLogSystem()
 	{
-		FILE *pFile = fopen(TLOG_FILE, "w");
+		FILE *pFile;
+		
+		if( fopen_s( &pFile, TLOG_FILE, "w") != 0)
+			return;
 
 		if (pFile)
 		{
@@ -22,7 +25,7 @@ namespace CLOG
 		}
 
 		char szTime[64]="";
-		_strtime( szTime );
+		_strtime_s( szTime );
 
 		fprintf(pFile, "------------------------------------------------------------------------------\n");
 		fprintf(pFile, "-- Logging Start :%s)\n", szTime);
@@ -35,10 +38,11 @@ namespace CLOG
 	inline void Write(const char* szText)
 	{
 		FILE* pFile;
-		pFile = fopen( TLOG_FILE, "a");
+		if( fopen_s( &pFile, TLOG_FILE, "a") != 0)
+			return;
 
 		char szTime[64]="";
-		_strtime( szTime );
+		_strtime_s( szTime );
 
 		fprintf_s(pFile, "%s - %s\n", szTime, szText);
 
@@ -52,7 +56,7 @@ namespace CLOG
 
 		va_list args;
 		va_start(args,pFormat);
-		vsprintf(temp,pFormat,args);
+		vsprintf_s(temp,pFormat,args);
 		va_end(args);
 
 		Write(temp);
