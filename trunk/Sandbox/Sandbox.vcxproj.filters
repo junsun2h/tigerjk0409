@@ -53,6 +53,12 @@
     <ClInclude Include="SSelectionMgr.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="SEntityTreeCtrl.h">
+      <Filter>Panels\Property\data</Filter>
+    </ClInclude>
+    <ClInclude Include="SSceneTreeCtrl.h">
+      <Filter>Panels\Property\data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SApp.cpp" />
@@ -95,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="SSelectionMgr.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SEntityTreeCtrl.cpp">
+      <Filter>Panels\Property\data</Filter>
+    </ClCompile>
+    <ClCompile Include="SSceneTreeCtrl.cpp">
+      <Filter>Panels\Property\data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

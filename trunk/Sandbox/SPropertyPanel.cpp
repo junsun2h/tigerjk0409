@@ -2,82 +2,10 @@
 #include "SPropertyGrid.h"
 #include "STexturePopupWindow.h"
 #include "STextureConvertor.h"
-
-
-IMPLEMENT_DYNAMIC_CLASS(SPropertyTreeCtrl, wxTreeCtrl)
-
-BEGIN_EVENT_TABLE(SPropertyTreeCtrl, wxTreeCtrl)
-	EVT_TREE_SEL_CHANGED(ID_PROPERTY_TREECTRL, SPropertyTreeCtrl::OnSelChanged)
-END_EVENT_TABLE()
-
-
-SPropertyTreeCtrl::SPropertyTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id)
-	: wxTreeCtrl(parent, id,  wxDefaultPosition, wxSize(250, 100), wxPG_BOLD_MODIFIED | wxPG_SPLITTER_AUTO_CENTER | wxPG_DESCRIPTION)
-	, m_pGrid(pGrid)
-{
-}
-
-inline const char* PROXY_TYPE_STRING(eENTITY_PROXY_TYPE type)
-{
-	if( type == ENTITY_PROXY_ACTOR )		return ENUMSTR(ENTITY_PROXY_ACTOR);
-	else if( type == ENTITY_PROXY_RENDER)	return ENUMSTR(ENTITY_PROXY_RENDER);
-	else if( type == ENTITY_PROXY_CAMERA)	return ENUMSTR(ENTITY_PROXY_CAMERA);
-	else
-		assert(0);
-
-	return "";
-}
-
-
-void SPropertyTreeCtrl::OnSelChanged(wxTreeEvent& event)
-{
-	m_SeletedItem = event.GetItem();
-	m_pGrid->Clear();
-	wxString name = GetItemText( m_SeletedItem );
-
-	if( m_SeletedItem == GetRootItem() )
-	{
-		m_pGrid->Set(m_pEntity);
-	}
-	else
-	{
-		wxString strItem = GetItemText(m_SeletedItem);
-		
-		for( int i=0 ; i < NUM_ENTITY_PROXY_TYPE; ++i )
-		{
-			if( strItem == PROXY_TYPE_STRING( eENTITY_PROXY_TYPE(i)) )
-				m_pGrid->Set( m_pEntity->GetProxy( eENTITY_PROXY_TYPE(i) ) );
-		}
-	}
-}
-
-void SPropertyTreeCtrl::SetEntity(IEntity* pEntity)
-{
-	DeleteAllItems();
-
-	m_pEntity = pEntity;
-
-	if( m_pEntity == NULL)
-		return;
-
-	wxString strName = "Entity (" + pEntity->GetName() + ")";
-
-	wxTreeItemId rootItem = AddRoot( strName );
-
-	for( int i=0 ; i < NUM_ENTITY_PROXY_TYPE; ++i )
-	{
-		IEntityProxy* pEntityProxy = m_pEntity->GetProxy( eENTITY_PROXY_TYPE(i) );
-		if( pEntityProxy != NULL )
-			AppendItem(rootItem,pEntityProxy->GetTypeString() );
-	}
-
-	Expand(rootItem);
-}
+#include "SEntityTreeCtrl.h"
 
 
 
-
-//-------------------------------------------------------------------------------------------------------------------
 IMPLEMENT_DYNAMIC_CLASS(SPropertyPanel, wxPanel)
 BEGIN_EVENT_TABLE(SPropertyPanel, wxPanel)
 END_EVENT_TABLE()
@@ -95,15 +23,17 @@ SPropertyPanel::SPropertyPanel(wxWindow* parent)
 
 	m_pTextureCanvas = new SCanvas(this);
 	m_pGridMgr = new SPropertyGrid(this);	
-	m_pEntityTreeCtrl = new SPropertyTreeCtrl(this, m_pGridMgr, ID_PROPERTY_TREECTRL);
+	m_pEntityTreeCtrl = new SEntityTreeCtrl(this, m_pGridMgr, ID_PROPERTY_ENTITY_TREECTRL);
+	m_pSceneTreeCtrl = new wxTreeCtrl(this);
 
 	pRootSizer->Add(m_pTextureCanvas, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pEntityTreeCtrl, 0, wxALL|wxEXPAND, 5);
+	pRootSizer->Add(m_pSceneTreeCtrl, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pGridMgr, wxSizerFlags(1).Center().Expand());
 
 	SetSizerAndFit(pRootSizer);
 
-	SetEmpty();
+	Empty();
 }
 
 void SPropertyPanel::SetObject( IEntity* pEntity )
@@ -144,7 +74,28 @@ void SPropertyPanel::SetObject( const CResourceMesh* pResource )
 	OrganizeInside();
 }
 
-void SPropertyPanel::SetEmpty()
+void SPropertyPanel::SetObject( const CResourceActor* pResource )
+{
+	m_pGridMgr->Set( pResource );
+
+	{
+		m_pSceneTreeCtrl->DeleteAllItems();
+
+		wxTreeItemId rootItem = m_pSceneTreeCtrl->AddRoot( pResource->name );
+		{
+
+		}
+	}
+
+	m_pTextureCanvas->Hide();
+	m_pEntityTreeCtrl->Hide();
+	m_pSceneTreeCtrl->Show();
+	m_pGridMgr->Show();
+
+	OrganizeInside();
+}
+
+void SPropertyPanel::Empty()
 {
 	m_pGridMgr->Clear();
 	m_pEntityTreeCtrl->SetEntity(NULL);
@@ -158,11 +109,6 @@ void SPropertyPanel::SetEmpty()
 
 void SPropertyPanel::OrganizeInside()
 {
-	int nWidth = 100;
-	int nHeight = 100;
-	GetSize(&nWidth, &nHeight);
-//DoMoveSibling( GetHWND(), nWidth, nHeight, )
-
-	SetSize(nWidth + 1, nHeight);
-	SetSize(nWidth - 1, nHeight);
+	GetSizer()->FitInside( this );
+	GetSizer()->RecalcSizes();
 }

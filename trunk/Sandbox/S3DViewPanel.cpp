@@ -1,6 +1,6 @@
 #include "S3DViewPanel.h"
 #include "SSelectionMgr.h"
-
+#include "SPropertyPanel.h"
 
 
 
@@ -123,23 +123,48 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 	if( UpdateDrag(event) )
 		return;
 
-	if( event.LeftIsDown() || event.RightIsDown() || event.MiddleIsDown() )
+	if( event.LeftDown() )
 	{
 		SetFocus();
 
-		static CVector2 point;
+		SSelectionMgr* pSelectMgr = GLOBAL::SelectionMgr();
+		if( pSelectMgr->GetTransformMode() == TRANSFORM_SELECT )
+		{
+			TYPE_ENTITY_LIST list;
+			PickFromScreen( list, event.GetX(), event.GetY() );
 
+			if( list.size() > 0 )
+			{
+				IEntity* pSelectedEntity = *list.begin();
+				pSelectMgr->Select( pSelectedEntity );
+				GLOBAL::PropertyPanel()->SetObject( pSelectedEntity );
+			}
+			else
+			{
+				pSelectMgr->UnSelect();
+				GLOBAL::PropertyPanel()->Empty();
+			}
+		}
+	}
+
+	UpdateCamera(event);
+}
+
+void S3DViewPanel::UpdateCamera(wxMouseEvent& event)
+{
+	static wxPoint point;
+
+	if( event.LeftDown() || event.RightDown() || event.MiddleDown() )
+		point = event.GetPosition();
+
+	if( event.LeftIsDown() || event.RightIsDown() || event.MiddleIsDown() )
+	{
 		long x = event.GetX();
 		long y = event.GetY();
+
 		CVector2 dPoint = CVector2( point.x - x, point.y - y);
 		point.x = x;
 		point.y = y;
-
-		if( CVector2::Length(dPoint) > 20 )
-		{
-			dPoint.x = 0;
-			dPoint.y = 0;
-		}
 
 		if(  GLOBAL::SelectionMgr()->List()->size() == 0 )
 			UpdateObserverCameraWithoutEntity(dPoint, event);
@@ -182,24 +207,7 @@ void S3DViewPanel::UpdateObserverCameraWithoutEntity(CVector2& dPoint, wxMouseEv
 	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
 
 	if( e.LeftIsDown() )
-	{		
-		CVector3 origin;
-		CVector3 direction;
-		GLOBAL::ObserverCamera()->GetPickRayFromScreen( e.GetX(), e.GetY(), origin, direction);
-		CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
-
-		TYPE_ENTITY_LIST list;
-		CCollisionLine desc;
-		desc.from = origin;
-		desc.to = to;
-		GLOBAL::SceneRoot()->Pick( desc, list);
-
-		if( list.size() > 0 )
-		{
-			GLOBAL::SelectionMgr()->Select( *list.begin());
-			return;
-		}
-
+	{	
 		if( fabs(dPoint.x) > fabs(dPoint.y) )
 			pCamera->RotateLocalAxis( CVector3(0, 0, 1), dPoint.x * 0.005f);
 		else
@@ -243,11 +251,13 @@ bool S3DViewPanel::UpdateDrag(wxMouseEvent& e)
 		{
 			s_dragMode = DRAG_START;
 			s_dragStartPos = e.GetPosition();
+			return true;
 		}
 	}
 	else if ( e.LeftUp() && s_dragMode != DRAG_NONE)
 	{
 		s_dragMode = DRAG_NONE;
+		return true;
 	}
 	else if ( e.Dragging() && s_dragMode != DRAG_NONE)
 	{
@@ -266,9 +276,18 @@ bool S3DViewPanel::UpdateDrag(wxMouseEvent& e)
 		{
 			GLOBAL::SelectionMgr()->GrabUpdate( e.GetX(), e.GetY() );
 		}
+		return true;
 	}
-	else
-		return false;
+	
+	return false;
+}
 
-	return true;
+void S3DViewPanel::PickFromScreen(TYPE_ENTITY_LIST& list, long x, long y)
+{
+	CVector3 origin;
+	CVector3 direction;
+	GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
+	CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
+
+	GLOBAL::SceneRoot()->Pick( origin, to, list);
 }

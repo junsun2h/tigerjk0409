@@ -3,7 +3,6 @@
 #include "CDefine.h"
 #include "IEntityProxy.h"
 #include "IAABB.h"
-#include "CColiision.h"
 
 enum eENTITY_TYPE
 {
@@ -87,7 +86,7 @@ struct IEntity
 	virtual const IAABB*	GetWorldAABB() = 0;
 	virtual const IAABB*	GetLocalEntityAABB() = 0;
 
-	virtual bool			Pick(CCollisionLine& desc, TYPE_ENTITY_LIST& list) = 0;
+	virtual bool			Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list) = 0;
 
 };
 

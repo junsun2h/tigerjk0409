@@ -2,19 +2,6 @@
 #include "EEngine.h"
 
 
-void ECopyData(void* dest, BYTE** src, int size)
-{
-	CopyMemory( dest, *src, size );
-	*src += size;
-}
-
-void ECopyString(char* dest, BYTE** src)
-{
-	BYTE nameLength;
-	ECopyData(&nameLength, src, 1);
-	strcpy_s( dest, 64, (char*)*src);
-	*src += nameLength;
-}
 
 
 EMeshDataProcessor::EMeshDataProcessor( std::string name )

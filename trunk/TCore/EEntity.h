@@ -114,8 +114,8 @@ public:
 	void			ADDLocalEntityAABB(CVector3 min, CVector3 max);
 	void			UpdateWorldAABB();
 
-	bool			Pick(CCollisionLine& desc, TYPE_ENTITY_LIST& list) override;
-	
+	bool			Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list) override;
+
 private:
 	EAABB			m_WorldAABB;		// including child's Bounding box in world coordinates system
 	EAABB			m_LocalAABB;		// including child's Bounding box in local coordinates system

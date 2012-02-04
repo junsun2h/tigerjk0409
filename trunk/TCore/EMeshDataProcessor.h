@@ -8,7 +8,7 @@ struct IRDevice;
 
 class EMeshDataProcessor : public IDataProcessor
 {
-	std::string				m_name;
+	std::string					m_name;
 	std::vector<CResourceBase*>	m_pResources;
 	
 	long					PT_ReadMesh(BYTE** ppSrcBits, std::string name);

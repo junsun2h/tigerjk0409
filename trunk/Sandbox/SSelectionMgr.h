@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SGlobal.h"
+#include "CGeometryConstructor.h"
 
 #define  TRANSFORM_HELPER_EXTENT	50
 

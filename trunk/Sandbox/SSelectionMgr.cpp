@@ -196,7 +196,7 @@ void SSelectionMgr::Clear()
 {
 	m_SelctionList.clear();
 
-	GLOBAL::PropertyPanel()->SetEmpty();
+	GLOBAL::PropertyPanel()->Empty();
 }
 
 void SSelectionMgr::Select(IEntity* pEntity, bool multiSelection)

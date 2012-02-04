@@ -7,6 +7,20 @@
 #define E_TRYAGAIN MAKE_HRESULT(1,FACILITY_WIN32,123456)
 
 
+inline void ECopyData(void* dest, BYTE** src, int size)
+{
+	CopyMemory( dest, *src, size );
+	*src += size;
+}
+
+inline void ECopyString(char* dest, BYTE** src)
+{
+	BYTE nameLength;
+	ECopyData(&nameLength, src, 1);
+	strcpy_s( dest, 64, (char*)*src);
+	*src += nameLength;
+}
+
 ///////////////////////////////Thread Prefix///////////////////////////////
 //IOP_ = IO Thread
 //PT_  = Process Thread

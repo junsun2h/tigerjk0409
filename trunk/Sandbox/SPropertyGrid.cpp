@@ -74,7 +74,6 @@ void SPropertyGrid::Set( IEntity* pEntity )
 void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 {
 	ClearProperties();
-	AddPage();
 
 	eENTITY_PROXY_TYPE type = pEntityProxy->GetType();
 
@@ -110,7 +109,7 @@ void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 
 void SPropertyGrid::Set(const CResourceTexture* pTexture)
 {
-	AddPage();
+	ClearProperties();
 
 	if( pTexture->usage == TEXTURE_NORMAL )
 		Append( new wxStringProperty( "Usage", wxPG_LABEL, "texture resource") );
@@ -125,7 +124,7 @@ void SPropertyGrid::Set(const CResourceTexture* pTexture)
 
 void SPropertyGrid::Set(const CResourceMesh* pMesh)
 {
-	AddPage();
+	ClearProperties();
 
 	Append( new wxVectorProperty( "BoundingBox Min", wxPG_LABEL, pMesh->min) );
 	Append( new wxVectorProperty( "BoundingBox Max", wxPG_LABEL, pMesh->max) );
@@ -151,6 +150,13 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 	}
 }
 
+void SPropertyGrid::Set( const CResourceActor* pActor )
+{
+	ClearProperties();
+
+	Append( new wxIntProperty( "Joint Num", wxPG_LABEL, pActor->jointList.size()) );
+}
+
 void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)
 {
 	wxString propertyName = event.GetPropertyName();
@@ -164,14 +170,15 @@ void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)
 	}
 }
 
-void SPropertyGrid::RefreshAllProperties()
-{
-
-}
-
 void SPropertyGrid::ClearProperties()
 {
+	if( GetSelectedPage() != -1 )
+		GetCurrentPage()->Clear();
+	else
+		AddPage();
+
 	Clear();
+
 	m_pEntity = NULL;
 	m_pEntityProxy = NULL;
 }
