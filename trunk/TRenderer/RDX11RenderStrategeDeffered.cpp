@@ -32,7 +32,8 @@ void RDX11RenderStrategeDeffered::GeometryPass()
 	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
 
 	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_GPASS_LAMBERT);
-	pShader->Begin();
+	if( pShader )
+		pShader->Begin();
 
 	GLOBAL::Engine()->SpaceMgr()->Render();
 }

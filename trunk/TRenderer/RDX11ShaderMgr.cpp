@@ -64,7 +64,6 @@ IShader* RDX11ShaderMgr::GetShader(EFFECT_TYPE type)
 	if( pShader != NULL )
 		return pShader->m_value;
 
-	assert(0);
 	return NULL;
 }
 
