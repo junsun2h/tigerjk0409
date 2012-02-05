@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IEntity.h"
+struct IEntity;
 
 struct IEntityMgr
 {

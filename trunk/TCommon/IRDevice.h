@@ -1,13 +1,14 @@
 #pragma once
 
-#include "CResource.h"
-#include "IRenderHelper.h"
-#include "IEntityProxy.h"
-
-
 struct IEngine;
-struct CENGINE_INIT_PARAM;
-struct CCAMERA_DESC;
+struct IRenderHelper;
+struct IEntityProxyRender;
+
+
+#include "CEngineParam.h"
+#include "CResource.h"
+#include "CCamera.h"
+
 
 enum eRENDER_COMMAND
 {
@@ -35,6 +36,7 @@ enum eRENDER_PASS
 
 	NUM_RENDER_PASS
 };
+
 
 struct IRenderStrategy
 {

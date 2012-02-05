@@ -2,9 +2,6 @@
 
 
 #include "CResource.h"
-#include "IEntity.h"
-#include "IEntityProxy.h"
-
 
 
 struct IEngineMemoryMgr

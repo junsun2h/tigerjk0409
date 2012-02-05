@@ -1,8 +1,6 @@
 #pragma once
 
 #include "CDefine.h"
-#include <vector>
-#include <map>
 
 
 typedef std::vector<std::string>			CSTRING_LIST;

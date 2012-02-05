@@ -80,7 +80,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="EAABB.cpp" />
     <ClCompile Include="EActorDataProcessor.cpp" />
     <ClCompile Include="EEngineMemoryMgr.cpp" />
     <ClCompile Include="EAssetMgr.cpp" />
@@ -103,7 +102,6 @@
     <ClCompile Include="ThirdParty\tinyxml\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EAABB.h" />
     <ClInclude Include="EActorDataProcessor.h" />
     <ClInclude Include="EEngineMemoryMgr.h" />
     <ClInclude Include="EAssetMgr.h" />

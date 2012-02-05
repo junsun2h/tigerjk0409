@@ -34,9 +34,6 @@
     <ClCompile Include="EQuadSpaceTreeMgr.cpp">
       <Filter>Space</Filter>
     </ClCompile>
-    <ClCompile Include="EAABB.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="EEntityProxyActor.cpp">
       <Filter>EntitySystem\EntityProxy</Filter>
     </ClCompile>
@@ -124,9 +121,6 @@
     </ClInclude>
     <ClInclude Include="EQuadSpaceTreeMgr.h">
       <Filter>Space</Filter>
-    </ClInclude>
-    <ClInclude Include="EAABB.h">
-      <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="EEntityProxyRender.h">
       <Filter>EntitySystem\EntityProxy</Filter>

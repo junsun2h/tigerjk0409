@@ -100,16 +100,16 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// AABB
-	const IAABB*	GetWorldAABB() override			{ return &m_WorldAABB; }
-	const IAABB*	GetLocalEntityAABB() override	{ return &m_LocalEntityAABB; }
+	const CAABB*	GetWorldAABB() override			{ return &m_WorldAABB; }
+	const CAABB*	GetLocalEntityAABB() override	{ return &m_LocalEntityAABB; }
 	void			ADDLocalEntityAABB(CVector3 min, CVector3 max) override;
 	bool			Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list) override;
 
 private:
 	void			UpdateWorldAABB();
 
-	EAABB			m_WorldAABB;		// including child's Bounding box in world coordinates system
-	EAABB			m_LocalAABB;		// including child's Bounding box in local coordinates system
-	EAABB			m_LocalEntityAABB;	// this entity's Bounding box in local coordinates system
+	CAABB			m_WorldAABB;		// including child's Bounding box in world coordinates system
+	CAABB			m_LocalAABB;		// including child's Bounding box in local coordinates system
+	CAABB			m_LocalEntityAABB;	// this entity's Bounding box in local coordinates system
 };
 

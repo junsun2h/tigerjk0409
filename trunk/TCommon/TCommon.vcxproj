@@ -61,8 +61,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CAABB.h" />
+    <ClInclude Include="CCamera.h" />
     <ClInclude Include="CColiision.h" />
     <ClInclude Include="CColor.h" />
+    <ClInclude Include="CEngineParam.h" />
     <ClInclude Include="CGeometryConstructor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CFrustrum.h" />
@@ -71,11 +74,10 @@
     <ClInclude Include="CLog.h" />
     <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CPlane.h" />
+    <ClInclude Include="CQuad.h" />
     <ClInclude Include="CResource.h" />
-    <ClInclude Include="CText.h" />
     <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="CVertex.h" />
-    <ClInclude Include="IAABB.h" />
     <ClInclude Include="IAssetMgr.h" />
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="CThreadSafeQueue.h" />

@@ -6,7 +6,7 @@
 #include "EAssetMgr.h"
 #include "ELoader.h"
 #include "EFileUtility.h"
-#include "EAABB.h"
+#include "CAABB.h"
 #include "EEntity.h"
 #include "EEntityProxyActor.h"
 #include "EEntityProxyCamera.h"

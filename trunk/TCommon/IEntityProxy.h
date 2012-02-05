@@ -2,11 +2,13 @@
 
 #include <string>
 #include "CResource.h"
-#include "IMotionMgr.h"
+#include "CCamera.h"
 
+
+struct IMotionMgr;
 struct IEntity;
 struct EntityEvent;
-enum eENTITY_TYPE;
+enum eENTITY_EVENT_ID;
 
 
 enum eENTITY_PROXY_TYPE
@@ -41,20 +43,6 @@ struct IEntityProxyActor : IEntityProxy
 	virtual void					Update(float deltaTime) = 0;
 };
 
-struct CCAMERA_DESC
-{
-	XMMATRIX ViewTM;
-	XMMATRIX ProjTM;
-			 
-	float	nearClip;
-	float	farClip;
-	float	Fovy;
-	float	aspect;
-
-	CVector4	eyePos;
-	CVector4	eyeDirection;
-	CVector4	upVector;
-};
 
 struct IEntityProxyCamera : IEntityProxy
 {

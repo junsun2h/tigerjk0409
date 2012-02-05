@@ -66,7 +66,7 @@ void S3DViewPanel::PostRender()
 
 	int FPS = GLOBAL::Engine()->GlobalTimer()->GetFPS();
 
-	RENDER_TEXT_BUFFER textFPS;
+	RENDER_TEXT_QUAD textFPS;
 	_itow_s(FPS, textFPS.strMsg, 5);
 	textFPS.rc.left = 0;
 	textFPS.rc.top = 0;
@@ -102,13 +102,13 @@ void S3DViewPanel::PostRender()
 		
 		pRenderHelper->RenderAxis( pEntity->GetWorldTM() , TRANSFORM_HELPER_EXTENT);
 
-		const IAABB* pWorldAABB = pEntity->GetWorldAABB();
+		const CAABB* pWorldAABB = pEntity->GetWorldAABB();
 
 		if( pWorldAABB->IsValid() )
 		{
 			pRenderHelper->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
 			
-			const IAABB* pLocalEntityAABB = pEntity->GetLocalEntityAABB();
+			const CAABB* pLocalEntityAABB = pEntity->GetLocalEntityAABB();
 			if( pLocalEntityAABB->IsValid() )
 				pRenderHelper->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
 		}

@@ -1,7 +1,7 @@
 #include "RDX11Global.h"
 
 #include "CGrowableArray.h"
-#include "CText.h"
+#include "CQuad.h"
 
 #include "RDX11FontRenderer.h"
 
@@ -38,7 +38,7 @@ bool RDX11FontRenderer::SetFontFile(const char* fontDDS)
 
 
 //--------------------------------------------------------------------------------------
-void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text)
+void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD& text)
 {
 	float screenWidth = (float)GLOBAL::DeviceInfo().width;
 	float screenHeight = (float)GLOBAL::DeviceInfo().height;
@@ -131,7 +131,7 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text)
 
 
 //--------------------------------------------------------------------------------------
-void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text)
+void RDX11FontRenderer::Render( RENDER_TEXT_QUAD& text)
 {
 	FillVertex( text );
 

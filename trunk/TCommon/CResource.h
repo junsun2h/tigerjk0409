@@ -14,6 +14,19 @@
 #define MAX_NAME_LENGTH		64
 
 
+enum eIMAGE_FILE_FORMAT
+{
+	IMG_FILE_BMP         = 0,
+	IMG_FILE_JPG         = 1,
+	IMG_FILE_PNG         = 3,
+	IMG_FILE_DDS         = 4,
+	IMG_FILE_TIFF		  = 10,
+	IMG_FILE_GIF		  = 11,
+	IMG_FILE_WMP		  = 12,
+	IMG_FILE_FORCE_DWORD = 0x7fffffff
+};
+
+
 enum eRESOURCE_TYPE
 {
 	RESOURCE_GEOMETRY,

@@ -58,9 +58,6 @@
     <ClInclude Include="CTimer.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="CText.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
     <ClInclude Include="CThread.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
@@ -72,9 +69,6 @@
     </ClInclude>
     <ClInclude Include="CVertex.h">
       <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="IAABB.h">
-      <Filter>Interface_Engine</Filter>
     </ClInclude>
     <ClInclude Include="CLine.h">
       <Filter>DataStructure</Filter>
@@ -111,6 +105,18 @@
     </ClInclude>
     <ClInclude Include="IFontRenderer.h">
       <Filter>Interface_Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="CEngineParam.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CQuad.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CCamera.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CAABB.h">
+      <Filter>DataStructure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

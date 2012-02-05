@@ -4,8 +4,9 @@
 #include "CUnitPool.h"
 #include "CFrustrum.h"
 #include "CMathType.h"
-#include "CText.h"
+#include "CQuad.h"
 
+#include "CAABB.h"
 #include "ISpaceMgr.h"
 #include "IEntity.h"
 
@@ -150,7 +151,7 @@ void EQuadSpaceTreeMgr::UpdateEntitySpace(IEntity* pEntity)
 
 void EQuadSpaceTreeMgr::AssignSpace(IEntity* pEntity)
 {
-	const IAABB* pAABB = pEntity->GetWorldAABB();
+	const CAABB* pAABB = pEntity->GetWorldAABB();
 
 	if( pAABB->IsValid() == false)
 	{

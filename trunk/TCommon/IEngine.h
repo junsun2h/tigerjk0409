@@ -1,38 +1,27 @@
 #pragma once
 
+struct IEngine;
+
 #include "CDefine.h"
+#include "CResource.h"
+#include "CCamera.h"
+#include "CEngineParam.h"
+#include "CTimer.h"
+#include "CQuad.h"
+#include "CAABB.h"
+
+#include "IRenderHelper.h"
+#include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IEntityMgr.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
 #include "IRenderCallback.h"
-#include "CTimer.h"
-#include "CText.h"
 #include "IFileUtility.h"
 #include "ILoader.h"
+#include "IEntity.h"
 #include "IEngineMemoryMgr.h"
 #include "ISpaceMgr.h"
-
-
-struct CENGINE_INIT_PARAM
-{
-	CENGINE_INIT_PARAM()
-		: hWnd(NULL)
-		, width(-1)
-		, height(-1)
-		, bFullScreen(false)
-		, numOfProcessThread(1)
-		, resourceFolder(NULL)
-	{
-	}	
-
-	void*			hWnd;
-	int				width;
-	int				height;
-	bool			bFullScreen;
-	UINT			numOfProcessThread;
-	const wchar_t*	resourceFolder;
-};
 
 
 

@@ -1,16 +1,67 @@
+#pragma once
+
 #include <float.h>
 
-#include "IAABB.h"
-#include "EAABB.h"
+#include "CDefine.h"
+#include "CMathType.h"
 
-EAABB::EAABB()
+
+struct CAABB
+{
+public:
+	CAABB();
+	void		AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max);
+	void		AddAABB(CVector3& min, CVector3& max );
+	void		AddAABB(const CAABB* pAABB);
+	void		GetAABBPoints(CVector3 vPoints[], const XMMATRIX& tm);
+	void		Reset();
+
+	bool		IsValid() const;
+	bool		IsPointInBox(const CVector3 &InP, XMMATRIX* pWorld = NULL ) const;
+	bool		IsSphereInBox( const CVector3 &InP, float fRadius, XMMATRIX* pWorld = NULL ) const;
+	bool		IsLineInBox( const CVector3& L1, const CVector3& L2, XMMATRIX* pWorld = NULL  ) const;
+
+	CVector3	GetMax() const		{ return m_Max; }
+	CVector3	GetMin() const		{ return m_Min; }
+	CVector3	GetCenter() const	{ return ( m_Min + m_Max ) * 0.5f; }
+	CVector3	GetExtent() const	{ return ( m_Max - m_Min ) * 0.5f; }
+
+	BOOL operator == ( const CAABB& aabb) const	
+	{
+		if( m_IsValid == false && aabb.m_IsValid == false )
+			return true;
+
+		if( m_Min != aabb.m_Min || m_Max != aabb.m_Max )
+			return false;
+
+		return true;
+	}
+
+	BOOL operator != ( const CAABB& aabb) const	
+	{
+		return !(*this == aabb );
+	}
+
+protected:
+	XMMATRIX	CalculatCAABBCoordinate() const;
+
+	bool		m_IsValid;
+	CVector3	m_Min;
+	CVector3	m_Max;
+};
+
+
+
+
+
+inline CAABB::CAABB()
 	: m_Min(FLT_MAX, FLT_MAX, FLT_MAX)
 	, m_Max(-FLT_MAX, -FLT_MAX, -FLT_MAX)
 	, m_IsValid(false)
 {
 }
 
-void EAABB::AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max)
+inline void CAABB::AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max)
 {
 	CVector3 vec[8] = { 
 		min,
@@ -23,17 +74,17 @@ void EAABB::AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max)
 		max,
 		CVector3( min.x, max.y, max.z)};
 
-	for (int i=0; i< 8; ++i)
-	{
-		vec[i] = CVector3::Transform( vec[i], worldTM);
-		m_Min = CVector3::Min(m_Min, vec[i]);
-		m_Max = CVector3::Max(m_Max, vec[i]);
-	}
+		for (int i=0; i< 8; ++i)
+		{
+			vec[i] = CVector3::Transform( vec[i], worldTM);
+			m_Min = CVector3::Min(m_Min, vec[i]);
+			m_Max = CVector3::Max(m_Max, vec[i]);
+		}
 
-	m_IsValid = true;
+		m_IsValid = true;
 }
 
-void EAABB::AddAABB(CVector3& min, CVector3& max)
+inline void CAABB::AddAABB(CVector3& min, CVector3& max)
 {
 	m_Min = CVector3::Min( m_Min, min );
 	m_Max = CVector3::Max( m_Max, max );
@@ -42,7 +93,7 @@ void EAABB::AddAABB(CVector3& min, CVector3& max)
 }
 
 
-void EAABB::AddAABB(const IAABB* pAABB)
+inline void CAABB::AddAABB(const CAABB* pAABB)
 {
 	if( pAABB->IsValid() == false )
 		return;
@@ -53,7 +104,7 @@ void EAABB::AddAABB(const IAABB* pAABB)
 	m_IsValid = true;
 }
 
-void EAABB::GetAABBPoints(CVector3 vPoints[], const XMMATRIX& tm)
+inline void CAABB::GetAABBPoints(CVector3 vPoints[], const XMMATRIX& tm)
 {
 	// This function simply converts the center and extents of an AABB into 8 points
 	static const CVector3 vExtentsMap[] = 
@@ -78,7 +129,7 @@ void EAABB::GetAABBPoints(CVector3 vPoints[], const XMMATRIX& tm)
 	}
 }
 
-void EAABB::Reset()
+inline void CAABB::Reset()
 {
 	m_Min = CVector3(FLT_MAX, FLT_MAX, FLT_MAX);
 	m_Max = CVector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -86,7 +137,7 @@ void EAABB::Reset()
 	m_IsValid = false;
 }
 
-bool EAABB::IsValid() const
+inline bool CAABB::IsValid() const
 {
 	if( !m_IsValid ||  m_Min == m_Max)
 		return false;
@@ -94,7 +145,7 @@ bool EAABB::IsValid() const
 	return true;
 }
 
-XMMATRIX EAABB::CalculateAABBCoordinate() const
+inline XMMATRIX CAABB::CalculatCAABBCoordinate() const
 {
 	// AABB center will be (0,0,0) in AABBCoordinate
 	XMMATRIX AABBCoordinate = XMMatrixIdentity();
@@ -106,7 +157,7 @@ XMMATRIX EAABB::CalculateAABBCoordinate() const
 	return AABBCoordinate;
 }
 
-bool EAABB::IsPointInBox(const CVector3 &InP, XMMATRIX* pWorld ) const
+inline bool CAABB::IsPointInBox(const CVector3 &InP, XMMATRIX* pWorld ) const
 {
 	if( !IsValid() )
 		return false;
@@ -115,18 +166,18 @@ bool EAABB::IsPointInBox(const CVector3 &InP, XMMATRIX* pWorld ) const
 	if( pWorld != NULL)
 	{
 		XMMATRIX invTM = XMMATRIX_UTIL::Inverse( NULL, *pWorld);
-		 P = CVector3::Transform( InP, invTM);
+		P = CVector3::Transform( InP, invTM);
 	}
 
 	if ( ( P.x > m_Min.x && P.x < m_Max.x ) &&
-		 ( P.y > m_Min.y && P.y < m_Max.y ) &&
-		 ( P.z > m_Min.z && P.z < m_Max.z ) )
+		( P.y > m_Min.y && P.y < m_Max.y ) &&
+		( P.z > m_Min.z && P.z < m_Max.z ) )
 		return true;
 
 	return false;
 }
 
-bool EAABB::IsSphereInBox( const CVector3 &InP, float fRadius, XMMATRIX* pWorld ) const
+inline bool CAABB::IsSphereInBox( const CVector3 &InP, float fRadius, XMMATRIX* pWorld ) const
 {
 	if( !IsValid() )
 		return false;
@@ -138,13 +189,13 @@ bool EAABB::IsSphereInBox( const CVector3 &InP, float fRadius, XMMATRIX* pWorld 
 	if( pWorld != NULL)
 	{
 		XMMATRIX temp = XMMATRIX_UTIL::Inverse( NULL, *pWorld);
-		temp = XMMatrixMultiply( temp, CalculateAABBCoordinate() );
+		temp = XMMatrixMultiply( temp, CalculatCAABBCoordinate() );
 
 		P = CVector3::Transform( InP, temp);
 	}
 	else
 	{
-		P = CVector3::Transform( InP, CalculateAABBCoordinate() );
+		P = CVector3::Transform( InP, CalculatCAABBCoordinate() );
 	}
 
 	CVector3 extent = GetExtent();
@@ -162,7 +213,7 @@ bool EAABB::IsSphereInBox( const CVector3 &InP, float fRadius, XMMATRIX* pWorld 
 }
 
 
-bool EAABB::IsLineInBox( const CVector3& L1, const CVector3& L2 , XMMATRIX* pWorld  ) const
+inline bool CAABB::IsLineInBox( const CVector3& L1, const CVector3& L2 , XMMATRIX* pWorld  ) const
 {	
 	if( !IsValid() )
 		return false;
@@ -172,11 +223,11 @@ bool EAABB::IsLineInBox( const CVector3& L1, const CVector3& L2 , XMMATRIX* pWor
 	if( pWorld != NULL)
 	{
 		AABBCoordinate = XMMATRIX_UTIL::Inverse( NULL, *pWorld);
-		AABBCoordinate = XMMatrixMultiply( AABBCoordinate, CalculateAABBCoordinate() );
+		AABBCoordinate = XMMatrixMultiply( AABBCoordinate, CalculatCAABBCoordinate() );
 	}
 	else
 	{
-		AABBCoordinate = CalculateAABBCoordinate();
+		AABBCoordinate = CalculatCAABBCoordinate();
 	}
 
 	// Put line in box space

@@ -2,7 +2,7 @@
 
 #include "CGrowableArray.h"
 
-#include "EAABB.h"
+#include "CAABB.h"
 #include "EEntity.h"
 
 
@@ -209,7 +209,7 @@ void EEntity::UpdateLocalFromWorld()
 
 void EEntity::OnTransformChanged()
 {
-	EAABB temp = m_WorldAABB;
+	CAABB temp = m_WorldAABB;
 
 	m_WorldAABB.Reset();
 	if( m_LocalEntityAABB.IsValid() )
@@ -439,7 +439,7 @@ void EEntity::ADDLocalEntityAABB(CVector3 min, CVector3 max)
 
 void EEntity::UpdateWorldAABB()
 {
-	EAABB temp = m_WorldAABB;
+	CAABB temp = m_WorldAABB;
 
 	m_WorldAABB.Reset();
 	if( m_LocalEntityAABB.IsValid() )
