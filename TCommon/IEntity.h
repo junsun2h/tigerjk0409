@@ -1,13 +1,16 @@
 #pragma once
 
 #include "CDefine.h"
-#include "IEntityProxy.h"
-#include "IAABB.h"
+
+enum eENTITY_PROXY_TYPE;
+struct CAABB;
+struct IEntityProxy;
+struct IEntity;
 
 typedef std::list<UINT>	TYPE_SPACE_IDS;
 
 
-enum eENTITY_TYPE
+enum eENTITY_EVENT_ID
 {
 	E_EVENT_TRANSFORM_CHANGED,
 };
@@ -15,7 +18,7 @@ enum eENTITY_TYPE
 
 struct EntityEvent
 {
-	eENTITY_TYPE	type;
+	eENTITY_EVENT_ID	type;
 	byte*			pData;
 	UINT			dataSize;
 	UINT			flags;
@@ -92,8 +95,8 @@ struct IEntity
 
 	//////////////////////////////////////////////////////////////////////////
 	// AABB
-	virtual const IAABB*	GetWorldAABB() = 0;
-	virtual const IAABB*	GetLocalEntityAABB() = 0;
+	virtual const CAABB*	GetWorldAABB() = 0;
+	virtual const CAABB*	GetLocalEntityAABB() = 0;
 	virtual void			ADDLocalEntityAABB(CVector3 min, CVector3 max) = 0;
 
 	virtual bool			Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list) = 0;

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "CDefine.h"
-#include "IEntityProxy.h"
 #include "CPlane.h"
+#include "CCamera.h"
 
+#include "IEntityProxy.h"
 
 struct FRUSTRUM_DESC
 {

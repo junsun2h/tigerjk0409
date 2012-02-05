@@ -1,12 +1,15 @@
 #include <atlcoll.h>
 
-#include "IRDevice.h"
-#include "IEngineMemoryMgr.h"
-
 #include "CUnitPool.h"
 #include "CGrowableArray.h"
 
-#include "EAABB.h"
+#include "IRDevice.h"
+#include "IEntity.h"
+#include "IEntityProxy.h"
+#include "IEngineMemoryMgr.h"
+#include "IEntityProxy.h"
+
+#include "CAABB.h"
 #include "EEntity.h"
 #include "EEntityProxyActor.h"
 #include "EEntityProxyCamera.h"

@@ -413,7 +413,7 @@ void RDX11RenderHelper::DrawLine()
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderText(RENDER_TEXT_BUFFER& text)
+void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD& text)
 {
 	GLOBAL::FontRenderer()->Render(text);
 }

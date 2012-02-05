@@ -9,10 +9,10 @@ public:
 
 	bool		SetFontFile(const char* fontDDS) override;
 	void		Destroy() override;
-	void		Render( RENDER_TEXT_BUFFER& text ) override;
+	void		Render( RENDER_TEXT_QUAD& text ) override;
 
 private:
-	void		FillVertex( RENDER_TEXT_BUFFER& text );
+	void		FillVertex( RENDER_TEXT_QUAD& text );
 
 	ID3D11Buffer*					m_pFontBuffer;
 	UINT							m_FontBufferBytes;

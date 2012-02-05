@@ -30,7 +30,8 @@ struct CQuad
 	}
 };
 
-struct RENDER_TEXT_BUFFER
+
+struct RENDER_TEXT_QUAD
 {
 	CQuad		rc;			// the box area which is filled with text
 	wchar_t		strMsg[256];

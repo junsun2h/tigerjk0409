@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CDefine.h"
 
 enum ALPHA_BLEND_TYPE
 {

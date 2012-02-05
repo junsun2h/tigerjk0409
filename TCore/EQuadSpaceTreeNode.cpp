@@ -1,7 +1,12 @@
 #include <atlcoll.h>
 
+#include "CQuad.h"
+#include "CUnitPool.h"
+
+#include "CAABB.h"
 #include "IEntity.h"
-#include "CText.h"
+#include "IEntityProxy.h"
+
 #include "EQuadSpaceTreeNode.h"
 
 
@@ -50,7 +55,7 @@ void EQuadSpaceTreeNode::UnRegister(IEntity* pEntity)
 
 bool EQuadSpaceTreeNode::IsInArea(IEntity* pEntity)
 {
-	const IAABB* pEntityAABB = pEntity->GetLocalEntityAABB();
+	const CAABB* pEntityAABB = pEntity->GetLocalEntityAABB();
 
 	if( pEntityAABB->IsValid() == false )
 	{
