@@ -3,6 +3,7 @@
 #include "STexturePopupWindow.h"
 #include "STextureConvertor.h"
 #include "SEntityTreeCtrl.h"
+#include "SSceneTreeCtrl.h"
 
 
 
@@ -24,7 +25,7 @@ SPropertyPanel::SPropertyPanel(wxWindow* parent)
 	m_pTextureCanvas = new SCanvas(this);
 	m_pGridMgr = new SPropertyGrid(this);	
 	m_pEntityTreeCtrl = new SEntityTreeCtrl(this, m_pGridMgr, ID_PROPERTY_ENTITY_TREECTRL);
-	m_pSceneTreeCtrl = new wxTreeCtrl(this);
+	m_pSceneTreeCtrl = new SSceneTreeCtrl(this, m_pGridMgr, ID_PROPERTY_SCENE_TREECTRL);
 
 	pRootSizer->Add(m_pTextureCanvas, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pEntityTreeCtrl, 0, wxALL|wxEXPAND, 5);
@@ -49,35 +50,19 @@ void SPropertyPanel::SetObject( const CResourceTexture* pResource )
 	m_pGridMgr->Set( pResource );
 	SaveTextureToPNGFile( pResource, COLOR_FORMAT_R8G8B8A8_TYPELESS);
 	m_pTextureCanvas->SetImage( &wxImage("temp.png") );
-
 	OrganizeInside( PROPERTY_GRID | TEXTURE_CANVAS );
 }
 
 void SPropertyPanel::SetObject( const CResourceMesh* pResource )
 {
 	m_pGridMgr->Set( pResource );
-
-	m_pTextureCanvas->Hide();
-	m_pEntityTreeCtrl->Hide();
-	m_pSceneTreeCtrl->Hide();
-	m_pGridMgr->Show();
-
 	OrganizeInside( PROPERTY_GRID );
 }
 
 void SPropertyPanel::SetObject( const CResourceActor* pResource )
 {
+	m_pSceneTreeCtrl->SetScene( &pResource->jointList );
 	m_pGridMgr->Set( pResource );
-
-	{
-		m_pSceneTreeCtrl->DeleteAllItems();
-
-		wxTreeItemId rootItem = m_pSceneTreeCtrl->AddRoot( pResource->name );
-		{
-
-		}
-	}
-
 	OrganizeInside( PROPERTY_GRID | SCENE_TREE_CTRL );
 }
 

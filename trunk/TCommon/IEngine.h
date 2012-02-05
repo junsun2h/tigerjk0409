@@ -52,6 +52,7 @@ struct IEngine
 	virtual ILoader*			Loader() = 0;
 	virtual IEngineMemoryMgr*	EngineMemoryMgr() =0;
 	virtual ISpaceMgr*			SpaceMgr() =0;
+	virtual long				GetCurrentFrame() =0;
 
 	virtual void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
 };

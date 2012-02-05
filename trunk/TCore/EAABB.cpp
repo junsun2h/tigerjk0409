@@ -1,5 +1,7 @@
-#include "EAABB.h"
 #include <float.h>
+
+#include "EGlobal.h"
+#include "EAABB.h"
 
 EAABB::EAABB()
 	: m_Min(FLT_MAX, FLT_MAX, FLT_MAX)

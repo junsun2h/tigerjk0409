@@ -1,13 +1,6 @@
 #pragma once
 
-#include "ILoader.h"
-#include "CGrowableArray.h"
-
-
 #define MAX_DATA_PROC_THREAD	3
-
-
-
 
 class ELoader : public ILoader
 {
@@ -15,9 +8,9 @@ public:
 	ELoader();
 	virtual ~ELoader();
 
-	bool                        Init( UINT NumProcessingThreads );
-	static	bool				IsIOThread();
-	static	bool				IsDataProcThread();
+	bool                        Init( UINT NumProcessingThreads ) override;
+	bool						IsIOThread() override;
+	bool						IsDataProcThread() override;
 
 public:
 	virtual CResourceBase*		LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type) override;

@@ -305,6 +305,8 @@ struct CJoint
 	char			parentName[MAX_NAME_LENGTH];
 };
 
+typedef std::vector<CJoint>	JOINT_LIST;
+
 class CResourceActor : public CResourceBase
 {
 	// only object pool can make&delete this class
@@ -320,7 +322,7 @@ class CResourceActor : public CResourceBase
 	}
 
 public:
-	std::vector<CJoint>		jointList;
+	JOINT_LIST		jointList;
 
 	eRESOURCE_TYPE	Type() override		{ return RESOURCE_ACTOR; }
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_ACTOR); }

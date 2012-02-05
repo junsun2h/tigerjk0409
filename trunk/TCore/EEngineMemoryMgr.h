@@ -1,13 +1,5 @@
 #pragma once
 
-#include "IEngineMemoryMgr.h"
-#include "CUnitPool.h"
-#include "EEntity.h"
-#include "EEntityProxyActor.h"
-#include "EEntityProxyCamera.h"
-#include "EEntityProxyRender.h"
-
-
 
 class EEngineMemoryMgr : public IEngineMemoryMgr
 {
@@ -15,15 +7,14 @@ public:
 	EEngineMemoryMgr();
 	~EEngineMemoryMgr();
 
-	virtual CResourceBase*	GetNewResource(eRESOURCE_TYPE type) override;
-	virtual void			RemoveResource(CResourceBase* pResource) override;
+	CResourceBase*			GetNewResource(eRESOURCE_TYPE type) override;
+	void					RemoveResource(CResourceBase* pResource) override;
 
-public:
-	EEntity*				GetNewEntity();
-	void					RemoveEntity(IEntity* pEntity);
+	IEntity*				GetNewEntity() override;
+	void					RemoveEntity(IEntity* pEntity) override;
 
-	IEntityProxy*			GetNewProxy(eENTITY_PROXY_TYPE type);
-	void					RemoveProxy(IEntityProxy* pProxy);
+	IEntityProxy*			GetNewProxy(eENTITY_PROXY_TYPE type) override;
+	void					RemoveProxy(IEntityProxy* pProxy) override;
 
 private:
 	CObjectPool<CResourceGeometry>	m_MemPoolGeometry;

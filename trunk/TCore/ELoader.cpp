@@ -1,10 +1,15 @@
-#include "ELoader.h"
-#include "EEngine.h"
+#include <process.h>
+#include <string>
+#include <vector>
+
+#include "EGlobal.h"
+#include "CGrowableArray.h"
+
 #include "EWinFileLoader.h"
 #include "EMeshDataProcessor.h"
 #include "EActorDataProcessor.h"
-#include <process.h>
 
+#include "ELoader.h"
 
 
 
@@ -296,10 +301,10 @@ CResourceBase* ELoader::LoadForward(char* fileName, char* name, eRESOURCE_FILE_T
 	}
 	else if(RESOURCE_FILE_TEXTURE == type )
 	{
-		CResourceTexture* pTexture = g_Engine.RDevice()->CreateTextureFromFile(fileName);
+		CResourceTexture* pTexture = GLOBAL::RDevice()->CreateTextureFromFile(fileName);
 		strcpy_s( pTexture->name, name );
 
-		g_Engine.AssetMgr()->Insert(pTexture);
+		GLOBAL::AssetMgr()->Insert(pTexture);
 		return pTexture;
 	}
 	else if(RESOURCE_FILE_MATERIAL == type )

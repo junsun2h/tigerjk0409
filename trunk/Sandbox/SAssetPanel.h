@@ -26,7 +26,6 @@ public:
 	void	OnSelChanged(wxTreeEvent& event);
 	void	OnItemMenu(wxTreeEvent& event);
 	void	OnDelete(wxCommandEvent& event);
-	void	OnFocusGot(wxFocusEvent& event);
     void	OnBeginDrag(wxTreeEvent& event);
 
 	void	Reload();

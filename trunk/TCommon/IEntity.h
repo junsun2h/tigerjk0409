@@ -4,6 +4,9 @@
 #include "IEntityProxy.h"
 #include "IAABB.h"
 
+typedef std::list<UINT>	TYPE_SPACE_IDS;
+
+
 enum eENTITY_TYPE
 {
 	E_EVENT_TRANSFORM_CHANGED,
@@ -33,6 +36,12 @@ struct IEntity
 	virtual	UINT			GetID()	= 0;
 	virtual std::string		GetName() = 0;
 	virtual	bool			IsVisible() = 0;
+
+	virtual	void			Init(std::string& name, UINT id) = 0;
+
+	virtual	TYPE_SPACE_IDS*	GetSpaceIDList() = 0;
+	virtual	void			AddSpaceID(UINT id) = 0;
+	virtual	void			RemoveSpaceID(UINT id) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// entity properties
@@ -85,6 +94,7 @@ struct IEntity
 	// AABB
 	virtual const IAABB*	GetWorldAABB() = 0;
 	virtual const IAABB*	GetLocalEntityAABB() = 0;
+	virtual void			ADDLocalEntityAABB(CVector3 min, CVector3 max) = 0;
 
 	virtual bool			Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list) = 0;
 

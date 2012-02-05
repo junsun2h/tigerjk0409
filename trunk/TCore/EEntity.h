@@ -1,15 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <atlcoll.h>
-#include "IEntity.h"
-#include "CGrowableArray.h"
-#include "CUnitPool.h"
-#include "EAABB.h"
-
-
-typedef std::list<UINT>	TYPE_SPACE_IDS;
-
 
 class EEntity : public IEntity
 {
@@ -19,20 +9,21 @@ class EEntity : public IEntity
 	virtual ~EEntity();
 
 public:
-	void			Init(std::string& name, UINT id);
+	void			Init(std::string& name, UINT id) override;
+
+	TYPE_SPACE_IDS*	GetSpaceIDList() override		{ return &m_SpaceIDList;}
+	void			AddSpaceID(UINT id) override;
+	void			RemoveSpaceID(UINT id) override;
 
 	UINT			GetID() override			{ return m_ID; };
 	std::string		GetName() override			{ return m_Name; }
 
-	TYPE_SPACE_IDS*	GetSpaceIDList()			{ return &m_SpaceIDList;}
-	void			AddSpaceID(UINT id);
-	void			RemoveSpaceID(UINT id);
-
-	void			Destroy();
 	void			SendEvent( EntityEvent &e ) override;
 	bool			IsVisible() override;
 
 private:
+	void			Destroy();
+
 	UINT			m_ID;
 	std::string		m_Name;
 	std::list<UINT>	m_SpaceIDList;
@@ -111,12 +102,12 @@ public:
 	// AABB
 	const IAABB*	GetWorldAABB() override			{ return &m_WorldAABB; }
 	const IAABB*	GetLocalEntityAABB() override	{ return &m_LocalEntityAABB; }
-	void			ADDLocalEntityAABB(CVector3 min, CVector3 max);
-	void			UpdateWorldAABB();
-
+	void			ADDLocalEntityAABB(CVector3 min, CVector3 max) override;
 	bool			Pick(CVector3& from, CVector3& to, TYPE_ENTITY_LIST& list) override;
 
 private:
+	void			UpdateWorldAABB();
+
 	EAABB			m_WorldAABB;		// including child's Bounding box in world coordinates system
 	EAABB			m_LocalAABB;		// including child's Bounding box in local coordinates system
 	EAABB			m_LocalEntityAABB;	// this entity's Bounding box in local coordinates system

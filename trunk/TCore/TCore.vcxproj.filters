@@ -58,6 +58,7 @@
     <ClCompile Include="ThirdParty\tinyxml\tinyxmlparser.cpp">
       <Filter>3rdParty\TinyXML</Filter>
     </ClCompile>
+    <ClCompile Include="EGlobal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -142,5 +143,6 @@
     <ClInclude Include="ThirdParty\tinyxml\tinyxml.h">
       <Filter>3rdParty\TinyXML</Filter>
     </ClInclude>
+    <ClInclude Include="EGlobal.h" />
   </ItemGroup>
 </Project>

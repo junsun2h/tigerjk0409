@@ -1,6 +1,5 @@
+#include "EGlobal.h"
 #include "EAssetMgr.h"
-#include "EEngine.h"
-#include <locale>
 
 
 //--------------------------------------------------------------------------------------------------------
@@ -37,7 +36,7 @@ long EAssetMgr::Insert( CResourceBase* pResource)
 	eRESOURCE_TYPE type = pResource->Type();
 
 	if( type == RESOURCE_GEOMETRY || type == RESOURCE_TEXTURE )
-		g_Engine.RDevice()->CreateGraphicBuffer( pResource );
+		GLOBAL::RDevice()->CreateGraphicBuffer( pResource );
 
 	if( m_Resources[type].Lookup(pResource->RID) == NULL )
 		pResource->RID = GET_HASH_KEY( pResource->name );
@@ -68,8 +67,8 @@ void EAssetMgr::Clear()
 
 void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 {
-	IRDevice*		pRDevice		= g_Engine.RDevice();
-	EEngineMemoryMgr* pMemeoryPool	= g_Engine.EngMemoryPoolMgr();
+	IRDevice*		pRDevice		= GLOBAL::RDevice();
+	IEngineMemoryMgr* pMemeoryPool	= GLOBAL::EngineMemoryMgr();
 
 	CResourceBase* pResource = m_Resources[type].Lookup( id )->m_value;
 

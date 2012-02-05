@@ -61,6 +61,10 @@ struct RESOURCE_REQUEST
 
 struct ILoader
 {
+	virtual	bool			IsIOThread() = 0;
+	virtual	bool			IsDataProcThread() = 0;
+
+	virtual	bool			Init( UINT NumProcessingThreads ) =0;
 	virtual CResourceBase*	LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type) = 0;
 	virtual void			LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type) = 0;
 	virtual void			WaitForAllItems() = 0;

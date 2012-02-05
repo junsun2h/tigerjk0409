@@ -1,12 +1,6 @@
 #pragma once
 
-#include "ISpaceMgr.h"
-#include "CUnitPool.h"
-#include "EQuadSpaceTreeNode.h"
-#include <atlcoll.h>
 
-class EEntity;
-struct IEntityProxyCamera;
 
 class EQuadSpaceTreeMgr : public ISpaceMgr
 {
@@ -15,9 +9,9 @@ public:
 	~EQuadSpaceTreeMgr();
 
 	void				Init(UINT worldSize, UINT divideCount);
-	void				Destroy();
+	void				Destroy() override;
 
-	void				UpdateVisibleSpaceList(IEntityProxyCamera* pCamera);
+	void				UpdateVisibleSpaceList(IEntityProxyCamera* pCamera) override;
 	void				UpdateEntitySpace(IEntity* pEntity) override;
 
 	void				Render() override;
@@ -25,7 +19,7 @@ public:
 private:
 	EQuadSpaceTreeNode*	GetSpace(float x, float y);
 	EQuadSpaceTreeNode*	GetSpace(UINT id);
-	void				AssignSpace(EEntity* pEntity);
+	void				AssignSpace(IEntity* pEntity);
 
 	typedef	ATL::CAtlMap<UINT, EQuadSpaceTreeNode*>	TYPE_SPACE_NODE_MAP;
 	typedef	std::vector<EQuadSpaceTreeNode*>		TYPE_VISIBLE_SPACE_LIST;

@@ -1,12 +1,5 @@
 #pragma once
 
-#include "CUnitPool.h"
-#include "CText.h"
-#include <atlcoll.h>
-
-class EEntity;
-struct IAABB;
-
 
 class EQuadSpaceTreeNode
 {
@@ -17,15 +10,15 @@ class EQuadSpaceTreeNode
 public:
 	void		Init(CQuad&	area, UINT spaceID );
 	void		Destroy();
-	void		Register(EEntity* pEntity);
-	void		UnRegister(EEntity* pEntity);
+	void		Register(IEntity* pEntity);
+	void		UnRegister(IEntity* pEntity);
 	UINT		GetID()						{ return m_SpaceID; }
-	bool		IsInArea(EEntity* pEntity);
+	bool		IsInArea(IEntity* pEntity);
 	CQuad		GetArea()					{ return m_Area; }
 	void		Render();
 
 private:
-	typedef	ATL::CAtlMap<long, EEntity*>	TYPE_ENTITY_MAP;
+	typedef	ATL::CAtlMap<long, IEntity*>	TYPE_ENTITY_MAP;
 
 	TYPE_ENTITY_MAP		m_EntityMap;
 	CQuad				m_Area;

@@ -1,8 +1,5 @@
 #pragma once
 
-#include "IEntity.h"
-#include "CUnitPool.h"
-
 
 class EEntityProxyActor : public IEntityProxyActor 
 {

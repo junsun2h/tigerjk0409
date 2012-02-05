@@ -1,3 +1,4 @@
+#include "IEntityProxy.h"
 #include "EEntityProxyActor.h"
 
 
