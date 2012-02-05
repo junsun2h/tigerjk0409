@@ -4,7 +4,6 @@
 #include "CPlane.h"
 #include "CCamera.h"
 
-#include "IEntityProxy.h"
 
 struct FRUSTRUM_DESC
 {
@@ -63,7 +62,7 @@ inline void ComputeFrustumFromProjection( FRUSTRUM_DESC* pOut, XMMATRIX& project
 class CFrustumCull
 {
 public:
-	void ConstructFrustum(IEntityProxyCamera* pCamera);
+	void ConstructFrustum(const CCAMERA_DESC& desc);
 
 	bool CheckPoint(const CVector3& point);
 	bool CheckCube(const CVector3& center, float radius);
@@ -76,10 +75,8 @@ private:
 
 
 
-inline void CFrustumCull::ConstructFrustum(IEntityProxyCamera* pCamera)
+inline void CFrustumCull::ConstructFrustum(const CCAMERA_DESC& desc)
 {
-	const CCAMERA_DESC desc= pCamera->GetDesc();
-
 	float screenDepth = desc.farClip;
 	XMMATRIX projTM = desc.ProjTM;
 	XMMATRIX viewTM = desc.ViewTM;

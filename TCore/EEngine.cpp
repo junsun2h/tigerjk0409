@@ -84,7 +84,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list
-	GLOBAL::SpaceMgr()->UpdateVisibleSpaceList(pCamera);
+	GLOBAL::SpaceMgr()->UpdateVisibleSpaceList(pCamera->GetDesc());
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system

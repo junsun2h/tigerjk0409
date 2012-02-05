@@ -11,7 +11,7 @@ public:
 	void				Init(UINT worldSize, UINT divideCount);
 	void				Destroy() override;
 
-	void				UpdateVisibleSpaceList(IEntityProxyCamera* pCamera) override;
+	void				UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc) override;
 	void				UpdateEntitySpace(IEntity* pEntity) override;
 
 	void				Render() override;
