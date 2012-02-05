@@ -1,6 +1,6 @@
 #include <float.h>
 
-#include "EGlobal.h"
+#include "IAABB.h"
 #include "EAABB.h"
 
 EAABB::EAABB()

@@ -1,4 +1,6 @@
-#include "EGlobal.h"
+#include <tchar.h>
+
+#include "IFileUtility.h"
 #include "EFileUtility.h"
 
 

@@ -1,4 +1,6 @@
-#include "EGlobal.h"
+#include <atlcoll.h>
+
+#include "IEntity.h"
 #include "CText.h"
 #include "EQuadSpaceTreeNode.h"
 

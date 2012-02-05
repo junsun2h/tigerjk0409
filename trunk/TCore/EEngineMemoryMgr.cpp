@@ -1,4 +1,7 @@
-#include "EGlobal.h"
+#include <atlcoll.h>
+
+#include "IRDevice.h"
+#include "IEngineMemoryMgr.h"
 
 #include "CUnitPool.h"
 #include "CGrowableArray.h"
