@@ -1,10 +1,5 @@
 #pragma once
 
-#include "ILoader.h"
-#include <vector>
-
-struct IRDevice;
-
 
 class EMeshDataProcessor : public IDataProcessor
 {

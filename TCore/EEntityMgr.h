@@ -1,10 +1,5 @@
 #pragma once
 
-#include <atlcoll.h>
-
-#include "IEntityMgr.h"
-#include "EEntity.h"
-
 
 class EEntityMgr : public IEntityMgr
 {
@@ -23,7 +18,7 @@ public:
 	void				SaveXML(IEntity* pEntity);
 
 private:
-	typedef ATL::CAtlMap<long, EEntity*>	ENTITY_MAP;
+	typedef ATL::CAtlMap<long, IEntity*>	ENTITY_MAP;
 	
 	ENTITY_MAP			m_EntityMap;
 };

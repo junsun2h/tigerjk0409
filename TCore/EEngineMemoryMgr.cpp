@@ -1,3 +1,13 @@
+#include "EGlobal.h"
+
+#include "CUnitPool.h"
+#include "CGrowableArray.h"
+
+#include "EAABB.h"
+#include "EEntity.h"
+#include "EEntityProxyActor.h"
+#include "EEntityProxyCamera.h"
+#include "EEntityProxyRender.h"
 #include "EEngineMemoryMgr.h"
 
 
@@ -52,7 +62,7 @@ void EEngineMemoryMgr::RemoveResource(CResourceBase* pResource)
 		assert(0);
 }
 
-EEntity* EEngineMemoryMgr::GetNewEntity() 
+IEntity* EEngineMemoryMgr::GetNewEntity() 
 {
 	return m_MemPoolEntity.GetNew();
 }

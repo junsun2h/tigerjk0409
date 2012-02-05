@@ -1,6 +1,11 @@
-#include "EQuadSpaceTreeMgr.h"
-#include "EEntity.h"
+#include "EGlobal.h"
+
+#include "CUnitPool.h"
 #include "CFrustrum.h"
+
+#include "EQuadSpaceTreeNode.h"
+#include "EQuadSpaceTreeMgr.h"
+
 
 EQuadSpaceTreeMgr::EQuadSpaceTreeMgr()
 {
@@ -111,13 +116,12 @@ void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(IEntityProxyCamera* pCamera)
 	}
 }
 
-void EQuadSpaceTreeMgr::UpdateEntitySpace(IEntity* pIEntity)
+void EQuadSpaceTreeMgr::UpdateEntitySpace(IEntity* pEntity)
 {	
-	if( pIEntity->IsVisible() == false )
+	if( pEntity->IsVisible() == false )
 		return;
 
 	std::vector<EQuadSpaceTreeNode*> erasingList;
-	EEntity* pEntity = (EEntity*)pIEntity;
 
 	// check former space list
 	TYPE_SPACE_IDS* spaceIDList = pEntity->GetSpaceIDList();
@@ -135,11 +139,10 @@ void EQuadSpaceTreeMgr::UpdateEntitySpace(IEntity* pIEntity)
 		erasingList[i]->UnRegister(pEntity);
 	}
 
-	// check new space list
 	AssignSpace(pEntity);
 }
 
-void EQuadSpaceTreeMgr::AssignSpace(EEntity* pEntity)
+void EQuadSpaceTreeMgr::AssignSpace(IEntity* pEntity)
 {
 	const IAABB* pAABB = pEntity->GetWorldAABB();
 

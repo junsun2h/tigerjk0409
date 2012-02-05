@@ -1,5 +1,6 @@
+#include "EGlobal.h"
 #include "EActorDataProcessor.h"
-#include "EEngine.h"
+
 
 
 typedef struct
@@ -52,7 +53,7 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 
-	CResourceActor* pActor = (CResourceActor*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_ACTOR);
+	CResourceActor* pActor = (CResourceActor*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_ACTOR);
 
 	uint8 jointCount;
 	ECopyData( &jointCount, &pSrcBits,  1 );
@@ -69,7 +70,7 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 	}
 
 	strcpy_s( pActor->name, m_name.c_str());
-	g_Engine.AssetMgr()->Insert( pActor );
+	GLOBAL::AssetMgr()->Insert( pActor );
 
 	return pActor;
 }

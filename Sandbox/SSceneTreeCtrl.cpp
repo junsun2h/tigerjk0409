@@ -14,23 +14,42 @@ END_EVENT_TABLE()
 
 
 SSceneTreeCtrl::SSceneTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id)
-	: wxTreeCtrl(parent, id,  wxDefaultPosition, wxSize(250, 100), wxPG_BOLD_MODIFIED | wxPG_SPLITTER_AUTO_CENTER | wxPG_DESCRIPTION)
+	: wxTreeCtrl(parent, id,  wxDefaultPosition, wxSize(250, 100))
 	, m_pGrid(pGrid)
-	, m_pJoint(NULL)
 {
 }
 
 void SSceneTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
-	if( event.GetItem() != GetRootItem() )
+	for(UINT i = 0; i < m_pJointList->size(); ++i )
 	{
-		m_pGrid->Clear();
-		wxString strItem = GetItemText( event.GetItem() );
+		if( (*m_pJointList)[i].name == GetItemText( event.GetItem() ) )
+		{
+			m_pGrid->Set( &(*m_pJointList)[i] );
+			break;
+		}
 	}
 }
 
-void SSceneTreeCtrl::SetJoint(CJoint* pJoint)
+void SSceneTreeCtrl::SetScene(const JOINT_LIST* pJointList)
 {
 	DeleteAllItems();
 
+	m_pJointList = pJointList;
+
+	wxTreeItemId rootItem = AddRoot( (*pJointList)[0].name );
+	std::vector<wxTreeItemId>	itemList;
+	itemList.push_back(rootItem);
+
+	for( UINT i=1 ; i < pJointList->size(); ++i )
+	{
+		for( UINT iItem = 0; iItem < itemList.size(); ++iItem)
+		{
+			if( GetItemText( itemList[iItem] ) == (*pJointList)[i].parentName )
+			{
+				itemList.push_back( AppendItem(itemList[iItem], (*pJointList)[i].name) );
+				break;
+			}
+		}
+	}
 }

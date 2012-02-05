@@ -1,12 +1,5 @@
 #pragma once
 
-
-#include "CDefine.h"
-#include "IAssetMgr.h"
-#include "IEngine.h"
-#include "CUnitPool.h"
-
-
 enum eHELPER_GEOMETRY_TYPE
 {
 	HELPER_BOX,

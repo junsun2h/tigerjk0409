@@ -1,6 +1,7 @@
 #pragma once
 
 #include <new.h>      // for placement new
+#include <assert.h>
 
 //--------------------------------------------------------------------------------------
 // A growable array
@@ -18,10 +19,10 @@ public:
 	CGrowableArray& operator=( const CGrowableArray<TYPE>& a ) { if( this == &a ) return *this; RemoveAll(); for( int i=0; i < a.m_nSize; i++ ) Add( a.m_pData[i] ); return *this; }
 
 	TYPE*	GrowSize( int nSize );
-	HRESULT SetSize( int nNewMaxSize );
-	HRESULT Add( const TYPE& value );
-	HRESULT Insert( int nIndex, const TYPE& value );
-	HRESULT SetAt( int nIndex, const TYPE& value );
+	bool	SetSize( int nNewMaxSize );
+	bool	Add( const TYPE& value );
+	bool	Insert( int nIndex, const TYPE& value );
+	bool	SetAt( int nIndex, const TYPE& value );
 	TYPE&   GetAt( int nIndex ) const { assert( nIndex >= 0 && nIndex < m_nSize ); return m_pData[nIndex]; }
 	int     GetSize() const { return m_nSize; }
 	TYPE*   GetData() { return m_pData; }
@@ -35,7 +36,7 @@ public:
 	int     LastIndexOf( const TYPE& value, int nIndex ) { return LastIndexOf( value, nIndex, nIndex+1 ); }
 	int     LastIndexOf( const TYPE& value, int nIndex, int nNumElements );
 
-	HRESULT Remove( int nIndex );
+	bool	Remove( int nIndex );
 	void    RemoveAll() { SetSize(0); }
 	void	Reset() { m_nSize = 0; }
 
@@ -44,7 +45,7 @@ protected:
 	int m_nSize;        // # of elements (upperBound - 1)
 	int m_nMaxSize;     // max allocated
 
-	HRESULT SetSizeInternal( int nNewMaxSize );  // This version doesn't call ctor or dtor.
+	bool SetSizeInternal( int nNewMaxSize );  // This version doesn't call ctor or dtor.
 };
 
 
@@ -53,12 +54,12 @@ protected:
 //--------------------------------------------------------------------------------------
 
 // This version doesn't call ctor or dtor.
-template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSizeInternal( int nNewMaxSize )
+template<typename TYPE> bool CGrowableArray <TYPE>::SetSizeInternal( int nNewMaxSize )
 {
 	if( nNewMaxSize < 0 || ( nNewMaxSize > INT_MAX / sizeof( TYPE ) ) )
 	{
 		assert( false );
-		return E_INVALIDARG;
+		return false;
 	}
 
 	if( nNewMaxSize == 0 )
@@ -86,17 +87,17 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSizeInternal( int nNew
 
 		// Verify that (nNewMaxSize * sizeof(TYPE)) is not greater than UINT_MAX or the realloc will overrun
 		if( sizeof( TYPE ) > UINT_MAX / ( UINT )nNewMaxSize )
-			return E_INVALIDARG;
+			return false;
 
 		TYPE* pDataNew = ( TYPE* )realloc( m_pData, nNewMaxSize * sizeof( TYPE ) );
 		if( pDataNew == NULL )
-			return E_OUTOFMEMORY;
+			return false;
 
 		m_pData = pDataNew;
 		m_nMaxSize = nNewMaxSize;
 	}
 
-	return S_OK;
+	return true;
 }
 
 //--------------------------------------------------------------------------------------
@@ -110,7 +111,7 @@ template<typename TYPE> TYPE* CGrowableArray <TYPE>::GrowSize( int nSize )
 }
 
 //--------------------------------------------------------------------------------------
-template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSize( int nNewMaxSize )
+template<typename TYPE> bool CGrowableArray <TYPE>::SetSize( int nNewMaxSize )
 {
 	int nOldSize = m_nSize;
 
@@ -128,7 +129,7 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSize( int nNewMaxSize 
 
 	// Adjust buffer.  Note that there's no need to check for error
 	// since if it happens, nOldSize == nNewMaxSize will be true.)
-	HRESULT hr = SetSizeInternal( nNewMaxSize );
+	bool hr = SetSizeInternal( nNewMaxSize );
 
 	if( nOldSize < nNewMaxSize )
 	{
@@ -147,11 +148,10 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetSize( int nNewMaxSize 
 
 
 //--------------------------------------------------------------------------------------
-template<typename TYPE> HRESULT CGrowableArray <TYPE>::Add( const TYPE& value )
+template<typename TYPE> bool CGrowableArray <TYPE>::Add( const TYPE& value )
 {
-	HRESULT hr;
-	if( FAILED( hr = SetSizeInternal( m_nSize + 1 ) ) )
-		return hr;
+	if( SetSizeInternal( m_nSize + 1 ) == false )
+		return false;
 
 	assert( m_pData != NULL );
 
@@ -162,15 +162,13 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::Add( const TYPE& value )
 	m_pData[m_nSize] = value;
 	++m_nSize;
 
-	return S_OK;
+	return true;
 }
 
 
 //--------------------------------------------------------------------------------------
-template<typename TYPE> HRESULT CGrowableArray <TYPE>::Insert( int nIndex, const TYPE& value )
+template<typename TYPE> bool CGrowableArray <TYPE>::Insert( int nIndex, const TYPE& value )
 {
-	HRESULT hr;
-
 	// Validate index
 	if( nIndex < 0 ||
 		nIndex > m_nSize )
@@ -180,8 +178,8 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::Insert( int nIndex, const
 	}
 
 	// Prepare the buffer
-	if( FAILED( hr = SetSizeInternal( m_nSize + 1 ) ) )
-		return hr;
+	if( SetSizeInternal( m_nSize + 1 ) == false )
+		return false;
 
 	// Shift the array
 	MoveMemory( &m_pData[nIndex + 1], &m_pData[nIndex], sizeof( TYPE ) * ( m_nSize - nIndex ) );
@@ -193,12 +191,12 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::Insert( int nIndex, const
 	m_pData[nIndex] = value;
 	++m_nSize;
 
-	return S_OK;
+	return true;
 }
 
 
 //--------------------------------------------------------------------------------------
-template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetAt( int nIndex, const TYPE& value )
+template<typename TYPE> bool CGrowableArray <TYPE>::SetAt( int nIndex, const TYPE& value )
 {
 	// Validate arguments
 	if( nIndex < 0 ||
@@ -209,7 +207,7 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::SetAt( int nIndex, const 
 	}
 
 	m_pData[nIndex] = value;
-	return S_OK;
+	return true;
 }
 
 
@@ -274,13 +272,13 @@ template<typename TYPE> int CGrowableArray <TYPE>::LastIndexOf( const TYPE& valu
 
 
 //--------------------------------------------------------------------------------------
-template<typename TYPE> HRESULT CGrowableArray <TYPE>::Remove( int nIndex )
+template<typename TYPE> bool CGrowableArray <TYPE>::Remove( int nIndex )
 {
 	if( nIndex < 0 ||
 		nIndex >= m_nSize )
 	{
 		assert( false );
-		return E_INVALIDARG;
+		return false;
 	}
 
 	// Destruct the element to be removed
@@ -290,5 +288,5 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::Remove( int nIndex )
 	MoveMemory( &m_pData[nIndex], &m_pData[nIndex + 1], sizeof( TYPE ) * ( m_nSize - ( nIndex + 1 ) ) );
 	--m_nSize;
 
-	return S_OK;
+	return true;
 }

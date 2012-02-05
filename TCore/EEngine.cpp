@@ -1,8 +1,11 @@
-#include "EEngine.h"
-#include "EEntityProxyCamera.h"
-#include "IRDevice.h"
-#include "CLog.h"
 #include <windows.h>
+
+#include "EGlobal.h"
+
+#include "CTimer.h"
+#include "CLog.h"
+
+#include "EEngine.h"
 
 
 
@@ -13,10 +16,17 @@ EEngine::EEngine()
 	m_GlobalTimer.Start();
 }
 
-EEngine::~EEngine()
-{
+IRDevice*			EEngine::RDevice()			{ return m_pRenderer;}
+IAssetMgr*			EEngine::AssetMgr()			{ return GLOBAL::AssetMgr(); }
+IEntityMgr*			EEngine::EntityMgr()		{ return GLOBAL::EntityMgr(); }
+IRenderHelper*		EEngine::RenderHelper()		{ return m_pRenderer->GetRenderHelper(); }
+CTimer*				EEngine::GlobalTimer()		{ return &m_GlobalTimer; }
+IFileUtility*		EEngine::FileUtility()		{ return GLOBAL::FileUtility(); }
+ILoader*			EEngine::Loader()			{ return GLOBAL::Loader(); }
+IEngineMemoryMgr*	EEngine::EngineMemoryMgr()	{ return GLOBAL::EngineMemoryMgr(); }
+ISpaceMgr*			EEngine::SpaceMgr()			{ return GLOBAL::SpaceMgr(); }
+long				EEngine::GetCurrentFrame()	{ return m_CurrentFrame; }
 
-}
 
 bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 {
@@ -40,8 +50,8 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
-	m_Loader.Init( param.numOfProcessThread );
-	m_QuadSpaceMgr.Init( 10000, 10);
+	GLOBAL::Loader()->Init( param.numOfProcessThread );
+	GLOBAL::SpaceMgr()->Init( 10000, 10);
 	CLOG::InitLogSystem();
 
 	return true;
@@ -49,10 +59,10 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 
 bool EEngine::ShutDown()
 {
-	m_QuadSpaceMgr.Destroy();
-	m_AssetMgr.Clear();
+	GLOBAL::SpaceMgr()->Destroy();
+	GLOBAL::AssetMgr()->Clear();
 	m_pRenderer->ShutDown();
-	m_EntityMgr.Destroy();
+	GLOBAL::EntityMgr()->Destroy();
 
 	return false;
 }
@@ -74,7 +84,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list
-	m_QuadSpaceMgr.UpdateVisibleSpaceList(pCamera);
+	GLOBAL::SpaceMgr()->UpdateVisibleSpaceList(pCamera);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system

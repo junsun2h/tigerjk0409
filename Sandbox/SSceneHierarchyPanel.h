@@ -23,7 +23,6 @@ public:
 	void	OnSelChanged(wxTreeEvent& event);
 	void	OnItemMenu(wxTreeEvent& event);
 	void	OnDelete(wxCommandEvent& event);
-	void	OnFocusGot(wxFocusEvent& event);
 
 	void	Reload();
 	void	FindItem(wxTreeItemId parent, wxString text);

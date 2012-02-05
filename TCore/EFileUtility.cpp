@@ -1,5 +1,6 @@
+#include "EGlobal.h"
 #include "EFileUtility.h"
-#include "EEngine.h"
+
 
 struct CFileInfo
 {

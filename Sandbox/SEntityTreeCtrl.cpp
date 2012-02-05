@@ -14,7 +14,7 @@ END_EVENT_TABLE()
 
 
 SEntityTreeCtrl::SEntityTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id)
-	: wxTreeCtrl(parent, id,  wxDefaultPosition, wxSize(250, 100), wxPG_BOLD_MODIFIED | wxPG_SPLITTER_AUTO_CENTER | wxPG_DESCRIPTION)
+	: wxTreeCtrl(parent, id,  wxDefaultPosition, wxSize(250, 100))
 	, m_pGrid(pGrid)	
 {
 }
@@ -67,6 +67,4 @@ void SEntityTreeCtrl::SetEntity(IEntity* pEntity)
 		if( pEntityProxy != NULL )
 			AppendItem(rootItem,pEntityProxy->GetTypeString() );
 	}
-
-	Expand(rootItem);
 }

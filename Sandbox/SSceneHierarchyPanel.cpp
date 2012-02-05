@@ -6,16 +6,6 @@
 #include "SDragAndDropState.h"
 
 
-IMPLEMENT_DYNAMIC_CLASS(SSceneHierarchyTreeCtrl, wxTreeCtrl)
-	BEGIN_EVENT_TABLE(SSceneHierarchyTreeCtrl, wxTreeCtrl)
-	EVT_TREE_SEL_CHANGED(ID_SCENE_TREECTRL, SSceneHierarchyTreeCtrl::OnSelChanged)
-	EVT_TREE_ITEM_MENU(ID_SCENE_TREECTRL, SSceneHierarchyTreeCtrl::OnItemMenu)
-	EVT_MENU(ID_SCENE_DELETE, SSceneHierarchyTreeCtrl::OnDelete)
-    EVT_SET_FOCUS(SSceneHierarchyTreeCtrl::OnFocusGot)
-	EVT_TREE_BEGIN_DRAG(wxID_ANY, SSceneHierarchyTreeCtrl::OnBeginDrag)
-END_EVENT_TABLE()
-
-
 class SAssetDragAndDrop : public wxTextDropTarget
 {
 public:
@@ -30,7 +20,16 @@ private:
 	SSceneHierarchyTreeCtrl*	m_SceneHierarchyTree;
 };
 
+
 //---------------------------------------------------------------------------------------------------------------------
+IMPLEMENT_DYNAMIC_CLASS(SSceneHierarchyTreeCtrl, wxTreeCtrl)
+	BEGIN_EVENT_TABLE(SSceneHierarchyTreeCtrl, wxTreeCtrl)
+	EVT_TREE_SEL_CHANGED(ID_SCENE_TREECTRL, SSceneHierarchyTreeCtrl::OnSelChanged)
+	EVT_TREE_ITEM_MENU(ID_SCENE_TREECTRL, SSceneHierarchyTreeCtrl::OnItemMenu)
+	EVT_MENU(ID_SCENE_DELETE, SSceneHierarchyTreeCtrl::OnDelete)
+	EVT_TREE_BEGIN_DRAG(wxID_ANY, SSceneHierarchyTreeCtrl::OnBeginDrag)
+END_EVENT_TABLE()
+
 
 SSceneHierarchyTreeCtrl::SSceneHierarchyTreeCtrl(wxWindow *parent, const wxWindowID id)
 	: wxTreeCtrl(parent, id)
@@ -51,18 +50,6 @@ void SSceneHierarchyTreeCtrl::OnItemMenu(wxTreeEvent& event)
 	menu.Append(ID_SCENE_ADD_COMPONENT, wxT("&ADD Component"));
 
 	PopupMenu(&menu, event.GetPoint());
-}
-
-void SSceneHierarchyTreeCtrl::OnFocusGot(wxFocusEvent& event)
-{
-	wxTreeItemId pSelectedID = GetSelection();
-
-	if( pSelectedID.IsOk() )
-	{
-		wxTreeEvent e;
-		e.SetItem(pSelectedID);
-		OnSelChanged(e);
-	}
 }
 
 void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)

@@ -7,6 +7,8 @@
 
 class SCanvas;
 class SEntityTreeCtrl;
+class SSceneTreeCtrl;
+
 
 enum PROPERTY_WIDGET_ID
 {
@@ -47,7 +49,7 @@ private:
 	SCanvas*				m_pTextureCanvas;
 	SPropertyGrid*			m_pGridMgr;
 	SEntityTreeCtrl*		m_pEntityTreeCtrl;
-	wxTreeCtrl*				m_pSceneTreeCtrl;
+	SSceneTreeCtrl*			m_pSceneTreeCtrl;
 
 	DECLARE_EVENT_TABLE()
 };

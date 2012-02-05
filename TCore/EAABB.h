@@ -1,6 +1,5 @@
 #pragma once
 
-#include "IAABB.h"
 
 class EAABB : public IAABB
 {

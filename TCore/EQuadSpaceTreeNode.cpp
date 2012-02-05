@@ -1,5 +1,6 @@
+#include "EGlobal.h"
+#include "CText.h"
 #include "EQuadSpaceTreeNode.h"
-#include "EEntity.h"
 
 
 EQuadSpaceTreeNode::EQuadSpaceTreeNode()
@@ -25,7 +26,7 @@ void EQuadSpaceTreeNode::Destroy()
 	m_bInitialized = false;
 }
 
-void EQuadSpaceTreeNode::Register(EEntity* pEntity)
+void EQuadSpaceTreeNode::Register(IEntity* pEntity)
 {
 	TYPE_ENTITY_MAP::CPair* itr = m_EntityMap.Lookup( pEntity->GetID() );
 	if( itr == NULL )
@@ -35,7 +36,7 @@ void EQuadSpaceTreeNode::Register(EEntity* pEntity)
 	}
 }
 
-void EQuadSpaceTreeNode::UnRegister(EEntity* pEntity)
+void EQuadSpaceTreeNode::UnRegister(IEntity* pEntity)
 {
 	TYPE_ENTITY_MAP::CPair* itr = m_EntityMap.Lookup( pEntity->GetID() );
 	if( itr == NULL )
@@ -45,18 +46,18 @@ void EQuadSpaceTreeNode::UnRegister(EEntity* pEntity)
 	m_EntityMap.RemoveKey( pEntity->GetID() );
 }
 
-bool EQuadSpaceTreeNode::IsInArea(EEntity* pEntity)
+bool EQuadSpaceTreeNode::IsInArea(IEntity* pEntity)
 {
-	const IAABB* pWorldAABB = pEntity->GetWorldAABB();
+	const IAABB* pEntityAABB = pEntity->GetLocalEntityAABB();
 
-	if( pWorldAABB->IsValid() == false )
+	if( pEntityAABB->IsValid() == false )
 	{
 		CVector3 worldPos = pEntity->GetWorldPos();
 		return m_Area.IsIn(worldPos.x, worldPos.y );
 	}
 
-	CVector3 min = pWorldAABB->GetMin();
-	CVector3 max = pWorldAABB->GetMax();
+	CVector3 min = CVector3::Transform( pEntityAABB->GetMin(), pEntity->GetWorldTM() );
+	CVector3 max = CVector3::Transform( pEntityAABB->GetMax(), pEntity->GetWorldTM() );
 
 	if( min.x < m_Area.left ||
 		max.x > m_Area.right ||

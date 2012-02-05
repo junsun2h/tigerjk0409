@@ -5,7 +5,7 @@
 #include "wx/propgrid/manager.h"
 #include "wx/propgrid/advprops.h"
 
-class wxVectorProperty;
+class wxVector3Property;
 
 enum ePROPERTY_GRID_TYPE
 {
@@ -28,13 +28,14 @@ public:
 	void			Set( const CResourceTexture* pTexture );
 	void			Set( const CResourceMesh* pMesh );
 	void			Set( const CResourceActor* pActor );
+	void			Set( const CJoint* pJoint );
 
 	void			ClearProperties();
 
 private:
 	void			OnPropertyChanged(wxPropertyGridEvent& event);
 
-	void			OnEntityPropertyChanged(wxString& propertyName, wxVectorProperty* pPg);
+	void			OnEntityPropertyChanged(wxString& propertyName, wxVector3Property* pPg);
 
 	ePROPERTY_GRID_TYPE			m_CurrentPropertyType;
 

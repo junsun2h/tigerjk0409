@@ -1,5 +1,5 @@
+#include "EGlobal.h"
 #include "EEntityMgr.h"
-#include "EEngine.h"
 
 
 IEntity* EEntityMgr::SpawnEntity(std::string name)
@@ -12,10 +12,10 @@ IEntity* EEntityMgr::SpawnEntity(std::string name)
 		return pEntity->m_value;
 	} 
 
-	EEntity* pNewEntity = g_Engine.EngMemoryPoolMgr()->GetNewEntity();
+	IEntity* pNewEntity = GLOBAL::EngineMemoryMgr()->GetNewEntity();
 	pNewEntity->Init(name, newID);
 
-	m_EntityMap.SetAt( newID, (EEntity*)pNewEntity );
+	m_EntityMap.SetAt( newID, pNewEntity );
 
 	return pNewEntity;
 }
@@ -25,7 +25,7 @@ void EEntityMgr::RemoveEntity(long id)
 	ENTITY_MAP::CPair* pEntity = m_EntityMap.Lookup( id );
 	if( pEntity != NULL )
 	{
-		g_Engine.EngMemoryPoolMgr()->RemoveEntity(pEntity->m_value);
+		GLOBAL::EngineMemoryMgr()->RemoveEntity(pEntity->m_value);
 		m_EntityMap.RemoveKey(id);
 	}
 }	 
@@ -38,7 +38,7 @@ void EEntityMgr::RemoveAllEntity()
 	while (pos)
 	{
 		itr = m_EntityMap.GetNext(pos);
-		g_Engine.EngMemoryPoolMgr()->RemoveEntity(itr->m_value);
+		GLOBAL::EngineMemoryMgr()->RemoveEntity(itr->m_value);
 	}
 
 	m_EntityMap.RemoveAll();

@@ -1,5 +1,6 @@
+#include "EGlobal.h"
 #include "EMeshDataProcessor.h"
-#include "EEngine.h"
+
 
 
 
@@ -18,7 +19,7 @@ bool EMeshDataProcessor::PopData()
 {
 	for( UINT i=0; i< m_pResources.size(); ++i )
 	{
-		g_Engine.AssetMgr()->Insert(m_pResources[i]);
+		GLOBAL::AssetMgr()->Insert(m_pResources[i]);
 	}
 
 	return true;
@@ -37,7 +38,7 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 	
-	CResourceMesh* pMesh = (CResourceMesh*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
+	CResourceMesh* pMesh = (CResourceMesh*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
 
 	ECopyData( &pMesh->min, &pSrcBits,  12 );
 	ECopyData( &pMesh->max, &pSrcBits,  12 );
@@ -47,7 +48,7 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	for(int i=0; i< pMesh->geometryNum; ++i)
 	{
 		_itoa_s( i, buf, 32);
-		CResourceGeometry* pGeometry = (CResourceGeometry*)g_Engine.EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
+		CResourceGeometry* pGeometry = (CResourceGeometry*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
 
 		ECopyData( &pGeometry->eVertexType, &pSrcBits,  4 );
 		ECopyData( &pGeometry->vertexCount, &pSrcBits,  4 );
@@ -75,17 +76,17 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		std::string geometryName = m_name + "Geometry" + buf;
 		strcpy_s( pGeometry->name, geometryName.c_str());
 
-		pMesh->goemetries[i] = g_Engine.AssetMgr()->Insert( pGeometry );
+		pMesh->goemetries[i] = GLOBAL::AssetMgr()->Insert( pGeometry );
 	}
 
 	strcpy_s( pMesh->name, m_name.c_str());
-	g_Engine.AssetMgr()->Insert( pMesh );
+	GLOBAL::AssetMgr()->Insert( pMesh );
 	return pMesh;
 }
 
 bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 {
-	assert ( ELoader::IsDataProcThread() );
+	assert ( GLOBAL::Loader()->IsDataProcThread() );
 			
 	return true;
 }

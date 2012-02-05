@@ -1,5 +1,6 @@
+#include "EGlobal.h"
 #include "EWinFileLoader.h"
-#include "ELoader.h"
+
 
 
 EWinFileLoader::EWinFileLoader( char* szFileName  )
@@ -25,7 +26,7 @@ bool EWinFileLoader::GetData( void** ppData, SIZE_T* pcBytes )
 
 bool EWinFileLoader::IOT_Load()
 {
-	assert ( ELoader::IsIOThread() );
+	assert ( GLOBAL::Loader()->IsIOThread() );
 
 	Load();
 

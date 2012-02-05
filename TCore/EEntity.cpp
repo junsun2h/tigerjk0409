@@ -1,6 +1,12 @@
+#include "EGlobal.h"
+
+#include "CGrowableArray.h"
+
+#include "EAABB.h"
 #include "EEntity.h"
-#include "CDefine.h"
-#include "EEngine.h"
+
+
+
 
 EEntity::EEntity()
 	: m_pParent(NULL)
@@ -220,7 +226,7 @@ void EEntity::OnTransformChanged()
 
 	if( temp != m_WorldAABB )
 	{
-		g_Engine.SpaceMgr()->UpdateEntitySpace(this);
+		GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
 
 		if( m_pParent != NULL )
 			m_pParent->UpdateWorldAABB();
@@ -367,7 +373,7 @@ IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type, bool bCreate )
 
 IEntityProxy* EEntity::CreateProxy( eENTITY_PROXY_TYPE type )
 {
-	EEngineMemoryMgr* pPool = g_Engine.EngMemoryPoolMgr();
+	IEngineMemoryMgr* pPool = GLOBAL::EngineMemoryMgr();
 
 	IEntityProxy* pProxy = GetProxy( type );
 	if( pProxy != NULL)
@@ -389,13 +395,13 @@ bool EEntity::DeleteProxy( eENTITY_PROXY_TYPE type )
 	if( pProxy == NULL )
 		return false;
 
-	g_Engine.EngMemoryPoolMgr()->RemoveProxy( pProxy );
+	GLOBAL::EngineMemoryMgr()->RemoveProxy( pProxy );
 	return true;
 }
 
 void EEntity::DeleteAllProxy()
 {
-	EEngineMemoryMgr* pPool = g_Engine.EngMemoryPoolMgr();
+	IEngineMemoryMgr* pPool = GLOBAL::EngineMemoryMgr();
 
 	POSITION pos = m_ProxyMap.GetStartPosition();
 	ENEITY_PROXY_MAP::CPair* itr = NULL;
@@ -448,7 +454,7 @@ void EEntity::UpdateWorldAABB()
 
 	if( temp != m_WorldAABB )
 	{
-		g_Engine.SpaceMgr()->UpdateEntitySpace(this);
+		GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
 
 		if( m_pParent != NULL )
 			m_pParent->UpdateWorldAABB();

@@ -52,18 +52,18 @@ void SPropertyGrid::Set( IEntity* pEntity )
 	XMMATRIX_UTIL::ToRollPitchYaw( worldRot.x, worldRot.y, worldRot.z, pEntity->GetWorldTM());
 
 	AddPage();
-	Append( new wxVectorProperty( strProLocalPos, wxPG_LABEL, pEntity->GetLocalPos()) );
-	Append( new wxVectorProperty( strProLocalRot, wxPG_LABEL, localRot) );
-	Append( new wxVectorProperty( strProLocalScale, wxPG_LABEL, pEntity->GetLocalScale()) );
-	Append( new wxVectorProperty( strProWorldPos, wxPG_LABEL, pEntity->GetWorldPos()) );
-	Append( new wxVectorProperty( strProWorldRot, wxPG_LABEL, worldRot) );
+	Append( new wxVector3Property( strProLocalPos, wxPG_LABEL, pEntity->GetLocalPos()) );
+	Append( new wxVector3Property( strProLocalRot, wxPG_LABEL, localRot) );
+	Append( new wxVector3Property( strProLocalScale, wxPG_LABEL, pEntity->GetLocalScale()) );
+	Append( new wxVector3Property( strProWorldPos, wxPG_LABEL, pEntity->GetWorldPos()) );
+	Append( new wxVector3Property( strProWorldRot, wxPG_LABEL, worldRot) );
 
 	if( pEntity->GetWorldAABB()->IsValid() )
 	{
-		Append( new wxVectorProperty( "BoundingBox Min (Local)", wxPG_LABEL, pEntity->GetLocalEntityAABB()->GetMin()) );
-		Append( new wxVectorProperty( "BoundingBox Max (Local)", wxPG_LABEL, pEntity->GetLocalEntityAABB()->GetMax()) );
-		Append( new wxVectorProperty( "BoundingBox Min (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMin()) );
-		Append( new wxVectorProperty( "BoundingBox Max (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMax()) );
+		Append( new wxVector3Property( "BoundingBox Min (Local)", wxPG_LABEL, pEntity->GetLocalEntityAABB()->GetMin()) );
+		Append( new wxVector3Property( "BoundingBox Max (Local)", wxPG_LABEL, pEntity->GetLocalEntityAABB()->GetMax()) );
+		Append( new wxVector3Property( "BoundingBox Min (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMin()) );
+		Append( new wxVector3Property( "BoundingBox Max (World)", wxPG_LABEL, pEntity->GetWorldAABB()->GetMax()) );
 	}
 	else
 	{
@@ -126,8 +126,8 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 {
 	ClearProperties();
 
-	Append( new wxVectorProperty( "BoundingBox Min", wxPG_LABEL, pMesh->min) );
-	Append( new wxVectorProperty( "BoundingBox Max", wxPG_LABEL, pMesh->max) );
+	Append( new wxVector3Property( "BoundingBox Min", wxPG_LABEL, pMesh->min) );
+	Append( new wxVector3Property( "BoundingBox Max", wxPG_LABEL, pMesh->max) );
 	Append( new wxIntProperty( "Geometry Count", wxPG_LABEL, pMesh->geometryNum) );
 
 	char buf[32];
@@ -157,6 +157,14 @@ void SPropertyGrid::Set( const CResourceActor* pActor )
 	Append( new wxIntProperty( "Joint Num", wxPG_LABEL, pActor->jointList.size()) );
 }
 
+void SPropertyGrid::Set( const CJoint* pJoint )
+{
+	ClearProperties();
+
+	Append( new wxVector3Property( "position", wxPG_LABEL, pJoint->pos) );
+	Append( new wxVector4Property( "rotation", wxPG_LABEL, CVector4(pJoint->rot.m128) ) );
+}
+
 void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)
 {
 	wxString propertyName = event.GetPropertyName();
@@ -166,7 +174,7 @@ void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)
 	switch( m_CurrentPropertyType )
 	{
 	case ENTITY_PROPERTY:
-		OnEntityPropertyChanged( propertyName, (wxVectorProperty*)pg );
+		OnEntityPropertyChanged( propertyName, (wxVector3Property*)pg );
 	}
 }
 
@@ -183,7 +191,7 @@ void SPropertyGrid::ClearProperties()
 	m_pEntityProxy = NULL;
 }
 
-void SPropertyGrid::OnEntityPropertyChanged(wxString& propertyName, wxVectorProperty* pPg)
+void SPropertyGrid::OnEntityPropertyChanged(wxString& propertyName, wxVector3Property* pPg)
 {
 	if( propertyName == strProLocalPos )
 	{

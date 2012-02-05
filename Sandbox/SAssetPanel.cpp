@@ -66,7 +66,6 @@ BEGIN_EVENT_TABLE(SAssetTreeCtrl, wxTreeCtrl)
 	EVT_TREE_ITEM_MENU(ID_ASSET_TREECTRL, SAssetTreeCtrl::OnItemMenu)
 	EVT_TREE_BEGIN_DRAG(wxID_ANY, SAssetTreeCtrl::OnBeginDrag)
 	EVT_MENU(ID_ASSET_DELETE, SAssetTreeCtrl::OnDelete)
-    EVT_SET_FOCUS(SAssetTreeCtrl::OnFocusGot)
 END_EVENT_TABLE()
 
 
@@ -103,18 +102,6 @@ void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)
 	menu.Append(ID_ASSET_DELETE, wxT("&Delete"));
 
 	PopupMenu(&menu, event.GetPoint());
-}
-
-void SAssetTreeCtrl::OnFocusGot(wxFocusEvent& event)
-{
-	wxTreeItemId pSelectedID = GetSelection();
-
-	if( pSelectedID.IsOk() )
-	{
-		wxTreeEvent e;
-		e.SetItem(pSelectedID);
-		OnSelChanged(e);
-	}
 }
 
 void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
@@ -289,8 +276,6 @@ eRESOURCE_FILE_TYPE SAssetTreeCtrl::GetAssetType(wxTreeItemId seletedItem)
 	else
 		return RESOURCE_FILE_INVALID;
 }
-
-
 
 
 //---------------------------------------------------------------------------------------------------------
