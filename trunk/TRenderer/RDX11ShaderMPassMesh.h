@@ -1,10 +1,6 @@
 #pragma once
 
-#include "RDX11Shader.h"
-
-class CResourceMtrl;
-
-class RDX11ShaderMPassMesh : public RDX11Shader
+class RDX11ShaderMPassMesh : public RDX11ShaderBase
 {
 public:
 	RDX11ShaderMPassMesh();

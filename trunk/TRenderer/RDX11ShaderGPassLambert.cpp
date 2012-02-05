@@ -1,8 +1,6 @@
+#include "RDX11Global.h"
+#include "RDX11Shader.h"
 #include "RDX11ShaderGPassLambert.h"
-#include "CResource.h"
-#include "IEntityProxy.h"
-#include "IEntity.h"
-#include "RDX11Device.h"
 
 
 RDX11ShaderGPassLambert::RDX11ShaderGPassLambert()
@@ -31,7 +29,12 @@ RDX11ShaderGPassLambert::RDX11ShaderGPassLambert()
 
 	CreatePS(desc);
 
-	SetRenderState(DEPTH_STENCIL_WRITE, RASTERIZER_CULL_BACK, BLEND_NONE);
+	GRAPHIC_DEVICE_DESC renderDesc;
+	renderDesc.DepthStencil = DEPTH_STENCIL_WRITE;
+	renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
+	renderDesc.BlendState = BLEND_NONE;
+
+	SetRenderState( renderDesc );
 	SetTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }
 
@@ -44,7 +47,7 @@ void RDX11ShaderGPassLambert::SetShaderContants(XMMATRIX& tm)
 		XMMATRIX world;
 	}modelVS;
 	
-	const CCAMERA_DESC& camera = GLOBAL::GetCameraDesc();
+	const CCAMERA_DESC& camera = GLOBAL::CameraDesc();
 
 	modelVS.world = tm;
 	modelVS.wv = XMMatrixMultiply( modelVS.world, camera.ViewTM ); 
@@ -54,5 +57,5 @@ void RDX11ShaderGPassLambert::SetShaderContants(XMMATRIX& tm)
 	modelVS.wv = XMMatrixTranspose( modelVS.wv );
 	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
 
-	GLOBAL::GetShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VS_SHADER );
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VS_SHADER );
 }

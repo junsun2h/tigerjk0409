@@ -1,15 +1,9 @@
+#include "RDX11Global.h"
 #include "RDX11RenderStateMgr.h"
-#include "RDX11Device.h"
 
 
 RDX11RenderStateMgr::RDX11RenderStateMgr()
 	: m_bCreated(false)
-	, m_CurrentStencilRef(NULL)
-	, m_CurrentblendFactor(NULL)
-	, m_CurrentsampleMask(0xffffffff)
-	, m_CurrentBlend(BLEND_INVALID)
-	, m_CurrentRasterizer(RASTERIZER_INVALID)
-	, m_CurrentDepthStencil(DEPTH_STENCIL_INVALID)
 {
 }
 
@@ -24,14 +18,14 @@ void RDX11RenderStateMgr::Init()
 	if( m_bCreated == true)
 		return;
 
-	ID3D11Device* pD3Device = GLOBAL::GetD3DDevice();
+	ID3D11Device* pD3Device = GLOBAL::D3DDevice();
 
 	CreateSampler(pD3Device);
 	CreateBlenderStates(pD3Device);
 	CreateRasterizerStates(pD3Device);
 	CreateDepthStencilStates(pD3Device);
 
-	GLOBAL::GetD3DContext()->PSSetSamplers(0, 3, m_SamplerStates);
+	GLOBAL::D3DContext()->PSSetSamplers(0, 3, m_SamplerStates);
 
 	m_bCreated = true;
 }
@@ -243,28 +237,21 @@ void RDX11RenderStateMgr::CreateSampler(ID3D11Device* pD3Device)
 	TDXERROR( pD3Device->CreateSamplerState( &SamDesc, &m_SamplerStates[POINT_SAMPLER] ) );
 }
 
-void RDX11RenderStateMgr::ApplyRenderState(DEPTH_STENCIL_TYPE DepthStencil,
-	RASTERIZER_TYPE RasterizerState,
-	ALPHA_BLEND_TYPE BlendState,
-	UINT stencilRef,
-	float* blendFactor,
-	UINT sampleMask)
+void RDX11RenderStateMgr::ApplyRenderState(const GRAPHIC_DEVICE_DESC& desc)
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
-	pContext->OMSetDepthStencilState( m_pDepthStencilType[DepthStencil], stencilRef );
-	pContext->RSSetState( m_pRasterizerType[RasterizerState] );
-	pContext->OMSetBlendState( m_pBlendType[BlendState], blendFactor, sampleMask );
+	pContext->OMSetDepthStencilState( m_pDepthStencilType[desc.DepthStencil], desc.StencilRef );
+	pContext->RSSetState( m_pRasterizerType[desc.RasterizerState] );
+	pContext->OMSetBlendState( m_pBlendType[desc.BlendState], desc.blendFactor, desc.sampleMask );
 
-	m_CurrentBlend = BlendState;
-	m_CurrentRasterizer = RasterizerState;
-	m_CurrentDepthStencil = DepthStencil;
+	m_CurrentDesc = desc;
 }
 
 //--------------------------------------------------------------------------------------
 void RDX11RenderStateMgr::StoreCurrentState()
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	pContext->OMGetDepthStencilState( &m_pStoredDepthStencil, &m_StoredStencilRef );
 	pContext->RSGetState( &m_pStoredRasterizer );
@@ -274,7 +261,7 @@ void RDX11RenderStateMgr::StoreCurrentState()
 //--------------------------------------------------------------------------------------
 void RDX11RenderStateMgr::RestoreSavedState()
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	pContext->OMSetDepthStencilState( m_pStoredDepthStencil, m_StoredStencilRef );
 	pContext->RSSetState( m_pStoredRasterizer );
@@ -287,27 +274,27 @@ void RDX11RenderStateMgr::RestoreSavedState()
 
 void RDX11RenderStateMgr::SetRasterizer(RASTERIZER_TYPE RasterizerState)
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	pContext->RSSetState( m_pRasterizerType[RasterizerState] );
-	m_CurrentRasterizer = RasterizerState;
+	m_CurrentDesc.RasterizerState = RasterizerState;
 }
 
 void RDX11RenderStateMgr::SetBlend(ALPHA_BLEND_TYPE BlendState, float* pblendFactor, UINT sampleMask)
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	pContext->OMSetBlendState( m_pBlendType[BlendState], pblendFactor, sampleMask );
-	m_CurrentBlend = BlendState;
-	m_CurrentblendFactor = pblendFactor;
-	m_CurrentsampleMask = sampleMask;
+	m_CurrentDesc.BlendState = BlendState;
+	m_CurrentDesc.blendFactor = pblendFactor;
+	m_CurrentDesc.sampleMask = sampleMask;
 }
 
-void RDX11RenderStateMgr::SetDepthStancil(DEPTH_STENCIL_TYPE DepthStencilState, UINT StencilRef)
+void RDX11RenderStateMgr::SetDepthStancil(DEPTH_STENCIL_TYPE depthStencil, UINT StencilRef)
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
-	pContext->OMSetDepthStencilState( m_pDepthStencilType[DepthStencilState], StencilRef );
-	m_CurrentDepthStencil = DepthStencilState;
-	m_CurrentStencilRef = StencilRef;
+	pContext->OMSetDepthStencilState( m_pDepthStencilType[depthStencil], StencilRef );
+	m_CurrentDesc.DepthStencil = depthStencil;
+	m_CurrentDesc.StencilRef = StencilRef;
 }

@@ -1,6 +1,5 @@
+#include "RDX11Global.h"
 #include "RDX11RenderStrategeDeffered.h"
-#include "RDX11Device.h"
-#include "RDX11Miscellaneous.h"
 
 
 void RDX11RenderStrategeDeffered::RenderScene()
@@ -30,11 +29,11 @@ void RDX11RenderStrategeDeffered::ShadowPass()
 
 void RDX11RenderStrategeDeffered::GeometryPass()
 {
-	GLOBAL::GetMainFrameRenderTarget()->ClearAndSet();
+	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
 
-	RDX11Shader* pShader = GLOBAL::GetShaderMgr()->GetShader(EFFECT_GPASS_LAMBERT);
-	
+	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_GPASS_LAMBERT);
 	pShader->Begin();
+
 	GLOBAL::Engine()->SpaceMgr()->Render();
 }
 

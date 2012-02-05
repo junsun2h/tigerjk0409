@@ -1,5 +1,9 @@
-#include "RDX11Font.h"
-#include "RDX11Device.h"
+#include "RDX11Global.h"
+
+#include "CGrowableArray.h"
+#include "CText.h"
+
+#include "RDX11FontRenderer.h"
 
 
 //--------------------------------------------------------------------------------------
@@ -20,21 +24,24 @@ void RDX11FontRenderer::Destroy()
 
 
 //--------------------------------------------------------------------------------------
-HRESULT RDX11FontRenderer::SetFontFile(const char* fontDDS)
+bool RDX11FontRenderer::SetFontFile(const char* fontDDS)
 {
 	HRESULT hr = S_OK;
 
-	V_RETURN( D3DX11CreateShaderResourceViewFromFileA( GLOBAL::GetD3DDevice(), fontDDS, NULL, NULL, &m_pFontSRV, &hr) );
+	D3DX11CreateShaderResourceViewFromFileA( GLOBAL::D3DDevice(), fontDDS, NULL, NULL, &m_pFontSRV, &hr);
 
-	return hr;
+	if( hr == S_OK )
+		return true;
+
+	return false;
 }
 
 
 //--------------------------------------------------------------------------------------
 void RDX11FontRenderer::FillVertex( RENDER_TEXT_BUFFER& text)
 {
-	float screenWidth = (float)GLOBAL::GetDeviceInfo().width;
-	float screenHeight = (float)GLOBAL::GetDeviceInfo().height;
+	float screenWidth = (float)GLOBAL::DeviceInfo().width;
+	float screenHeight = (float)GLOBAL::DeviceInfo().height;
 
 	float fCharTexSizeX = 0.010526315f;
 	float fGlyphSizeX = 15.0f / screenWidth;
@@ -128,8 +135,8 @@ void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text)
 {
 	FillVertex( text );
 
-	ID3D11Device* pd3dDevice = GLOBAL::GetD3DDevice();
-	ID3D11DeviceContext* pd3dImmediateContext = GLOBAL::GetD3DContext();
+	ID3D11Device* pd3dDevice = GLOBAL::D3DDevice();
+	ID3D11DeviceContext* pd3dImmediateContext = GLOBAL::D3DContext();
 
 	// ensure our buffer size can hold our sprites
 	UINT FontDataBytes = m_FontVertices.GetSize() * sizeof( CVertexPCT );
@@ -168,7 +175,7 @@ void RDX11FontRenderer::Render( RENDER_TEXT_BUFFER& text)
 	pd3dImmediateContext->PSGetShaderResources( 0, 1, &pOldTexture );
 	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
 
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_FONT)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_FONT)->Begin();
 
 	// Draw
 	UINT Stride = sizeof( CVertexPCT );

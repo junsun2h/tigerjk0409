@@ -1,21 +1,7 @@
 #pragma once
 
-#include "RDefine.h"
-#include "CColor.h"
-#include "CResource.h"
 
-enum eDEFFERED_RENDER_TARGET
-{
-	RT_GPASS1,
-	RT_GPASS2,
-	RT_GPASS3,
-
-	RT_LPASS,
-
-	NUM_DEFFERED_RENDER_TARGET
-};
-
-struct RDX11RenderTargetMgr
+struct RDX11RenderTargetMgr : public IRenderTargetMgr
 {
 	RDX11RenderTargetMgr();
 	~RDX11RenderTargetMgr();
@@ -33,7 +19,7 @@ struct RDX11RenderTargetMgr
 	bool	Resize(int cx, int cy, bool bFullScreen);
 	void	Present();
 	void	Destroy();
-	void	ClearAndSet();
+	void	ClearAndSetMaineFrame() override;
 
 	CResourceTexture*			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
 };

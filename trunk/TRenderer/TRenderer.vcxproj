@@ -82,7 +82,8 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="RDX11Device.cpp" />
-    <ClCompile Include="RDX11Font.cpp" />
+    <ClCompile Include="RDX11FontRenderer.cpp" />
+    <ClCompile Include="RDX11Global.cpp" />
     <ClCompile Include="RDX11MultiThreadRenderer.cpp" />
     <ClCompile Include="RDX11RenderHelper.cpp" />
     <ClCompile Include="RDX11RenderStateMgr.cpp" />
@@ -97,9 +98,11 @@
     <ClCompile Include="RDX11ShaderMPassMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IRDX11Device.h" />
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Device.h" />
-    <ClInclude Include="RDX11Font.h" />
+    <ClInclude Include="RDX11FontRenderer.h" />
+    <ClInclude Include="RDX11Global.h" />
     <ClInclude Include="RDX11MultiThreadRenderer.h" />
     <ClInclude Include="RDX11RenderHelper.h" />
     <ClInclude Include="RDX11RenderStateMgr.h" />

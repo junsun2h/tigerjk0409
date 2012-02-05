@@ -1,7 +1,5 @@
 #pragma once
 
-#include "IRDevice.h"
-
 
 class RDX11RenderStrategeDeffered : public IRenderStrategy
 {

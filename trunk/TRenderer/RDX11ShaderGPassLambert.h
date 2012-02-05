@@ -1,9 +1,7 @@
 #pragma once
 
-#include "RDX11Shader.h"
 
-
-class RDX11ShaderGPassLambert : public RDX11Shader
+class RDX11ShaderGPassLambert : public RDX11ShaderBase
 {
 public:
 	RDX11ShaderGPassLambert();

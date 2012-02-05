@@ -1,4 +1,7 @@
+#include "RDX11Global.h"
+#include "RDX11Shader.h"
 #include "RDX11ShaderFont.h"
+
 
 char g_strFontFxFile[] = \
 	"texture2D txDiffuse : register( t0 );"\
@@ -63,6 +66,11 @@ RDX11ShaderFont::RDX11ShaderFont()
 
 	CreatePS(desc);
 
-	SetRenderState(DEPTH_STENCIL_OFF, RASTERIZER_CULL_BACK, BLEND_ADD_BY_ALPHA);
+	GRAPHIC_DEVICE_DESC renderDesc;
+	renderDesc.DepthStencil = DEPTH_STENCIL_OFF;
+	renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
+	renderDesc.BlendState = BLEND_ADD_BY_ALPHA;
+
+	SetRenderState(renderDesc);
 	SetTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }

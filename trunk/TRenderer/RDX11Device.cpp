@@ -1,40 +1,11 @@
+#include "RDX11Global.h"
 #include "RDX11Device.h"
 #include "RDX11RenderStrategeDeffered.h"
-#include "RDX11MultiThreadRenderer.h"
-
-namespace GLOBAL
-{
-	ID3D11Device*				g_D3Device = NULL;
-	ID3D11DeviceContext*		g_D3DeviceContext = NULL;
-	RDX11Device*				g_RDX11Device = NULL;
-	RDeviceDesc					g_DeviceSetting;
-	RDX11RenderStateMgr			g_StateRepository;
-	RDX11RenderTargetMgr		g_MainWindow;
-	RDX11RenderHelper			g_RenderHelper;
-	RDX11ShaderMgr				g_ShaderMgr;
-	CCAMERA_DESC				g_pCurrentCameraDesc;
-	IEngine*					g_pEngine = NULL;
-	RDX11MultyThreadRenderer	g_MultyThreadRenderer;
-
-	IEngine*					Engine()					{ return g_pEngine; }
-	ID3D11Device*				GetD3DDevice()				{ return g_D3Device;}
-	ID3D11DeviceContext*		GetD3DContext()				{ return g_D3DeviceContext; }
-	RDX11Device*				GetRDX11Device()			{ return g_RDX11Device; }
-	RDX11RenderStateMgr*		GetD3DStateMgr()			{ return &g_StateRepository; }
-	const RDeviceDesc&			GetDeviceInfo()				{ return g_DeviceSetting; }
-	RDX11ShaderMgr*				GetShaderMgr()				{ return &g_ShaderMgr; }
-	const CCAMERA_DESC&			GetCameraDesc()				{ return g_pCurrentCameraDesc; }
-	RDX11RenderTargetMgr*		GetMainFrameRenderTarget()	{ return &g_MainWindow; }
-	RDX11MultyThreadRenderer*	GetMultyThreadRenderer()	{ return &g_MultyThreadRenderer; }
-};
 
 
-
-using namespace GLOBAL;
 
 RDX11Device::RDX11Device()
-	: m_pD3Device(NULL)
-	, m_pCurrentRenderStrategy(NULL)
+	: m_pCurrentRenderStrategy(NULL)
 {
 }
 
@@ -45,12 +16,12 @@ RDX11Device::~RDX11Device()
 
 IRenderHelper* RDX11Device::GetRenderHelper()
 {
-	return &g_RenderHelper;
+	return GLOBAL::RenderHelper();
 }
 
 RDeviceDesc	RDX11Device::GetDeviceSetting()
 {
-	return GLOBAL::GetDeviceInfo();
+	return GLOBAL::DeviceInfo();
 }
 
 
@@ -58,103 +29,15 @@ RDeviceDesc	RDX11Device::GetDeviceSetting()
 bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
 {
 	m_HWND = (HWND)param.hWnd;
-
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-
-	ZeroMemory( &swapChainDesc, sizeof( swapChainDesc ) );
-
-	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = param.width;
-	swapChainDesc.BufferDesc.Height = param.height;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.OutputWindow = (HWND)param.hWnd;
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
-	swapChainDesc.Windowed = true;
-
-	HRESULT hr = S_OK;
-	ID3D11DeviceContext* pImmediateContext = NULL;
-
-	D3D_DRIVER_TYPE driverTypes[] =
-	{
-		D3D_DRIVER_TYPE_HARDWARE,
-		D3D_DRIVER_TYPE_WARP,
-		D3D_DRIVER_TYPE_REFERENCE,
-	};
-	UINT numDriverTypes = ARRAYSIZE( driverTypes );
-
-	D3D_FEATURE_LEVEL featureLevels[] =
-	{
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
-		D3D_FEATURE_LEVEL_10_0,
-	};
-	UINT numFeatureLevels = ARRAYSIZE( featureLevels );
-
-	UINT createDeviceFlags = 0;
-#ifdef _DEBUG
-	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-	for( UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++ )
-	{
-		hr = D3D11CreateDeviceAndSwapChain( NULL, 
-											driverTypes[driverTypeIndex], 
-											NULL, 
-											createDeviceFlags, 
-											featureLevels, 
-											numFeatureLevels,
-											D3D11_SDK_VERSION, 
-											&swapChainDesc, 
-											&g_MainWindow.pSwapChain, 
-											&m_pD3Device, 
-											&m_FeatureLevel, 
-											&m_pContext );
-		if( SUCCEEDED( hr ) )
-			break;
-	}
-	TDXERROR(hr);
-	
-	// set global variables
-	g_D3Device = m_pD3Device;
-	g_D3DeviceContext = m_pContext;
-	g_RDX11Device = this;
-	g_pEngine = pEngine;
-
-	g_DeviceSetting.width = param.width;
-	g_DeviceSetting.height = param.height;
-
-	g_StateRepository.Init();
-
-	g_MainWindow.CreateMainFrameTarget();
-	g_MainWindow.CreateDefferedTarget(param.width, param.height);
-
-	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
-
-	// initialize subsystem
-	g_MultyThreadRenderer.InitAsyncRenderThreadObjects();
-	g_ShaderMgr.init();
-	g_RenderHelper.Init( "Data\\font\\Font.dds");
-
-	SetRenderStrategy(RS_DEFFERED);
-
-	return true;
+	return GLOBAL::StartUp(param, pEngine);
 }
 
 
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::ShutDown()
 {
-	g_RenderHelper.Destroy();
-	g_MainWindow.Destroy();
-	g_StateRepository.Destroy();
-	g_ShaderMgr.Destroy();
-	SAFE_RELEASE( m_pContext )
-	SAFE_RELEASE( m_pD3Device )
+	GLOBAL::ShutDown();
 }
-
 
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::SetViewport(float width, float height, float MinDepth, float MaxDepth, float TopLeftX, float TopLeftY)
@@ -168,19 +51,19 @@ void RDX11Device::SetViewport(float width, float height, float MinDepth, float M
 	vp.TopLeftX = TopLeftX;
 	vp.TopLeftY = TopLeftY;
 
-	m_pContext->RSSetViewports( 1, &vp );
+	GLOBAL::D3DContext()->RSSetViewports( 1, &vp );
 }
 
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
 {
-	g_pCurrentCameraDesc = cameraDesc;
+	GLOBAL::SetCameraDesc(cameraDesc);
 
 	// update global shader constant
 	CCAMERA_DESC cameraConstant = cameraDesc;
 	cameraConstant.ViewTM = XMMatrixTranspose( cameraDesc.ViewTM );
 	cameraConstant.ProjTM = XMMatrixTranspose( cameraDesc.ProjTM );
-	GLOBAL::GetShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), SM_BUF12_192BYTE_SLOT1, PS_SHADER );
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), SM_BUF12_192BYTE_SLOT1, PS_SHADER );
 
 	m_pCurrentRenderStrategy->RenderScene();
 }
@@ -189,8 +72,8 @@ void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy)
 {
-	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl );
-	GLOBAL::GetShaderMgr()->GetCurrentShader()->SetShaderContants( pRenderProxy->GetEntity()->GetWorldTM() );
+	GLOBAL::ShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl );
+	GLOBAL::ShaderMgr()->GetCurrentShader()->SetShaderContants( pRenderProxy->GetEntity()->GetWorldTM() );
 	RenderGeometry(pGeometry);
 }
 
@@ -202,41 +85,36 @@ void RDX11Device::RenderGeometry(CResourceGeometry*	pGeometry)
 	if( pGeometry->pGraphicMemoryVertexBufferOut != NULL)
 	{
 		stride[0] = VERTEX_STRIDE(pGeometry->eVertexType) + 4;
-		m_pContext->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBufferOut, stride, offset );
+		GLOBAL::D3DContext()->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBufferOut, stride, offset );
 	}
 	else
 	{
 		stride[0] = VERTEX_STRIDE(pGeometry->eVertexType);
-		m_pContext->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBuffer, stride, offset );
+		GLOBAL::D3DContext()->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBuffer, stride, offset );
 	}
 
 	if( pGeometry->pIndexBuffer != NULL)
 	{
 		if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
-			m_pContext->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
+			GLOBAL::D3DContext()->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
 		else
-			m_pContext->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R32_UINT, 0 );
+			GLOBAL::D3DContext()->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R32_UINT, 0 );
 
-		m_pContext->DrawIndexed( pGeometry->primitiveCount * 3, 0, 0 );
+		GLOBAL::D3DContext()->DrawIndexed( pGeometry->primitiveCount * 3, 0, 0 );
 	}
 }
 
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::Present()
 {
-	g_MainWindow.Present();
+	GLOBAL::Present();
 }
 
 
 //----------------------------------------------------------------------------------------------------------
 bool RDX11Device::Resize(int width, int height)
 {
-	g_DeviceSetting.width = width;
-	g_DeviceSetting.height = height;
-
-	SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
-
-	return g_MainWindow.Resize(width, height, false);
+	return GLOBAL::Resize(height, width);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -295,7 +173,7 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 
 		ID3D11Texture2D* pRT = (ID3D11Texture2D*)pTexture->pTextureSource;
 		if( pRT == NULL )
-			m_pD3Device->CreateTexture2D(&textureDesc, NULL, &pRT);
+			GLOBAL::D3DDevice()->CreateTexture2D(&textureDesc, NULL, &pRT);
 
 		if( pTexture->usage == TEXTURE_RENDER_RAGET )
 		{
@@ -306,7 +184,7 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 			renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-			m_pD3Device->CreateRenderTargetView( pRT, &renderTargetViewDesc, &pRTV);
+			GLOBAL::D3DDevice()->CreateRenderTargetView( pRT, &renderTargetViewDesc, &pRTV);
 			pTexture->pRenderTargetView = pRTV;
 		}
 
@@ -317,7 +195,7 @@ void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 		ID3D11ShaderResourceView* pSRV;
-		m_pD3Device->CreateShaderResourceView(pRT, &shaderResourceViewDesc, &pSRV);
+		GLOBAL::D3DDevice()->CreateShaderResourceView(pRT, &shaderResourceViewDesc, &pSRV);
 		pTexture->pShaderResourceView = pSRV;
 
 		if( pTexture->bDeleteMemoryAfterLoading )
@@ -414,11 +292,11 @@ void RDX11Device::RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size,
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory( &InitData, sizeof(InitData) );
 		InitData.pSysMem = pData;
-		TDXERROR( m_pD3Device->CreateBuffer( &bd, &InitData, ppBuffer ) );
+		TDXERROR( GLOBAL::D3DDevice()->CreateBuffer( &bd, &InitData, ppBuffer ) );
 	}
 	else
 	{
-		TDXERROR( m_pD3Device->CreateBuffer( &bd, NULL, ppBuffer ) );
+		TDXERROR( GLOBAL::D3DDevice()->CreateBuffer( &bd, NULL, ppBuffer ) );
 	}
 }
 
@@ -427,7 +305,7 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
 	HRESULT hr = S_OK;
 	ID3D11Resource *pDXTexture = NULL;
 
-	hr = D3DX11CreateTextureFromFileA( m_pD3Device, fileName, NULL, NULL, &pDXTexture, NULL );
+	hr = D3DX11CreateTextureFromFileA( GLOBAL::D3DDevice(), fileName, NULL, NULL, &pDXTexture, NULL );
 
 	if( FAILED( hr ) )
 		return NULL;
@@ -455,7 +333,7 @@ bool RDX11Device::SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FIL
 
 	HRESULT hr = S_OK;
 
-	hr = D3DX11SaveTextureToFileA( GLOBAL::GetD3DContext(), pResource,  D3DX11_IMAGE_FILE_FORMAT(format), fileName );
+	hr = D3DX11SaveTextureToFileA( GLOBAL::D3DContext(), pResource,  D3DX11_IMAGE_FILE_FORMAT(format), fileName );
 
 	if( FAILED(hr) )
 	{

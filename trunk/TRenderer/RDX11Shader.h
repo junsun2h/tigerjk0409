@@ -1,12 +1,5 @@
 #pragma once
 
-#include "RDefine.h"
-#include "RDX11RenderStateMgr.h"
-
-class CResourceMtrl;
-struct IEntityProxyRender;
-
-
 
 struct SHADER_COMPILE_DESC
 {
@@ -28,29 +21,26 @@ struct SHADER_COMPILE_DESC
 	}
 };
 
-class RDX11Shader
+
+class RDX11ShaderBase : public IShader
 {
 public:
-	RDX11Shader();
-	virtual ~RDX11Shader();
+	RDX11ShaderBase();
+	virtual ~RDX11ShaderBase();
 
-	virtual void		Begin();
-	virtual void		End(){}
+	virtual void		Begin() override;
+	virtual void		End() override {}
 
-	virtual void		SetShaderContants(IEntityProxyRender* pRenderProxy){}
-	virtual void		SetShaderContants(CResourceMtrl* pMaterial){}
-	virtual void		SetShaderContants(XMMATRIX& tm){}
+	virtual void		SetShaderContants(IEntityProxyRender* pRenderProxy) override {}
+	virtual void		SetShaderContants(CResourceMtrl* pMaterial) override {}
+	virtual void		SetShaderContants(XMMATRIX& tm) override {}
 
+public:
 	void				CreateVS( SHADER_COMPILE_DESC& desc);
 	void				CreatePS( SHADER_COMPILE_DESC& desc);
 
 	void				SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)		{ m_Topology = topology; }
-	void				SetRenderState(	DEPTH_STENCIL_TYPE DepthStencilState,
-										RASTERIZER_TYPE RasterizerState,
-										ALPHA_BLEND_TYPE BlendState,
-										UINT StencilRef = NULL,
-										float* blendFactor = NULL,
-										UINT sampleMask = 0xffffffff);
+	void				SetRenderState(	const GRAPHIC_DEVICE_DESC desc);
 
 	void				ApplyRenderState();
 	void				Destroy();
@@ -66,10 +56,5 @@ private:
 
 	D3D_PRIMITIVE_TOPOLOGY		m_Topology;
 
-	DEPTH_STENCIL_TYPE			m_DepthStencilState;
-	RASTERIZER_TYPE				m_RasterizerState;
-	ALPHA_BLEND_TYPE			m_BlendState;
-	UINT						m_StencilRef;
-	float						m_BlendFactor[4];
-	UINT						m_SampleMask;
+	GRAPHIC_DEVICE_DESC			m_RenderState;
 };
