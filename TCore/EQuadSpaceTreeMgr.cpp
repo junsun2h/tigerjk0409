@@ -1,7 +1,13 @@
-#include "EGlobal.h"
+#include <atlcoll.h>
+
 
 #include "CUnitPool.h"
 #include "CFrustrum.h"
+#include "CMathType.h"
+#include "CText.h"
+
+#include "ISpaceMgr.h"
+#include "IEntity.h"
 
 #include "EQuadSpaceTreeNode.h"
 #include "EQuadSpaceTreeMgr.h"
