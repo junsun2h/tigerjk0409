@@ -96,12 +96,12 @@ EQuadSpaceTreeNode*	EQuadSpaceTreeMgr::GetSpace(UINT index)
 	return itr->m_value;
 }
 
-void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(IEntityProxyCamera* pCamera)
+void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc)
 {
 	m_VisibleSpaceList.clear();
 
 	CFrustumCull frustrum;
-	frustrum.ConstructFrustum(pCamera);
+	frustrum.ConstructFrustum( cameraDesc );
 
 	POSITION pos = m_SpaceMap.GetStartPosition();
 	TYPE_SPACE_NODE_MAP::CPair* itr = NULL;
