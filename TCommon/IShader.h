@@ -24,6 +24,8 @@ enum SHADER_TYPE
 
 struct IShader
 {
+	virtual ~IShader(){}
+
 	virtual void		Begin() = 0;
 	virtual void		End() = 0;
 
