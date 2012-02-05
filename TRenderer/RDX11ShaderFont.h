@@ -1,8 +1,7 @@
 #pragma once
 
-#include "RDX11Shader.h"
 
-class RDX11ShaderFont : public RDX11Shader
+class RDX11ShaderFont : public RDX11ShaderBase
 {
 public:
 	RDX11ShaderFont();

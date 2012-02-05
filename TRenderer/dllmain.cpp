@@ -2,9 +2,8 @@
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
-#include "RDX11Device.h"
-
-RDX11Device g_RDevice;
+#include <CGuid.h>
+#include "RDX11Global.h"
 
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -27,6 +26,6 @@ extern "C"
 {
 	DLL_EXPORT IRDevice* CreateDX11Renderer()
 	{
-		return &g_RDevice;
+		return GLOBAL::RDevice();
 	}
 }

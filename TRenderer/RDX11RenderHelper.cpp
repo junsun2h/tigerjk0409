@@ -1,7 +1,9 @@
-#include "RDX11RenderHelper.h"
-#include "CResource.h"
-#include "RDX11Device.h"
+#include "RDX11Global.h"
+
 #include "CGeometryConstructor.h"
+#include "CGrowableArray.h"
+
+#include "RDX11RenderHelper.h"
 
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -14,16 +16,8 @@ RDX11RenderHelper::RDX11RenderHelper()
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::Init(const char* fontDDS)
-{
-	m_FontRenderer.SetFontFile(fontDDS);
-}
-
-
-//--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::Destroy()
 {
-	m_FontRenderer.Destroy();
 	SAFE_RELEASE( m_pLineBuffer )
 	m_LineVertices.RemoveAll();
 	m_LineBufferBytes = 0;
@@ -33,8 +27,8 @@ void RDX11RenderHelper::Destroy()
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 {
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
 
 	CVertexPC v1;
 
@@ -62,7 +56,7 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::GetD3DStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 	DrawLine();
 }
 
@@ -70,8 +64,8 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 {
 	IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
-	RDX11Shader* pShader = GLOBAL::GetShaderMgr()->GetShader(EFFECT_MPASS_MESH);
-	RDX11Device* pDevice = GLOBAL::GetRDX11Device();
+	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_MPASS_MESH);
+	IRDX11Device* pDevice = GLOBAL::RDevice();
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
 	
@@ -132,9 +126,9 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 {
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
-	GLOBAL::GetD3DStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
 
@@ -201,8 +195,8 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 {
 	IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
-	RDX11Shader* pShader = GLOBAL::GetShaderMgr()->GetShader(EFFECT_MPASS_MESH);
-	RDX11Device* pDevice = GLOBAL::GetRDX11Device();
+	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_MPASS_MESH);
+	IRDX11Device* pDevice = GLOBAL::RDevice();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
@@ -273,8 +267,8 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
 	DrawLine();
 }
 
@@ -363,8 +357,8 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::GetShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
 	DrawLine();
 }
 
@@ -384,13 +378,13 @@ void RDX11RenderHelper::DrawLine()
 		BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		BufferDesc.MiscFlags = 0;
 
-		GLOBAL::GetD3DDevice()->CreateBuffer( &BufferDesc, NULL, &m_pLineBuffer );
+		GLOBAL::D3DDevice()->CreateBuffer( &BufferDesc, NULL, &m_pLineBuffer );
 		DXUT_SetDebugName( m_pLineBuffer, "LineBuffer" );
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// Copy the sprites over
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	D3D11_BOX destRegion;
 	destRegion.left = 0;
@@ -421,6 +415,6 @@ void RDX11RenderHelper::DrawLine()
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderText(RENDER_TEXT_BUFFER& text)
 {
-	m_FontRenderer.Render(text);
+	GLOBAL::FontRenderer()->Render(text);
 }
 

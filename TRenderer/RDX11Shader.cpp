@@ -1,5 +1,5 @@
+#include "RDX11Global.h"
 #include "RDX11Shader.h"
-#include "RDX11Device.h"
 
 
 //--------------------------------------------------------------------------------------------------------
@@ -39,37 +39,28 @@ HRESULT CompileShader( SHADER_COMPILE_DESC& desc, ID3DBlob** ppBlobOut )
 
 
 //--------------------------------------------------------------------------------------------------------
-RDX11Shader::RDX11Shader()
+RDX11ShaderBase::RDX11ShaderBase()
 	: m_pVertexShader(NULL)
 	, m_pPixelShader(NULL)	
 	, m_pGeometryShader(NULL)
 	, m_pVertexLayout(NULL)
-	, m_DepthStencilState(DEPTH_STENCIL_WRITE)
-	, m_RasterizerState(RASTERIZER_CULL_BACK)
-	, m_BlendState(BLEND_NONE)
 {
-
 }
 
 
-RDX11Shader::~RDX11Shader()
+RDX11ShaderBase::~RDX11ShaderBase()
 {
 	Destroy();
 }
 
 
 //--------------------------------------------------------------------------------------------------------
-void RDX11Shader::Begin()
+void RDX11ShaderBase::Begin()
 {
-	GLOBAL::GetShaderMgr()->SetCurrentShader(this);
-	GLOBAL::GetD3DStateMgr()->ApplyRenderState(	m_DepthStencilState,
-												m_RasterizerState,
-												m_BlendState,
-												m_StencilRef,
-												m_BlendFactor,
-												m_SampleMask);
+	GLOBAL::ShaderMgr()->SetCurrentShader(this);
+	GLOBAL::RenderStateMgr()->ApplyRenderState(	m_RenderState );
 
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	if( m_pVertexShader != NULL )
 		pContext->VSSetShader( m_pVertexShader, NULL, 0 );
@@ -93,29 +84,14 @@ void RDX11Shader::Begin()
 
 
 //--------------------------------------------------------------------------------------------------------
-void RDX11Shader::SetRenderState(	DEPTH_STENCIL_TYPE DepthStencilState,
-									RASTERIZER_TYPE RasterizerState,
-									ALPHA_BLEND_TYPE BlendState,
-									UINT StencilRef,
-									float* blendFactor,
-									UINT sampleMask)
+void RDX11ShaderBase::SetRenderState(const GRAPHIC_DEVICE_DESC desc)
 {
-	m_DepthStencilState = DepthStencilState;
-	m_RasterizerState = RasterizerState;
-	m_BlendState = BlendState;
-	m_StencilRef = StencilRef;
-
-	if( blendFactor != NULL)
-		memcpy( m_BlendFactor, blendFactor, 16 );
-	else
-		memset( m_BlendFactor, 0, 16);
-
-	m_SampleMask = sampleMask;
+	m_RenderState = desc;
 }
 
 
 //--------------------------------------------------------------------------------------------------------
-void RDX11Shader::Destroy()
+void RDX11ShaderBase::Destroy()
 {
 	SAFE_RELEASE(m_pVertexShader)
 	SAFE_RELEASE(m_pPixelShader)
@@ -125,7 +101,7 @@ void RDX11Shader::Destroy()
 
 
 //--------------------------------------------------------------------------------------------------------
-void RDX11Shader::CreateVS( SHADER_COMPILE_DESC& desc)
+void RDX11ShaderBase::CreateVS( SHADER_COMPILE_DESC& desc)
 {
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
@@ -135,7 +111,7 @@ void RDX11Shader::CreateVS( SHADER_COMPILE_DESC& desc)
 	else
 		CompileShaderFromFile( desc, &pBlob );
 
-	V( GLOBAL::GetD3DDevice()->CreateVertexShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pVertexShader ) );
+	V( GLOBAL::D3DDevice()->CreateVertexShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pVertexShader ) );
 
 #if defined( DEBUG ) || defined( _DEBUG )
 	if( desc.debugName != 0)
@@ -144,7 +120,7 @@ void RDX11Shader::CreateVS( SHADER_COMPILE_DESC& desc)
 
 	if( desc.layoutSize != 0 )
 	{
-		V( GLOBAL::GetD3DDevice()->CreateInputLayout( desc.pLayout, desc.layoutSize, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &m_pVertexLayout ) );
+		V( GLOBAL::D3DDevice()->CreateInputLayout( desc.pLayout, desc.layoutSize, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &m_pVertexLayout ) );
 	}
 
 	SAFE_RELEASE( pBlob );
@@ -152,7 +128,7 @@ void RDX11Shader::CreateVS( SHADER_COMPILE_DESC& desc)
 
 
 //--------------------------------------------------------------------------------------------------------
-void RDX11Shader::CreatePS( SHADER_COMPILE_DESC& desc )
+void RDX11ShaderBase::CreatePS( SHADER_COMPILE_DESC& desc )
 {
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
@@ -162,7 +138,7 @@ void RDX11Shader::CreatePS( SHADER_COMPILE_DESC& desc )
 	else
 		CompileShaderFromFile( desc, &pBlob );
 
-	V( GLOBAL::GetD3DDevice()->CreatePixelShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pPixelShader ) );
+	V( GLOBAL::D3DDevice()->CreatePixelShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pPixelShader ) );
 
 #if defined( DEBUG ) || defined( _DEBUG )
 	DXUT_SetDebugName( m_pPixelShader, desc.debugName );

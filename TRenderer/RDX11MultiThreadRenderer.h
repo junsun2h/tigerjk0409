@@ -1,11 +1,6 @@
 #pragma once
 
 
-#include "CDefine.h"
-#include "IRDevice.h"
-#include "CGrowableArray.h"
-
-
 enum eRENDER_BUFFER
 {
 	RENDER_BUFFER_0,

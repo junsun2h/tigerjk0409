@@ -1,21 +1,15 @@
 #pragma once
 
 
-#include "RDefine.h"
-#include "CGrowableArray.h"
-#include "CResource.h"
-#include "CText.h"
 
-
-class RDX11FontRenderer
+class RDX11FontRenderer : public IFontRenderer
 {
 public:
 	RDX11FontRenderer();
 
-	HRESULT		SetFontFile(const char* fontDDS);
-	void		Destroy();
-
-	void		Render( RENDER_TEXT_BUFFER& text );
+	bool		SetFontFile(const char* fontDDS) override;
+	void		Destroy() override;
+	void		Render( RENDER_TEXT_BUFFER& text ) override;
 
 private:
 	void		FillVertex( RENDER_TEXT_BUFFER& text );

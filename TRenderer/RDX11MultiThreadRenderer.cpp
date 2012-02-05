@@ -1,5 +1,10 @@
-#include "RDX11MultiThreadRenderer.h"
 #include <process.h>
+
+#include "CDefine.h"
+#include "IRDevice.h"
+#include "CGrowableArray.h"
+
+#include "RDX11MultiThreadRenderer.h"
 
 
 #define CHECK_COMMAND(ptr)	\

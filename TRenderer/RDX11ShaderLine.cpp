@@ -1,5 +1,6 @@
+#include "RDX11Global.h"
+#include "RDX11Shader.h"
 #include "RDX11ShaderLine.h"
-#include "RDX11Device.h"
 
 
 char g_strLineEffectFile[] = \
@@ -66,7 +67,13 @@ RDX11ShaderLine::RDX11ShaderLine()
 
 	CreatePS(desc);
 
-	SetRenderState(DEPTH_STENCIL_ON, RASTERIZER_CULL_BACK, BLEND_NONE);
+
+	GRAPHIC_DEVICE_DESC renderDesc;
+	renderDesc.DepthStencil = DEPTH_STENCIL_ON;
+	renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
+	renderDesc.BlendState = BLEND_NONE;
+
+	SetRenderState( renderDesc );
 	SetTopology( D3D_PRIMITIVE_TOPOLOGY_LINELIST );
 }
 
@@ -78,11 +85,11 @@ void RDX11ShaderLine::SetShaderContants(XMMATRIX& tm)
 		XMMATRIX wvp;
 	}modelVS;
 
-	const CCAMERA_DESC& camera = GLOBAL::GetCameraDesc();
+	const CCAMERA_DESC& camera = GLOBAL::CameraDesc();
 
 	modelVS.wvp = XMMatrixMultiply( tm, camera.ViewTM ); 
 	modelVS.wvp = XMMatrixMultiply( modelVS.wvp, camera.ProjTM ); 
 	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
 
-	GLOBAL::GetShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VS_SHADER );
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VS_SHADER );
 }

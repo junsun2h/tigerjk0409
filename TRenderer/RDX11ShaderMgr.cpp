@@ -1,9 +1,12 @@
-#include "RDX11ShaderMgr.h"
-#include "RDX11Device.h"
+#include "RDX11Global.h"
+
+#include "RDX11Shader.h"
 #include "RDX11ShaderLine.h"
 #include "RDX11ShaderFont.h"
 #include "RDX11ShaderGPassLambert.h"
 #include "RDX11ShaderMPassMesh.h"
+
+#include "RDX11ShaderMgr.h"
 
 
 RDX11ShaderMgr::RDX11ShaderMgr()
@@ -55,7 +58,7 @@ void RDX11ShaderMgr::Destroy()
 
 
 //------------------------------------------------------------------------------------------------------------
-RDX11Shader* RDX11ShaderMgr::GetShader(EFFECT_TYPE type)
+IShader* RDX11ShaderMgr::GetShader(EFFECT_TYPE type)
 {
 	SHADER_MAP::CPair* pShader = m_ShaderMap.Lookup( type );
 	if( pShader != NULL )
@@ -102,12 +105,12 @@ void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_
 	memcpy( pData, pScr, size );
 
 	ID3D11Buffer* pDXBuffer = NULL;
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	CONST_BUFFER_MAP::CPair* pBuffer = m_ConstBufferMap[type].Lookup( slot );
 	if( pBuffer == NULL )
 	{
-		GLOBAL::GetRDX11Device()->RecreateBuffer( &pDXBuffer, pData, GetDXBufSize(slot), D3D11_BIND_CONSTANT_BUFFER );
+		GLOBAL::RDevice()->RecreateBuffer( &pDXBuffer, pData, GetDXBufSize(slot), D3D11_BIND_CONSTANT_BUFFER );
 		m_ConstBufferMap[type].SetAt( slot, pDXBuffer);
 	}
 	else
@@ -128,38 +131,6 @@ void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_
 void RDX11ShaderMgr::UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYPE textureType)
 {
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
-	/*
-	if ( textureType == PARAM_DIFFISE )
-	{
-		if( pMtrl->RID_textures[PARAM_DIFFISE] != 0)
-		{
-			CResourceTexture* pTexture = (CResourceTexture*)pAssetMgr->GetResource( RESOURCE_TEXTURE, pMtrl->RID_textures[PARAM_DIFFISE] );
-			pContext->PSSetShaderResources( SHADER_RESOURCE_VIEW_DIFFISE, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
-		}	
-	}
-	else if( textureType == PARAM_NORMAL )
-	{
-		if( pMtrl->RID_textures[PARAM_DIFFISE] != 0)
-		{
-			CResourceTexture* pTexture = (CResourceTexture*)pAssetMgr->GetResource( RESOURCE_TEXTURE, pMtrl->RID_textures[PARAM_DIFFISE] );
-			pContext->PSSetShaderResources( SHADER_RESOURCE_VIEW_DIFFISE, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
-		}	
-	}
-	else if( textureType == PARAM_SPECULAR )
-	{
-		if( pMtrl->RID_textures[PARAM_DIFFISE] != 0)
-		{
-			CResourceTexture* pTexture = (CResourceTexture*)pAssetMgr->GetResource( RESOURCE_TEXTURE, pMtrl->RID_textures[PARAM_DIFFISE] );
-			pContext->PSSetShaderResources( SHADER_RESOURCE_VIEW_DIFFISE, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
-		}	
-	}
-	else if( textureType == PARAM_TRANSPARENCY )
-	{
-		if( pMtrl->RID_textures[PARAM_DIFFISE] != 0)
-		{
-			CResourceTexture* pTexture = (CResourceTexture*)pAssetMgr->GetResource( RESOURCE_TEXTURE, pMtrl->RID_textures[PARAM_DIFFISE] );
-			pContext->PSSetShaderResources( SHADER_RESOURCE_VIEW_DIFFISE, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
-		}	
-	}*/
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
+
 }

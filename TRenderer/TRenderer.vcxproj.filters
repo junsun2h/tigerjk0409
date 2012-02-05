@@ -4,7 +4,6 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="RDX11Device.cpp" />
     <ClCompile Include="RDX11Miscellaneous.cpp" />
-    <ClCompile Include="RDX11Font.cpp" />
     <ClCompile Include="RDX11RenderHelper.cpp" />
     <ClCompile Include="RDX11Shader.cpp">
       <Filter>Shader</Filter>
@@ -28,13 +27,14 @@
     <ClCompile Include="RDX11ShaderMPassMesh.cpp">
       <Filter>Shader\fx\MPass</Filter>
     </ClCompile>
+    <ClCompile Include="RDX11Global.cpp" />
+    <ClCompile Include="RDX11FontRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RDefine.h" />
     <ClInclude Include="RDX11Device.h" />
     <ClInclude Include="RDX11Miscellaneous.h" />
     <ClInclude Include="RDX11DDS.h" />
-    <ClInclude Include="RDX11Font.h" />
     <ClInclude Include="RDX11RenderHelper.h" />
     <ClInclude Include="RDX11Shader.h">
       <Filter>Shader</Filter>
@@ -58,6 +58,11 @@
     <ClInclude Include="RDX11ShaderMPassMesh.h">
       <Filter>Shader\fx\MPass</Filter>
     </ClInclude>
+    <ClInclude Include="RDX11Global.h" />
+    <ClInclude Include="IRDX11Device.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="RDX11FontRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -83,6 +88,9 @@
     </Filter>
     <Filter Include="Shader\fx\ScreenSpaceDrawing">
       <UniqueIdentifier>{bfa0d8ce-ce5f-4653-b5c2-4b236ad105e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{731828e1-5ea0-4c12-8a36-cb191aa4f508}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

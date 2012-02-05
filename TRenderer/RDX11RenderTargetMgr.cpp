@@ -1,5 +1,6 @@
+#include "RDX11Global.h"
 #include "RDX11RenderTargetMgr.h"
-#include "RDX11Device.h"
+
 
 RDX11RenderTargetMgr::RDX11RenderTargetMgr()
 	: pSwapChain(NULL)
@@ -28,7 +29,7 @@ void RDX11RenderTargetMgr::Destroy()
 
 bool RDX11RenderTargetMgr::CreateMainFrameTarget()
 {
-	ID3D11Device* pD3Device = GLOBAL::GetD3DDevice();
+	ID3D11Device* pD3Device = GLOBAL::D3DDevice();
 
 	if( pSwapChain == NULL)
 	{
@@ -116,10 +117,10 @@ bool RDX11RenderTargetMgr::Resize(int cx, int cy, bool bFullScreen)
 	
 	for( int i=0; i < NUM_DEFFERED_RENDER_TARGET; ++i)
 	{
-		GLOBAL::GetRDX11Device()->RemoveGraphicBuffer( m_DefferdRenderTargets[i] );
+		GLOBAL::RDevice()->RemoveGraphicBuffer( m_DefferdRenderTargets[i] );
 		m_DefferdRenderTargets[i]->Width = cx;
 		m_DefferdRenderTargets[i]->height = cy;
-		GLOBAL::GetRDX11Device()->CreateGraphicBuffer( m_DefferdRenderTargets[i] );
+		GLOBAL::RDevice()->CreateGraphicBuffer( m_DefferdRenderTargets[i] );
 	}
 	
 	return true;
@@ -130,9 +131,9 @@ void RDX11RenderTargetMgr::Present()
 	pSwapChain->Present(0,0);
 }
 
-void RDX11RenderTargetMgr::ClearAndSet()
+void RDX11RenderTargetMgr::ClearAndSetMaineFrame()
 {
-	ID3D11DeviceContext* pContext = GLOBAL::GetD3DContext();
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	pContext->OMSetRenderTargets( 1, &pMainFrameRTV, pDSV );
 	pContext->ClearRenderTargetView( pMainFrameRTV, clearColor);
