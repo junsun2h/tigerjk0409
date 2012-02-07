@@ -40,7 +40,7 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 	for( UINT i=0 ; i < pResource->jointList.size(); ++i )
 	{
 		const CJoint& joint = pResource->jointList[i];
-		std::string name = m_pEntity->GetName() + joint.name;
+		std::string name = m_pEntity->GetName() + "_" + joint.name;
 		IEntity* pJointEntity = pEntityMgr->SpawnEntity( name );
 
 		pJointEntity->SetLocalPos( joint.pos );
@@ -49,9 +49,9 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 		if( joint.parentIndex == -1 )
 			m_pEntity->AttachChild( pJointEntity, true );
 		else
-			m_pJoints[joint.parentIndex]->AttachChild(pJointEntity, true);
+			m_pJointEntities[joint.parentIndex]->AttachChild(pJointEntity, true);
 
-		m_pJoints.push_back(pJointEntity);
+		m_pJointEntities.push_back(pJointEntity);
 	}
 }
 
@@ -59,11 +59,11 @@ void EEntityProxyActor::Destroy()
 {
 	IEntityMgr* pEntityMgr = GLOBAL::EntityMgr();
 	
-	for(int i = m_pJoints.size() -1 ; i > -1 ; --i )
+	for(int i = m_pJointEntities.size() -1 ; i > -1 ; --i )
 	{
-		pEntityMgr->RemoveEntity( m_pJoints[i]->GetID() );
+		pEntityMgr->RemoveEntity( m_pJointEntities[i]->GetID() );
 	}
 
-	m_pJoints.clear();
+	m_pJointEntities.clear();
 	m_pResource = NULL;
 }

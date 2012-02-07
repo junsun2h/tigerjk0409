@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="S3DViewPanel.h" />
+    <ClInclude Include="SAnimationToolBar.h" />
     <ClInclude Include="SAssetPanel.h" />
     <ClInclude Include="SDragAndDropState.h" />
     <ClInclude Include="SEntityTreeCtrl.h" />
@@ -101,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="S3DViewPanel.cpp" />
+    <ClCompile Include="SAnimationToolBar.cpp" />
     <ClCompile Include="SApp.cpp" />
     <ClCompile Include="SAssetPanel.cpp" />
     <ClCompile Include="SDragAndDropState.cpp" />

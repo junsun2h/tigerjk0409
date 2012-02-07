@@ -1,10 +1,11 @@
-#include "SPropertyPanel.h"
 #include "SPropertyGrid.h"
 #include "STexturePopupWindow.h"
 #include "STextureConvertor.h"
 #include "SEntityTreeCtrl.h"
 #include "SSceneTreeCtrl.h"
+#include "SAnimationToolBar.h"
 
+#include "SPropertyPanel.h"
 
 
 IMPLEMENT_DYNAMIC_CLASS(SPropertyPanel, wxPanel)
@@ -26,12 +27,14 @@ SPropertyPanel::SPropertyPanel(wxWindow* parent)
 	m_pGridMgr = new SPropertyGrid(this);	
 	m_pEntityTreeCtrl = new SEntityTreeCtrl(this, m_pGridMgr, ID_PROPERTY_ENTITY_TREECTRL);
 	m_pSceneTreeCtrl = new SSceneTreeCtrl(this, m_pGridMgr, ID_PROPERTY_SCENE_TREECTRL);
+	m_pAnimationTooBar = new SAnimationToolBar(this, ID_PROPERTY_ANIMATION_TOOLBAR);
 
+	pRootSizer->Add(m_pAnimationTooBar, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pTextureCanvas, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pEntityTreeCtrl, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pSceneTreeCtrl, 0, wxALL|wxEXPAND, 5);
 	pRootSizer->Add(m_pGridMgr, wxSizerFlags(1).Center().Expand());
-
+	
 	SetSizerAndFit(pRootSizer);
 
 	Empty();
@@ -42,7 +45,10 @@ void SPropertyPanel::SetObject( IEntity* pEntity )
 	m_pEntityTreeCtrl->SetEntity(pEntity);
 	m_pGridMgr->Clear();
 
-	OrganizeInside( ENTITY_TREE_CTRL | PROPERTY_GRID );
+	if( pEntity->GetProxy(ENTITY_PROXY_ACTOR ) )
+		OrganizeInside( ENTITY_TREE_CTRL | PROPERTY_GRID | ANIMATION_TOOLBAR);
+	else
+		OrganizeInside( ENTITY_TREE_CTRL | PROPERTY_GRID );
 }
 
 void SPropertyPanel::SetObject( const CResourceTexture* pResource )
@@ -96,6 +102,10 @@ void SPropertyPanel::OrganizeInside(DWORD flag)
 	else
 		m_pGridMgr->Hide();
 
+	if( ( flag & ANIMATION_TOOLBAR ) == ANIMATION_TOOLBAR )
+		m_pAnimationTooBar->Show();
+	else
+		m_pAnimationTooBar->Hide();
 
 	GetSizer()->FitInside( this );
 	GetSizer()->RecalcSizes();
