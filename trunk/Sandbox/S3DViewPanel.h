@@ -22,8 +22,6 @@ private:
 	void	OnKeyDown(wxKeyEvent& event);
 
 	void	UpdateCamera(wxMouseEvent& event);
-	void	UpdateObserverCamera(CVector2& dPoint, wxMouseEvent& event);
-	void	UpdateObserverCameraWithoutEntity(CVector2& dPoint, wxMouseEvent& event);
 	bool	UpdateDrag(wxMouseEvent& e);
 
 	void	PickFromScreen(TYPE_ENTITY_LIST& list, long x, long y);

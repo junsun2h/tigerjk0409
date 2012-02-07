@@ -83,6 +83,7 @@ void S3DViewPanel::PostRender()
 	{
 		IEntity* pEntity = (*selcetedEntities)[i];
 
+		// Draw transform helper
 		CQuat rot;
 		XMMATRIX tm  = XMMatrixIdentity();
 		tm.r[3] = pEntity->GetWorldTM().r[3];
@@ -104,6 +105,7 @@ void S3DViewPanel::PostRender()
 
 		const CAABB* pWorldAABB = pEntity->GetWorldAABB();
 
+		// Draw Bounding Box
 		if( pWorldAABB->IsValid() )
 		{
 			pRenderHelper->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
@@ -112,6 +114,9 @@ void S3DViewPanel::PostRender()
 			if( pLocalEntityAABB->IsValid() )
 				pRenderHelper->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
 		}
+
+		// Draw skeleton if it has a actor
+		pRenderHelper->RenderSkeleton(pEntity);
 	}
 }
 
@@ -166,60 +171,52 @@ void S3DViewPanel::UpdateCamera(wxMouseEvent& event)
 		point.x = x;
 		point.y = y;
 
-		if(  GLOBAL::SelectionMgr()->List()->size() == 0 )
-			UpdateObserverCameraWithoutEntity(dPoint, event);
-		else
-			UpdateObserverCamera(dPoint, event);
-	}
-}
+		IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
 
-void S3DViewPanel::UpdateObserverCamera(CVector2& dPoint, wxMouseEvent& e)
-{
-	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
+		if( event.LeftIsDown() )
+		{	
+			if( GLOBAL::SelectionMgr()->List()->size() == 0 )
+			{
+				// FPS camera moving
+				if( fabs(dPoint.x) > fabs(dPoint.y) )
+					pCamera->RotateLocalAxis( CVector3(0, 0, 1), dPoint.x * 0.005f);
+				else
+					pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
+			}
+			else
+			{
+				// rotate in entity coordinate system
+				IEntity* pEntity = GLOBAL::SelectionMgr()->First();
+				XMMATRIX entityTM = XMMatrixIdentity();
+				entityTM.r[3] = pEntity->GetWorldPos().ToXMVEECTOR();
+				XMMATRIX invEntityTM = XMMATRIX_UTIL::Inverse(NULL, entityTM );
 
-	if( e.LeftIsDown() )
-	{		
-		if( fabs(dPoint.x) > fabs(dPoint.y) )
-		{
-			XMMATRIX rotTM = XMMatrixRotationAxis( CVector3(0,0,1).ToXMVEECTOR(), dPoint.x * 0.005f );
-			rotTM = XMMatrixMultiply( pCamera->GetWorldTM(), rotTM );
-			pCamera->SetWorldTM( rotTM );
+				XMMATRIX tm = XMMatrixMultiply( pCamera->GetWorldTM() , invEntityTM );
+
+				if( fabs(dPoint.x) > fabs(dPoint.y) )
+				{
+					XMMATRIX rotTM = XMMatrixRotationAxis( CVector3(0,0,1).ToXMVEECTOR(), dPoint.x * 0.005f );
+					tm = XMMatrixMultiply( tm, rotTM );
+
+				}
+				else
+				{
+					XMMATRIX rotTM = XMMatrixRotationAxis( pCamera->GetWorldTM().r[0] ,dPoint.y * 0.005f);
+					tm = XMMatrixMultiply( tm, rotTM );
+				}
+
+				tm = XMMatrixMultiply( tm, entityTM );
+				pCamera->SetWorldTM( tm );
+			}
 		}
-		else
+		else if( event.RightIsDown() )
 		{
-			XMMATRIX rot = XMMatrixRotationAxis( pCamera->GetWorldTM().r[0] ,dPoint.y * 0.005f);
-			rot = XMMatrixMultiply( pCamera->GetWorldTM(), rot);
-			pCamera->SetWorldTM(rot);
+			pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
 		}
-	}
-	else if( e.RightIsDown() )
-	{
-		pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
-	}
-	else if( e.MiddleIsDown() )
-	{
-		pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
-	}
-}
-
-void S3DViewPanel::UpdateObserverCameraWithoutEntity(CVector2& dPoint, wxMouseEvent& e)
-{
-	IEntity* pCamera = GLOBAL::ObserverCamera()->GetEntity();
-
-	if( e.LeftIsDown() )
-	{	
-		if( fabs(dPoint.x) > fabs(dPoint.y) )
-			pCamera->RotateLocalAxis( CVector3(0, 0, 1), dPoint.x * 0.005f);
-		else
-			pCamera->RotateLocalAxis( pCamera->GetWorldTM().r[0], dPoint.y * 0.005f );
-	}
-	else if( e.RightIsDown() )
-	{
-		pCamera->MoveOnLocalAxis( 0 , 0,  dPoint.y * m_CameraSpeed );
-	}
-	else if( e.MiddleIsDown() )
-	{
-		pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
+		else if( event.MiddleIsDown() )
+		{
+			pCamera->MoveOnLocalAxis( -dPoint.x * m_CameraSpeed , dPoint.y * m_CameraSpeed, 0 );
+		}
 	}
 }
 

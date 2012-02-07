@@ -318,7 +318,7 @@ void EEntity::AttachChild( IEntity* pChild, bool keepLocalTM   )
 			return;
 	}
 
-	m_Children.push_back( (EEntity*)pChild );
+	m_Children.push_back( pChild );
 	pChild->Reparent( this, keepLocalTM );
 
 	UpdateWorldAABB();
@@ -333,11 +333,12 @@ void EEntity::DetachChild( IEntity* _pChild )
 
 	for( ; itr != m_Children.end(); itr++ )
 	{
-		IEntity* pChild = *itr;
-		if( pChild == _pChild )
+		if( *itr == _pChild )
 		{
-			itr = m_Children.erase(itr);
-			_pChild->Reparent( NULL, false );
+			m_Children.erase( itr);
+			EEntity* pChild = (EEntity*)_pChild;
+			pChild->m_pParent = NULL;
+			pChild->SetLocalTM( pChild->GetWorldTM());
 			UpdateWorldAABB();
 			return;
 		}
@@ -346,18 +347,14 @@ void EEntity::DetachChild( IEntity* _pChild )
 
 void EEntity::DetachAllChild()
 {
-	TYPE_ENTITY_LIST::iterator itr = m_Children.begin();
-
-	for( ; itr != m_Children.end(); itr++ )
+	for(UINT i =0; i < m_Children.size(); ++i )
 	{
-		IEntity* pChild = *itr;
-		itr = m_Children.erase(itr);
-		pChild->Reparent( NULL , false );
-
-		if( itr == m_Children.end() )
-			break;
+		EEntity* pChild = (EEntity*)m_Children[i];
+		pChild->m_pParent = NULL;
+		pChild->SetLocalTM( pChild->GetWorldTM());
 	}
 
+	m_Children.clear();
 	UpdateWorldAABB();
 }
 

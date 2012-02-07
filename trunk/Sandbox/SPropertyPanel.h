@@ -8,13 +8,14 @@
 class SCanvas;
 class SEntityTreeCtrl;
 class SSceneTreeCtrl;
-
+class SAnimationToolBar;
 
 enum PROPERTY_WIDGET_ID
 {
 	ID_PROPERTY_ENTITY_TREECTRL,
 	ID_PROPERTY_SCENE_TREECTRL,
-	ID_PROPERTY_GRID
+	ID_PROPERTY_GRID,
+	ID_PROPERTY_ANIMATION_TOOLBAR
 };
 
 enum PROPERTY_SUB_WINDOWS
@@ -22,7 +23,8 @@ enum PROPERTY_SUB_WINDOWS
 	TEXTURE_CANVAS	= BIT(1),
 	PROPERTY_GRID	= BIT(2),
 	ENTITY_TREE_CTRL = BIT(3),
-	SCENE_TREE_CTRL	= BIT(4)
+	SCENE_TREE_CTRL	= BIT(4),
+	ANIMATION_TOOLBAR = BIT(5)
 };
 
 class SPropertyGrid;
@@ -50,6 +52,7 @@ private:
 	SPropertyGrid*			m_pGridMgr;
 	SEntityTreeCtrl*		m_pEntityTreeCtrl;
 	SSceneTreeCtrl*			m_pSceneTreeCtrl;
+	SAnimationToolBar*		m_pAnimationTooBar;
 
 	DECLARE_EVENT_TABLE()
 };

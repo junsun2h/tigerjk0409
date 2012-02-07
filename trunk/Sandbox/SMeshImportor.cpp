@@ -80,7 +80,7 @@ namespace SMESH_LOADER
 	//------------------------------------------------------------------------------------------------------
 	bool LoadRawActor(const char* strFileName, SRAW_ACTOR& rawActor)
 	{
-		char delimiters[2] = { ' ', char(13) };
+		char delimiters[2] = { '/', char(13) };
 		char* pContext = NULL;
 
 #define READ_BUFFER_SIZE 256

@@ -33,11 +33,15 @@ struct IEntityProxy
 	virtual	void				ProcessEvent( EntityEvent &event ) = 0;
 };
 
+
+typedef std::vector<IEntity*>	JOINT_ENTITY_LIST;
+
 struct IEntityProxyActor : IEntityProxy
 {
 	virtual eENTITY_PROXY_TYPE		GetType()			{ return ENTITY_PROXY_ACTOR; };
 	virtual const char*				GetTypeString()		{ return "ENTITY_PROXY_ACTOR"; }
 
+	virtual	JOINT_ENTITY_LIST*		GetJointEntities() =0;
 	virtual const CResourceActor*	GetActorInfo() = 0;
 	virtual IMotionMgr*				GetMotionMgr() = 0;
 	virtual	void					SetActor(const CResourceActor* pResource) = 0;

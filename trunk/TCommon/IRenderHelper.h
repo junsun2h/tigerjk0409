@@ -1,9 +1,11 @@
 #pragma once
 
 
+struct IEntity;
 
 struct IRenderHelper
 {
+	virtual void	RenderSkeleton(IEntity* pEntity) = 0;
 	virtual void	RenderAxis(XMMATRIX& tm, float scale) = 0;
 	virtual void	RenderScaler(XMMATRIX& tm, float scale) = 0;
 	virtual void	RenderRotator(XMMATRIX& tm, float scale) =0;

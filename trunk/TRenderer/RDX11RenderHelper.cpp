@@ -25,6 +25,33 @@ void RDX11RenderHelper::Destroy()
 
 
 //--------------------------------------------------------------------------------------------------------------------
+void RDX11RenderHelper::RenderSkeleton(IEntity* pEntity)
+{
+	IEntityProxyActor* pActor = (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR);
+	if( pActor == NULL)
+		return;
+
+	JOINT_ENTITY_LIST* pJointEntitesList = pActor->GetJointEntities();
+
+	CVertexPC v1;
+	v1.color = COLOR_RED;
+
+	for( UINT i=1; i < pJointEntitesList->size(); ++i)
+	{
+		v1.vPos = (*pJointEntitesList)[i]->GetWorldPos();
+		m_LineVertices.Add(v1);
+		v1.vPos = (*pJointEntitesList)[i]->GetParent()->GetWorldPos();
+		m_LineVertices.Add(v1);
+	}
+
+	XMMATRIX tm = XMMatrixIdentity();
+	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	DrawLine();
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 {
 	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
@@ -37,7 +64,6 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(scale, 0.0f, 0.0f);
-	v1.color = COLOR_RED;
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(0.0f, 0.0f, 0.0f);
@@ -45,7 +71,6 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(0.0f, 0.0f, scale);
-	v1.color = COLOR_BLUE;
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(0.0f, 0, 0.0f);
@@ -53,7 +78,6 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(0.0f, scale, 0.0f);
-	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
