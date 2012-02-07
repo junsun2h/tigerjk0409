@@ -10,14 +10,13 @@ struct IEngine;
 #include "CQuad.h"
 #include "CAABB.h"
 
+
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IEntityMgr.h"
-#include "IEntityProxy.h"
 #include "IAssetMgr.h"
 #include "IRenderCallback.h"
-#include "IFileUtility.h"
 #include "ILoader.h"
 #include "IEntity.h"
 #include "IEngineMemoryMgr.h"
@@ -37,7 +36,6 @@ struct IEngine
 
 	virtual IRenderHelper*		RenderHelper() =0;
 	virtual CTimer*				GlobalTimer() = 0;
-	virtual IFileUtility*		FileUtility() = 0;
 	virtual ILoader*			Loader() = 0;
 	virtual IEngineMemoryMgr*	EngineMemoryMgr() =0;
 	virtual ISpaceMgr*			SpaceMgr() =0;

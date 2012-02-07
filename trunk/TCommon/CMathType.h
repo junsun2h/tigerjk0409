@@ -135,7 +135,7 @@ struct CVector3{
 		z = XMVectorGetZ(_m128);
 	}
 
-	XMVECTOR ToXMVEECTOR()	const { return XMVectorSet(x, y, z, 0);}
+	XMVECTOR ToXMVEECTOR()	const { return XMVectorSet(x, y, z, 1);}
 
 	static float		Length(const CVector3& v)						{ return XMVectorGetX( XMVector3Length( v.ToXMVEECTOR() ) ); }
 	static CVector3		Normalize(const CVector3& v)					{ return XMVector3Normalize( v.ToXMVEECTOR() ); }
@@ -198,7 +198,8 @@ struct CVector4{
 	CVector4(float x_, float y_, float z_, float w_)
 		: x(x_)	, y(y_)	, z(z_), w(w_)	{}
 	CVector4(XMVECTOR _m128)	{ m128 = _m128; }
-	CVector4(CVector3 v)		{ m128 = XMVectorSet(v.x, v.y, v.z, 0); }
+	CVector4(CVector3 v)		{ m128 = XMVectorSet(v.x, v.y, v.z, 1); }
+	XMVECTOR			ToXMVEECTOR()	const { return XMVectorSet(x, y, z, w);}
 
 	static float		Length(const CVector4& v)						{ return XMVectorGetX( XMVector4Length( v.m128) ); }
 	static CVector4		Normalize(const CVector4& v)					{ return XMVector4Normalize( v.m128); }
@@ -268,7 +269,10 @@ namespace XMMATRIX_UTIL
 		XMVECTOR outTrans;
 
 		if( !XMMatrixDecompose( &outScale, &outRotQuat, &outTrans, mt) )
+		{
+			assert(0);
 			return false;
+		}
 
 		if( pScale != NULL )
 			*pScale = outScale;

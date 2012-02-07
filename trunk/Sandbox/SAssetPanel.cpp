@@ -1,4 +1,7 @@
 #include "SAssetPanel.h"
+
+#include "CFileUtility.h"
+
 #include "wx/treectrl.h"
 #include "wx/filename.h"
 #include "wx/dnd.h"
@@ -186,6 +189,15 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 		pAssetMgr->Remove( RESOURCE_MESH, (char*)strItem.char_str() );
 		Delete(pSelectedID);
 	}
+	else if( fileType == RESOURCE_FILE_ACTOR )
+	{
+		wxString fullPath = wxString(m_Path) + wxString("\\Data\\actor\\") + strItem + wxString(".tac");
+		if ( !DeleteFile( fullPath ) )
+			assert(0);
+
+		pAssetMgr->Remove( RESOURCE_ACTOR, (char*)strItem.char_str() );
+		Delete(pSelectedID);
+	}
 
 	Reload();
 }
@@ -226,7 +238,7 @@ void SAssetTreeCtrl::Reload()
 		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\Texture");
 
 		CSTRING_LIST fileList;
-		GLOBAL::Engine()->FileUtility()->CollectFileList( pathBuf, &fileList);
+		CFILE_UTILITY::CollectFileList( pathBuf, &fileList);
 		for(UINT i=0; i< fileList.size(); ++i)
 		{
 			wxFileName fn = fileList[i];
@@ -238,7 +250,7 @@ void SAssetTreeCtrl::Reload()
 		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\actor");
 
 		CSTRING_LIST fileList;
-		GLOBAL::Engine()->FileUtility()->CollectFileList( pathBuf, &fileList);
+		CFILE_UTILITY::CollectFileList( pathBuf, &fileList);
 		for(UINT i=0; i< fileList.size(); ++i)
 		{
 			wxFileName fn = fileList[i];
@@ -250,7 +262,7 @@ void SAssetTreeCtrl::Reload()
 		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\mesh");
 
 		CSTRING_LIST fileList;
-		GLOBAL::Engine()->FileUtility()->CollectFileList( pathBuf, &fileList);
+		CFILE_UTILITY::CollectFileList( pathBuf, &fileList);
 		for(UINT i=0; i< fileList.size(); ++i)
 		{
 			wxFileName fn = fileList[i];

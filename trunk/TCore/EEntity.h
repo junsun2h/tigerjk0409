@@ -51,6 +51,7 @@ public:
 	XMMATRIX		GetLocalTM() override		{ return m_LocalTM;	}
 
 	CVector3		GetWorldPos() override		{ return m_WorldPos;	}
+	CVector3		GetWorldScale() override	{ return m_WorldScale;	}
 	CQuat			GetWorldRot() override		{ return m_WorldRotation;	}
 	XMMATRIX		GetWorldTM() override		{ return m_WorldTM;	}
 
@@ -78,14 +79,15 @@ private:
 	XMMATRIX		m_LocalTM;
 
 	CVector3		m_WorldPos;
+	CVector3		m_WorldScale;
 	CQuat			m_WorldRotation;
 	XMMATRIX		m_WorldTM;
 	
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// hierarchy
-	void			Reparent( IEntity* _pParent ) override;
-	void			AttachChild( IEntity* pChild ) override;
+	void			Reparent( IEntity* _pParent, bool keepLocalTM  ) override;
+	void			AttachChild( IEntity* pChild , bool keepLocalTM  ) override;
 	void			DetachChild( IEntity* pChild ) override;
 	void			DetachAllChild()  override;
 

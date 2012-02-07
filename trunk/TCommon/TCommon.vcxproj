@@ -66,6 +66,7 @@
     <ClInclude Include="CColiision.h" />
     <ClInclude Include="CColor.h" />
     <ClInclude Include="CEngineParam.h" />
+    <ClInclude Include="CFileUtility.h" />
     <ClInclude Include="CGeometryConstructor.h" />
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CFrustrum.h" />
@@ -86,7 +87,6 @@
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="IEntityMgr.h" />
     <ClInclude Include="IEntityProxy.h" />
-    <ClInclude Include="IFileUtility.h" />
     <ClInclude Include="IFontRenderer.h" />
     <ClInclude Include="ILoader.h" />
     <ClInclude Include="IEngineMemoryMgr.h" />

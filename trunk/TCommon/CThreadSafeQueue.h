@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CThread.h"
-#include <list>
+
 
 template<typename T>
 class CThreadSafeQueue

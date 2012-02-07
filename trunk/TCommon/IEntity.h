@@ -66,6 +66,7 @@ struct IEntity
 
 	virtual CVector3		GetWorldPos() = 0;
 	virtual CQuat			GetWorldRot() = 0;
+	virtual CVector3		GetWorldScale() = 0;
 	virtual XMMATRIX		GetWorldTM() = 0;
 
 	virtual void			SetLocalPos(const CVector3& _pos) = 0;
@@ -84,8 +85,8 @@ struct IEntity
 
 	//////////////////////////////////////////////////////////////////////////
 	// hierarchy functions
-	virtual void			Reparent( IEntity* _pParent ) = 0;
-	virtual void			AttachChild( IEntity* pChild ) = 0;
+	virtual void			Reparent( IEntity* _pParent, bool keepLocalTM ) = 0;
+	virtual void			AttachChild( IEntity* pChild, bool keepLocalTM ) = 0;
 	virtual void			DetachChild( IEntity* pChild ) = 0;
 	virtual void			DetachAllChild() = 0;
 	

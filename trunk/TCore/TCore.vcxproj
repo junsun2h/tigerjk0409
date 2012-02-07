@@ -89,7 +89,6 @@
     <ClCompile Include="EEntityProxyActor.cpp" />
     <ClCompile Include="EEntityProxyCamera.cpp" />
     <ClCompile Include="EEntityProxyRender.cpp" />
-    <ClCompile Include="EFileUtility.cpp" />
     <ClCompile Include="EGlobal.cpp" />
     <ClCompile Include="ELoader.cpp" />
     <ClCompile Include="EMeshDataProcessor.cpp" />
@@ -111,7 +110,6 @@
     <ClInclude Include="EEntityProxyActor.h" />
     <ClInclude Include="EEntityProxyCamera.h" />
     <ClInclude Include="EEntityProxyRender.h" />
-    <ClInclude Include="EFileUtility.h" />
     <ClInclude Include="EGlobal.h" />
     <ClInclude Include="ELoader.h" />
     <ClInclude Include="EMeshDataProcessor.h" />

@@ -184,30 +184,39 @@ void SMainFrame::OnSaveLayout(wxCommandEvent& event)
 
 void SMainFrame::OnCreateEntity(wxCommandEvent& event)
 {
+	CreateEntity();
+}
+
+IEntity* SMainFrame::CreateEntity()
+{
 	SCreateEntityDlg dlg(this);
 
 	if(wxID_OK == dlg.ShowModal())
 	{
 		wxString name;
 		CVector3 pos;
-		
+
 		dlg.GetNameAndPosition( name, pos );
-		
+
 		IEntityMgr* pEntityMgr = GLOBAL::Engine()->EntityMgr();
 
 		IEntity* pEntity = pEntityMgr->GetEntity( name.c_str().AsChar() );
 		if( pEntity != NULL )
 		{
 			wxMessageBox("There is already same name!");
-			return;
+			return NULL;
 		}
 
 		pEntity = pEntityMgr->SpawnEntity( name.c_str().AsChar() );
 		pEntity->SetLocalPos( pos );
 
-		GLOBAL::SceneRoot()->AttachChild( pEntity );
+		GLOBAL::SceneRoot()->AttachChild( pEntity, true);
 		GLOBAL::SceneHierarchyPanel()->Reload();
+
+		return pEntity;
 	}
+
+	return NULL;
 }
 
 void SMainFrame::OnCreateCamera(wxCommandEvent& event)

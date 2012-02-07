@@ -19,6 +19,7 @@ void EEntity::Init(std::string& name, UINT id)
 	m_LocalScale = CVector3(1,1,1);
 	m_LocalRotation = CQuat(0,0,0,1);
 	m_WorldPos = CVector3(0,0,0);
+	m_WorldScale = CVector3(1,1,1);
 	m_WorldRotation = CQuat(0,0,0,1);
 	m_pParent = NULL;
 	m_Name = name;
@@ -176,6 +177,7 @@ inline void EEntity::UpdateWorldTM()
 	{
 		m_WorldTM = m_LocalTM;
 		m_WorldPos = m_LocalPos;
+		m_WorldScale = m_LocalScale;
 		m_WorldRotation = m_LocalRotation;
 
 		EntityEvent e;
@@ -185,7 +187,13 @@ inline void EEntity::UpdateWorldTM()
 	else
 	{
 		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetWorldTM());
-		XMMATRIX_UTIL::Decompose(NULL, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+
+		// make sure SRT order
+		m_WorldPos = m_WorldTM.r[3];		
+		m_WorldRotation = XMQuaternionRotationMatrix( m_WorldTM );
+		m_WorldScale = m_LocalScale * m_pParent->GetWorldScale();
+
+		m_WorldTM =	XMMATRIX_UTIL::TransformationAffine(m_WorldScale, m_WorldRotation, m_WorldPos);
 	}
 
 	OnTransformChanged();
@@ -213,7 +221,10 @@ void EEntity::OnTransformChanged()
 
 	m_WorldAABB.Reset();
 	if( m_LocalEntityAABB.IsValid() )
+	{
 		m_WorldAABB.AddAABB( m_WorldTM, m_LocalEntityAABB.GetMin(), m_LocalEntityAABB.GetMax() );
+		GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
+	}
 
 	int count = m_Children.size();
 	for(int i= 0; i < count; i++)
@@ -224,13 +235,8 @@ void EEntity::OnTransformChanged()
 			m_WorldAABB.AddAABB( m_Children[i]->GetWorldAABB() );
 	}
 
-	if( temp != m_WorldAABB )
-	{
-		GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
-
-		if( m_pParent != NULL )
-			m_pParent->UpdateWorldAABB();
-	}
+	if( temp != m_WorldAABB && m_pParent != NULL )
+		m_pParent->UpdateWorldAABB();
 
 	EntityEvent e;
 	e.type = E_EVENT_TRANSFORM_CHANGED;
@@ -269,7 +275,7 @@ void EEntity::RotateLocalAxis(CVector3 axis, float radian)
 //    hierarchy functions
 //////////////////////////////////////////////////////////////////////////
 
-void EEntity::Reparent( IEntity* _pNewParent )
+void EEntity::Reparent( IEntity* _pNewParent, bool keepLocalTM  )
 {
 	if( _pNewParent == this || m_pParent == _pNewParent )
 		return;
@@ -286,14 +292,19 @@ void EEntity::Reparent( IEntity* _pNewParent )
 	else
 	{
 		m_pParent = (EEntity*)_pNewParent;
-		XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
-		m_LocalTM = XMMatrixMultiply( m_WorldTM , parentWorldInverse);	
-		XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+
+		if( keepLocalTM == false)
+		{
+			XMMATRIX parentWorldInverse = XMMATRIX_UTIL::Inverse(NULL, m_pParent->GetWorldTM());
+			m_LocalTM = XMMatrixMultiply( m_WorldTM , parentWorldInverse);	
+			XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
+		}
+
 		UpdateWorldTM();
 	}
 }
 
-void EEntity::AttachChild( IEntity* pChild )
+void EEntity::AttachChild( IEntity* pChild, bool keepLocalTM   )
 {
 	if( pChild == this )
 		return;
@@ -305,7 +316,7 @@ void EEntity::AttachChild( IEntity* pChild )
 	}
 
 	m_Children.push_back( (EEntity*)pChild );
-	pChild->Reparent( this );
+	pChild->Reparent( this, keepLocalTM );
 
 	UpdateWorldAABB();
 }
@@ -323,7 +334,7 @@ void EEntity::DetachChild( IEntity* _pChild )
 		if( pChild == _pChild )
 		{
 			itr = m_Children.erase(itr);
-			_pChild->Reparent( NULL );
+			_pChild->Reparent( NULL, false );
 			UpdateWorldAABB();
 			return;
 		}
@@ -338,7 +349,7 @@ void EEntity::DetachAllChild()
 	{
 		IEntity* pChild = *itr;
 		itr = m_Children.erase(itr);
-		pChild->Reparent( NULL );
+		pChild->Reparent( NULL , false );
 
 		if( itr == m_Children.end() )
 			break;
@@ -435,6 +446,7 @@ void EEntity::ADDLocalEntityAABB(CVector3 min, CVector3 max)
 {
 	m_LocalEntityAABB.AddAABB(min, max);
 	UpdateWorldAABB();
+	GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
 }
 
 void EEntity::UpdateWorldAABB()
@@ -452,13 +464,8 @@ void EEntity::UpdateWorldAABB()
 			m_WorldAABB.AddAABB( m_Children[i]->GetWorldAABB() );
 	}
 
-	if( temp != m_WorldAABB )
-	{
-		GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
-
-		if( m_pParent != NULL )
-			m_pParent->UpdateWorldAABB();
-	}
+	if( temp != m_WorldAABB && m_pParent != NULL)
+		m_pParent->UpdateWorldAABB();
 }
 
 

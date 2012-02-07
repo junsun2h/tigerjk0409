@@ -15,9 +15,6 @@
     <ClCompile Include="EMeshDataProcessor.cpp">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="EFileUtility.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="ELoader.cpp">
       <Filter>Asset</Filter>
     </ClCompile>
@@ -55,7 +52,9 @@
     <ClCompile Include="ThirdParty\tinyxml\tinyxmlparser.cpp">
       <Filter>3rdParty\TinyXML</Filter>
     </ClCompile>
-    <ClCompile Include="EGlobal.cpp" />
+    <ClCompile Include="EGlobal.cpp">
+      <Filter>Global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -88,6 +87,9 @@
     <Filter Include="3rdParty\TinyXML">
       <UniqueIdentifier>{81a38de8-364b-4481-b6a3-973813ca5026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Global">
+      <UniqueIdentifier>{b629c070-6780-4a5e-b0c2-1794a16e9874}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEngine.h" />
@@ -99,9 +101,6 @@
     </ClInclude>
     <ClInclude Include="EActorDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>
-    </ClInclude>
-    <ClInclude Include="EFileUtility.h">
-      <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="ELoader.h">
       <Filter>Asset</Filter>
@@ -137,6 +136,8 @@
     <ClInclude Include="ThirdParty\tinyxml\tinyxml.h">
       <Filter>3rdParty\TinyXML</Filter>
     </ClInclude>
-    <ClInclude Include="EGlobal.h" />
+    <ClInclude Include="EGlobal.h">
+      <Filter>Global</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

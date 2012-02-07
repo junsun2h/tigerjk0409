@@ -1,9 +1,6 @@
 #pragma once
 
 #include "CDefine.h"
-#include <vector>
-#include <list>
-#include <assert.h>
 
 /*
 Uses when [T] has virtual functions.

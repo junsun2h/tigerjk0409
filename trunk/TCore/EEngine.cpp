@@ -21,7 +21,6 @@ IAssetMgr*			EEngine::AssetMgr()			{ return GLOBAL::AssetMgr(); }
 IEntityMgr*			EEngine::EntityMgr()		{ return GLOBAL::EntityMgr(); }
 IRenderHelper*		EEngine::RenderHelper()		{ return m_pRenderer->GetRenderHelper(); }
 CTimer*				EEngine::GlobalTimer()		{ return &m_GlobalTimer; }
-IFileUtility*		EEngine::FileUtility()		{ return GLOBAL::FileUtility(); }
 ILoader*			EEngine::Loader()			{ return GLOBAL::Loader(); }
 IEngineMemoryMgr*	EEngine::EngineMemoryMgr()	{ return GLOBAL::EngineMemoryMgr(); }
 ISpaceMgr*			EEngine::SpaceMgr()			{ return GLOBAL::SpaceMgr(); }
@@ -59,11 +58,11 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 
 bool EEngine::ShutDown()
 {
-	GLOBAL::SpaceMgr()->Destroy();
+	// make sure deleting order
 	GLOBAL::AssetMgr()->Clear();
 	m_pRenderer->ShutDown();
 	GLOBAL::EntityMgr()->Destroy();
-
+	GLOBAL::SpaceMgr()->Destroy();
 	return false;
 }
 
