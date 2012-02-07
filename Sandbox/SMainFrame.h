@@ -52,6 +52,8 @@ public:
 	void	OnCreateCamera(wxCommandEvent& event);
 	void	OnCreateRenderer(wxCommandEvent& event);
 
+	IEntity*	CreateEntity();
+
 private:
 	void	InitLayout();
 	void	InitToolBar();

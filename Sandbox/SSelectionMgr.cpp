@@ -314,7 +314,8 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		XMMATRIX rotTM;
 		float d;
 
-		XMMATRIX_UTIL::Decompose(&scale, &rot, &pos, m_GrabedTransform);
+		if( XMMATRIX_UTIL::Decompose(&scale, &rot, &pos, m_GrabedTransform) == false )
+			return;
 
 		if( m_TransformAxis == X_AXIS )
 		{
@@ -407,7 +408,8 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 		CVector3 scale;
 		CQuat rot;
 		CVector3 pos;
-		XMMATRIX_UTIL::Decompose(&scale, &rot, &pos, m_GrabedTransform);
+		if( XMMATRIX_UTIL::Decompose(&scale, &rot, &pos, m_GrabedTransform) == false )
+			return;
 
 		if( m_TransformAxis == X_AXIS )
 		{

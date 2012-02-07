@@ -40,6 +40,7 @@ struct IEntityProxyActor : IEntityProxy
 
 	virtual const CResourceActor*	GetActorInfo() = 0;
 	virtual IMotionMgr*				GetMotionMgr() = 0;
+	virtual	void					SetActor(const CResourceActor* pResource) = 0;
 	virtual void					Update(float deltaTime) = 0;
 };
 

@@ -31,6 +31,8 @@ public:
     void	OnBeginDrag(wxTreeEvent& event);
 
 private:
+	void		CreateEntity();
+
 	IEntity*	GetSelectedEntity();
 	void		AddEntity(wxTreeItemId parent, IEntity* pEntity);
 

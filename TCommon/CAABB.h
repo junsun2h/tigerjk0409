@@ -72,16 +72,17 @@ inline void CAABB::AddAABB(XMMATRIX& worldTM, CVector3& min, CVector3& max)
 		CVector3( min.x, min.y, max.z),
 		CVector3( max.x, min.y, max.z),
 		max,
-		CVector3( min.x, max.y, max.z)};
+		CVector3( min.x, max.y, max.z)
+	};
 
-		for (int i=0; i< 8; ++i)
-		{
-			vec[i] = CVector3::Transform( vec[i], worldTM);
-			m_Min = CVector3::Min(m_Min, vec[i]);
-			m_Max = CVector3::Max(m_Max, vec[i]);
-		}
+	for (int i=0; i< 8; ++i)
+	{
+		vec[i] = CVector3::Transform( vec[i], worldTM);
+		m_Min = CVector3::Min(m_Min, vec[i]);
+		m_Max = CVector3::Max(m_Max, vec[i]);
+	}
 
-		m_IsValid = true;
+	m_IsValid = true;
 }
 
 inline void CAABB::AddAABB(CVector3& min, CVector3& max)

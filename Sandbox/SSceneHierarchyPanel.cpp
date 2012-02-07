@@ -4,7 +4,8 @@
 #include "SPropertyPanel.h"
 #include "SSelectionMgr.h"
 #include "SDragAndDropState.h"
-
+#include "SCreateEntityDlg.h"
+#include "SMainFrame.h"
 
 class SAssetDragAndDrop : public wxTextDropTarget
 {
@@ -125,8 +126,14 @@ void SSceneHierarchyTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 
 	int flags =0;
 	wxTreeItemId seletedItem = HitTest( point, flags);
-	if (flags & (wxTREE_HITTEST_ABOVE | wxTREE_HITTEST_BELOW | wxTREE_HITTEST_NOWHERE | wxTREE_HITTEST_TOLEFT | wxTREE_HITTEST_TORIGHT))
+	if (flags & (wxTREE_HITTEST_ABOVE | wxTREE_HITTEST_BELOW | wxTREE_HITTEST_TOLEFT | wxTREE_HITTEST_TORIGHT))
 		return;
+
+	if( flags & wxTREE_HITTEST_NOWHERE )
+	{
+		CreateEntity();
+		return;
+	}
 
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 	IEntityMgr* pEntityMgr = GLOBAL::Engine()->EntityMgr();
@@ -139,7 +146,7 @@ void SSceneHierarchyTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 	{		
 		IEntity* pTargetEntity = pEntityMgr->GetEntity( desc.strParam.c_str().AsChar() );
 		
-		pEntity->AttachChild(pTargetEntity);
+		pEntity->AttachChild(pTargetEntity, false);
 
 		Reload();
 	}
@@ -153,7 +160,32 @@ void SSceneHierarchyTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 		IEntityProxyRender* pProxy = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
 		pProxy->Insert( pAssetMgr->GetResource(RESOURCE_MESH, desc.strParam.char_str())->RID );
 	}
+}
 
+void SSceneHierarchyTreeCtrl::CreateEntity()
+{
+	SDragAndDragDesc desc;
+	SDragAndDropState::Get(desc);
+	
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+	IEntity* pEntity = GLOBAL::MainFrame()->CreateEntity();
+
+	if( pEntity == NULL )
+		return;
+
+	if( desc.type == DND_ACTOR )
+	{
+		IEntityProxyActor* pActor = (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR, true);
+		const CResourceBase* pResource = pAssetMgr->GetResource(RESOURCE_ACTOR, desc.strParam.char_str());
+		pActor->SetActor( (CResourceActor*)pResource );
+		Reload();
+	}
+	else if( desc.type == DND_MESH )
+	{
+		IEntityProxyRender* pProxy = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
+		const CResourceBase* pResource = pAssetMgr->GetResource(RESOURCE_MESH, desc.strParam.char_str());
+		pProxy->Insert( pResource->RID );
+	}
 }
 
 void SSceneHierarchyTreeCtrl::OnBeginDrag(wxTreeEvent& WXUNUSED(event))

@@ -9,10 +9,11 @@ class EEntityProxyActor : public IEntityProxyActor
 	~EEntityProxyActor(){}
 
 public:
-	void					Destroy(){}
+	void					Destroy();
 
 	const CResourceActor*	GetActorInfo() override;
 	IMotionMgr*				GetMotionMgr() override;
+	void					SetActor(const CResourceActor* pResource) override;
 
 	IEntity*				GetEntity() override		{ return m_pEntity; }
 	
@@ -22,5 +23,9 @@ public:
 	void					Update(float deltaTime) override;
 
 private:
+	typedef std::vector<IEntity*>	JOINT_LIST;
+
 	IEntity*				m_pEntity;
+	const CResourceActor*	m_pResource;
+	JOINT_LIST				m_pJoints;
 };

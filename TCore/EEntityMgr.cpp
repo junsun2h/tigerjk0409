@@ -31,17 +31,16 @@ void EEntityMgr::RemoveEntity(long id)
 }	 
 	 	 
 void EEntityMgr::RemoveAllEntity()
-{	 
-	POSITION pos = m_EntityMap.GetStartPosition();
-	ENTITY_MAP::CPair* itr = NULL;
-
-	while (pos)
+{	
+	// delete safely whole entities
+	// There is possibility to delete entity in entity
+	while(m_EntityMap.GetCount() != 0)
 	{
-		itr = m_EntityMap.GetNext(pos);
+		POSITION pos = m_EntityMap.GetStartPosition();
+		ENTITY_MAP::CPair* itr = m_EntityMap.GetNext(pos);
 		GLOBAL::EngineMemoryMgr()->RemoveEntity(itr->m_value);
+		m_EntityMap.RemoveKey(itr->m_key);
 	}
-
-	m_EntityMap.RemoveAll();
 }	 
 	 
 void EEntityMgr::Destroy()

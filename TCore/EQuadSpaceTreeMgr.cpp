@@ -134,7 +134,7 @@ void EQuadSpaceTreeMgr::UpdateEntitySpace(IEntity* pEntity)
 	TYPE_SPACE_IDS* spaceIDList = pEntity->GetSpaceIDList();
 	for(TYPE_SPACE_IDS::iterator itr = spaceIDList->begin() ; itr != spaceIDList->end(); itr++ )
 	{
-		UINT spaceID = *itr;
+		UINT spaceID = *itr;	
 		EQuadSpaceTreeNode* pNode = m_SpaceMap.Lookup( spaceID )->m_value;
 
 		if( pNode->IsInArea(pEntity) == false)

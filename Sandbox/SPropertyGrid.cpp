@@ -162,7 +162,8 @@ void SPropertyGrid::Set( const CJoint* pJoint )
 	ClearProperties();
 
 	Append( new wxVector3Property( "position", wxPG_LABEL, pJoint->pos) );
-	Append( new wxVector4Property( "rotation", wxPG_LABEL, CVector4(pJoint->rot.m128) ) );
+	CVector4 rot = CVector4( pJoint->rot.x, pJoint->rot.y, pJoint->rot.z, pJoint->rot.w);
+	Append( new wxVector4Property( "rotation", wxPG_LABEL, rot) );
 }
 
 void SPropertyGrid::OnPropertyChanged(wxPropertyGridEvent& event)

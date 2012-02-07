@@ -17,7 +17,6 @@ public:
 
 	IRenderHelper*		RenderHelper() override;
 	CTimer*				GlobalTimer() override;
-	IFileUtility*		FileUtility() override;
 	ILoader*			Loader() override;
 	IEngineMemoryMgr*	EngineMemoryMgr() override;
 	ISpaceMgr*			SpaceMgr() override;

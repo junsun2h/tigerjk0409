@@ -34,9 +34,6 @@
     <ClInclude Include="IEntityProxy.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IFileUtility.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
     <ClInclude Include="ILoader.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
@@ -116,6 +113,9 @@
       <Filter>DataStructure</Filter>
     </ClInclude>
     <ClInclude Include="CAABB.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="CFileUtility.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
   </ItemGroup>
