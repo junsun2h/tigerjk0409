@@ -165,7 +165,7 @@ inline void EEntity::SetWorldRot(const CQuat& _rot)
 inline void EEntity::SetWorldTM(const XMMATRIX& tm)
 {
 	m_WorldTM = tm;
-	XMMATRIX_UTIL::Decompose(NULL, &m_WorldRotation, &m_WorldPos, m_WorldTM);
+	XMMATRIX_UTIL::Decompose(&m_WorldScale, &m_WorldRotation, &m_WorldPos, m_WorldTM);
 
 	UpdateLocalFromWorld();
 	OnTransformChanged();
@@ -186,9 +186,9 @@ inline void EEntity::UpdateWorldTM()
 	}
 	else
 	{
-		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetWorldTM());
-
 		// make sure SRT order
+
+		m_WorldTM = XMMatrixMultiply( m_LocalTM, m_pParent->GetWorldTM());
 		m_WorldPos = m_WorldTM.r[3];		
 		m_WorldRotation = XMQuaternionRotationMatrix( m_WorldTM );
 		m_WorldScale = m_LocalScale * m_pParent->GetWorldScale();
@@ -286,7 +286,10 @@ void EEntity::Reparent( IEntity* _pNewParent, bool keepLocalTM  )
 	if( _pNewParent == NULL )
 	{
 		m_pParent = NULL;
-		SetLocalTM( GetWorldTM() );
+		m_LocalPos = m_WorldPos;
+		m_LocalRotation = m_WorldRotation;
+		m_LocalScale = m_WorldScale;
+		UpdateLocalTM();
 		return;
 	}
 	else
