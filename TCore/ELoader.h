@@ -13,7 +13,8 @@ public:
 	bool						IsDataProcThread() override;
 
 public:
-	virtual CResourceBase*		LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type) override;
+	virtual CResourceBase*		LoadForward(const char* fullPath, char* name, eRESOURCE_FILE_TYPE type) override;
+	virtual CResourceBase*		LoadForward(char* name, eRESOURCE_FILE_TYPE type) override;
 	virtual void				LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type) override;
 	virtual void				WaitForAllItems() override;
 	virtual void				CompleteWork( UINT CurrentNumResourcesToService ) override;
@@ -29,6 +30,8 @@ private:
 	void                        DestroyAsyncLoadingThreadObjects();
 	
 private:
+	char						m_Path[MAX_PATH];
+
 	BOOL						m_bDone;
 	BOOL						m_bProcessThreadDone;
 	BOOL						m_bIOThreadDone;

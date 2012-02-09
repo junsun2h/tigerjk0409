@@ -78,5 +78,8 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 		pMotion->jointList.push_back(joint);
 	}
 	
+	strcpy_s( pMotion->name, m_name.c_str());
+	GLOBAL::AssetMgr()->Insert( pMotion );
+
 	return pMotion;
 }

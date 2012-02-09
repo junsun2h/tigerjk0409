@@ -62,6 +62,9 @@
     <ClInclude Include="SVectorProperty.h">
       <Filter>Panels\PropertyPanel\Grid</Filter>
     </ClInclude>
+    <ClInclude Include="SMotionTreeCtrl.h">
+      <Filter>Panels\PropertyPanel\panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SApp.cpp" />
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="SVectorProperty.cpp">
       <Filter>Panels\PropertyPanel\Grid</Filter>
+    </ClCompile>
+    <ClCompile Include="SMotionTreeCtrl.cpp">
+      <Filter>Panels\PropertyPanel\panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

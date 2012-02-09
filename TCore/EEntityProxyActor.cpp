@@ -2,9 +2,9 @@
 #include "EEntityProxyActor.h"
 
 
-const CResourceActor* EEntityProxyActor::GetActorInfo()
+const CResourceActor* EEntityProxyActor::GetResource()
 {
-	return NULL;
+	return m_pResource;
 }
 
 IMotionMgr*	EEntityProxyActor::GetMotionMgr()

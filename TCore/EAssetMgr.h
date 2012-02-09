@@ -24,6 +24,8 @@ public:
 public:
 	long						Insert( CResourceBase* pResource) override;
 
+	CResourceBase*				UnSafeGetResource( eRESOURCE_TYPE type, long id ) override;
+	CResourceBase*				UnSafeGetResource( eRESOURCE_TYPE type, const char* name ) override;
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, long id ) override;
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, const char* name ) override;
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, std::string name ) override;

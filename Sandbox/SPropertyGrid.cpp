@@ -160,6 +160,12 @@ void SPropertyGrid::Set( const CResourceActor* pActor )
 void SPropertyGrid::Set( const CResourceMotion* pMotion )
 {
 	ClearProperties();
+
+	Append( new wxIntProperty( "Frame Rate", wxPG_LABEL, pMotion->frameRate) );
+	Append( new wxIntProperty( "Total Frame", wxPG_LABEL, pMotion->totalFrame) );
+	Append( new wxFloatProperty( "Total Time(s)", wxPG_LABEL, pMotion->totalFrame / float(pMotion->frameRate) ) );
+	Append( new wxIntProperty( "Joint Count", wxPG_LABEL, pMotion->jointList.size()) );
+	Append( new wxIntProperty( "Sample Count", wxPG_LABEL, pMotion->jointList[0].keys.size() ) );
 }
 
 void SPropertyGrid::Set( const CJoint* pJoint )

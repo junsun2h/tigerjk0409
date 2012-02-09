@@ -31,6 +31,7 @@ public:
 	void	Reload();
 
 private:
+	const CResourceBase*	LoadResource(wxTreeItemId seletedItem);
 	eRESOURCE_FILE_TYPE		GetAssetType(wxTreeItemId seletedItem);
 
 	wchar_t					m_Path[MAX_PATH];

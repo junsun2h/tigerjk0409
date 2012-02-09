@@ -81,7 +81,7 @@ struct CResourceBase
 	double					loadBeginTime;
 	char					name[MAX_NAME_LENGTH];
 
-	virtual eRESOURCE_TYPE	Type()	{ return RESOURCE_INVALID; }
+	virtual eRESOURCE_TYPE	Type() const	{ return RESOURCE_INVALID; }
 	virtual std::string		strType()  { return ""; }
 	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(state)); }
 
@@ -96,6 +96,7 @@ struct CResourceBase
 	virtual ~CResourceBase(){}
 };
 
+//-------------------------------------------------------------------------------------------------
 enum eTEXTURE_USAGE
 {
 	TEXTURE_NORMAL,
@@ -236,10 +237,11 @@ public:
 		bDeleteMemoryAfterLoading = false;
 	}
 
-	eRESOURCE_TYPE	Type() override		{ return RESOURCE_TEXTURE; }
+	eRESOURCE_TYPE	Type() const override		{ return RESOURCE_TEXTURE; }
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_TEXTURE); }
 };
 
+//-------------------------------------------------------------------------------------------------
 class CResourceGeometry : public CResourceBase
 {
 	// only object pool can make&delete this class
@@ -285,10 +287,11 @@ public:
 
 	char			mtrlName[MAX_NAME_LENGTH];
 
-	eRESOURCE_TYPE	Type() override { return RESOURCE_GEOMETRY; }
+	eRESOURCE_TYPE	Type() const override { return RESOURCE_GEOMETRY; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_GEOMETRY); }
 };
 
+//-------------------------------------------------------------------------------------------------
 class CResourceMesh : public CResourceBase
 {
 	// only object pool can make&delete this class
@@ -305,44 +308,11 @@ public:
 	CVector3		min;
 	CVector3		max;
 
-	eRESOURCE_TYPE	Type() override { return RESOURCE_MESH; }
+	eRESOURCE_TYPE	Type() const override { return RESOURCE_MESH; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MESH); }
 };
 
-struct CJoint
-{
-	CQuat			rot;
-	CVector3		pos;
-	int				parentIndex;
-
-	char			name[MAX_NAME_LENGTH];
-	char			parentName[MAX_NAME_LENGTH];
-};
-
-typedef std::vector<CJoint>	JOINT_LIST;
-
-class CResourceActor : public CResourceBase
-{
-	// only object pool can make&delete this class
-	friend CObjectPool<CResourceActor>;
-	CResourceActor(){}
-	~CResourceActor()
-	{
-		Destroy();
-	}
-	void Destroy() override	
-	{
-		jointList.clear();	
-	}
-
-public:
-	JOINT_LIST		jointList;
-
-	eRESOURCE_TYPE	Type() override		{ return RESOURCE_ACTOR; }
-	std::string		strType() override	{ return ENUMSTR(RESOURCE_ACTOR); }
-};
-
-
+//-------------------------------------------------------------------------------------------------
 struct CMotionKey
 {
 	CQuat		rot;
@@ -381,10 +351,49 @@ public:
 	uint8				frameInterval;
 	MOTION_NODE_LIST	jointList;
 
-	eRESOURCE_TYPE	Type() override		{ return RESOURCE_MOTION; }
+	eRESOURCE_TYPE	Type() const override		{ return RESOURCE_MOTION; }
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_MOTION); }
 };
 
+
+//-------------------------------------------------------------------------------------------------
+struct CJoint
+{
+	CQuat			rot;
+	CVector3		pos;
+	int				parentIndex;
+
+	char			name[MAX_NAME_LENGTH];
+	char			parentName[MAX_NAME_LENGTH];
+};
+
+typedef std::vector<CJoint>					JOINT_LIST;
+typedef std::vector<const CResourceMotion*>	MOTION_LIST;
+
+class CResourceActor : public CResourceBase
+{
+	// only object pool can make&delete this class
+	friend CObjectPool<CResourceActor>;
+	CResourceActor(){}
+	~CResourceActor()
+	{
+		Destroy();
+	}
+	void Destroy() override	
+	{
+		jointList.clear();	
+		motionList.clear();
+	}
+
+public:
+	JOINT_LIST			jointList;
+	MOTION_LIST			motionList;
+
+	eRESOURCE_TYPE	Type() const override	{ return RESOURCE_ACTOR; }
+	std::string		strType() override		{ return ENUMSTR(RESOURCE_ACTOR); }
+};
+
+//-------------------------------------------------------------------------------------------------
 enum eSHADER_TYPE
 {
 	SHADER_SKIN_MESH_PASS,
@@ -413,11 +422,12 @@ public:
 	long			RID_textures[NUM_TEXTURE_TYPE];
 	eSHADER_TYPE	shaderType;
 
-	eRESOURCE_TYPE	Type() override		{ return RESOURCE_MATERIAL; }
+	eRESOURCE_TYPE	Type() const override		{ return RESOURCE_MATERIAL; }
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_MATERIAL); }
 };
 
 
+//-------------------------------------------------------------------------------------------------
 inline long GET_HASH_KEY( std::string name )
 {
 	std::locale loc;
