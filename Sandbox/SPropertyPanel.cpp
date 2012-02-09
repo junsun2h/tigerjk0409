@@ -72,6 +72,12 @@ void SPropertyPanel::SetObject( const CResourceActor* pResource )
 	OrganizeInside( PROPERTY_GRID | SCENE_TREE_CTRL );
 }
 
+void SPropertyPanel::SetObject( const CResourceMotion* pResource )
+{
+	m_pGridMgr->Set( pResource );
+	OrganizeInside( PROPERTY_GRID );
+}
+
 void SPropertyPanel::Empty()
 {
 	m_pGridMgr->Clear();

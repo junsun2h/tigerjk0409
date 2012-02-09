@@ -2,23 +2,6 @@
 #include "EActorDataProcessor.h"
 
 
-
-typedef struct
-{
-	DWORD dwSize;
-	DWORD dwHeaderFlags;
-	DWORD dwHeight;
-	DWORD dwWidth;
-	DWORD dwPitchOrLinearSize;
-	DWORD dwDepth; // only if DDS_HEADER_FLAGS_VOLUME is set in dwHeaderFlags
-	DWORD dwMipMapCount;
-	DWORD dwReserved1[11];
-	DWORD dwSurfaceFlags;
-	DWORD dwCubemapFlags;
-	DWORD dwReserved2[3];
-} ACTOR_FILE_EADER;
-
-
 EActorDataProcessor::EActorDataProcessor( std::string name )
 	: m_name(name)
 {

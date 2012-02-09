@@ -6,7 +6,7 @@ class EWinFileLoader : public IDataLoader
 private:
 	char				m_szFileName[MAX_PATH];
 	BYTE*				m_pData;
-	UINT				m_cBytes;
+	DWORD				m_cBytes;
 
 public:
 	EWinFileLoader( char* szFileName );

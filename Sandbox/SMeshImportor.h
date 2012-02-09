@@ -19,10 +19,22 @@ namespace SMESH_LOADER
 		uint8	bone[4];
 	};
 	
-	struct RAW_TRANSFORM
+	struct RAW_ACTOR_NODE
 	{
 		CQuat			rot;
 		CVector3		pos;
+		std::string		name;
+		std::string		parentName;
+	};
+
+	struct RAW_MOTION_KEY
+	{
+		CQuat			rot;
+		CVector3		pos;
+	};
+
+	struct RAW_MOTION_NODE
+	{
 		std::string		name;
 		std::string		parentName;
 	};
@@ -71,14 +83,35 @@ namespace SMESH_LOADER
 		void ChangeCoordsys(TCOODSYS coodSys_);
 
 		TCOODSYS	coordSys;
-		std::vector<RAW_TRANSFORM>	joints;
+		std::vector<RAW_ACTOR_NODE>	joints;
+	};
+
+	struct SRAW_MOTION
+	{
+		SRAW_MOTION()
+		{
+			coordSys = COODSYS_3DSMAX;
+		}
+
+		void ChangeCoordsys(TCOODSYS coodSys_);
+
+		TCOODSYS	coordSys;
+
+		uint8		frameRate;
+		UINT		totalFrame;
+		uint8		frameInterval;
+
+		std::vector<std::vector<RAW_MOTION_KEY>>	keys;
+		std::vector<RAW_MOTION_NODE>				joints;
 	};
 
 	bool LoadRawMesh(const char* strFileName, SRAW_MESH& RawMesh);
 	bool LoadRawActor(const char* strFileName, SRAW_ACTOR& RawMesh);
+	bool LoadRawMotion(const char* strFileName, SRAW_MOTION& RawMesh);
 
 	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name );
 	void SaveRawActorToFile( SRAW_ACTOR* pRawActor, wxString name );
+	void SaveRawMotionToFile( SRAW_MOTION* pRawMotion, wxString name );
 };
 
 

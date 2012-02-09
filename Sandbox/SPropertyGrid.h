@@ -28,6 +28,7 @@ public:
 	void			Set( const CResourceTexture* pTexture );
 	void			Set( const CResourceMesh* pMesh );
 	void			Set( const CResourceActor* pActor );
+	void			Set( const CResourceMotion* pMotion );
 	void			Set( const CJoint* pJoint );
 
 	void			ClearProperties();

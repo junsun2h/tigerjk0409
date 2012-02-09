@@ -55,6 +55,9 @@
     <ClCompile Include="EGlobal.cpp">
       <Filter>Global</Filter>
     </ClCompile>
+    <ClCompile Include="EMotionDataProcessor.cpp">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -138,6 +141,9 @@
     </ClInclude>
     <ClInclude Include="EGlobal.h">
       <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="EMotionDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
