@@ -42,6 +42,7 @@ public:
 	void					SetObject( const CResourceTexture* pResource );
 	void					SetObject( const CResourceMesh* pResource );
 	void					SetObject( const CResourceActor* pResource );
+	void					SetObject( const CResourceMotion* pResource );
 
 	void					Empty();
 

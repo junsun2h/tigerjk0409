@@ -77,10 +77,26 @@ namespace SMESH_LOADER
 		}
 	}
 
+	void SRAW_MOTION::ChangeCoordsys(TCOODSYS coodSys_)
+	{
+		if( coordSys == COODSYS_3DSMAX && coodSys_ == COODSYS_DIRECTX )
+		{
+			for( UINT i = 0; i< keys.size(); ++i)
+			{
+				std::vector<RAW_MOTION_KEY>& keyList = keys[i];
+				for( UINT iKeys = 0; iKeys < keyList.size(); ++iKeys)
+				{
+					keyList[iKeys].pos.y = -keyList[iKeys].pos.y;
+					keyList[iKeys].rot.y = -keyList[iKeys].rot.y;
+				}
+			}
+		}
+	}
+
 	//------------------------------------------------------------------------------------------------------
 	bool LoadRawActor(const char* strFileName, SRAW_ACTOR& rawActor)
 	{
-		char delimiters[2] = { '/', char(13) };
+		char delimiters[2] = { '/', 0 };
 		char* pContext = NULL;
 
 #define READ_BUFFER_SIZE 256
@@ -96,7 +112,7 @@ namespace SMESH_LOADER
 
 			if( strncmp( buf, "node", 4) == 0 )
 			{
-				RAW_TRANSFORM transform;
+				RAW_ACTOR_NODE transform;
 
 				transform.name = strtok_s( &buf[4], delimiters , &pContext );
 				transform.parentName = strtok_s( NULL, delimiters , &pContext );
@@ -113,6 +129,76 @@ namespace SMESH_LOADER
 				transform.rot.w = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
 
 				rawActor.joints.push_back( transform);
+			}
+		}
+
+		fclose(fp);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------------
+	bool LoadRawMotion(const char* strFileName, SRAW_MOTION& rawMotion)
+	{
+		char delimiters[2] = { '/', 0 };
+		char* pContext = NULL;
+
+#define READ_BUFFER_SIZE 256
+		FILE *fp;
+
+		char buf[READ_BUFFER_SIZE];
+		if( fopen_s( &fp, strFileName, "rb") != 0)
+			return false;
+
+		while (!feof (fp))
+		{
+			fgets (buf, sizeof (buf), fp);
+
+			if( strncmp( buf, "framerate",  9) == 0 )
+			{
+				rawMotion.frameRate = atoi( &buf[10] );
+			}
+			else if( strncmp( buf, "totalFrame", 10) == 0 )
+			{
+				rawMotion.totalFrame = atoi( &buf[11] );
+			}
+			else if( strncmp( buf, "bakeInterval", 12) == 0 )
+			{
+				rawMotion.frameInterval = atoi( &buf[13] );
+			}
+			if( strncmp( buf, "node", 4) == 0 )
+			{
+				RAW_MOTION_NODE motion;
+
+				motion.name = strtok_s( &buf[4], delimiters , &pContext );
+				motion.parentName = strtok_s( NULL, delimiters , &pContext );
+				rawMotion.joints.push_back(motion);
+
+				std::vector<RAW_MOTION_KEY> keys;
+
+				int keyCount = rawMotion.totalFrame/rawMotion.frameInterval + 1;
+				if( rawMotion.totalFrame/float( rawMotion.frameRate) > keyCount )
+					keyCount++;
+
+				for( int i=0; i < keyCount; ++i)
+				{
+					RAW_MOTION_KEY key;
+
+					fgets (buf, sizeof (buf), fp);
+
+					key.pos.x = (float)atof( strtok_s( buf, delimiters , &pContext ) );				
+					key.pos.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+					key.pos.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+
+					key.rot.x = (float)atof( strtok_s( NULL, delimiters , &pContext ) );				
+					key.rot.y = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+					key.rot.z = (float)atof( strtok_s( NULL, delimiters , &pContext ) );	
+					key.rot.w = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+
+					keys.push_back( key);
+				}
+
+				rawMotion.keys.push_back(keys);
 			}
 		}
 
@@ -611,7 +697,7 @@ namespace SMESH_LOADER
 		UINT version = ACTOR_FILE_VERSION;
 		file.write( (char*)&version, 4);
 
-		UINT size = jointList.size();
+		uint8 size = jointList.size();
 		file.write( (char*)&size, 1);
 
 		for (UINT i=0; i < size; ++i)
@@ -622,6 +708,79 @@ namespace SMESH_LOADER
 
 			WriteString( &file, joint.name );
 			WriteString( &file, joint.parentName );
+		}
+
+		file.close();
+	}
+
+	void SaveRawMotionToFile( SRAW_MOTION* pRawMotion, wxString name )
+	{
+		MOTION_NODE_LIST	jointList;
+
+		for( UINT i= 0; i < pRawMotion->joints.size(); ++i)
+		{
+			CMotionNode joint;
+
+			strcpy_s( joint.name , pRawMotion->joints[i].name.c_str() );
+			strcpy_s( joint.parentName , pRawMotion->joints[i].parentName.c_str() );
+
+			std::vector<RAW_MOTION_KEY>* pKeys = &pRawMotion->keys[i];
+			
+			for( UINT iKey =0; iKey < pKeys->size(); ++iKey)
+			{
+				CMotionKey key;
+				key.pos = (*pKeys)[iKey].pos;
+				key.rot = (*pKeys)[iKey].rot;
+
+				if( iKey > 0 &&
+					CVector3::EQual( joint.keys[iKey - 1 ].pos , key.pos, 0.1f ) &&
+					CQuat::EQual( joint.keys[iKey - 1 ].rot, key.rot, 0.001f ) )
+				{
+					key.bKeyChanged = false;
+					key.keyIndex = joint.keys[iKey - 1 ].keyIndex;
+				}
+				else
+				{
+					key.bKeyChanged = true;
+					key.keyIndex = 0;
+				}
+
+				joint.keys.push_back(key);
+			}
+
+			jointList.push_back(joint);
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		// save actor as binary file
+		using namespace std;
+
+		fstream file;
+		file.open( name.char_str(), ios_base::out | ios_base::binary | ios_base::trunc );
+
+		UINT version = MOTION_FILE_VERSION;
+		file.write( (char*)&version, 4);
+
+		file.write( (char*)&pRawMotion->frameRate, 1);
+		file.write( (char*)&pRawMotion->frameInterval, 1);
+		file.write( (char*)&pRawMotion->totalFrame, 4);
+
+		uint8 size = jointList.size();
+		file.write( (char*)&size, 1);
+
+		for (UINT i=0; i < size; ++i)
+		{
+			CMotionNode& joint = jointList[i];
+
+			WriteString( &file, joint.name );
+			WriteString( &file, joint.parentName );
+
+			for( UINT iKey = 0; iKey < joint.keys.size(); ++iKey )
+			{	
+				file.write( (char*)&joint.keys[iKey].bKeyChanged, 1);
+				if( joint.keys[iKey].bKeyChanged )
+					file.write( (char*)&joint.keys[iKey], 28);
+			}
 		}
 
 		file.close();

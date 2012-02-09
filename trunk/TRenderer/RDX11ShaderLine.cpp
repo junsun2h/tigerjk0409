@@ -27,6 +27,7 @@ char g_strLineEffectFile[] = \
 	"	PS_INPUT OUT = (PS_INPUT)0;"\
 	""\
 	"	OUT.Pos = mul( In.Pos, WVP );"\
+	"	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;"\
 	"	OUT.Color.x = In.Color.x/255.f;"\
 	"	OUT.Color.y = In.Color.y/255.f;"\
 	"	OUT.Color.z = In.Color.z/255.f;"\

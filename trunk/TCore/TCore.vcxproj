@@ -92,6 +92,7 @@
     <ClCompile Include="EGlobal.cpp" />
     <ClCompile Include="ELoader.cpp" />
     <ClCompile Include="EMeshDataProcessor.cpp" />
+    <ClCompile Include="EMotionDataProcessor.cpp" />
     <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="EGlobal.h" />
     <ClInclude Include="ELoader.h" />
     <ClInclude Include="EMeshDataProcessor.h" />
+    <ClInclude Include="EMotionDataProcessor.h" />
     <ClInclude Include="EQuadSpaceTreeMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h" />
     <ClInclude Include="EWinFileLoader.h" />

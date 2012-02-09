@@ -48,6 +48,18 @@ public:
 
 				bImported = true;
 			}
+			else if( fn.GetExt() == "motion" )
+			{
+				SMESH_LOADER::SRAW_MOTION rawMotion;
+				SMESH_LOADER::LoadRawMotion(  fn.GetFullPath().char_str() , rawMotion);
+
+				rawMotion.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+
+				wxString saveFile = wxString(path) + wxString("\\Data\\motion\\") + fn.GetName() + wxString(".tmo");
+				SMESH_LOADER::SaveRawMotionToFile( &rawMotion , saveFile );
+
+				bImported = true;
+			}
 		}
 
 		if( bImported )
@@ -157,6 +169,18 @@ void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 
 		pPropertyPanel->SetObject( (CResourceActor*)pActor );
 	}
+	else if( fileType == RESOURCE_FILE_MOTION )
+	{
+		const CResourceBase* pMotion = pAssetMgr->GetResource(RESOURCE_MOTION, strItem.c_str().AsChar() );
+
+		if( pMotion == NULL )
+		{
+			wxString fullPath = wxString(m_Path) + wxString("\\Data\\motion\\") + strItem + wxString(".tmo");
+			pMotion = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_MOTION );
+		}
+
+		pPropertyPanel->SetObject( (CResourceMotion*)pMotion );
+	}
 }
 
 
@@ -170,35 +194,33 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 	IAssetMgr*			pAssetMgr	= GLOBAL::Engine()->AssetMgr();
 	wxString			strItem		= GetItemText(pSelectedID);
 	eRESOURCE_FILE_TYPE	fileType	= GetAssetType(pSelectedID);
+	wxString fullPath;
 
 	if( fileType == RESOURCE_FILE_TEXTURE )
 	{
-		wxString fullPath = wxString(m_Path) + wxString("\\Data\\texture\\") + strItem + wxString(".dds");
-		if ( !DeleteFile( fullPath ) )
-			assert(0);
-
+		fullPath = wxString(m_Path) + wxString("\\Data\\texture\\") + strItem + wxString(".dds");
 		pAssetMgr->Remove( RESOURCE_TEXTURE, (char*)strItem.char_str() );
-		Delete(pSelectedID);
 	}
 	else if( fileType == RESOURCE_FILE_MESH )
 	{
-		wxString fullPath = wxString(m_Path) + wxString("\\Data\\mesh\\") + strItem + wxString(".tmesh");
-		if ( !DeleteFile( fullPath ) )
-			assert(0);
-
+		fullPath = wxString(m_Path) + wxString("\\Data\\mesh\\") + strItem + wxString(".tmesh");
 		pAssetMgr->Remove( RESOURCE_MESH, (char*)strItem.char_str() );
-		Delete(pSelectedID);
 	}
 	else if( fileType == RESOURCE_FILE_ACTOR )
 	{
-		wxString fullPath = wxString(m_Path) + wxString("\\Data\\actor\\") + strItem + wxString(".tac");
-		if ( !DeleteFile( fullPath ) )
-			assert(0);
-
+		fullPath = wxString(m_Path) + wxString("\\Data\\actor\\") + strItem + wxString(".tac");
 		pAssetMgr->Remove( RESOURCE_ACTOR, (char*)strItem.char_str() );
-		Delete(pSelectedID);
+	}
+	else if( fileType == RESOURCE_FILE_MOTION )
+	{
+		fullPath = wxString(m_Path) + wxString("\\Data\\motion\\") + strItem + wxString(".tmo");
+		pAssetMgr->Remove( RESOURCE_MOTION, (char*)strItem.char_str() );
 	}
 
+	if ( !DeleteFile( fullPath ) )
+		assert(0);
+
+	Delete(pSelectedID);
 	Reload();
 }
 
@@ -232,41 +254,25 @@ void SAssetTreeCtrl::Reload()
 	IAssetMgr*		pAssetMgr	= GLOBAL::Engine()->AssetMgr();
 	wxTreeItemId	rootItem	= AddRoot( "Asset" );
 	wchar_t			pathBuf[MAX_PATH];
-	
-	{ // texture
-		wxTreeItemId textureItem = AppendItem( rootItem, strAssetType[RESOURCE_FILE_TEXTURE] );
-		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\Texture");
+
+	for( UINT i =0 ; i < NUM_RESOURCE_FILE_TYPE; ++i)
+	{
+		wxTreeItemId parent = AppendItem( rootItem, strAssetType[i] );
+
+		if( i == RESOURCE_FILE_TEXTURE )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\Texture");
+		else if( i == RESOURCE_FILE_ACTOR )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\actor");
+		else if( i == RESOURCE_FILE_MESH )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\mesh");
+		else if( i == RESOURCE_FILE_MOTION )	swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\motion");
+		else if( i == RESOURCE_FILE_MATERIAL )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\material");
+		else
+			assert(0);
 
 		CSTRING_LIST fileList;
 		CFILE_UTILITY::CollectFileList( pathBuf, &fileList);
-		for(UINT i=0; i< fileList.size(); ++i)
+		for(UINT iFile=0; iFile< fileList.size(); ++iFile)
 		{
-			wxFileName fn = fileList[i];
-			AppendItem( textureItem, fn.GetName() );
-		}
-	}
-	{ // actor
-		wxTreeItemId actorItem = AppendItem( rootItem, strAssetType[RESOURCE_FILE_ACTOR] );
-		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\actor");
-
-		CSTRING_LIST fileList;
-		CFILE_UTILITY::CollectFileList( pathBuf, &fileList);
-		for(UINT i=0; i< fileList.size(); ++i)
-		{
-			wxFileName fn = fileList[i];
-			AppendItem( actorItem, fn.GetName() );
-		}
-	}
-	{ // mesh
-		wxTreeItemId meshItem = AppendItem( rootItem, strAssetType[RESOURCE_FILE_MESH] );
-		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\mesh");
-
-		CSTRING_LIST fileList;
-		CFILE_UTILITY::CollectFileList( pathBuf, &fileList);
-		for(UINT i=0; i< fileList.size(); ++i)
-		{
-			wxFileName fn = fileList[i];
-			AppendItem( meshItem, fn.GetName() );
+			wxFileName fn = fileList[iFile];
+			AppendItem( parent, fn.GetName() );
 		}
 	}
 }

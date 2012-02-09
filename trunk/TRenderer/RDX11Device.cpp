@@ -57,12 +57,18 @@ void RDX11Device::SetViewport(float width, float height, float MinDepth, float M
 //----------------------------------------------------------------------------------------------------------
 void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
 {
-	GLOBAL::SetCameraDesc(cameraDesc);
+	CCAMERA_DESC desc;
+
+	desc = cameraDesc;
+	desc.ProjTM._33 /= desc.farClip;
+	desc.ProjTM._43 /= desc.farClip;
+
+	GLOBAL::SetCameraDesc(desc);
 
 	// update global shader constant
-	CCAMERA_DESC cameraConstant = cameraDesc;
-	cameraConstant.ViewTM = XMMatrixTranspose( cameraDesc.ViewTM );
-	cameraConstant.ProjTM = XMMatrixTranspose( cameraDesc.ProjTM );
+	CCAMERA_DESC cameraConstant = desc;
+	cameraConstant.ViewTM = XMMatrixTranspose( desc.ViewTM );
+	cameraConstant.ProjTM = XMMatrixTranspose( desc.ProjTM );
 	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), SM_BUF12_192BYTE_SLOT1, PS_SHADER );
 
 	m_pCurrentRenderStrategy->RenderScene();

@@ -29,6 +29,17 @@ struct CQuat
 		: x(x_), y(y_), z(z_), w(w_)	{}
 	CQuat(XMVECTOR _m128)	{ m128 = _m128; }
 
+	static bool EQual(const CQuat& a, const CQuat& b, float tolerance)
+	{
+		if( fabs(a.x - b.x) > tolerance ||
+			fabs(a.y - b.y) > tolerance ||
+			fabs(a.z - b.z) > tolerance ||
+			fabs(a.w - b.w) > tolerance )
+			return false;
+
+		return true;
+	}
+
 	static XMVECTOR		Conjugate(const CQuat& q)	{ return XMQuaternionConjugate(q.m128);}
 	static XMVECTOR		Normalise(const CQuat& q)	{ return XMQuaternionNormalize(q.m128);}
 	static XMVECTOR		Identity()					{ return XMQuaternionIdentity(); }
@@ -135,6 +146,16 @@ struct CVector3{
 		z = XMVectorGetZ(_m128);
 	}
 
+	static bool EQual(const CVector3& a, const CVector3& b, float tolerance)
+	{
+		if( fabs(a.x - b.x) > tolerance ||
+			fabs(a.y - b.y) > tolerance ||
+			fabs(a.z - b.z) > tolerance )
+			return false;
+
+		return true;
+	}
+
 	XMVECTOR ToXMVEECTOR()	const { return XMVectorSet(x, y, z, 1);}
 
 	static float		Length(const CVector3& v)						{ return XMVectorGetX( XMVector3Length( v.ToXMVEECTOR() ) ); }
@@ -200,6 +221,18 @@ struct CVector4{
 	CVector4(XMVECTOR _m128)	{ m128 = _m128; }
 	CVector4(CVector3 v)		{ m128 = XMVectorSet(v.x, v.y, v.z, 1); }
 	XMVECTOR			ToXMVEECTOR()	const { return XMVectorSet(x, y, z, w);}
+
+	static bool EQual(const CVector4& a, const CVector4& b, float tolerance)
+	{
+		if( fabs(a.x - b.x) > tolerance ||
+			fabs(a.y - b.y) > tolerance ||
+			fabs(a.z - b.z) > tolerance ||
+			fabs(a.w - b.w) > tolerance )
+			return false;
+
+		return true;
+	}
+
 
 	static float		Length(const CVector4& v)						{ return XMVectorGetX( XMVector4Length( v.m128) ); }
 	static CVector4		Normalize(const CVector4& v)					{ return XMVector4Normalize( v.m128); }

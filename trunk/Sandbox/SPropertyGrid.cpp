@@ -157,6 +157,11 @@ void SPropertyGrid::Set( const CResourceActor* pActor )
 	Append( new wxIntProperty( "Joint Num", wxPG_LABEL, pActor->jointList.size()) );
 }
 
+void SPropertyGrid::Set( const CResourceMotion* pMotion )
+{
+	ClearProperties();
+}
+
 void SPropertyGrid::Set( const CJoint* pJoint )
 {
 	ClearProperties();

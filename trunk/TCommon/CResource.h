@@ -9,6 +9,7 @@
 
 #define MESH_FILE_VERSION	1
 #define ACTOR_FILE_VERSION	1
+#define MOTION_FILE_VERSION	1
 
 #define MAX_GEOMETRY	5
 #define MAX_NAME_LENGTH		64
@@ -341,13 +342,44 @@ public:
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_ACTOR); }
 };
 
+
+struct CMotionKey
+{
+	CQuat		rot;
+	CVector3	pos;
+	uint8		keyIndex;	// same key index if bKeyChanged is FALSE
+	bool		bKeyChanged;
+};
+
+typedef std::vector<CMotionKey>	MOTION_KEY_LIST;
+
+struct CMotionNode
+{
+	MOTION_KEY_LIST	keys;
+	char			name[MAX_NAME_LENGTH];
+	char			parentName[MAX_NAME_LENGTH];
+};
+
+typedef std::vector<CMotionNode> MOTION_NODE_LIST;
+
 class CResourceMotion : public CResourceBase
 {
 	// only object pool can make&delete this class
 	friend CObjectPool<CResourceMotion>;
 	CResourceMotion(){}
-	~CResourceMotion(){}
+	~CResourceMotion()
+	{
+		Destroy();
+	}
+	void Destroy() override	
+	{
+		jointList.clear();	
+	}
 public:
+	uint8				frameRate;
+	UINT				totalFrame;
+	uint8				frameInterval;
+	MOTION_NODE_LIST	jointList;
 
 	eRESOURCE_TYPE	Type() override		{ return RESOURCE_MOTION; }
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_MOTION); }

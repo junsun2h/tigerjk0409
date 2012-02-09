@@ -50,12 +50,12 @@ bool EWinFileLoader::Load()
 	}
 
 
-	DWORD size = GetFileSize(hFile, NULL );
-	m_pData = new BYTE[size];
+	m_cBytes = GetFileSize(hFile, NULL );
+	m_pData = new BYTE[m_cBytes];
 
 	// read the header
 	DWORD dwRead;
-	if( !ReadFile( hFile, m_pData, size, &dwRead, NULL ) )
+	if( !ReadFile( hFile, m_pData, m_cBytes, &dwRead, NULL ) )
 	{
 		assert(0);
 		return false;
