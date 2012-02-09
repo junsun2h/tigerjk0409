@@ -121,68 +121,39 @@ void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)
 
 void SAssetTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
-	SPropertyPanel*	pPropertyPanel	= GLOBAL::PropertyPanel();
-	IAssetMgr*		pAssetMgr		= GLOBAL::Engine()->AssetMgr();
-	ILoader*		pLoader			= GLOBAL::Engine()->Loader();
-
-	wxTreeItemId seletedItem		= event.GetItem();
-	wxString strItem	= GetItemText(seletedItem);
-
-	eRESOURCE_FILE_TYPE fileType = GetAssetType(seletedItem);
+	SPropertyPanel*	pPropertyPanel	=  GLOBAL::PropertyPanel();
 
 	pPropertyPanel->Empty();
 	GLOBAL::SelectionMgr()->Clear();
 
-	if( fileType == RESOURCE_FILE_TEXTURE )
-	{
-		const CResourceBase* pTexture = pAssetMgr->GetResource(RESOURCE_TEXTURE, strItem.c_str().AsChar() );
+	const CResourceBase* pResource = LoadResource( event.GetItem() );
 
-		if( pTexture == NULL )
-		{
-			wxString fullPath = wxString(m_Path) + wxString("\\Data\\texture\\") + strItem + wxString(".dds");
-			pTexture = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_TEXTURE );
-		}
-
-		pPropertyPanel->SetObject( (CResourceTexture*)pTexture );
-	}
-	else if( fileType == RESOURCE_FILE_MESH )
-	{
-		const CResourceBase* pMesh = pAssetMgr->GetResource(RESOURCE_MESH, strItem.c_str().AsChar() );
-
-		if( pMesh == NULL )
-		{
-			wxString fullPath = wxString(m_Path) + wxString("\\Data\\mesh\\") + strItem + wxString(".tmesh");
-			pMesh = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_MESH );
-		}
-
-		pPropertyPanel->SetObject( (CResourceMesh*)pMesh );
-	}
-	else if( fileType == RESOURCE_FILE_ACTOR )
-	{
-		const CResourceBase* pActor = pAssetMgr->GetResource(RESOURCE_ACTOR, strItem.c_str().AsChar() );
-
-		if( pActor == NULL )
-		{
-			wxString fullPath = wxString(m_Path) + wxString("\\Data\\actor\\") + strItem + wxString(".tac");
-			pActor = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_ACTOR );
-		}
-
-		pPropertyPanel->SetObject( (CResourceActor*)pActor );
-	}
-	else if( fileType == RESOURCE_FILE_MOTION )
-	{
-		const CResourceBase* pMotion = pAssetMgr->GetResource(RESOURCE_MOTION, strItem.c_str().AsChar() );
-
-		if( pMotion == NULL )
-		{
-			wxString fullPath = wxString(m_Path) + wxString("\\Data\\motion\\") + strItem + wxString(".tmo");
-			pMotion = pLoader->LoadForward( fullPath.char_str(), strItem.char_str(), RESOURCE_FILE_MOTION );
-		}
-
-		pPropertyPanel->SetObject( (CResourceMotion*)pMotion );
-	}
+	if( pResource != NULL )
+		pPropertyPanel->SetObject( pResource );
 }
 
+const CResourceBase* SAssetTreeCtrl::LoadResource(wxTreeItemId seletedItem)
+{
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+	eRESOURCE_FILE_TYPE fileType = GetAssetType(seletedItem);
+
+	if( fileType == RESOURCE_FILE_INVALID)
+		return NULL;
+
+	wxString strItem = GetItemText(seletedItem);
+
+	const CResourceBase* pResource = NULL;
+
+	if( fileType == RESOURCE_FILE_TEXTURE )		pResource = pAssetMgr->GetResource(RESOURCE_TEXTURE, strItem.c_str().AsChar() );
+	else if( fileType == RESOURCE_FILE_MESH )	pResource = pAssetMgr->GetResource(RESOURCE_MESH, strItem.c_str().AsChar() );
+	else if( fileType == RESOURCE_FILE_ACTOR )	pResource = pAssetMgr->GetResource(RESOURCE_ACTOR, strItem.c_str().AsChar() );
+	else if( fileType == RESOURCE_FILE_MOTION )	pResource = pAssetMgr->GetResource(RESOURCE_MOTION, strItem.c_str().AsChar() );
+
+	if( pResource != NULL)
+		return pResource;
+
+	return GLOBAL::Engine()->Loader()->LoadForward( strItem.char_str(), fileType );
+}
 
 void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 {
@@ -224,25 +195,31 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 	Reload();
 }
 
-void SAssetTreeCtrl::OnBeginDrag(wxTreeEvent& WXUNUSED(event))
+void SAssetTreeCtrl::OnBeginDrag(wxTreeEvent& event)
 {
-	wxTreeItemId pSelectedID = GetSelection();
-
-	if( pSelectedID.IsOk() )
+	int flags =0;
+	wxTreeItemId seletedItem = HitTest( event.GetPoint(), flags);
+	if (flags & (wxTREE_HITTEST_ABOVE | wxTREE_HITTEST_NOWHERE | wxTREE_HITTEST_BELOW | wxTREE_HITTEST_TOLEFT | wxTREE_HITTEST_TORIGHT))
+		return;
+	
+	if( seletedItem.IsOk() )
 	{
-		eRESOURCE_FILE_TYPE	fileType	= GetAssetType(pSelectedID);
+		eRESOURCE_FILE_TYPE	fileType	= GetAssetType(seletedItem);
 		
 		if( fileType == RESOURCE_FILE_INVALID )
 			return;
+
+		LoadResource(seletedItem);
 
 		SDragAndDragDesc desc;
 		
 		if( fileType == RESOURCE_FILE_ACTOR )		{	desc.type = DND_ACTOR;	}
 		else if( fileType == RESOURCE_FILE_MESH )	{	desc.type = DND_MESH;	}
+		else if( fileType == RESOURCE_FILE_MOTION )	{	desc.type = DND_MOTION;	}
 		else
 			return;
 
-		desc.strParam = GetItemText(pSelectedID);
+		desc.strParam = GetItemText(seletedItem);
 		SDragAndDropState::Do(desc, this);
 	}
 }

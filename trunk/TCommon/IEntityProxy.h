@@ -42,7 +42,7 @@ struct IEntityProxyActor : IEntityProxy
 	virtual const char*				GetTypeString()		{ return "ENTITY_PROXY_ACTOR"; }
 
 	virtual	JOINT_ENTITY_LIST*		GetJointEntities() =0;
-	virtual const CResourceActor*	GetActorInfo() = 0;
+	virtual const CResourceActor*	GetResource() = 0;
 	virtual IMotionMgr*				GetMotionMgr() = 0;
 	virtual	void					SetActor(const CResourceActor* pResource) = 0;
 	virtual void					Update(float deltaTime) = 0;

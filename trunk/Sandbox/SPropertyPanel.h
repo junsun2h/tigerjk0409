@@ -9,13 +9,16 @@ class SCanvas;
 class SEntityTreeCtrl;
 class SSceneTreeCtrl;
 class SAnimationToolBar;
+class SMotionTreeCtrl;
+
 
 enum PROPERTY_WIDGET_ID
 {
 	ID_PROPERTY_ENTITY_TREECTRL,
 	ID_PROPERTY_SCENE_TREECTRL,
+	ID_PROPERTY_MOTION_TREECTRL,
 	ID_PROPERTY_GRID,
-	ID_PROPERTY_ANIMATION_TOOLBAR
+	ID_PROPERTY_ANIMATION_TOOLBAR	
 };
 
 enum PROPERTY_SUB_WINDOWS
@@ -24,7 +27,8 @@ enum PROPERTY_SUB_WINDOWS
 	PROPERTY_GRID	= BIT(2),
 	ENTITY_TREE_CTRL = BIT(3),
 	SCENE_TREE_CTRL	= BIT(4),
-	ANIMATION_TOOLBAR = BIT(5)
+	ANIMATION_TOOLBAR = BIT(5),
+	MOTION_TREE_CTRL = BIT(6),
 };
 
 class SPropertyGrid;
@@ -39,6 +43,8 @@ public:
 	SPropertyPanel(wxWindow* parent);
 
 	void					SetObject( IEntity* pEntity );
+	void					SetObject( const CResourceBase* pResource );
+
 	void					SetObject( const CResourceTexture* pResource );
 	void					SetObject( const CResourceMesh* pResource );
 	void					SetObject( const CResourceActor* pResource );
@@ -54,6 +60,7 @@ private:
 	SEntityTreeCtrl*		m_pEntityTreeCtrl;
 	SSceneTreeCtrl*			m_pSceneTreeCtrl;
 	SAnimationToolBar*		m_pAnimationTooBar;
+	SMotionTreeCtrl*		m_pMotionTreeCtrl;
 
 	DECLARE_EVENT_TABLE()
 };

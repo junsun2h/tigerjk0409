@@ -12,7 +12,8 @@ class SAssetDragAndDrop : public wxTextDropTarget
 public:
 	SAssetDragAndDrop(SSceneHierarchyTreeCtrl* pParent)
 		: m_SceneHierarchyTree(pParent){}
-	bool SAssetDragAndDrop::OnDropText(wxCoord x, wxCoord y, const wxString& text)
+	
+	bool OnDropText(wxCoord x, wxCoord y, const wxString& text)
 	{
 		m_SceneHierarchyTree->OnDrop( wxPoint(x,y), text);
 		return true;

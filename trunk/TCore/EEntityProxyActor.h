@@ -12,7 +12,7 @@ public:
 	void					Destroy();
 
 	JOINT_ENTITY_LIST*		GetJointEntities() override { return &m_pJointEntities; }
-	const CResourceActor*	GetActorInfo() override;
+	const CResourceActor*	GetResource() override;
 	IMotionMgr*				GetMotionMgr() override;
 	void					SetActor(const CResourceActor* pResource) override;
 

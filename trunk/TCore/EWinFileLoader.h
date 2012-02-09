@@ -9,7 +9,7 @@ private:
 	DWORD				m_cBytes;
 
 public:
-	EWinFileLoader( char* szFileName );
+	EWinFileLoader( const char* szFileName );
 	~EWinFileLoader();
 
 	// overrides

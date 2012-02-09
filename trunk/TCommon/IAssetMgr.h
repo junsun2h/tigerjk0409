@@ -16,6 +16,9 @@ struct IAssetMgr
 	virtual void				Remove(eRESOURCE_TYPE type, std::string& name) = 0;
 	virtual void				Remove(eRESOURCE_TYPE type, const char* name) = 0;
 
+	virtual CResourceBase*		UnSafeGetResource( eRESOURCE_TYPE type, long id ) = 0;
+	virtual CResourceBase*		UnSafeGetResource( eRESOURCE_TYPE type, const char* name ) = 0;
+
 	virtual const CResourceBase*		GetResource( eRESOURCE_TYPE type, long id ) = 0;
 	virtual const CResourceBase*		GetResource( eRESOURCE_TYPE type, const char* name ) = 0;
 	virtual const CResourceBase*		GetResource( eRESOURCE_TYPE type, std::string name ) = 0;

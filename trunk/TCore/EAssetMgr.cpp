@@ -12,6 +12,20 @@ EAssetMgr::~EAssetMgr()
 
 }
 
+CResourceBase* EAssetMgr::UnSafeGetResource( eRESOURCE_TYPE type, long id )
+{
+	TYPE_RESOURCE_MAP::CPair* itr = m_Resources[type].Lookup( id );
+	if( itr != NULL)
+		return itr->m_value;
+
+	return NULL;
+}
+
+CResourceBase* EAssetMgr::UnSafeGetResource( eRESOURCE_TYPE type, const char* name )
+{
+	return UnSafeGetResource(type, GET_HASH_KEY(name) );
+}
+
 const CResourceBase* EAssetMgr::GetResource( eRESOURCE_TYPE type, long id )
 {
 	TYPE_RESOURCE_MAP::CPair* itr = m_Resources[type].Lookup( id );

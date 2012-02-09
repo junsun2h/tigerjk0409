@@ -83,6 +83,7 @@
     <ClInclude Include="SAssetPanel.h" />
     <ClInclude Include="SDragAndDropState.h" />
     <ClInclude Include="SEntityTreeCtrl.h" />
+    <ClInclude Include="SMotionTreeCtrl.h" />
     <ClInclude Include="SNameDlg.h" />
     <ClInclude Include="SSceneTreeCtrl.h" />
     <ClInclude Include="SSelectionMgr.h" />
@@ -111,6 +112,7 @@
     <ClCompile Include="SMainFrame.cpp" />
     <ClCompile Include="SMainToolBar.cpp" />
     <ClCompile Include="SMeshImportor.cpp" />
+    <ClCompile Include="SMotionTreeCtrl.cpp" />
     <ClCompile Include="SPropertyGrid.cpp" />
     <ClCompile Include="SPropertyPanel.cpp" />
     <ClCompile Include="SSceneHierarchyPanel.cpp" />

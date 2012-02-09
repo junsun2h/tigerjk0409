@@ -3,7 +3,7 @@
 
 
 
-EWinFileLoader::EWinFileLoader( char* szFileName  )
+EWinFileLoader::EWinFileLoader( const char* szFileName  )
 	: m_pData(NULL)
 	, m_cBytes(0)
 {

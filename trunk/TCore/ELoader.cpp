@@ -42,6 +42,7 @@ ELoader::ELoader()
 	m_hProcessQueueSemaphore( 0 ),
 	m_hIOThread( 0 )
 {
+	GetCurrentDirectoryA( MAX_PATH, m_Path);
 }
 
 //--------------------------------------------------------------------------------------
@@ -266,9 +267,7 @@ bool ELoader::IsDataProcThread()
 	return false;
 }
 
-
-
-CResourceBase* ELoader::LoadForward(char* fileName, char* name, eRESOURCE_FILE_TYPE type)
+CResourceBase* ELoader::LoadForward(const char* fileName, char* name, eRESOURCE_FILE_TYPE type)
 {
 	if(RESOURCE_FILE_ACTOR == type )
 	{
@@ -323,6 +322,19 @@ CResourceBase* ELoader::LoadForward(char* fileName, char* name, eRESOURCE_FILE_T
 	}
 
 	return NULL;
+}
+
+CResourceBase* ELoader::LoadForward(char* name, eRESOURCE_FILE_TYPE type)
+{
+	std::string fullPath = m_Path;
+	
+	if(RESOURCE_FILE_ACTOR == type )			fullPath = fullPath + "\\Data\\actor\\" + name + ".tac";
+	else if( RESOURCE_FILE_MESH == type)		fullPath = fullPath + "\\Data\\mesh\\" + name + ".tmesh";
+	else if(RESOURCE_FILE_MOTION == type )		fullPath = fullPath + "\\Data\\motion\\" + name + ".tmo";
+	else if(RESOURCE_FILE_TEXTURE == type )		fullPath = fullPath + "\\Data\\texture\\" + name + ".dds";
+	else if(RESOURCE_FILE_MATERIAL == type )	fullPath = fullPath + "\\Data\\material\\" + name + ".mtrl";
+
+	return LoadForward( fullPath.c_str(), name, type );
 }
 
 
