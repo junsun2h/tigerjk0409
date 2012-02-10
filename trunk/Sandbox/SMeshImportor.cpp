@@ -505,11 +505,11 @@ namespace SMESH_LOADER
 	CResourceGeometry* CreateGeometry(SRAW_MESH* pRawMesh, std::vector<int>* pMtrlIDList )
 	{
 		UNIFIED_VERTEX_MAP vertexMap;
-		IEngineMemoryMgr* pMemoryPoolMgr = GLOBAL::Engine()->EngineMemoryMgr();
+		IResourceMemMgr* pMemoryPoolMgr = GLOBAL::Engine()->ResourceMemMgr();
 
 		//////////////////////////////////////////////////////////////////////////
 		// set geometry info
-		CResourceGeometry* pGeometry = (CResourceGeometry*)pMemoryPoolMgr->GetNewResource(RESOURCE_GEOMETRY);
+		CResourceGeometry* pGeometry = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
 		strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
 
 		//////////////////////////////////////////////////////////////////////////
@@ -648,7 +648,7 @@ namespace SMESH_LOADER
 
 		for (UINT i=0; i < vecGeometries.size(); ++i)
 		{
-			GLOBAL::Engine()->EngineMemoryMgr()->RemoveResource( vecGeometries[i] );
+			GLOBAL::Engine()->ResourceMemMgr()->Remove( vecGeometries[i] );
 		}
 	}
 

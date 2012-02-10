@@ -1,6 +1,22 @@
-#include "EGlobal.h"
+#include <atlcoll.h>
+
+#include "CGrowableArray.h"
+#include "CAABB.h"
+#include "CUnitPool.h"
+#include "CResource.h"
+
+#include "IEntity.h"
+#include "EEntity.h"
+
+#include "IEntityMgr.h"
 #include "EEntityMgr.h"
 
+
+EEntityMgr::EEntityMgr()
+	: m_MemPoolEntity(1000)
+{
+
+}
 
 IEntity* EEntityMgr::SpawnEntity(std::string name)
 {
@@ -12,7 +28,7 @@ IEntity* EEntityMgr::SpawnEntity(std::string name)
 		return pEntity->m_value;
 	} 
 
-	IEntity* pNewEntity = GLOBAL::EngineMemoryMgr()->GetNewEntity();
+	IEntity* pNewEntity = m_MemPoolEntity.GetNew();
 	pNewEntity->Init(name, newID);
 
 	m_EntityMap.SetAt( newID, pNewEntity );
@@ -25,7 +41,7 @@ void EEntityMgr::RemoveEntity(long id)
 	ENTITY_MAP::CPair* pEntity = m_EntityMap.Lookup( id );
 	if( pEntity != NULL )
 	{
-		GLOBAL::EngineMemoryMgr()->RemoveEntity(pEntity->m_value);
+		m_MemPoolEntity.Remove(pEntity->m_value);
 		m_EntityMap.RemoveKey(id);
 	}
 }	 
@@ -38,7 +54,7 @@ void EEntityMgr::RemoveAllEntity()
 	{
 		POSITION pos = m_EntityMap.GetStartPosition();
 		ENTITY_MAP::CPair* itr = m_EntityMap.GetNext(pos);
-		GLOBAL::EngineMemoryMgr()->RemoveEntity(itr->m_value);
+		m_MemPoolEntity.Remove(itr->m_value);
 		m_EntityMap.RemoveKey(itr->m_key);
 	}
 }	 

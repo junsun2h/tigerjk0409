@@ -34,7 +34,8 @@ END_EVENT_TABLE()
 
 SMotionTreeCtrl::SMotionTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id)
 	: wxTreeCtrl(parent, id,  wxDefaultPosition, wxSize(250, 100))
-	, m_pGrid(pGrid)	
+	, m_pGrid(pGrid)
+	, m_pEntity(NULL)
 {
 	SetDropTarget( new SMotionDragAndDrop(this) );
 }
@@ -49,22 +50,28 @@ void SMotionTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	else
 	{
 		wxString strItem = GetItemText( event.GetItem() );
-		for( UINT i=0 ; i < 	m_pActor->motionList.size(); ++i )
+		for( UINT i=0 ; i <	m_pActor->motionList.size(); ++i )
 		{
 			if( strItem == m_pActor->motionList[i]->name)
 			{
 				m_pGrid->Set( m_pActor->motionList[i] );
+				if( m_pEntity )
+				{
+					IEntityProxyActor* pActorProxy = (IEntityProxyActor*)m_pEntity->GetProxy(ENTITY_PROXY_ACTOR);
+				}
+
 				break;
 			}
 		}
 	}
 }
 
-void SMotionTreeCtrl::SetActor(const CResourceActor* pActor)
+void SMotionTreeCtrl::SetActor(const CResourceActor* pActor, IEntity* pEntity)
 {
 	DeleteAllItems();
 
 	m_pActor = pActor;
+	m_pEntity = pEntity;
 
 	if( m_pActor == NULL)
 		return;

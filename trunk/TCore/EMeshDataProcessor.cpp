@@ -38,7 +38,7 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 	
-	CResourceMesh* pMesh = (CResourceMesh*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_MESH);
+	CResourceMesh* pMesh = (CResourceMesh*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_MESH);
 
 	ECopyData( &pMesh->min, &pSrcBits,  12 );
 	ECopyData( &pMesh->max, &pSrcBits,  12 );
@@ -48,7 +48,7 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	for(int i=0; i< pMesh->geometryNum; ++i)
 	{
 		_itoa_s( i, buf, 32);
-		CResourceGeometry* pGeometry = (CResourceGeometry*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_GEOMETRY);
+		CResourceGeometry* pGeometry = (CResourceGeometry*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_GEOMETRY);
 
 		ECopyData( &pGeometry->eVertexType, &pSrcBits,  4 );
 		ECopyData( &pGeometry->vertexCount, &pSrcBits,  4 );

@@ -37,7 +37,7 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 
-	CResourceMotion* pMotion = (CResourceMotion*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_MOTION);
+	CResourceMotion* pMotion = (CResourceMotion*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_MOTION);
 
 	ECopyData( &pMotion->frameRate, &pSrcBits,  1 );
 	ECopyData( &pMotion->frameInterval, &pSrcBits,  1 );

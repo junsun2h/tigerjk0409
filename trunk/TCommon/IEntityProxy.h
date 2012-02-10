@@ -5,7 +5,6 @@
 #include "CCamera.h"
 
 
-struct IMotionMgr;
 struct IEntity;
 struct EntityEvent;
 enum eENTITY_EVENT_ID;
@@ -33,8 +32,10 @@ struct IEntityProxy
 	virtual	void				ProcessEvent( EntityEvent &event ) = 0;
 };
 
-
-typedef std::vector<IEntity*>	JOINT_ENTITY_LIST;
+struct CMotionDesc;
+struct IMotionInstance;
+typedef std::list<IMotionInstance*>		MOTION_INSTANCE_LIST;
+typedef std::vector<IEntity*>			JOINT_ENTITY_LIST;
 
 struct IEntityProxyActor : IEntityProxy
 {
@@ -43,9 +44,13 @@ struct IEntityProxyActor : IEntityProxy
 
 	virtual	JOINT_ENTITY_LIST*		GetJointEntities() =0;
 	virtual const CResourceActor*	GetResource() = 0;
-	virtual IMotionMgr*				GetMotionMgr() = 0;
 	virtual	void					SetActor(const CResourceActor* pResource) = 0;
-	virtual void					Update(float deltaTime) = 0;
+
+	virtual void					Play(CMotionDesc* pdesc) = 0;
+	virtual void					Freeze() = 0;
+	virtual void					Stop() = 0;
+	virtual bool					IsPlaying() = 0;
+	virtual MOTION_INSTANCE_LIST*	GetPlayingMotions() = 0;
 };
 
 

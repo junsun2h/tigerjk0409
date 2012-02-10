@@ -79,9 +79,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EMotionInstance.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EActorDataProcessor.cpp" />
-    <ClCompile Include="EEngineMemoryMgr.cpp" />
     <ClCompile Include="EAssetMgr.cpp" />
     <ClCompile Include="EEngine.cpp" />
     <ClCompile Include="EEntity.cpp" />
@@ -95,6 +95,7 @@
     <ClCompile Include="EMotionDataProcessor.cpp" />
     <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
+    <ClCompile Include="EResourceMemMgr.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
     <ClCompile Include="ThirdParty\tinyxml\tinystr.cpp" />
     <ClCompile Include="ThirdParty\tinyxml\tinyxml.cpp" />
@@ -102,8 +103,8 @@
     <ClCompile Include="ThirdParty\tinyxml\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EMotionInstance.h" />
     <ClInclude Include="EActorDataProcessor.h" />
-    <ClInclude Include="EEngineMemoryMgr.h" />
     <ClInclude Include="EAssetMgr.h" />
     <ClInclude Include="EEngine.h" />
     <ClInclude Include="EEntity.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="EMotionDataProcessor.h" />
     <ClInclude Include="EQuadSpaceTreeMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h" />
+    <ClInclude Include="EResourceMemMgr.h" />
     <ClInclude Include="EWinFileLoader.h" />
     <ClInclude Include="ThirdParty\tinyxml\tinystr.h" />
     <ClInclude Include="ThirdParty\tinyxml\tinyxml.h" />

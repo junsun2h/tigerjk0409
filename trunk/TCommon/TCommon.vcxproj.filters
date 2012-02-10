@@ -37,12 +37,6 @@
     <ClInclude Include="ILoader.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IEngineMemoryMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="IMotionMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
     <ClInclude Include="IRenderHelper.h">
       <Filter>Interface_Renderer</Filter>
     </ClInclude>
@@ -117,6 +111,12 @@
     </ClInclude>
     <ClInclude Include="CFileUtility.h">
       <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="IMotionInstance.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IResourceMemMgr.h">
+      <Filter>Interface_Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

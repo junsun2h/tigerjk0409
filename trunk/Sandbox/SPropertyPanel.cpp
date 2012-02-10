@@ -52,7 +52,7 @@ void SPropertyPanel::SetObject( IEntity* pEntity )
 	if( pActor )
 	{
 		OrganizeInside( ENTITY_TREE_CTRL | MOTION_TREE_CTRL | PROPERTY_GRID | ANIMATION_TOOLBAR);
-		m_pMotionTreeCtrl->SetActor( pActor->GetResource() );
+		m_pMotionTreeCtrl->SetActor( pActor->GetResource(), pEntity );
 	}
 	else
 		OrganizeInside( ENTITY_TREE_CTRL | PROPERTY_GRID );
@@ -85,7 +85,7 @@ void SPropertyPanel::SetObject( const CResourceActor* pResource )
 {
 	m_pSceneTreeCtrl->SetScene( &pResource->jointList );
 	m_pGridMgr->Set( pResource );
-	m_pMotionTreeCtrl->SetActor( pResource );
+	m_pMotionTreeCtrl->SetActor( pResource, NULL  );
 	OrganizeInside( PROPERTY_GRID | MOTION_TREE_CTRL | SCENE_TREE_CTRL );
 }
 

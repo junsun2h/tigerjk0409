@@ -82,7 +82,7 @@ void EAssetMgr::Clear()
 void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 {
 	IRDevice*		pRDevice		= GLOBAL::RDevice();
-	IEngineMemoryMgr* pMemeoryPool	= GLOBAL::EngineMemoryMgr();
+	IResourceMemMgr* pMemeoryPool	= GLOBAL::ResourceMemMgr();
 
 	CResourceBase* pResource = m_Resources[type].Lookup( id )->m_value;
 
@@ -98,7 +98,7 @@ void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 			{
 				CResourceGeometry* pGeometry = (CResourceGeometry*)itr->m_value;
 				pRDevice->RemoveGraphicBuffer(pGeometry);
-				pMemeoryPool->RemoveResource( pGeometry );
+				pMemeoryPool->Remove( pGeometry );
 				m_Resources[RESOURCE_GEOMETRY].RemoveKey( key);
 			}
 		}
@@ -108,7 +108,7 @@ void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 		pRDevice->RemoveGraphicBuffer(pResource);
 	}
 
-	pMemeoryPool->RemoveResource( pResource );
+	pMemeoryPool->Remove( pResource );
 	m_Resources[type].RemoveKey( id);
 }
 

@@ -36,7 +36,7 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 
-	CResourceActor* pActor = (CResourceActor*)GLOBAL::EngineMemoryMgr()->GetNewResource(RESOURCE_ACTOR);
+	CResourceActor* pActor = (CResourceActor*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_ACTOR);
 
 	uint8 jointCount;
 	ECopyData( &jointCount, &pSrcBits,  1 );

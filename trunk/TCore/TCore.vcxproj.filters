@@ -24,7 +24,6 @@
     <ClCompile Include="EEntityMgr.cpp">
       <Filter>EntitySystem\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="EEngineMemoryMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp">
       <Filter>Space</Filter>
     </ClCompile>
@@ -58,6 +57,10 @@
     <ClCompile Include="EMotionDataProcessor.cpp">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
+    <ClCompile Include="EMotionInstance.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="EResourceMemMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -93,6 +96,9 @@
     <Filter Include="Global">
       <UniqueIdentifier>{b629c070-6780-4a5e-b0c2-1794a16e9874}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{dcbe14ee-e617-486a-a9c2-1fb647eac215}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEngine.h" />
@@ -117,7 +123,6 @@
     <ClInclude Include="EEntityMgr.h">
       <Filter>EntitySystem\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="EEngineMemoryMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h">
       <Filter>Space</Filter>
     </ClInclude>
@@ -145,5 +150,9 @@
     <ClInclude Include="EMotionDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
+    <ClInclude Include="EMotionInstance.h">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="EResourceMemMgr.h" />
   </ItemGroup>
 </Project>

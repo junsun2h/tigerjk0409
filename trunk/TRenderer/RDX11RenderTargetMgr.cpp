@@ -149,10 +149,10 @@ void RDX11RenderTargetMgr::ClearAndSetMaineFrame()
 
 void RDX11RenderTargetMgr::CreateRenderTarget(int width, int height, eTEXTURE_FORMAT format, eDEFFERED_RENDER_TARGET target, const char* name)
 {
-	IEngineMemoryMgr* pMemoryMgr = GLOBAL::Engine()->EngineMemoryMgr();
+	IResourceMemMgr* pMemoryMgr = GLOBAL::Engine()->ResourceMemMgr();
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 
-	CResourceTexture* pGeometryTexture = (CResourceTexture*)pMemoryMgr->GetNewResource(RESOURCE_TEXTURE);
+	CResourceTexture* pGeometryTexture = (CResourceTexture*)pMemoryMgr->GetNew(RESOURCE_TEXTURE);
 	strcpy_s( pGeometryTexture->name, name);
 	pGeometryTexture->height = height;
 	pGeometryTexture->Width = width;
