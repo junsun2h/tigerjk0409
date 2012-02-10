@@ -321,7 +321,7 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
 	D3D11_TEXTURE2D_DESC desc;
 	pRT->GetDesc(&desc);
 
-	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->EngineMemoryMgr()->GetNewResource(RESOURCE_TEXTURE);
+	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->ResourceMemMgr()->GetNew(RESOURCE_TEXTURE);
 	pTexture->pTextureSource = pDXTexture;
 	pTexture->Width = desc.Width;
 	pTexture->height = desc.Height;

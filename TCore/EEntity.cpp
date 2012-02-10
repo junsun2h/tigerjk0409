@@ -1,10 +1,34 @@
 #include "EGlobal.h"
 
 #include "CGrowableArray.h"
+#include "CUnitPool.h"
+
+#include "IRDevice.h"
+#include "IMotionInstance.h"
 
 #include "CAABB.h"
+#include "IEntityProxy.h"
+#include "EEntityProxyActor.h"
+#include "EEntityProxyCamera.h"
+#include "EEntityProxyRender.h"
+
 #include "EEntity.h"
 
+
+CObjectPool<EEntityProxyActor>	g_MemPoolProxyActor(100);
+CObjectPool<EEntityProxyCamera>	g_MemPoolProxyCamera(100);
+CObjectPool<EEntityProxyRender>	g_MemPoolProxyRender(100);
+
+void RemoveProxyFromMemeory(IEntityProxy* pProxy)
+{
+	eENTITY_PROXY_TYPE type = pProxy->GetType();
+
+	if( type == ENTITY_PROXY_ACTOR )			{	return g_MemPoolProxyActor.Remove(pProxy);	}
+	else if( type == ENTITY_PROXY_RENDER )		{	return g_MemPoolProxyRender.Remove(pProxy);	}
+	else if( type == ENTITY_PROXY_CAMERA )		{	return g_MemPoolProxyCamera.Remove(pProxy);	}
+	else
+		assert(0);
+}
 
 
 
@@ -384,15 +408,15 @@ IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type, bool bCreate )
 
 IEntityProxy* EEntity::CreateProxy( eENTITY_PROXY_TYPE type )
 {
-	IEngineMemoryMgr* pPool = GLOBAL::EngineMemoryMgr();
+	IResourceMemMgr* pPool = GLOBAL::ResourceMemMgr();
 
 	IEntityProxy* pProxy = GetProxy( type );
 	if( pProxy != NULL)
 		return pProxy;
 
-	if( type == ENTITY_PROXY_ACTOR)			{	pProxy = pPool->GetNewProxy( ENTITY_PROXY_ACTOR );	}
-	else if( type == ENTITY_PROXY_CAMERA)	{	pProxy = pPool->GetNewProxy( ENTITY_PROXY_CAMERA );	}
-	else if( type == ENTITY_PROXY_RENDER )	{	pProxy = pPool->GetNewProxy( ENTITY_PROXY_RENDER );	}
+	if( type == ENTITY_PROXY_ACTOR)			{	pProxy = g_MemPoolProxyActor.GetNew();	}
+	else if( type == ENTITY_PROXY_CAMERA)	{	pProxy = g_MemPoolProxyCamera.GetNew();	}
+	else if( type == ENTITY_PROXY_RENDER )	{	pProxy = g_MemPoolProxyRender.GetNew();	}
 
 	pProxy->Init(this);
 	m_ProxyMap.SetAt( type, pProxy );
@@ -406,22 +430,19 @@ bool EEntity::DeleteProxy( eENTITY_PROXY_TYPE type )
 	if( pProxy == NULL )
 		return false;
 
-	GLOBAL::EngineMemoryMgr()->RemoveProxy( pProxy );
+	RemoveProxyFromMemeory( pProxy );
 	return true;
 }
 
 void EEntity::DeleteAllProxy()
 {
-	IEngineMemoryMgr* pPool = GLOBAL::EngineMemoryMgr();
-
 	POSITION pos = m_ProxyMap.GetStartPosition();
 	ENEITY_PROXY_MAP::CPair* itr = NULL;
 
 	while (pos)
 	{
 		itr = m_ProxyMap.GetNext(pos);
-		IEntityProxy* pProxy = itr->m_value;
-		pPool->RemoveProxy(itr->m_value );
+		RemoveProxyFromMemeory( itr->m_value );
 		m_ProxyMap.RemoveKey( itr->m_key );
 	}
 }

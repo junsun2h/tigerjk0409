@@ -9,14 +9,13 @@ public:
 	~EQuadSpaceTreeMgr();
 
 	void				Init(UINT worldSize, UINT divideCount);
-	void				Destroy() override;
-
-	void				UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc) override;
-	void				UpdateEntitySpace(IEntity* pEntity) override;
-
-	void				Render() override;
 
 private:
+	void				Destroy() override;
+	void				UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc) override;
+	void				UpdateEntitySpace(IEntity* pEntity) override;
+	void				Render() override;
+
 	EQuadSpaceTreeNode*	GetSpace(float x, float y);
 	EQuadSpaceTreeNode*	GetSpace(UINT id);
 	void				AssignSpace(IEntity* pEntity);

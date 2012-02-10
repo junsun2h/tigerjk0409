@@ -9,7 +9,7 @@ namespace GLOBAL
 	IAssetMgr*			AssetMgr();
 	IEntityMgr*			EntityMgr();
 	ILoader*			Loader();
-	IEngineMemoryMgr*	EngineMemoryMgr();
+	IResourceMemMgr*	ResourceMemMgr();
 	ISpaceMgr*			SpaceMgr();
 	long				GetCurrentFrame();
 }

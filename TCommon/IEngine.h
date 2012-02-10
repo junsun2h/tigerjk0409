@@ -19,7 +19,7 @@ struct IEngine;
 #include "IRenderCallback.h"
 #include "ILoader.h"
 #include "IEntity.h"
-#include "IEngineMemoryMgr.h"
+#include "IResourceMemMgr.h"
 #include "ISpaceMgr.h"
 
 
@@ -37,7 +37,7 @@ struct IEngine
 	virtual IRenderHelper*		RenderHelper() =0;
 	virtual CTimer*				GlobalTimer() = 0;
 	virtual ILoader*			Loader() = 0;
-	virtual IEngineMemoryMgr*	EngineMemoryMgr() =0;
+	virtual IResourceMemMgr*	ResourceMemMgr() =0;
 	virtual ISpaceMgr*			SpaceMgr() =0;
 	virtual long				GetCurrentFrame() =0;
 

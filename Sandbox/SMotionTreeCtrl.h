@@ -13,11 +13,12 @@ public:
 	SMotionTreeCtrl(wxWindow *parent, SPropertyGrid* pGrid, const wxWindowID id);
 
 	void			OnSelChanged(wxTreeEvent& event);
-	void			SetActor(const CResourceActor* pActor);
+	void			SetActor(const CResourceActor* pActor, IEntity* pEntity);
 	void			OnDrop(wxPoint point, const wxString& text);
 
 private:
 	const CResourceActor*	m_pActor;
+	IEntity*				m_pEntity;
 	SPropertyGrid*			m_pGrid;
 
 	DECLARE_DYNAMIC_CLASS(SEntityTreeCtrl)
