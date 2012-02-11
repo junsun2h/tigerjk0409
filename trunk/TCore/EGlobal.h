@@ -5,11 +5,10 @@
 
 namespace GLOBAL
 {
-	IRDevice*			RDevice();
+	IEngine*			Engine();
 	IAssetMgr*			AssetMgr();
 	IEntityMgr*			EntityMgr();
 	ILoader*			Loader();
 	IResourceMemMgr*	ResourceMemMgr();
 	ISpaceMgr*			SpaceMgr();
-	long				GetCurrentFrame();
 }

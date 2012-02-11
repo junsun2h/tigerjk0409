@@ -3,11 +3,15 @@
 struct IEngine;
 struct IRenderHelper;
 struct IEntityProxyRender;
+struct CResourceBase;
+struct CCAMERA_DESC;
+struct CENGINE_INIT_PARAM;
 
+class CResourceTexture;
+class CResourceGeometry;
+class CResourceMtrl;
 
-#include "CEngineParam.h"
-#include "CResource.h"
-#include "CCamera.h"
+enum eIMAGE_FILE_FORMAT;
 
 
 enum eRENDER_COMMAND
@@ -49,14 +53,22 @@ struct RDeviceDesc
 	int					height;
 };
 
+
+struct IRenderingCallback
+{
+	virtual void PreRender(){}
+	virtual void PostRender(){}
+};
+
+
 struct IRDevice  
 {
 	virtual ~IRDevice(){}
 
-	virtual bool			StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine) = 0;
+	virtual bool			StartUp(const CENGINE_INIT_PARAM* pRaram, IEngine* pEngine) = 0;
 	virtual void			ShutDown() = 0;
 
-	virtual void			RenderFrame(const CCAMERA_DESC& cameraDesc) = 0;
+	virtual void			RenderFrame(CCAMERA_DESC* pCameraDesc) = 0;
 	virtual void			RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy) = 0;
 	virtual void			Present() = 0;
 

@@ -1,32 +1,24 @@
 #pragma once
 
-struct IEngine;
-
 #include "CDefine.h"
-#include "CResource.h"
-#include "CCamera.h"
-#include "CEngineParam.h"
-#include "CTimer.h"
-#include "CQuad.h"
-#include "CAABB.h"
 
+struct IRDevice;		
+struct IAssetMgr;
+struct IEntity;
+struct IEntityMgr;	
+struct IRenderHelper;	
+struct ILoader;		
+struct IResourceMemMgr;
+struct ISpaceMgr;		
+struct IEntityProxyCamera;
+struct IRenderingCallback;
+struct CENGINE_INIT_PARAM;
 
-#include "IRenderHelper.h"
-#include "IEntityProxy.h"
-#include "IRDevice.h"
-#include "IEntityMgr.h"
-#include "IAssetMgr.h"
-#include "IRenderCallback.h"
-#include "ILoader.h"
-#include "IEntity.h"
-#include "IResourceMemMgr.h"
-#include "ISpaceMgr.h"
-
-
+class CTimer;
 
 struct IEngine
 {
-	virtual bool				StartUp(const CENGINE_INIT_PARAM &param) = 0;
+	virtual bool				StartUp(const CENGINE_INIT_PARAM* pParam) = 0;
 	virtual bool				ShutDown() = 0;
 	virtual void				Resize(UINT width, UINT height) = 0;
 

@@ -1,5 +1,11 @@
-#include "EGlobal.h"
+#include "CResource.h"
+
+#include "IEntity.h"
+#include "IEntityMgr.h"
+#include "IEntityProxy.h"
 #include "IMotionInstance.h"
+
+#include "EGlobal.h"
 #include "EEntityProxyActor.h"
 
 

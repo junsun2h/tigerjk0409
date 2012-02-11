@@ -6,7 +6,7 @@ class EEngine : public IEngine
 public:
 	EEngine();
 
-	bool				StartUp(const CENGINE_INIT_PARAM &param) override;
+	bool				StartUp(const CENGINE_INIT_PARAM* pParam) override;
 	bool				ShutDown() override;
 	void				Resize(UINT width, UINT height) override;
 

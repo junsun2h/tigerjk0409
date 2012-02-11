@@ -43,9 +43,6 @@
     <ClInclude Include="IRDevice.h">
       <Filter>Interface_Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderCallback.h">
-      <Filter>Interface_Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="CTimer.h">
       <Filter>DataStructure</Filter>
     </ClInclude>

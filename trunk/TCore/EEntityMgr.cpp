@@ -6,9 +6,9 @@
 #include "CResource.h"
 
 #include "IEntity.h"
-#include "EEntity.h"
-
 #include "IEntityMgr.h"
+
+#include "EEntity.h"
 #include "EEntityMgr.h"
 
 

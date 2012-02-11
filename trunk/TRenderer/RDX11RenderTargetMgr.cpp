@@ -1,3 +1,10 @@
+#include "CQuad.h"
+#include "CResource.h"
+
+#include "IRDevice.h"
+#include "IResourceMemMgr.h"
+#include "IAssetMgr.h"
+
 #include "RDX11Global.h"
 #include "RDX11RenderTargetMgr.h"
 

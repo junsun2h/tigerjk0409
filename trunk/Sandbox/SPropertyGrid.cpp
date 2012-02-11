@@ -80,12 +80,12 @@ void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 	if( type == ENTITY_PROXY_CAMERA )
 	{
 		IEntityProxyCamera* pCamera = (IEntityProxyCamera*)pEntityProxy;
-		const CCAMERA_DESC& desc = pCamera->GetDesc();
+		const CCAMERA_DESC* pDesc = pCamera->GetDesc();
 
-		Append(new wxFloatProperty( "Near Clip", wxPG_LABEL, desc.nearClip) );
-		Append(new wxFloatProperty( "Far Clip", wxPG_LABEL, desc.farClip) );
-		Append(new wxFloatProperty( "Fovy", wxPG_LABEL, desc.Fovy) );
-		Append(new wxFloatProperty( "Aspect", wxPG_LABEL, desc.aspect) );
+		Append(new wxFloatProperty( "Near Clip", wxPG_LABEL, pDesc->nearClip) );
+		Append(new wxFloatProperty( "Far Clip", wxPG_LABEL, pDesc->farClip) );
+		Append(new wxFloatProperty( "Fovy", wxPG_LABEL, pDesc->Fovy) );
+		Append(new wxFloatProperty( "Aspect", wxPG_LABEL, pDesc->aspect) );
 	}
 	else if( type == ENTITY_PROXY_RENDER )
 	{

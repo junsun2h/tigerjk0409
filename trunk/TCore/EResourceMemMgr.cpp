@@ -1,9 +1,11 @@
 #include <atlcoll.h>
 
+#include "CResource.h"
 #include "CUnitPool.h"
 #include "CGrowableArray.h"
 
 #include "IResourceMemMgr.h"
+
 #include "EResourceMemMgr.h"
 
 

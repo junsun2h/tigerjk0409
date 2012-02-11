@@ -11,10 +11,10 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 	// IRDevice
 	//////////////////////////////////////////////////////////////////////////
-	bool				StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine) override;
+	bool				StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine) override;
 	void				ShutDown() override;
 
-	void				RenderFrame(const CCAMERA_DESC& cameraDesc) override;
+	void				RenderFrame(CCAMERA_DESC* pCameraDesc) override;
 	void				RenderElement(	CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy) override;
 	void				Present() override;
 

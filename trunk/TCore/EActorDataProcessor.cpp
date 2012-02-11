@@ -1,3 +1,9 @@
+#include "CResource.h"
+
+#include "IAssetMgr.h"
+#include "IResourceMemMgr.h"
+#include "ILoader.h"
+
 #include "EGlobal.h"
 #include "EActorDataProcessor.h"
 

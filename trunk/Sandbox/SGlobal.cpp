@@ -64,7 +64,7 @@ namespace GLOBAL
 			return false;
 
 		g_Eng = FuncCreateEngine();
-		if( g_Eng->StartUp( engineParam ) == false )
+		if( g_Eng->StartUp( &engineParam ) == false )
 			return false;
 
 		SetupScene( engineParam.width, engineParam.height );

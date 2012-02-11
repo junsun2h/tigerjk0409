@@ -18,8 +18,8 @@ namespace GLOBAL
 	ID3D11DeviceContext*		D3DContext();
 
 	const RDeviceDesc&			DeviceInfo();
-	const CCAMERA_DESC&			CameraDesc();
-	void						SetCameraDesc(const CCAMERA_DESC& desc);
+	const CCAMERA_DESC*			CameraDesc();
+	void						SetCameraDesc(CCAMERA_DESC* pDesc);
 
 	IRDX11Device*				RDevice();
 	IRenderStateMgr*			RenderStateMgr();
@@ -31,6 +31,6 @@ namespace GLOBAL
 	void						Present();
 	bool						Resize(int width, int height);
 
-	bool						StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine);
+	bool						StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine);
 	void						ShutDown();
 }

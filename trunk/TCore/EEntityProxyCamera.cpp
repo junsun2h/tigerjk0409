@@ -1,3 +1,11 @@
+#include "CMathType.h"
+#include "CCamera.h"
+#include "CUnitPool.h"
+
+#include "IEntity.h"
+#include "IRDevice.h"
+#include "IEntityProxy.h"
+
 #include "EGlobal.h"
 #include "EEntityProxyCamera.h"
 
@@ -17,7 +25,7 @@ void EEntityProxyCamera::ProcessEvent( EntityEvent &event )
 {
 	if( event.type == E_EVENT_TRANSFORM_CHANGED )
 	{
-		m_FrustrumChanged = GLOBAL::GetCurrentFrame();
+		m_FrustrumChanged = GLOBAL::Engine()->GetCurrentFrame();
 		SetViewDescFromWorldMatrix();
 	}
 }
@@ -31,7 +39,7 @@ void EEntityProxyCamera::SetProjParam(float fovy, int width, int height, float n
 	
 	m_Desc.ProjTM = XMMatrixPerspectiveFovLH( m_Desc.Fovy, m_Desc.aspect, nearPlane, farPlane);
 
-	m_FrustrumChanged = GLOBAL::GetCurrentFrame();
+	m_FrustrumChanged = GLOBAL::Engine()->GetCurrentFrame();
 }
 
 void EEntityProxyCamera::SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector)
@@ -47,7 +55,7 @@ void EEntityProxyCamera::SetViewParam(CVector3& eyePos, CVector3& targetPos, CVe
 	m_Desc.eyeDirection = worldTM.r[2];
 	m_Desc.upVector = worldTM.r[1];
 
-	m_FrustrumChanged = GLOBAL::GetCurrentFrame();
+	m_FrustrumChanged = GLOBAL::Engine()->GetCurrentFrame();
 }
 
 void EEntityProxyCamera::SetViewDescFromWorldMatrix()
@@ -62,7 +70,7 @@ void EEntityProxyCamera::SetViewDescFromWorldMatrix()
 
 void EEntityProxyCamera::GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction)
 {
-	RDeviceDesc deviceDesc = GLOBAL::RDevice()->GetDeviceSetting();
+	RDeviceDesc deviceDesc = GLOBAL::Engine()->RDevice()->GetDeviceSetting();
 
 	// Compute the vector of the pick ray in screen space
 	CVector3 v;

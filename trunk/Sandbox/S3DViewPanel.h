@@ -2,7 +2,6 @@
 
 #include "wx/wx.h"
 #include "SGlobal.h"
-#include "IRenderCallback.h"
 
 
 struct IEntityProxyCamera;

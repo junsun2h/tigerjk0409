@@ -1,8 +1,12 @@
-#include "RDX11Global.h"
-
+#include "CResource.h"
 #include "CGrowableArray.h"
 #include "CQuad.h"
 
+
+#include "IEntityProxy.h"
+#include "IRDevice.h"
+
+#include "RDX11Global.h"
 #include "RDX11FontRenderer.h"
 
 

@@ -1,13 +1,10 @@
 #include <process.h>
 
-struct IEngine;
-
 #include "CResource.h"
 #include "CGrowableArray.h"
 #include "CEngineParam.h"
 #include "CQuad.h"
 #include "CCamera.h"
-
 
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"

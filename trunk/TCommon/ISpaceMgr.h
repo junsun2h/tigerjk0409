@@ -8,6 +8,6 @@ struct ISpaceMgr
 	virtual void		Destroy() =0;
 	virtual void		Render() = 0;
 
-	virtual void		UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc) =0;
+	virtual void		UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc) =0;
 	virtual void		UpdateEntitySpace(IEntity* pEntity) =0;
 };

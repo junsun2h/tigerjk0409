@@ -1,11 +1,8 @@
 #pragma once
 
 
-#include "CResource.h"
-#include "CMathType.h"
-
-
 struct IEntity;
+class CResourceMotion;
 
 
 struct CMotionDesc

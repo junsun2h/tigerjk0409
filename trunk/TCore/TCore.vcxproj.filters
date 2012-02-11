@@ -72,9 +72,6 @@
     <Filter Include="Asset\ResourceDataProcessor">
       <UniqueIdentifier>{ca07cc05-6db3-4247-8263-797bb4fdd57c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utility">
-      <UniqueIdentifier>{df16fbb4-5d0c-4391-a232-fb208aa6985a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="EntitySystem">
       <UniqueIdentifier>{3df464fc-5f10-4a0a-adb6-1f94092d9355}</UniqueIdentifier>
     </Filter>

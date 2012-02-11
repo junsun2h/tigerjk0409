@@ -1,3 +1,14 @@
+#include "CResource.h"
+#include "CQuad.h"
+#include "CCamera.h"
+#include "CCamera.h"
+#include "CEngineParam.h"
+
+#include "IEntity.h"
+#include "IEntityProxy.h"
+#include "IRDevice.h"
+#include "IResourceMemMgr.h"
+
 #include "RDX11Global.h"
 #include "RDX11Device.h"
 #include "RDX11RenderStrategeDeffered.h"
@@ -26,10 +37,10 @@ RDeviceDesc	RDX11Device::GetDeviceSetting()
 
 
 //----------------------------------------------------------------------------------------------------------
-bool RDX11Device::StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
+bool RDX11Device::StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine)
 {
-	m_HWND = (HWND)param.hWnd;
-	return GLOBAL::StartUp(param, pEngine);
+	m_HWND = (HWND)pParam->hWnd;
+	return GLOBAL::StartUp(pParam, pEngine);
 }
 
 
@@ -55,15 +66,15 @@ void RDX11Device::SetViewport(float width, float height, float MinDepth, float M
 }
 
 //----------------------------------------------------------------------------------------------------------
-void RDX11Device::RenderFrame(const CCAMERA_DESC& cameraDesc)
+void RDX11Device::RenderFrame(CCAMERA_DESC* pCameraDesc)
 {
 	CCAMERA_DESC desc;
 
-	desc = cameraDesc;
+	desc = *pCameraDesc;
 	desc.ProjTM._33 /= desc.farClip;
 	desc.ProjTM._43 /= desc.farClip;
 
-	GLOBAL::SetCameraDesc(desc);
+	GLOBAL::SetCameraDesc(&desc);
 
 	// update global shader constant
 	CCAMERA_DESC cameraConstant = desc;

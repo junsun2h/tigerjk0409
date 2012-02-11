@@ -1,3 +1,7 @@
+#include "CQuad.h"
+
+#include "IRDevice.h"
+
 #include "RDX11Global.h"
 #include "RDX11RenderStateMgr.h"
 

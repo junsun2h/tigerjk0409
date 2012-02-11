@@ -1,17 +1,20 @@
-#include "EGlobal.h"
+#include <atlcoll.h>
 
 #include "CGrowableArray.h"
 #include "CUnitPool.h"
+#include "CAABB.h"
+#include "CCamera.h"
 
 #include "IRDevice.h"
 #include "IMotionInstance.h"
-
-#include "CAABB.h"
+#include "ISpaceMgr.h"
 #include "IEntityProxy.h"
+#include "IEntity.h"
+
 #include "EEntityProxyActor.h"
 #include "EEntityProxyCamera.h"
 #include "EEntityProxyRender.h"
-
+#include "EGlobal.h"
 #include "EEntity.h"
 
 
@@ -408,8 +411,6 @@ IEntityProxy* EEntity::GetProxy( eENTITY_PROXY_TYPE type, bool bCreate )
 
 IEntityProxy* EEntity::CreateProxy( eENTITY_PROXY_TYPE type )
 {
-	IResourceMemMgr* pPool = GLOBAL::ResourceMemMgr();
-
 	IEntityProxy* pProxy = GetProxy( type );
 	if( pProxy != NULL)
 		return pProxy;

@@ -1,4 +1,7 @@
-#include "EGlobal.h"
+#include "CDefine.h"
+
+#include "ILoader.h"
+
 #include "EWinFileLoader.h"
 
 
@@ -26,11 +29,7 @@ bool EWinFileLoader::GetData( void** ppData, SIZE_T* pcBytes )
 
 bool EWinFileLoader::IOT_Load()
 {
-	assert ( GLOBAL::Loader()->IsIOThread() );
-
-	Load();
-
-	return true;
+	return Load();
 }
 
 bool EWinFileLoader::Load()
