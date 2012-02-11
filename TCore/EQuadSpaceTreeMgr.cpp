@@ -1,12 +1,11 @@
 #include <atlcoll.h>
 
-
 #include "CUnitPool.h"
 #include "CFrustrum.h"
 #include "CMathType.h"
 #include "CQuad.h"
-
 #include "CAABB.h"
+
 #include "ISpaceMgr.h"
 #include "IEntity.h"
 
@@ -96,12 +95,12 @@ EQuadSpaceTreeNode*	EQuadSpaceTreeMgr::GetSpace(UINT index)
 	return itr->m_value;
 }
 
-void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc)
+void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc)
 {
 	m_VisibleSpaceList.clear();
 
 	CFrustumCull frustrum;
-	frustrum.ConstructFrustum( cameraDesc );
+	frustrum.ConstructFrustum( *pCameraDesc );
 
 	POSITION pos = m_SpaceMap.GetStartPosition();
 	TYPE_SPACE_NODE_MAP::CPair* itr = NULL;

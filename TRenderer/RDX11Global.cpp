@@ -1,6 +1,20 @@
-#include "RDX11Global.h"
+#include <atlcoll.h>
 
+#include "CResource.h"
 #include "CGrowableArray.h"
+#include "CQuad.h"
+#include "CCamera.h"
+#include "CEngineParam.h"
+
+#include "IRDevice.h"
+#include "IShader.h"
+#include "IFontRenderer.h"
+#include "IRenderHelper.h"
+#include "IRenderStateMgr.h"
+#include "IRenderTargetMgr.h"
+
+#include "RDefine.h"
+#include "IRDX11Device.h"
 
 #include "RDX11RenderStateMgr.h"
 #include "RDX11RenderTargetMgr.h"
@@ -8,6 +22,7 @@
 #include "RDX11FontRenderer.h"
 #include "RDX11RenderHelper.h"
 #include "RDX11ShaderMgr.h"
+#include "RDX11Global.h"
 
 
 namespace GLOBAL
@@ -33,8 +48,8 @@ namespace GLOBAL
 	ID3D11DeviceContext*		D3DContext()				{ return g_D3DeviceContext; }
 
 	const RDeviceDesc&			DeviceInfo()				{ return g_DeviceSetting; }
-	const CCAMERA_DESC&			CameraDesc()				{ return g_pCurrentCameraDesc; }
-	void						SetCameraDesc(const CCAMERA_DESC& desc)	{ g_pCurrentCameraDesc = desc; }
+	const CCAMERA_DESC*			CameraDesc()				{ return &g_pCurrentCameraDesc; }
+	void						SetCameraDesc(CCAMERA_DESC* pDesc)	{ g_pCurrentCameraDesc = *pDesc; }
 
 	IRDX11Device*				RDevice()					{ return &g_RDX11Device; }
 	IRenderStateMgr*			RenderStateMgr()			{ return &g_StateRepository; }
@@ -60,20 +75,20 @@ namespace GLOBAL
 		return g_RenderTargetMgr.Resize(width, height, false);
 	}
 
-	bool StartUp(const CENGINE_INIT_PARAM &param, IEngine* pEngine)
+	bool StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine)
 	{
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 
 		ZeroMemory( &swapChainDesc, sizeof( swapChainDesc ) );
 
 		swapChainDesc.BufferCount = 1;
-		swapChainDesc.BufferDesc.Width = param.width;
-		swapChainDesc.BufferDesc.Height = param.height;
+		swapChainDesc.BufferDesc.Width = pParam->width;
+		swapChainDesc.BufferDesc.Height = pParam->height;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.OutputWindow = (HWND)param.hWnd;
+		swapChainDesc.OutputWindow = (HWND)pParam->hWnd;
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.Windowed = true;
@@ -123,13 +138,13 @@ namespace GLOBAL
 		// set global variables
 		g_pEngine = pEngine;
 
-		g_DeviceSetting.width = param.width;
-		g_DeviceSetting.height = param.height;
+		g_DeviceSetting.width = pParam->width;
+		g_DeviceSetting.height = pParam->height;
 
 		g_StateRepository.Init();
 
 		g_RenderTargetMgr.CreateMainFrameTarget();
-		g_RenderTargetMgr.CreateDefferedTarget(param.width, param.height);
+		g_RenderTargetMgr.CreateDefferedTarget(g_DeviceSetting.width, g_DeviceSetting.height);
 
 		g_RDX11Device.SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
 

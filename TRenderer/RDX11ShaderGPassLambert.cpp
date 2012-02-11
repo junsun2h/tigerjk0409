@@ -1,3 +1,10 @@
+#include "CResource.h"
+#include "CQuad.h"
+#include "CCamera.h"
+
+#include "IRDevice.h"
+#include "IEntityProxy.h"
+
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
 #include "RDX11ShaderGPassLambert.h"
@@ -47,11 +54,11 @@ void RDX11ShaderGPassLambert::SetShaderContants(XMMATRIX& tm)
 		XMMATRIX world;
 	}modelVS;
 	
-	const CCAMERA_DESC& camera = GLOBAL::CameraDesc();
+	const CCAMERA_DESC* pCamera = GLOBAL::CameraDesc();
 
 	modelVS.world = tm;
-	modelVS.wv = XMMatrixMultiply( modelVS.world, camera.ViewTM ); 
-	modelVS.wvp = XMMatrixMultiply( modelVS.wv, camera.ProjTM ); 
+	modelVS.wv = XMMatrixMultiply( modelVS.world, pCamera->ViewTM ); 
+	modelVS.wvp = XMMatrixMultiply( modelVS.wv, pCamera->ProjTM ); 
 
 	modelVS.world = XMMatrixTranspose( modelVS.world );
 	modelVS.wv = XMMatrixTranspose( modelVS.wv );

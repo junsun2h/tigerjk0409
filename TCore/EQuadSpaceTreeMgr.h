@@ -12,7 +12,7 @@ public:
 
 private:
 	void				Destroy() override;
-	void				UpdateVisibleSpaceList(const CCAMERA_DESC& cameraDesc) override;
+	void				UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc) override;
 	void				UpdateEntitySpace(IEntity* pEntity) override;
 	void				Render() override;
 

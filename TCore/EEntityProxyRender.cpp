@@ -1,3 +1,10 @@
+#include "CResource.h"
+
+#include "IEntity.h"
+#include "IRDevice.h"
+#include "IEntityProxy.h"
+#include "IAssetMgr.h"
+
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
 
@@ -23,7 +30,7 @@ void EEntityProxyRender::ProcessEvent( EntityEvent &event )
 bool EEntityProxyRender::Insert(long meshID )
 {
 	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
-	CResourceMesh* pMesh = (CResourceMesh*)GLOBAL::AssetMgr()->GetResource(RESOURCE_MESH, meshID);
+	CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, meshID);
 
 	for( int i=0; i < pMesh->geometryNum ; ++i )
 	{
@@ -61,14 +68,15 @@ bool EEntityProxyRender::IsRenderGeometry(long geometryID )
 
 void EEntityProxyRender::Render()
 {
-	IRDevice* pRDevice = GLOBAL::RDevice();
-	
+	IRDevice* pRDevice = GLOBAL::Engine()->RDevice();
+	long currentFrame = GLOBAL::Engine()->GetCurrentFrame();
+
 	// don't render if it's already rendered in this frame
 	eRENDER_PASS currentPass = pRDevice->GetCurrentPass();
-	if( m_RenderedFrame[currentPass] == GLOBAL::GetCurrentFrame() )
+	if( m_RenderedFrame[currentPass] == currentFrame )
 		return;
 
-	m_RenderedFrame[currentPass] = GLOBAL::GetCurrentFrame(); 
+	m_RenderedFrame[currentPass] = currentFrame; 
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{

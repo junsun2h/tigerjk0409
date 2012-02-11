@@ -1,3 +1,9 @@
+#include "CResource.h"
+
+#include "IAssetMgr.h"
+#include "ILoader.h"
+#include "IResourceMemMgr.h"
+
 #include "EGlobal.h"
 #include "EMotionDataProcessor.h"
 

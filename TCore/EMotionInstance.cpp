@@ -1,4 +1,7 @@
+#include "CResource.h"
+
 #include "IMotionInstance.h"
+
 #include "EMotionInstance.h"
 
 

@@ -1,8 +1,7 @@
 #pragma once
 
-
-#include "CResource.h"
-
+enum eRESOURCE_TYPE;
+struct CResourceBase;
 
 struct IResourceMemMgr
 {

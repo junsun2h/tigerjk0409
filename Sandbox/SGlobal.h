@@ -1,7 +1,23 @@
 #pragma once
 
+#include "CResource.h"
+#include "CCamera.h"
+#include "CEngineParam.h"
+#include "CTimer.h"
+#include "CQuad.h"
+#include "CAABB.h"
+
+#include "IRenderHelper.h"
+#include "IEntityProxy.h"
+#include "IRDevice.h"
+#include "IEntityMgr.h"
+#include "IAssetMgr.h"
+#include "ILoader.h"
+#include "IEntity.h"
+#include "IResourceMemMgr.h"
+#include "ISpaceMgr.h"
 #include "IEngine.h"
-#include <vector>
+
 
 class SAssetPanel;
 class SPropertyPanel;

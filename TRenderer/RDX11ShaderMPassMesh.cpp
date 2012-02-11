@@ -1,3 +1,7 @@
+#include "CQuad.h"
+#include "CCamera.h"
+#include "IRDevice.h"
+
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
 #include "RDX11ShaderMPassMesh.h"
@@ -44,10 +48,10 @@ void RDX11ShaderMPassMesh::SetShaderContants(XMMATRIX& tm)
 		XMMATRIX wvp;
 	}modelVS;
 	
-	const CCAMERA_DESC& camera = GLOBAL::CameraDesc();
+	const CCAMERA_DESC* pCamera = GLOBAL::CameraDesc();
 
-	modelVS.wvp = XMMatrixMultiply( tm, camera.ViewTM ); 
-	modelVS.wvp = XMMatrixMultiply( modelVS.wvp, camera.ProjTM ); 
+	modelVS.wvp = XMMatrixMultiply( tm, pCamera->ViewTM ); 
+	modelVS.wvp = XMMatrixMultiply( modelVS.wvp, pCamera->ProjTM ); 
 	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
 
 	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VS_SHADER );

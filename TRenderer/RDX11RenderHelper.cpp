@@ -1,8 +1,16 @@
-#include "RDX11Global.h"
-
 #include "CGeometryConstructor.h"
 #include "CGrowableArray.h"
+#include "CColor.h"
+#include "CQuad.h"
 
+#include "IEntity.h"
+#include "IEntityProxy.h"
+#include "IResourceMemMgr.h"
+#include "IRDevice.h"
+#include "IRenderHelper.h"
+
+#include "RDefine.h"
+#include "RDX11Global.h"
 #include "RDX11RenderHelper.h"
 
 

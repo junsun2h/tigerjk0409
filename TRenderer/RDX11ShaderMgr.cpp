@@ -1,5 +1,12 @@
-#include "RDX11Global.h"
+#include <atlcoll.h>
 
+#include "CResource.h"
+#include "CQuad.h"
+
+#include "IRDevice.h"
+#include "IEntityProxy.h"
+
+#include "RDX11Global.h"
 #include "RDX11Shader.h"
 #include "RDX11ShaderLine.h"
 #include "RDX11ShaderFont.h"

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "CResource.h"
 #include <atlcoll.h>
+#include <string>
 
+enum eRESOURCE_TYPE;
+struct CResourceBase;
 
 typedef	ATL::CAtlMap<long, CResourceBase*>	TYPE_RESOURCE_MAP;
-
 
 struct IAssetMgr
 {

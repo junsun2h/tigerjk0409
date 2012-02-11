@@ -236,10 +236,11 @@ bool SSelectionMgr::GrabHelper(long x, long y)
 	if( m_SelctionList.size() == 0 )
 		return false;
 
+	const CCAMERA_DESC* pObserver = GLOBAL::ObserverCamera()->GetDesc();
 	CVector3 origin;
 	CVector3 direction;
 	GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
-	CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
+	CVector3 to = origin + direction * pObserver->farClip;
 
 	m_GrabedTransform = m_SelctionList[0]->GetWorldTM();
 	
@@ -255,7 +256,7 @@ bool SSelectionMgr::GrabHelper(long x, long y)
 		float fDistance;
 		if( GrabRotator( worldTransform, origin, to, m_TransformAxis, fDistance) )
 		{
-			m_GrabedPoint = origin + direction * fDistance * GLOBAL::ObserverCamera()->GetDesc().farClip;
+			m_GrabedPoint = origin + direction * fDistance * pObserver->farClip;
 			return true;
 		}
 		return false;
@@ -276,7 +277,7 @@ void SSelectionMgr::GrabUpdate(long x, long y)
 	CVector3 pickFrom;
 	CVector3 pickDir;
 	GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, pickFrom, pickDir);
-	CVector3 pickTo = pickFrom + pickDir * GLOBAL::ObserverCamera()->GetDesc().farClip;
+	CVector3 pickTo = pickFrom + pickDir * GLOBAL::ObserverCamera()->GetDesc()->farClip;
 
 	CVector3 pa, pb;
 	if( m_TransformMode == TRANSFORM_MOVE )

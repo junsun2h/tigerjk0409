@@ -1,8 +1,5 @@
 #pragma once
 
-#include "CDefine.h"
-#include "CAABB.h"
-
 
 enum eENTITY_PROXY_TYPE;
 struct CAABB;

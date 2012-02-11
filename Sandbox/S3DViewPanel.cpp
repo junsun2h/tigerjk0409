@@ -284,7 +284,7 @@ void S3DViewPanel::PickFromScreen(TYPE_ENTITY_LIST& list, long x, long y)
 	CVector3 origin;
 	CVector3 direction;
 	GLOBAL::ObserverCamera()->GetPickRayFromScreen( x, y, origin, direction);
-	CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc().farClip;
+	CVector3 to = origin + direction * GLOBAL::ObserverCamera()->GetDesc()->farClip;
 
 	GLOBAL::SceneRoot()->Pick( origin, to, list);
 }

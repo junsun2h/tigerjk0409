@@ -3,6 +3,14 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <CGuid.h>
+
+#include "CQuad.h"
+
+#include "IRDevice.h"
+
+#include "RDefine.h"
+#include "IRDX11Device.h"
+
 #include "RDX11Global.h"
 
 

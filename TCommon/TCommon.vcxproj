@@ -92,7 +92,6 @@
     <ClInclude Include="IMotionInstance.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />
-    <ClInclude Include="IRenderCallback.h" />
     <ClInclude Include="IRenderHelper.h" />
     <ClInclude Include="IRenderStateMgr.h" />
     <ClInclude Include="IRenderTargetMgr.h" />

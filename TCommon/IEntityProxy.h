@@ -1,14 +1,12 @@
 #pragma once
 
-#include <string>
-#include "CResource.h"
-#include "CCamera.h"
-
-
 struct IEntity;
 struct EntityEvent;
+struct CCAMERA_DESC;
 enum eENTITY_EVENT_ID;
-
+class CResourceActor;
+class CResourceGeometry;
+class CResourceMtrl;
 
 enum eENTITY_PROXY_TYPE
 {
@@ -63,8 +61,8 @@ struct IEntityProxyCamera : IEntityProxy
 	virtual void					SetViewParam(CVector3& eyePos, CVector3& targetPos, CVector3& upVector) = 0;
 
 	virtual long					GetLastTransformChangedFrame() =0;
-	virtual	const CCAMERA_DESC&		GetDesc() =0;
-
+	virtual	const CCAMERA_DESC*		GetDesc() =0;
+	virtual	void					CopyDesc(CCAMERA_DESC* pDesc) = 0;
 	virtual void					GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction) = 0;
 };
 

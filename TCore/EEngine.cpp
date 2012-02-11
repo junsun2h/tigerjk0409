@@ -1,10 +1,21 @@
 #include <windows.h>
 
-#include "EGlobal.h"
-
+#include "CDefine.h"
 #include "CTimer.h"
 #include "CLog.h"
+#include "CEngineParam.h"
+#include "CCamera.h"
 
+#include "IEntity.h"
+#include "IEntityProxy.h"
+#include "IEntityMgr.h"
+#include "IAssetMgr.h"
+#include "ILoader.h"
+#include "ISpaceMgr.h"
+#include "IResourceMemMgr.h"
+#include "IRDevice.h"
+
+#include "EGlobal.h"
 #include "EEngine.h"
 
 
@@ -27,7 +38,7 @@ ISpaceMgr*			EEngine::SpaceMgr()			{ return GLOBAL::SpaceMgr(); }
 long				EEngine::GetCurrentFrame()	{ return m_CurrentFrame; }
 
 
-bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
+bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 {
 	//////////////////////////////////////////////////////////////////////////
 	// load Render DLL
@@ -45,11 +56,11 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM &param)
 		return false;
 
 	m_pRenderer = FuncCreateRenderer();
-	m_pRenderer->StartUp( param, this );
+	m_pRenderer->StartUp( pParam, this );
 
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
-	GLOBAL::Loader()->Init( param.numOfProcessThread );
+	GLOBAL::Loader()->Init( pParam->numOfProcessThread );
 	GLOBAL::SpaceMgr()->Init( 10000, 10);
 	CLOG::InitLogSystem();
 
@@ -93,7 +104,9 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 	if( pRenderCallback )
 		pRenderCallback->PreRender();
 
-	m_pRenderer->RenderFrame( pCamera->GetDesc() );
+	CCAMERA_DESC cameraDesc;
+	pCamera->CopyDesc(&cameraDesc);
+	m_pRenderer->RenderFrame( &cameraDesc );
 
 	if( pRenderCallback )
 		pRenderCallback->PostRender();

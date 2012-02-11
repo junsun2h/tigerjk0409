@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CDefine.h"
-#include "CResource.h"
+struct CResourceBase;
+enum eRESOURCE_FILE_TYPE;
 
 
 #define E_TRYAGAIN MAKE_HRESULT(1,FACILITY_WIN32,123456)
