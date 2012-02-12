@@ -11,10 +11,6 @@ class EEntity : public IEntity
 public:
 	void			Init(std::string& name, UINT id) override;
 
-	TYPE_SPACE_IDS*	GetSpaceIDList() override		{ return &m_SpaceIDList;}
-	void			AddSpaceID(UINT id) override;
-	void			RemoveSpaceID(UINT id) override;
-
 	UINT			GetID() override			{ return m_ID; };
 	std::string		GetName() override			{ return m_Name; }
 
@@ -29,6 +25,19 @@ private:
 	std::list<UINT>	m_SpaceIDList;
 
 	CGrowableArray<EntityEvent> m_EventQueue;	// event stack for additional events while event is processing
+
+public:
+	//////////////////////////////////////////////////////////////////////////
+	//  culling information
+
+	TYPE_SPACE_IDS*	GetSpaceIDList() override		{ return &m_SpaceIDList;}
+	void			AddSpaceID(UINT id) override;
+	void			RemoveSpaceID(UINT id) override;
+	bool			IsCulled() override				{ return m_bCulled; }
+	void			SetCull(bool bCulled) override	{ m_bCulled = bCulled;}
+
+private:
+	bool			m_bCulled;
 
 public:
 	//////////////////////////////////////////////////////////////////////////

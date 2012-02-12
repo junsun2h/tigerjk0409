@@ -11,6 +11,7 @@
 #include "ILoader.h"
 #include "ISpaceMgr.h"
 #include "IResourceMemMgr.h"
+#include "IActorMgr.h"
 
 #include "EEntity.h"
 #include "EEntityMgr.h"
@@ -19,6 +20,7 @@
 #include "EResourceMemMgr.h"
 #include "EQuadSpaceTreeNode.h"
 #include "EQuadSpaceTreeMgr.h"
+#include "EActorMgr.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -33,6 +35,7 @@ namespace GLOBAL
 	ELoader				g_Loader;
 	EResourceMemMgr		g_ResourceMemMgr;
 	EQuadSpaceTreeMgr	g_QuadSpaceMgr;
+	EActorMgr			g_ActorMgr;
 
 	IEngine*			Engine()			{ return &g_Engine;}
 	IAssetMgr*			AssetMgr() 			{ return &g_AssetMgr; }
@@ -40,6 +43,7 @@ namespace GLOBAL
 	ILoader*			Loader() 			{ return &g_Loader; }
 	IResourceMemMgr*	ResourceMemMgr() 	{ return &g_ResourceMemMgr; }
 	ISpaceMgr*			SpaceMgr() 			{ return &g_QuadSpaceMgr; }
+	IActorMgr*			ActorMgr()			{ return &g_ActorMgr; }
 }
 
 

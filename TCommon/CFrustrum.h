@@ -88,7 +88,7 @@ inline void CFrustumCull::ConstructFrustum(const CCAMERA_DESC& desc)
 	projTM._43 = -r * zMinimum;
 
 	// Create the frustum matrix from the view matrix and updated projection matrix.
-	XMMATRIX matrix = projTM * viewTM;
+	XMMATRIX matrix = XMMatrixMultiply( viewTM, projTM );
 
 	// Calculate near plane of frustum.
 	m_planes[0].a = matrix._14 + matrix._13;

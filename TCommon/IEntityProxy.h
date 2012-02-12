@@ -32,7 +32,7 @@ struct IEntityProxy
 
 struct CMotionDesc;
 struct IMotionInstance;
-typedef std::list<IMotionInstance*>		MOTION_INSTANCE_LIST;
+typedef std::vector<IMotionInstance*>	MOTION_INSTANCE_LIST;
 typedef std::vector<IEntity*>			JOINT_ENTITY_LIST;
 
 struct IEntityProxyActor : IEntityProxy
@@ -47,8 +47,12 @@ struct IEntityProxyActor : IEntityProxy
 	virtual void					Play(CMotionDesc* pdesc) = 0;
 	virtual void					Freeze() = 0;
 	virtual void					Stop() = 0;
+	virtual void					Resume() =0;
 	virtual bool					IsPlaying() = 0;
+
 	virtual MOTION_INSTANCE_LIST*	GetPlayingMotions() = 0;
+
+	virtual	void					Update(float deltaTime) = 0;
 };
 
 

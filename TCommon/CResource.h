@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CVertex.h"
-#include "CMaterial.h"
 #include "CUnitPool.h"
 #include <string>
 #include <locale>
@@ -409,6 +408,17 @@ enum eSHADER_TYPE
 	SHADER_SCENE_2D,
 	SHADER_SCENE_LINE,
 	SHADER_SCENE_MESH,
+};
+
+
+enum eTEXTURE_TYPE
+{
+	PARAM_DIFFISE,
+	PARAM_SPECULAR,
+	PARAM_NORMAL,
+	PARAM_TRANSPARENCY,
+
+	NUM_TEXTURE_TYPE
 };
 
 class CResourceMtrl : public CResourceBase

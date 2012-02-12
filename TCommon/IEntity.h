@@ -41,9 +41,13 @@ struct IEntity
 
 	virtual	void			Init(std::string& name, UINT id) = 0;
 
+	//////////////////////////////////////////////////////////////////////////
+	// culling information
 	virtual	TYPE_SPACE_IDS*	GetSpaceIDList() = 0;
 	virtual	void			AddSpaceID(UINT id) = 0;
 	virtual	void			RemoveSpaceID(UINT id) = 0;
+	virtual bool			IsCulled() =0;
+	virtual void			SetCull(bool bCulled) =0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// entity properties

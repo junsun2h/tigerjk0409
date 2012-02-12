@@ -60,7 +60,7 @@ void SSceneHierarchyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	
 	IEntity* pEntity = GetSelectedEntity();
 	if( pEntity != NULL)
-		GLOBAL::SelectionMgr()->Select(pEntity);
+		GLOBAL::SelectionMgr()->SelectEntity(pEntity);
 }
 
 void SSceneHierarchyTreeCtrl::OnDelete(wxCommandEvent& event)

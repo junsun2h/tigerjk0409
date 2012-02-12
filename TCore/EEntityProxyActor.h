@@ -21,19 +21,24 @@ public:
 	void					Init(IEntity* pEntity) override;
 	
 	void					Play(CMotionDesc* pDesc) override;
-	void					Freeze() override;
 	void					Stop() override;
+	void					Freeze() override					{ m_bPause = true; }
+	void					Resume() override					{ m_bPause = false; }
 	bool					IsPlaying() override;
+
 	MOTION_INSTANCE_LIST*	GetPlayingMotions() override		{ 	return &m_PlayingMotionList; }
+	void					Update(float deltaTime) override;
 
 private:
-	void					UpdateJoint();
+	void					VisibleUpdate(float deltaTime);
+	void					CulledUpdate(float deltaTime);
+	void					ApplyAnimationToActor();
 
 	IEntity*				m_pEntity;
 	const CResourceActor*	m_pResource;
 	JOINT_ENTITY_LIST		m_pJointEntities;
 
 	MOTION_INSTANCE_LIST	m_PlayingMotionList;
-	MOTION_POSE				m_JointMatrix;
+	MOTION_POSE				m_AnimationMatrix;
 	bool					m_bPause;
 };

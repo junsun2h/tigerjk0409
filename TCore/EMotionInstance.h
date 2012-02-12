@@ -4,22 +4,31 @@
 
 class EMotionInstance : public IMotionInstance
 {
-	void					Init(CMotionDesc& desc) override;
+	friend CObjectPool<EMotionInstance>;
+public:
+	void					Init(CMotionDesc* pDesc, long generateTiming);
+
+
 	void					Destroy() override;
 
 	const CMotionDesc*		GetDesc() override			{ return &m_Desc;}
 	const CMotionState*		GetState() override			{ return &m_State;}
 
-	bool					Update(float timeDelta) override;
-	void					Stop(bool bInstant) override;
+	eMOTION_PLAY_STATE		VisibleUpdate(float timeDelta) override;
+	eMOTION_PLAY_STATE		CulledUpdate(float timeDelta) override;
+
 	void					ApplyToMotionPose(MOTION_POSE* pMotionPose) override;
 
+private:
 	void					UpdateBlendWeight(float timeDelta);
 	void					UpdateFrame(float timeDelta);
 	void					UpdateMatrix();
+
 
 	CMotionDesc				m_Desc;
 	CMotionState			m_State;
 
 	MOTION_POSE				m_JointMatrix;
+
+ // this is for sorting by generation timing
 };

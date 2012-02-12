@@ -61,6 +61,9 @@
       <Filter>Animation</Filter>
     </ClCompile>
     <ClCompile Include="EResourceMemMgr.cpp" />
+    <ClCompile Include="EActorMgr.cpp">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -151,5 +154,8 @@
       <Filter>Animation</Filter>
     </ClInclude>
     <ClInclude Include="EResourceMemMgr.h" />
+    <ClInclude Include="EActorMgr.h">
+      <Filter>EntitySystem\EntityProxy</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

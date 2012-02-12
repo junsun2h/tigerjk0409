@@ -10,12 +10,16 @@ class EQuadSpaceTreeNode
 public:
 	void		Init(CQuad&	area, UINT spaceID );
 	void		Destroy();
-	void		Register(IEntity* pEntity);
-	void		UnRegister(IEntity* pEntity);
+	void		Regist(IEntity* pEntity);
+	void		UnRegist(IEntity* pEntity);
 	UINT		GetID()						{ return m_SpaceID; }
 	bool		IsInArea(IEntity* pEntity);
 	CQuad		GetArea()					{ return m_Area; }
 	void		Render();
+	bool		IsCulled()					{ return m_bCulled; }
+
+	void		OnCulled();
+	void		OnBecomeVisible();
 
 private:
 	typedef	ATL::CAtlMap<long, IEntity*>	TYPE_ENTITY_MAP;
@@ -24,4 +28,5 @@ private:
 	CQuad				m_Area;
 	bool				m_bInitialized;
 	UINT				m_SpaceID;
+	bool				m_bCulled;
 };

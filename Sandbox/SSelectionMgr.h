@@ -21,7 +21,9 @@ public:
 	SSelectionMgr();
 
 	void						Clear();
-	void						Select(IEntity* pEntity, bool multiSelection = false);
+	void						SelectMotion(wxString strMotion)		{ m_strMotion = strMotion;}
+	wxString					GetSelectedMotion()						{ return m_strMotion; }
+	void						SelectEntity(IEntity* pEntity, bool multiSelection = false);
 	void						UnSelect();
 
 	void						SetTransformMode(eTRANSFORM_MODE m)		{ m_TransformMode = m; }
@@ -34,6 +36,8 @@ public:
 	TYPE_SELECTED_ENTITIES*		List()		{ return& m_SelctionList; }
 
 private:
+	wxString					m_strMotion;
+
 	eTRANSFORM_MODE				m_TransformMode;
 	eDIRECTION					m_TransformAxis;
 	

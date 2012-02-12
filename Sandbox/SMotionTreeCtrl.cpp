@@ -1,8 +1,11 @@
+#include "wx/wx.h"
+#include "wx/treectrl.h"
+#include "wx/dnd.h"
+
 #include "SPropertyGrid.h"
 #include "SPropertyPanel.h"
 #include "SDragAndDropState.h"
-
-#include "wx/dnd.h"
+#include "SSelectionMgr.h"
 
 #include "SMotionTreeCtrl.h"
 
@@ -55,11 +58,7 @@ void SMotionTreeCtrl::OnSelChanged(wxTreeEvent& event)
 			if( strItem == m_pActor->motionList[i]->name)
 			{
 				m_pGrid->Set( m_pActor->motionList[i] );
-				if( m_pEntity )
-				{
-					IEntityProxyActor* pActorProxy = (IEntityProxyActor*)m_pEntity->GetProxy(ENTITY_PROXY_ACTOR);
-				}
-
+				GLOBAL::SelectionMgr()->SelectMotion(strItem);
 				break;
 			}
 		}

@@ -1,9 +1,9 @@
-#include "SSelectionMgr.h"
 #include "SPropertyPanel.h"
 #include "SMainMenuBar.h"
 #include "CColiision.h"
 #include "CLog.h"
 #include "CPlane.h"
+#include "SSelectionMgr.h"
 
 #define MAX_COLLISION_DISTANCE	10000000000.0f
 
@@ -199,7 +199,7 @@ void SSelectionMgr::Clear()
 	GLOBAL::PropertyPanel()->Empty();
 }
 
-void SSelectionMgr::Select(IEntity* pEntity, bool multiSelection)
+void SSelectionMgr::SelectEntity(IEntity* pEntity, bool multiSelection)
 {
 	assert( pEntity);
 
