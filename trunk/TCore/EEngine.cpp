@@ -12,7 +12,6 @@
 #include "IAssetMgr.h"
 #include "ILoader.h"
 #include "ISpaceMgr.h"
-#include "IResourceMemMgr.h"
 #include "IRDevice.h"
 #include "IActorMgr.h"
 
@@ -34,7 +33,6 @@ IEntityMgr*			EEngine::EntityMgr()		{ return GLOBAL::EntityMgr(); }
 IRenderHelper*		EEngine::RenderHelper()		{ return m_pRenderer->GetRenderHelper(); }
 CTimer*				EEngine::GlobalTimer()		{ return &m_GlobalTimer; }
 ILoader*			EEngine::Loader()			{ return GLOBAL::Loader(); }
-IResourceMemMgr*	EEngine::ResourceMemMgr()	{ return GLOBAL::ResourceMemMgr(); }
 ISpaceMgr*			EEngine::SpaceMgr()			{ return GLOBAL::SpaceMgr(); }
 long				EEngine::GetCurrentFrame()	{ return m_CurrentFrame; }
 

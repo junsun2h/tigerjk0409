@@ -1,9 +1,10 @@
-#include "SMeshImportor.h"
 #include "CResource.h"
 #include <iostream>
 #include <fstream>
 
-namespace SMESH_LOADER
+#include "SRawResourceLoader.h"
+
+namespace SRAW_FILE_LOADER
 {
 	typedef std::vector<CResourceGeometry*>	GEOMETRY_LIST;
 
@@ -41,7 +42,7 @@ namespace SMESH_LOADER
 
 			BBoxMin.y = -BBoxMin.y;
 			BBoxMax.y = -BBoxMax.y;
-			
+
 			TSWAP( BBoxMin.y, BBoxMax.y );
 
 			postion.y = -postion.y;
@@ -213,7 +214,7 @@ namespace SMESH_LOADER
 		char* delimiters = " ";
 		char* pContext = NULL;
 
-	#define READ_BUFFER_SIZE 256
+#define READ_BUFFER_SIZE 256
 		FILE *fp;
 
 		char buf[READ_BUFFER_SIZE];
@@ -442,13 +443,13 @@ namespace SMESH_LOADER
 				CVertexPNTW* pVertex = &pVertexBuf[itrVertex->second];
 
 				pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
-			
+
 				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
 				pVertex->vTex = XMHALF2( uv.x, uv.y );
 
 				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
 				pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
-			
+
 				RAW_WEIGHT& w = pRawMesh->weightList[itrVertex->first.p];
 
 				if( w.count == 1 )
@@ -499,18 +500,11 @@ namespace SMESH_LOADER
 			pGeometry->pVertexBuffer = pVertexBuf;
 		}
 	}
-
-
+	
 	//------------------------------------------------------------------------------------------------------
-	CResourceGeometry* CreateGeometry(SRAW_MESH* pRawMesh, std::vector<int>* pMtrlIDList )
+	void CreateGeometry(CResourceGeometry* pGeometry, SRAW_MESH* pRawMesh, std::vector<int>* pMtrlIDList )
 	{
 		UNIFIED_VERTEX_MAP vertexMap;
-		IResourceMemMgr* pMemoryPoolMgr = GLOBAL::Engine()->ResourceMemMgr();
-
-		//////////////////////////////////////////////////////////////////////////
-		// set geometry info
-		CResourceGeometry* pGeometry = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
-		strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
 
 		//////////////////////////////////////////////////////////////////////////
 		// set index buffer info
@@ -559,13 +553,11 @@ namespace SMESH_LOADER
 		}
 
 		pGeometry->pIndexBuffer = pData;
-	
+
 
 		//////////////////////////////////////////////////////////////////////////
 		// set vertex buffer info
 		CreateVertexBuffer(pGeometry, pRawMesh, vertexMap);
-
-		return pGeometry;
 	}
 
 	void WriteString(std::fstream* file, std::string str )
@@ -620,13 +612,20 @@ namespace SMESH_LOADER
 	//------------------------------------------------------------------------------------------------------
 	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name )
 	{
+		CObjectPool<CResourceGeometry> memPool;
+
 		GEOMETRY_LIST	vecGeometries;
 
 		int mtrlCount = pRawMesh->faceMtrlID.size();
 
 		if( mtrlCount == 0 )
 		{
-			CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , NULL);
+			//////////////////////////////////////////////////////////////////////////
+			// set geometry info
+			CResourceGeometry* pGeometry = memPool.GetNew();
+			strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
+
+			CreateGeometry(pGeometry, pRawMesh , NULL);
 			vecGeometries.push_back(pGeometry);
 		}
 		else // split mesh per material
@@ -639,17 +638,18 @@ namespace SMESH_LOADER
 				if( pMtrlIDList->size() == 0 )
 					continue;
 
-				CResourceGeometry* pGeometry = CreateGeometry(pRawMesh , pMtrlIDList);
+				CResourceGeometry* pGeometry = memPool.GetNew();
+				strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[i].c_str() );
+
+				CreateGeometry(pGeometry, pRawMesh , pMtrlIDList);
 				vecGeometries.push_back(pGeometry);
 			}
 		}
 
 		SaveMeshToFile(vecGeometries, pRawMesh->BBoxMin, pRawMesh->BBoxMax, name);
 
-		for (UINT i=0; i < vecGeometries.size(); ++i)
-		{
-			GLOBAL::Engine()->ResourceMemMgr()->Remove( vecGeometries[i] );
-		}
+		for(UINT i =0; i< vecGeometries.size(); ++i)
+			memPool.Remove( vecGeometries[i] );
 	}
 
 	//------------------------------------------------------------------------------------------------------
@@ -710,6 +710,9 @@ namespace SMESH_LOADER
 			WriteString( &file, joint.parentName );
 		}
 
+		uint8 motionList = 0;
+		file.write( (char*)&motionList, 1);
+
 		file.close();
 	}
 
@@ -725,7 +728,7 @@ namespace SMESH_LOADER
 			strcpy_s( joint.parentName , pRawMotion->joints[i].parentName.c_str() );
 
 			std::vector<RAW_MOTION_KEY>* pKeys = &pRawMotion->keys[i];
-			
+
 			for( UINT iKey =0; iKey < pKeys->size(); ++iKey)
 			{
 				CMotionKey key;
@@ -781,6 +784,41 @@ namespace SMESH_LOADER
 				if( joint.keys[iKey].bKeyChanged )
 					file.write( (char*)&joint.keys[iKey], 28);
 			}
+		}
+
+		file.close();
+	}
+
+	void SaveActorToFile( const CResourceActor* pActor, wxString fullPath )
+	{
+		//////////////////////////////////////////////////////////////////////////
+		// save actor as binary file
+		using namespace std;
+
+		fstream file;
+		file.open( fullPath.char_str(), ios_base::out | ios_base::binary | ios_base::trunc );
+
+		UINT version = ACTOR_FILE_VERSION;
+		file.write( (char*)&version, 4);
+
+		uint8 jointSize = pActor->jointList.size();
+		file.write( (char*)&jointSize, 1);
+
+		for (UINT i=0; i < jointSize; ++i)
+		{
+			const CJoint& joint = pActor->jointList[i];
+
+			file.write( (char*)&joint, 32);
+
+			WriteString( &file, joint.name );
+			WriteString( &file, joint.parentName );
+		}
+
+		uint8 motionSize = pActor->motionList.size();
+		file.write( (char*)&motionSize, 1);
+		for (UINT i=0; i < motionSize; ++i)
+		{
+			WriteString( &file, pActor->motionList[i]->name );
 		}
 
 		file.close();

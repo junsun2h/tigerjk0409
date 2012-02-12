@@ -154,7 +154,7 @@ void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc)
 	}
 
 	for( UINT i =0; i < visibleList.size() ; ++i)
-		culledList[i]->OnBecomeVisible();
+		visibleList[i]->OnBecomeVisible();
 }
 
 void EQuadSpaceTreeMgr::UpdateEntitySpaceList(IEntity* pEntity)

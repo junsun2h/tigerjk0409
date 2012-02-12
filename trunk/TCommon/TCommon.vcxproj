@@ -95,7 +95,6 @@
     <ClInclude Include="IRenderHelper.h" />
     <ClInclude Include="IRenderStateMgr.h" />
     <ClInclude Include="IRenderTargetMgr.h" />
-    <ClInclude Include="IResourceMemMgr.h" />
     <ClInclude Include="IShader.h" />
     <ClInclude Include="ISpaceMgr.h" />
     <ClInclude Include="xnamath.h" />

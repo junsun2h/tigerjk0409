@@ -18,7 +18,6 @@ public:
 	IRenderHelper*		RenderHelper() override;
 	CTimer*				GlobalTimer() override;
 	ILoader*			Loader() override;
-	IResourceMemMgr*	ResourceMemMgr() override;
 	ISpaceMgr*			SpaceMgr() override;
 	long				GetCurrentFrame() override;
 

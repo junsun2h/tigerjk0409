@@ -7,7 +7,6 @@
 #include "IEntity.h"
 #include "IEntityProxy.h"
 #include "IRDevice.h"
-#include "IResourceMemMgr.h"
 
 #include "RDX11Global.h"
 #include "RDX11Device.h"
@@ -96,6 +95,12 @@ void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pM
 
 void RDX11Device::RenderGeometry(CResourceGeometry*	pGeometry)
 {
+	if( pGeometry->loadState != RESOURCE_LOAD_FINISHED )
+	{
+		assert(0);
+		return;
+	}
+
 	UINT offset[1] = { 0 };
 	UINT stride[1];
 
@@ -135,93 +140,93 @@ bool RDX11Device::Resize(int width, int height)
 }
 
 //----------------------------------------------------------------------------------------------------------
-void RDX11Device::PT_CreateGraphicBuffer(CResourceBase* pResource)
-{
-	CreateGraphicBuffer( pResource);
-}
-
-//----------------------------------------------------------------------------------------------------------
 void RDX11Device::CreateGraphicBuffer(CResourceBase* pResource)
 {
 	eRESOURCE_TYPE type = pResource->Type();
 
 	if( type == RESOURCE_GEOMETRY )
 	{
-		CResourceGeometry* pGeometry = (CResourceGeometry*)pResource;
-
-		if( pGeometry->vertexCount <= 0 || pGeometry->pGraphicMemoryVertexBuffer != NULL )
-			return;
-
-		size_t size = VERTEX_STRIDE(pGeometry->eVertexType) * pGeometry->vertexCount;
-		pGeometry->pGraphicMemoryVertexBuffer = CreateBuffer(pGeometry->pVertexBuffer, size, D3D11_BIND_VERTEX_BUFFER);
-
-		if( pGeometry->primitiveCount > 0)
-		{
-			if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
-				pGeometry->pGraphicMemoryIndexBuffer = CreateBuffer(pGeometry->pIndexBuffer, 2 * 3 * pGeometry->primitiveCount, D3D11_BIND_INDEX_BUFFER);
-			else
-				pGeometry->pGraphicMemoryIndexBuffer = CreateBuffer(pGeometry->pIndexBuffer, 4 * 3 * pGeometry->primitiveCount, D3D11_BIND_INDEX_BUFFER);
-		}
+		CreateDXGeometryBuffer( (CResourceGeometry*)pResource );
 	}
 	else if( type == RESOURCE_TEXTURE)
 	{
-		CResourceTexture* pTexture = (CResourceTexture*)pResource;
-
-		if( pTexture->pShaderResourceView != NULL)
-			return;
-
-		D3D11_TEXTURE2D_DESC textureDesc;
-		ZeroMemory(&textureDesc, sizeof(textureDesc));
-		textureDesc.Width = pTexture->Width;
-		textureDesc.Height = pTexture->height;
-		textureDesc.MipLevels = pTexture->MipLevels;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT( pTexture->Format );
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.Usage = D3D11_USAGE_DEFAULT;
-
-		if( pTexture->usage == TEXTURE_RENDER_RAGET )
-			textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		else
-			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-		textureDesc.CPUAccessFlags = 0;
-		textureDesc.MiscFlags = 0;
-
-		ID3D11Texture2D* pRT = (ID3D11Texture2D*)pTexture->pTextureSource;
-		if( pRT == NULL )
-			GLOBAL::D3DDevice()->CreateTexture2D(&textureDesc, NULL, &pRT);
-
-		if( pTexture->usage == TEXTURE_RENDER_RAGET )
-		{
-			ID3D11RenderTargetView*	pRTV;
-
-			D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-			renderTargetViewDesc.Format = textureDesc.Format;
-			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-			renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-			GLOBAL::D3DDevice()->CreateRenderTargetView( pRT, &renderTargetViewDesc, &pRTV);
-			pTexture->pRenderTargetView = pRTV;
-		}
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-		shaderResourceViewDesc.Format = textureDesc.Format;
-		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-		shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-		ID3D11ShaderResourceView* pSRV;
-		GLOBAL::D3DDevice()->CreateShaderResourceView(pRT, &shaderResourceViewDesc, &pSRV);
-		pTexture->pShaderResourceView = pSRV;
-
-		if( pTexture->bDeleteMemoryAfterLoading )
-		{
-			SAFE_RELEASE(pRT)
-		}
-		else
-			pTexture->pTextureSource = pRT;
+		CreateDXTextureBuffer( (CResourceTexture*)pResource );
 	}
+}
+
+void RDX11Device::CreateDXGeometryBuffer(CResourceGeometry* pGeometry)
+{
+	if( pGeometry->vertexCount <= 0 || pGeometry->pGraphicMemoryVertexBuffer != NULL )
+		return;
+
+	size_t size = VERTEX_STRIDE(pGeometry->eVertexType) * pGeometry->vertexCount;
+	pGeometry->pGraphicMemoryVertexBuffer = CreateBuffer(pGeometry->pVertexBuffer, size, D3D11_BIND_VERTEX_BUFFER);
+
+	if( pGeometry->primitiveCount > 0)
+	{
+		if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
+			pGeometry->pGraphicMemoryIndexBuffer = CreateBuffer(pGeometry->pIndexBuffer, 2 * 3 * pGeometry->primitiveCount, D3D11_BIND_INDEX_BUFFER);
+		else
+			pGeometry->pGraphicMemoryIndexBuffer = CreateBuffer(pGeometry->pIndexBuffer, 4 * 3 * pGeometry->primitiveCount, D3D11_BIND_INDEX_BUFFER);
+	}
+}
+
+void RDX11Device::CreateDXTextureBuffer(CResourceTexture* pTexture)
+{
+	if( pTexture->pShaderResourceView != NULL)
+		return;
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+	textureDesc.Width = pTexture->Width;
+	textureDesc.Height = pTexture->height;
+	textureDesc.MipLevels = pTexture->MipLevels;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT( pTexture->Format );
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	if( pTexture->usage == TEXTURE_RENDER_RAGET )
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	else
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* pRT = (ID3D11Texture2D*)pTexture->pTextureSource;
+	if( pRT == NULL )
+		GLOBAL::D3DDevice()->CreateTexture2D(&textureDesc, NULL, &pRT);
+
+	if( pTexture->usage == TEXTURE_RENDER_RAGET )
+	{
+		ID3D11RenderTargetView*	pRTV;
+
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		renderTargetViewDesc.Format = textureDesc.Format;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+		GLOBAL::D3DDevice()->CreateRenderTargetView( pRT, &renderTargetViewDesc, &pRTV);
+		pTexture->pRenderTargetView = pRTV;
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	ID3D11ShaderResourceView* pSRV;
+	GLOBAL::D3DDevice()->CreateShaderResourceView(pRT, &shaderResourceViewDesc, &pSRV);
+	pTexture->pShaderResourceView = pSRV;
+
+	if( pTexture->bDeleteMemoryAfterLoading )
+	{
+		SAFE_RELEASE(pRT)
+	}
+	else
+		pTexture->pTextureSource = pRT;
 }
 
 void RDX11Device::RemoveGraphicBuffer(CResourceBase* pResource)
@@ -317,7 +322,7 @@ void RDX11Device::RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size,
 	}
 }
 
-CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
+CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture)
 {
 	HRESULT hr = S_OK;
 	ID3D11Resource *pDXTexture = NULL;
@@ -332,7 +337,6 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName)
 	D3D11_TEXTURE2D_DESC desc;
 	pRT->GetDesc(&desc);
 
-	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->ResourceMemMgr()->GetNew(RESOURCE_TEXTURE);
 	pTexture->pTextureSource = pDXTexture;
 	pTexture->Width = desc.Width;
 	pTexture->height = desc.Height;

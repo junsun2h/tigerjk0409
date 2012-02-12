@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 
-namespace SMESH_LOADER
+namespace SRAW_FILE_LOADER
 {
 
 	typedef std::map<int, std::vector<int>* > MTRL_FACE_MAP;
@@ -18,7 +18,7 @@ namespace SMESH_LOADER
 		float	weight[3];
 		uint8	bone[4];
 	};
-	
+
 	struct RAW_ACTOR_NODE
 	{
 		CQuat			rot;
@@ -112,6 +112,8 @@ namespace SMESH_LOADER
 	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name );
 	void SaveRawActorToFile( SRAW_ACTOR* pRawActor, wxString name );
 	void SaveRawMotionToFile( SRAW_MOTION* pRawMotion, wxString name );
+
+	void SaveActorToFile( const CResourceActor* pActor, wxString fullPath );
 };
 
 

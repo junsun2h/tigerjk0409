@@ -111,7 +111,7 @@ void EMotionInstance::UpdateMatrix()
 	{
 		for( UINT i =0; i< jointCount ; ++i )
 		{
-			CMotionKey& key = m_Desc.pResource->jointList[i].keys[m_Desc.samplingCount -1];
+			const CMotionKey& key = m_Desc.pResource->jointList[i].keys[m_Desc.samplingCount -1];
 			
 			m_JointMatrix[i].rot = key.rot;
 			m_JointMatrix[i].pos = key.pos;
@@ -121,8 +121,8 @@ void EMotionInstance::UpdateMatrix()
 
 	for( UINT i =0; i< jointCount ; ++i )
 	{
-		CMotionKey& key = m_Desc.pResource->jointList[i].keys[m_State.currentKey];
-		CMotionKey& keyNext = m_Desc.pResource->jointList[i].keys[m_State.currentKey+1];
+		const CMotionKey& key = m_Desc.pResource->jointList[i].keys[m_State.currentKey];
+		const CMotionKey& keyNext = m_Desc.pResource->jointList[i].keys[m_State.currentKey+1];
 
 		m_JointMatrix[i].rot = XMQuaternionSlerp( key.rot.m128, keyNext.rot.m128, m_State.blendRatio );
 		m_JointMatrix[i].pos = CVector3::Lerp( key.pos, keyNext.pos, m_State.blendRatio );

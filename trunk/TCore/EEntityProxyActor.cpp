@@ -69,6 +69,8 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 
 		m_pJointEntities.push_back(pJointEntity);
 	}
+
+	m_AnimationMatrix.reserve( pResource->jointList.size() );
 }
 
 void EEntityProxyActor::Destroy()
@@ -81,13 +83,16 @@ void EEntityProxyActor::Destroy()
 	}
 
 	m_pJointEntities.clear();
+	m_PlayingMotionList.clear();
+	m_pEntity = NULL;
 	m_pResource = NULL;
+	m_AnimationMatrix.clear();
+	m_bPause = false;
 }
 
 void EEntityProxyActor::Play(CMotionDesc* pDesc)
 {
-	if( m_bPause )
-		m_bPause = false;
+	m_bPause = false;
 
 	static long generateTiming = 0;
 

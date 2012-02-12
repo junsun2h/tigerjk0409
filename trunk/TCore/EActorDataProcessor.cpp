@@ -1,7 +1,6 @@
 #include "CResource.h"
 
 #include "IAssetMgr.h"
-#include "IResourceMemMgr.h"
 #include "ILoader.h"
 
 #include "EGlobal.h"
@@ -42,7 +41,9 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 
-	CResourceActor* pActor = (CResourceActor*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_ACTOR);
+	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
+	CResourceActor* pActor = (CResourceActor*)pAssetMgr->CreateResource( RESOURCE_ACTOR, m_name.c_str() );
+	pActor->loadState = RESOURCE_LOAD_STARTED;
 
 	uint8 jointCount;
 	ECopyData( &jointCount, &pSrcBits,  1 );
@@ -58,8 +59,18 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		pActor->jointList.push_back(joint);
 	}
 
-	strcpy_s( pActor->name, m_name.c_str());
-	GLOBAL::AssetMgr()->Insert( pActor );
+	uint8 motionCount = 0;
+	ECopyData( &motionCount, &pSrcBits,  1 );
 
+	for(uint8 i=0; i< motionCount; ++i)
+	{
+		char strMotion[64];
+
+		ECopyString(strMotion, &pSrcBits);
+		CResourceMotion* motion = (CResourceMotion*)pAssetMgr->GetResource(RESOURCE_MOTION, strMotion);
+		pActor->motionList.push_back(motion);
+	}
+
+	pActor->loadState = RESOURCE_LOAD_FINISHED;
 	return pActor;
 }

@@ -58,6 +58,7 @@ enum eRESOURCE_FILE_TYPE
 enum eRESOURCE_LOAD_STATE
 {
 	RESOURCE_LOAD_NONE,
+	RESOURCE_MEMORY_CREATED,
 	RESOURCE_LOAD_STARTED,
 	RESOURCE_LOAD_FINISHED
 };
@@ -76,19 +77,19 @@ enum eCINDEX_TYPE
 struct CResourceBase
 {
 	long					RID;	// resource ID, hash Key fron resource name
-	eRESOURCE_LOAD_STATE	state;
+	eRESOURCE_LOAD_STATE	loadState;
 	double					loadBeginTime;
 	char					name[MAX_NAME_LENGTH];
 
 	virtual eRESOURCE_TYPE	Type() const	{ return RESOURCE_INVALID; }
 	virtual std::string		strType()  { return ""; }
-	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(state)); }
+	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(loadState)); }
 
 	virtual void			Destroy(){}
 
 	CResourceBase()
 		: RID(-1)
-		, state(RESOURCE_LOAD_NONE)
+		, loadState(RESOURCE_LOAD_NONE)
 		, loadBeginTime(0)
 	{
 	}
