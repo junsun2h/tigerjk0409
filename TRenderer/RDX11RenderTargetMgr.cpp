@@ -2,7 +2,6 @@
 #include "CResource.h"
 
 #include "IRDevice.h"
-#include "IResourceMemMgr.h"
 #include "IAssetMgr.h"
 
 #include "RDX11Global.h"
@@ -156,17 +155,16 @@ void RDX11RenderTargetMgr::ClearAndSetMaineFrame()
 
 void RDX11RenderTargetMgr::CreateRenderTarget(int width, int height, eTEXTURE_FORMAT format, eDEFFERED_RENDER_TARGET target, const char* name)
 {
-	IResourceMemMgr* pMemoryMgr = GLOBAL::Engine()->ResourceMemMgr();
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 
-	CResourceTexture* pGeometryTexture = (CResourceTexture*)pMemoryMgr->GetNew(RESOURCE_TEXTURE);
-	strcpy_s( pGeometryTexture->name, name);
-	pGeometryTexture->height = height;
-	pGeometryTexture->Width = width;
-	pGeometryTexture->usage = TEXTURE_RENDER_RAGET;
-	pGeometryTexture->Format = format;
-	pGeometryTexture->MipLevels = 1;
+	CResourceTexture* pRenderTargetTexture = (CResourceTexture*)pAssetMgr->CreateResource(RESOURCE_TEXTURE, name);
+	pRenderTargetTexture->height = height;
+	pRenderTargetTexture->Width = width;
+	pRenderTargetTexture->usage = TEXTURE_RENDER_RAGET;
+	pRenderTargetTexture->Format = format;
+	pRenderTargetTexture->MipLevels = 1;
 
-	pAssetMgr->Insert( pGeometryTexture );
-	m_DefferdRenderTargets[target] = pGeometryTexture;
+	GLOBAL::RDevice()->CreateGraphicBuffer(pRenderTargetTexture);
+
+	m_DefferdRenderTargets[target] = pRenderTargetTexture;
 }

@@ -78,11 +78,10 @@ struct IRDevice
 	virtual	RDeviceDesc		GetDeviceSetting() = 0;
 
 	// Device Dependent Resources ( ex: Texture, VB, IB, Shader )
-	virtual void			PT_CreateGraphicBuffer(CResourceBase* pResource) = 0;
 	virtual void			CreateGraphicBuffer(CResourceBase* pResource) = 0;
 	virtual void			RemoveGraphicBuffer(CResourceBase* pResource) =0;
 
-	virtual CResourceTexture*	CreateTextureFromFile(const char* fileName) = 0;
+	virtual CResourceTexture*	CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture) = 0;
 	virtual bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) = 0;
 
 	virtual HWND			GetHWND() = 0;

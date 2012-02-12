@@ -5,9 +5,9 @@
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
-#include "IResourceMemMgr.h"
 #include "IRDevice.h"
 #include "IRenderHelper.h"
+#include "IAssetMgr.h"
 
 #include "RDefine.h"
 #include "RDX11Global.h"
@@ -95,19 +95,19 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 {
-	IResourceMemMgr* pMemoryPoolMgr = GLOBAL::Engine()->ResourceMemMgr();
 	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_MPASS_MESH);
-	IRDX11Device* pDevice = GLOBAL::RDevice();
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
 	
 	pShader->Begin();
 	pShader->SetShaderContants( tm);
 
-	CResourceGeometry* pBoxX = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
-	CResourceGeometry* pBoxY = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
-	CResourceGeometry* pBoxZ = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
-	CResourceGeometry* pBoxCenter = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
+	CResourceGeometry* pBoxX = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep1");
+	CResourceGeometry* pBoxY = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep2");
+	CResourceGeometry* pBoxZ = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep3");
+	CResourceGeometry* pBoxCenter = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep4");
 
 	BOX_MAKE_PARAM param;
 	param.color = COLOR_RED;
@@ -132,25 +132,26 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxCenter, param);
 
-	pDevice->PT_CreateGraphicBuffer( pBoxX);
-	pDevice->PT_CreateGraphicBuffer( pBoxY);
-	pDevice->PT_CreateGraphicBuffer( pBoxZ);
-	pDevice->PT_CreateGraphicBuffer( pBoxCenter);
-
+	IRDX11Device* pDevice = GLOBAL::RDevice();
+	pDevice->CreateGraphicBuffer( pBoxX);
+	pDevice->CreateGraphicBuffer( pBoxY);
+	pDevice->CreateGraphicBuffer( pBoxZ);
+	pDevice->CreateGraphicBuffer( pBoxCenter);
+	
+	pBoxX->loadState = RESOURCE_LOAD_FINISHED;
+	pBoxY->loadState = RESOURCE_LOAD_FINISHED;
+	pBoxZ->loadState = RESOURCE_LOAD_FINISHED;
+	pBoxCenter->loadState = RESOURCE_LOAD_FINISHED;
+	
 	pDevice->RenderGeometry(pBoxX);
 	pDevice->RenderGeometry(pBoxY);
 	pDevice->RenderGeometry(pBoxZ);
 	pDevice->RenderGeometry(pBoxCenter);
 
-	pDevice->RemoveGraphicBuffer( pBoxX);
-	pDevice->RemoveGraphicBuffer( pBoxY);
-	pDevice->RemoveGraphicBuffer( pBoxZ);
-	pDevice->RemoveGraphicBuffer( pBoxCenter);
-
-	pMemoryPoolMgr->Remove(pBoxX);
-	pMemoryPoolMgr->Remove(pBoxY);
-	pMemoryPoolMgr->Remove(pBoxZ);
-	pMemoryPoolMgr->Remove(pBoxCenter);
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxX->RID);
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxY->RID);
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxZ->RID);
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxCenter->RID);
 
 	RenderAxis(tm, scale);
 }
@@ -226,18 +227,18 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 {
-	IResourceMemMgr* pMemoryPoolMgr = GLOBAL::Engine()->ResourceMemMgr();
 	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_MPASS_MESH);
 	IRDX11Device* pDevice = GLOBAL::RDevice();
+	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
 	pShader->Begin();
 	pShader->SetShaderContants(tm);
 
-	CResourceGeometry* pConeX = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
-	CResourceGeometry* pConeY = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
-	CResourceGeometry* pConeZ = (CResourceGeometry*)pMemoryPoolMgr->GetNew(RESOURCE_GEOMETRY);
+	CResourceGeometry* pConeX = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep1");
+	CResourceGeometry* pConeY = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep2");
+	CResourceGeometry* pConeZ = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep3");
 
 	CONE_MAKE_PARAM param;
 	param.color = COLOR_RED;
@@ -261,21 +262,21 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 
 	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeZ, param);
 	
-	pDevice->PT_CreateGraphicBuffer( pConeX);
-	pDevice->PT_CreateGraphicBuffer( pConeY);
-	pDevice->PT_CreateGraphicBuffer( pConeZ);
+	pDevice->CreateGraphicBuffer( pConeX);
+	pDevice->CreateGraphicBuffer( pConeY);
+	pDevice->CreateGraphicBuffer( pConeZ);
+
+	pConeX->loadState = RESOURCE_LOAD_FINISHED;
+	pConeY->loadState = RESOURCE_LOAD_FINISHED;
+	pConeZ->loadState = RESOURCE_LOAD_FINISHED;
 
 	pDevice->RenderGeometry(pConeX);
 	pDevice->RenderGeometry(pConeY);
 	pDevice->RenderGeometry(pConeZ);
-
-	pDevice->RemoveGraphicBuffer( pConeX);
-	pDevice->RemoveGraphicBuffer( pConeY);
-	pDevice->RemoveGraphicBuffer( pConeZ);
-
-	pMemoryPoolMgr->Remove(pConeX);
-	pMemoryPoolMgr->Remove(pConeY);
-	pMemoryPoolMgr->Remove(pConeZ);
+	
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pConeX->RID);
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pConeY->RID);
+	pAssetMgr->Remove(RESOURCE_GEOMETRY, pConeZ->RID);
 
 	RenderAxis(tm, scale);
 }

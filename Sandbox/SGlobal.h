@@ -14,7 +14,6 @@
 #include "IAssetMgr.h"
 #include "ILoader.h"
 #include "IEntity.h"
-#include "IResourceMemMgr.h"
 #include "ISpaceMgr.h"
 #include "IEngine.h"
 

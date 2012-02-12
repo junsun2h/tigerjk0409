@@ -11,7 +11,6 @@ namespace GLOBAL
 	IAssetMgr*			AssetMgr();
 	IEntityMgr*			EntityMgr();
 	ILoader*			Loader();
-	IResourceMemMgr*	ResourceMemMgr();
 	ISpaceMgr*			SpaceMgr();
 	IActorMgr*			ActorMgr();
 }

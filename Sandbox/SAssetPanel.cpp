@@ -7,7 +7,7 @@
 #include "wx/dnd.h"
 #include "SPropertyPanel.h"
 #include "SSelectionMgr.h"
-#include "SMeshImportor.h"
+#include "SRawResourceLoader.h"
 #include "SDragAndDropState.h"
 
 class SFileDragAndDrop : public wxFileDropTarget
@@ -26,37 +26,37 @@ public:
 			wxFileName fn = filenames[i];
 			if( fn.GetExt() == "mesh" )
 			{
-				SMESH_LOADER::SRAW_MESH rawMesh;
-				SMESH_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
+				SRAW_FILE_LOADER::SRAW_MESH rawMesh;
+				SRAW_FILE_LOADER::LoadRawMesh(  fn.GetFullPath().char_str() , rawMesh);
 
-				rawMesh.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+				rawMesh.ChangeCoordsys( SRAW_FILE_LOADER::COODSYS_DIRECTX );
 
 				wxString saveFile = wxString(path) + wxString("\\Data\\mesh\\") + fn.GetName() + wxString(".tmesh");
-				SMESH_LOADER::SaveRawMeshToFile( &rawMesh , saveFile );
+				SRAW_FILE_LOADER::SaveRawMeshToFile( &rawMesh , saveFile );
 
 				bImported = true;
 			}
 			else if( fn.GetExt() == "actor" )
 			{
-				SMESH_LOADER::SRAW_ACTOR rawActor;
-				SMESH_LOADER::LoadRawActor(  fn.GetFullPath().char_str() , rawActor);
+				SRAW_FILE_LOADER::SRAW_ACTOR rawActor;
+				SRAW_FILE_LOADER::LoadRawActor(  fn.GetFullPath().char_str() , rawActor);
 
-				rawActor.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+				rawActor.ChangeCoordsys( SRAW_FILE_LOADER::COODSYS_DIRECTX );
 
 				wxString saveFile = wxString(path) + wxString("\\Data\\actor\\") + fn.GetName() + wxString(".tac");
-				SMESH_LOADER::SaveRawActorToFile( &rawActor , saveFile );
+				SRAW_FILE_LOADER::SaveRawActorToFile( &rawActor , saveFile );
 
 				bImported = true;
 			}
 			else if( fn.GetExt() == "motion" )
 			{
-				SMESH_LOADER::SRAW_MOTION rawMotion;
-				SMESH_LOADER::LoadRawMotion(  fn.GetFullPath().char_str() , rawMotion);
+				SRAW_FILE_LOADER::SRAW_MOTION rawMotion;
+				SRAW_FILE_LOADER::LoadRawMotion(  fn.GetFullPath().char_str() , rawMotion);
 
-				rawMotion.ChangeCoordsys( SMESH_LOADER::COODSYS_DIRECTX );
+				rawMotion.ChangeCoordsys( SRAW_FILE_LOADER::COODSYS_DIRECTX );
 
 				wxString saveFile = wxString(path) + wxString("\\Data\\motion\\") + fn.GetName() + wxString(".tmo");
-				SMESH_LOADER::SaveRawMotionToFile( &rawMotion , saveFile );
+				SRAW_FILE_LOADER::SaveRawMotionToFile( &rawMotion , saveFile );
 
 				bImported = true;
 			}

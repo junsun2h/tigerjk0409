@@ -2,7 +2,6 @@
 
 #include "IAssetMgr.h"
 #include "ILoader.h"
-#include "IResourceMemMgr.h"
 
 #include "EGlobal.h"
 #include "EMotionDataProcessor.h"
@@ -43,7 +42,9 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 		return NULL;
 	}
 
-	CResourceMotion* pMotion = (CResourceMotion*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_MOTION);
+	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
+	CResourceMotion* pMotion = (CResourceMotion*)pAssetMgr->CreateResource( RESOURCE_MOTION, m_name.c_str() );
+	pMotion->loadState = RESOURCE_LOAD_STARTED;
 
 	ECopyData( &pMotion->frameRate, &pSrcBits,  1 );
 	ECopyData( &pMotion->frameInterval, &pSrcBits,  1 );
@@ -84,8 +85,6 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 		pMotion->jointList.push_back(joint);
 	}
 	
-	strcpy_s( pMotion->name, m_name.c_str());
-	GLOBAL::AssetMgr()->Insert( pMotion );
-
+	pMotion->loadState = RESOURCE_LOAD_FINISHED;
 	return pMotion;
 }

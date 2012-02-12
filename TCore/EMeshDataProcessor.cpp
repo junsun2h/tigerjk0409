@@ -2,7 +2,7 @@
 
 #include "IAssetMgr.h"
 #include "ILoader.h"
-#include "IResourceMemMgr.h"
+#include "IRDevice.h"
 
 #include "EGlobal.h"
 #include "EMeshDataProcessor.h"
@@ -23,11 +23,6 @@ EMeshDataProcessor::~EMeshDataProcessor()
 
 bool EMeshDataProcessor::PopData()
 {
-	for( UINT i=0; i< m_pResources.size(); ++i )
-	{
-		GLOBAL::AssetMgr()->Insert(m_pResources[i]);
-	}
-
 	return true;
 }
 
@@ -43,8 +38,10 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		assert(0);
 		return NULL;
 	}
-	
-	CResourceMesh* pMesh = (CResourceMesh*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_MESH);
+
+	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
+	CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->CreateResource( RESOURCE_MESH, m_name.c_str() );
+	pMesh->loadState = RESOURCE_LOAD_STARTED;
 
 	ECopyData( &pMesh->min, &pSrcBits,  12 );
 	ECopyData( &pMesh->max, &pSrcBits,  12 );
@@ -54,7 +51,10 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	for(int i=0; i< pMesh->geometryNum; ++i)
 	{
 		_itoa_s( i, buf, 32);
-		CResourceGeometry* pGeometry = (CResourceGeometry*)GLOBAL::ResourceMemMgr()->GetNew(RESOURCE_GEOMETRY);
+		std::string geometryName = m_name + "Geometry" + buf;
+
+		CResourceGeometry* pGeometry = (CResourceGeometry*)pAssetMgr->CreateResource( RESOURCE_GEOMETRY, geometryName.c_str() );
+		pMesh->loadState = RESOURCE_LOAD_STARTED;
 
 		ECopyData( &pGeometry->eVertexType, &pSrcBits,  4 );
 		ECopyData( &pGeometry->vertexCount, &pSrcBits,  4 );
@@ -78,15 +78,13 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		ECopyString(pGeometry->mtrlName, &pSrcBits);
 
+		GLOBAL::Engine()->RDevice()->CreateGraphicBuffer( pGeometry );
+		pGeometry->loadState = RESOURCE_LOAD_FINISHED;
 
-		std::string geometryName = m_name + "Geometry" + buf;
-		strcpy_s( pGeometry->name, geometryName.c_str());
-
-		pMesh->goemetries[i] = GLOBAL::AssetMgr()->Insert( pGeometry );
+		pMesh->goemetries[i] = pGeometry->RID;
 	}
 
-	strcpy_s( pMesh->name, m_name.c_str());
-	GLOBAL::AssetMgr()->Insert( pMesh );
+	pMesh->loadState = RESOURCE_LOAD_FINISHED;
 	return pMesh;
 }
 

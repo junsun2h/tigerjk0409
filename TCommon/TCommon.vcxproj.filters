@@ -109,9 +109,6 @@
     <ClInclude Include="IMotionInstance.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IResourceMemMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
     <ClInclude Include="IActorMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>

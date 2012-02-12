@@ -85,6 +85,7 @@
     <ClInclude Include="SEntityTreeCtrl.h" />
     <ClInclude Include="SMotionTreeCtrl.h" />
     <ClInclude Include="SNameDlg.h" />
+    <ClInclude Include="SRawResourceLoader.h" />
     <ClInclude Include="SSceneTreeCtrl.h" />
     <ClInclude Include="SSelectionMgr.h" />
     <ClInclude Include="STextureConvertor.h" />
@@ -92,7 +93,6 @@
     <ClInclude Include="SCreateEntityDlg.h" />
     <ClInclude Include="SGlobal.h" />
     <ClInclude Include="SMainToolBar.h" />
-    <ClInclude Include="SMeshImportor.h" />
     <ClInclude Include="SPropertyGrid.h" />
     <ClInclude Include="SPropertyPanel.h" />
     <ClInclude Include="SMainFrame.h" />
@@ -111,10 +111,10 @@
     <ClCompile Include="SGlobal.cpp" />
     <ClCompile Include="SMainFrame.cpp" />
     <ClCompile Include="SMainToolBar.cpp" />
-    <ClCompile Include="SMeshImportor.cpp" />
     <ClCompile Include="SMotionTreeCtrl.cpp" />
     <ClCompile Include="SPropertyGrid.cpp" />
     <ClCompile Include="SPropertyPanel.cpp" />
+    <ClCompile Include="SRawResourceLoader.cpp" />
     <ClCompile Include="SSceneHierarchyPanel.cpp" />
     <ClCompile Include="SSceneTreeCtrl.cpp" />
     <ClCompile Include="SSelectionMgr.cpp" />

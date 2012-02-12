@@ -6,6 +6,7 @@
 #include "SPropertyPanel.h"
 #include "SDragAndDropState.h"
 #include "SSelectionMgr.h"
+#include "SRawResourceLoader.h"
 
 #include "SMotionTreeCtrl.h"
 
@@ -104,7 +105,14 @@ void SMotionTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 		assert(0);
 
 	CResourceActor*	pUnSafeActor = (CResourceActor*)pAssetMgr->UnSafeGetResource(RESOURCE_ACTOR, m_pActor->RID);
+
 	pUnSafeActor->motionList.push_back( pMotion );
+
+	wxString fullPath = wxString("\\Data\\actor\\") + wxString(pUnSafeActor->name );
+
+	SRAW_FILE_LOADER::SaveActorToFile( pUnSafeActor, fullPath);
+
+	pAssetMgr->Reload( RESOURCE_ACTOR, m_pActor->RID );
 
 	GLOBAL::PropertyPanel()->SetObject( m_pActor );
 }
