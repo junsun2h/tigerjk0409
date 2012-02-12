@@ -8,6 +8,8 @@ CUnitPoolArray doesn't change its size
 [T] should have [ void Destroy() ] as function
 */
 
+typedef std::list<unsigned int>		OBJ_HANDLE_LIST;
+
 template<class T>
 class CObjectPool
 {
@@ -85,17 +87,24 @@ public:
 		return &m_pData[nUnusedIndex];
 	}
 
+	T*					Get(UINT handle)			{ return &m_pData[handle]; }
 	UINT				GetFirst()					{ return m_UsingList.front(); }
 	bool				IsUsed(UINT nIndex) const	{ return m_vecInfo[nIndex].m_bUsed; };
 	UINT				GetUsingCount() const		{ return m_nUsingCount; }
 	UINT				GetCapacity() const			{ return m_nReservedCount; }
 	void				Remove(void* pItem)			{ Remove( GetHandle(pItem) );	}
 
+	const OBJ_HANDLE_LIST*	UsingHandleList()		{ return &m_UsingList; }
+
 private:
 	UINT GetHandle(void* pItem)
 	{
-		int address = UINT(pItem) - UINT(m_pData);
-		int handle = address / sizeof(T);
+		int address = int(pItem) - int(m_pData);
+		UINT handle = address / sizeof(T);
+
+		if( handle > m_nReservedCount )
+			assert(0);
+
 		return handle;
 	}
 
@@ -115,7 +124,7 @@ private:
 	struct CHandleInfo
 	{
 		bool						m_bUsed;
-		std::list<UINT>::iterator	m_position;
+		OBJ_HANDLE_LIST::iterator	m_position;
 	};
 
 protected:
@@ -124,8 +133,8 @@ protected:
 	unsigned int				m_nReservedCount;	
 	unsigned int				m_nUsingCount;
 
-	std::list<unsigned int>		m_UnusingList;
-	std::list<unsigned int>		m_UsingList;
+	OBJ_HANDLE_LIST				m_UnusingList;
+	OBJ_HANDLE_LIST				m_UsingList;
 
 	bool						m_bInitialized;
 };

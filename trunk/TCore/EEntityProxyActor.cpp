@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "CResource.h"
 
 #include "IEntity.h"
@@ -6,9 +8,25 @@
 #include "IMotionInstance.h"
 
 #include "EGlobal.h"
+#include "EMotionInstance.h"
 #include "EEntityProxyActor.h"
 
 
+CObjectPool<EMotionInstance>	g_MemPoolMotionInstance(1000);
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+bool SORT_MOTION_INSTANCE(IMotionInstance* pA, IMotionInstance* pB)
+{
+	if( pA->GetDesc()->Priority == pB->GetDesc()->Priority)
+		return pA->GetState()->id < pB->GetState()->id;
+
+	return pA->GetDesc()->Priority < pB->GetDesc()->Priority;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------
 const CResourceActor* EEntityProxyActor::GetResource()
 {
 	return m_pResource;
@@ -70,20 +88,14 @@ void EEntityProxyActor::Play(CMotionDesc* pDesc)
 {
 	if( m_bPause )
 		m_bPause = false;
-	/*
-	TMotionInstance* pMotionInstance = NULL;
 
-	pMotionInstance = new TMotionInstance(pMotion, m_pMotionPose, param, m_PlayOrder);
+	static long generateTiming = 0;
 
-	m_MotionList.push_back( pMotionInstance );
-	sort(m_MotionList.begin(),m_MotionList.end(), SortMotionInstance);
-	
-	return pMotionInstance;*/
-}
+	EMotionInstance* pMotionInstance = g_MemPoolMotionInstance.GetNew();
+	pMotionInstance->Init(pDesc, generateTiming++);
 
-void EEntityProxyActor::Freeze()
-{
-
+	m_PlayingMotionList.push_back(pMotionInstance);
+	sort( m_PlayingMotionList.begin(), m_PlayingMotionList.end(), SORT_MOTION_INSTANCE);
 }
 
 void EEntityProxyActor::Stop()
@@ -93,17 +105,89 @@ void EEntityProxyActor::Stop()
 
 bool EEntityProxyActor::IsPlaying()
 {
-	return false;
+	if( m_PlayingMotionList.size() == 0)
+		return false;
+	else
+		return true;
 }
 
-void EEntityProxyActor::UpdateJoint()
+void EEntityProxyActor::Update(float deltaTime)
+{
+	if( m_bPause == true || IsPlaying() == false)
+		return;
+
+	if( m_pEntity->IsCulled() )
+		VisibleUpdate(deltaTime);
+	else
+		CulledUpdate(deltaTime);
+}
+
+void EEntityProxyActor::VisibleUpdate(float deltaTime)
+{
+	UINT jointCount = m_pJointEntities.size();
+	
+	// reset animation matrix to Figure mode
+	for(UINT i=0; i < jointCount; ++i)
+	{
+		m_AnimationMatrix[i].pos = m_pResource->jointList[i].pos;
+		m_AnimationMatrix[i].rot = m_pResource->jointList[i].rot;
+	}
+
+	// Update animation
+	MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
+	for(; itr != m_PlayingMotionList.end(); )
+	{
+		IMotionInstance* pMotionInstance = *itr;
+		eMOTION_PLAY_STATE motionState = pMotionInstance->VisibleUpdate(deltaTime);
+
+		if( motionState == MOTION_READY )
+			continue;
+
+		if( motionState == MOTION_STOPPED || motionState == MOTION_PLAY_INVAILD)
+		{
+			g_MemPoolMotionInstance.Remove( *itr );
+			itr = m_PlayingMotionList.erase(itr);
+			continue;
+		}
+
+		pMotionInstance->ApplyToMotionPose( &m_AnimationMatrix );
+		itr++;
+	}
+
+	ApplyAnimationToActor();
+}
+
+void EEntityProxyActor::CulledUpdate(float deltaTime)
+{
+	MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
+	for(; itr != m_PlayingMotionList.end(); )
+	{
+		IMotionInstance* pMotionInstance = *itr;
+		eMOTION_PLAY_STATE motionState = pMotionInstance->CulledUpdate(deltaTime);
+
+		if( motionState == MOTION_READY )
+			continue;
+
+		if( motionState == MOTION_STOPPED || motionState == MOTION_PLAY_INVAILD)
+		{
+			g_MemPoolMotionInstance.Remove( *itr );
+			itr = m_PlayingMotionList.erase(itr);
+			continue;
+		}
+
+		itr++;
+	}
+}
+
+
+void EEntityProxyActor::ApplyAnimationToActor()
 {
 	UINT jointCount = m_pJointEntities.size();
 
 	for(UINT i=0; i < jointCount; ++i)
 	{
-		XMMATRIX tm = XMMatrixRotationQuaternion( m_JointMatrix[i].rot.m128 );
-		tm.r[3] = m_JointMatrix[i].pos.ToXMVEECTOR();
+		XMMATRIX tm = XMMatrixRotationQuaternion( m_AnimationMatrix[i].rot.m128 );
+		tm.r[3] = m_AnimationMatrix[i].pos.ToXMVEECTOR();
 
 		m_pJointEntities[i]->SetLocalTM(tm);
 	}

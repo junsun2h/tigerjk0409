@@ -18,7 +18,7 @@ struct CMotionDesc
 	UINT	samplingCount;
 	float	length;
 
-	CResourceMotion*	pResource;
+	const CResourceMotion*	pResource;
 
 	CMotionDesc()
 		: fBlendInTime(0.3f)
@@ -35,11 +35,13 @@ struct CMotionDesc
 
 enum eMOTION_PLAY_STATE
 {
-	TMOTION_FADE_IN,
-	TMOTION_PLAY,
-	TMOTION_FADE_OUT_AFTER_END,
-	TMOTION_FADE_OUT_BEFORE_END,
-	TMOTION_STOP
+	MOTION_PLAY_FADE_IN,
+	MOTION_PLAY,
+	MOTION_PLAY_FADE_OUT_AFTER_END,
+	MOTION_PLAY_FADE_OUT_BEFORE_END,
+	MOTION_STOPPED,
+	MOTION_READY,
+	MOTION_PLAY_INVAILD
 };
 
 
@@ -55,6 +57,8 @@ struct CMotionState
 	eMOTION_PLAY_STATE	ePlayState;
 	float				weight;
 	
+	long				id;	// id is assigned by generating order, this is also used for sorting motion Instances
+
 	CMotionState()
 	{
 		Reset();
@@ -66,7 +70,7 @@ struct CMotionState
 		passedTime = 0;
 		blendTime = 0;
 		blendRatio = 0;
-		ePlayState = TMOTION_STOP;
+		ePlayState = MOTION_READY;
 		weight = 0;
 		loopCount = 0;
 	}
@@ -83,13 +87,12 @@ typedef std::vector<CMotionTransform>	MOTION_POSE;
 
 struct IMotionInstance
 {
-	virtual void	Init(CMotionDesc& desc) = 0;
 	virtual void	Destroy() = 0;
 
 	virtual const CMotionDesc*	GetDesc() = 0;
-	virtual const CMotionState*	GetState() = 0;
-									
-	virtual bool	Update(float timeDelta) = 0;
-	virtual void	Stop(bool bInstant) = 0;
+	virtual const CMotionState*	GetState() = 0;							
+	virtual eMOTION_PLAY_STATE	VisibleUpdate(float timeDelta) = 0;
+	virtual eMOTION_PLAY_STATE	CulledUpdate(float timeDelta) = 0;
+
 	virtual void	ApplyToMotionPose(MOTION_POSE* pMotionPose) = 0;
 }; 

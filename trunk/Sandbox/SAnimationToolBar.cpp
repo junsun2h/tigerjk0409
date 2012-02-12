@@ -1,7 +1,11 @@
 #include "wx/wx.h"
-#include "SGlobal.h"
-#include "SAnimationToolBar.h"
 
+#include "SGlobal.h"
+
+#include "IMotionInstance.h"
+
+#include "SAnimationToolBar.h"
+#include "SSelectionMgr.h"
 
 
 SAnimationToolBar::SAnimationToolBar(wxWindow *parent, wxWindowID id)
@@ -26,6 +30,27 @@ SAnimationToolBar::SAnimationToolBar(wxWindow *parent, wxWindowID id)
 
 void SAnimationToolBar::OnPlay( wxCommandEvent& event )
 {
+	IEntity* pEntity = GLOBAL::SelectionMgr()->First();
+
+	if( pEntity == NULL )
+		return;
+
+	IEntityProxyActor* pActorProxy = (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR);
+	if( pActorProxy == NULL)
+		return;
+
+	wxString strMotion = GLOBAL::SelectionMgr()->GetSelectedMotion();
+	const CResourceActor* pActor = pActorProxy->GetResource();
+
+	for( UINT i=0; i < pActor->motionList.size(); ++i )
+	{
+		if( strMotion == pActor->motionList[i]->name )
+		{
+			CMotionDesc desc;
+			desc.pResource = pActor->motionList[i];
+			pActorProxy->Play( &desc );
+		}
+	}
 }
 
 void SAnimationToolBar::OnFreeze( wxCommandEvent& event )

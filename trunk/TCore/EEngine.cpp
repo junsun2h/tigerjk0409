@@ -14,6 +14,7 @@
 #include "ISpaceMgr.h"
 #include "IResourceMemMgr.h"
 #include "IRDevice.h"
+#include "IActorMgr.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -98,6 +99,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system
+	GLOBAL::ActorMgr()->Update(deltaTime);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 4) render current frame

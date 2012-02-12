@@ -5,25 +5,49 @@
 #include "EMotionInstance.h"
 
 
-bool EMotionInstance::Update(float timeDelta)
+//--------------------------------------------------------------------------------------------------------------------
+eMOTION_PLAY_STATE EMotionInstance::VisibleUpdate(float timeDelta)
 {
 	if( m_Desc.pResource == NULL)
-		return false;
+	{
+		assert(0);
+		return MOTION_PLAY_INVAILD;
+	}
 
-	if( m_State.ePlayState == TMOTION_STOP)
-		return false;
+	if( m_State.ePlayState == MOTION_STOPPED)
+		return MOTION_STOPPED;
 
 	UpdateFrame(timeDelta);
 	UpdateBlendWeight(timeDelta);
 	UpdateMatrix();
 
-	return true;
+	return m_State.ePlayState;
 }
+
+
+//--------------------------------------------------------------------------------------------------------------------
+eMOTION_PLAY_STATE EMotionInstance::CulledUpdate(float timeDelta)
+{
+	if( m_Desc.pResource == NULL)
+	{
+		assert(0);
+		return MOTION_PLAY_INVAILD;
+	}
+
+	if( m_State.ePlayState == MOTION_STOPPED)
+		return MOTION_STOPPED;
+
+	UpdateFrame(timeDelta);
+	UpdateBlendWeight(timeDelta);
+
+	return m_State.ePlayState;
+}
+
 
 //--------------------------------------------------------------------------------------------------------------------
 void EMotionInstance::UpdateFrame(float timeDelta)
 {
-	if( m_State.ePlayState == TMOTION_FADE_OUT_AFTER_END)
+	if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END)
 		return;
 
 	m_State.passedTime += timeDelta;
@@ -39,7 +63,7 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 
 		if( m_Desc.bLoop == false )
 		{
-			m_State.ePlayState = TMOTION_FADE_OUT_AFTER_END;
+			m_State.ePlayState = MOTION_PLAY_FADE_OUT_AFTER_END;
 			m_State.blendTime = 0;
 		}
 	}
@@ -50,7 +74,7 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 //--------------------------------------------------------------------------------------------------------------------
 void EMotionInstance::UpdateBlendWeight(float timeDelta)
 {
-	if( m_State.ePlayState == TMOTION_FADE_IN )
+	if( m_State.ePlayState == MOTION_PLAY_FADE_IN )
 	{
 		m_State.blendTime += timeDelta;
 		if( m_State.blendTime < m_Desc.fBlendInTime )
@@ -60,17 +84,17 @@ void EMotionInstance::UpdateBlendWeight(float timeDelta)
 		else
 		{
 			m_State.weight = m_Desc.fTargetWeight;
-			m_State.ePlayState = TMOTION_PLAY;
+			m_State.ePlayState = MOTION_PLAY;
 			m_State.blendTime = 0;
 		}
 	}
-	else if( m_State.ePlayState == TMOTION_FADE_OUT_AFTER_END )
+	else if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END )
 	{
 		m_State.blendTime += timeDelta;
 
 		if( m_State.blendTime > m_Desc.fBlendOutTime )
 		{
-			m_State.ePlayState = TMOTION_STOP;
+			m_State.ePlayState = MOTION_STOPPED;
 			return;
 		}
 
@@ -83,7 +107,7 @@ void EMotionInstance::UpdateMatrix()
 {
 	UINT jointCount = m_JointMatrix.size();
 
-	if( m_State.ePlayState == TMOTION_FADE_OUT_AFTER_END )
+	if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END )
 	{
 		for( UINT i =0; i< jointCount ; ++i )
 		{
@@ -128,33 +152,17 @@ void EMotionInstance::ApplyToMotionPose(MOTION_POSE* pMotionPose)
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void EMotionInstance::Stop(bool bInstant)
+void EMotionInstance::Init(CMotionDesc* pDesc, long generateTiming)
 {
-	if( bInstant )
-	{
-		m_State.ePlayState = TMOTION_STOP;
-	}
-	else
-	{
-		m_State.ePlayState = TMOTION_FADE_OUT_AFTER_END;
-		m_State.blendTime = 0;
-	}
-
-	m_Desc.bLoop = false;
-}
-
-//--------------------------------------------------------------------------------------------------------------------
-void EMotionInstance::Init(CMotionDesc& desc)
-{
-	if( desc.pResource == NULL )
+	if( pDesc->pResource == NULL )
 		return;
 
-	m_Desc = desc;
+	m_Desc = *pDesc;
 	m_Desc.timePerFrame = 1.0f/m_Desc.pResource->frameRate;
 	m_Desc.samplingCount = m_Desc.pResource->jointList[0].keys.size() -1;
 	m_Desc.length = m_Desc.pResource->totalFrame / float(m_Desc.pResource->frameRate);
 
-	UINT jointCount = desc.pResource->jointList.size();
+	UINT jointCount = pDesc->pResource->jointList.size();
 	if( m_JointMatrix.size() != jointCount )
 	{
 		m_JointMatrix.clear();
@@ -162,10 +170,12 @@ void EMotionInstance::Init(CMotionDesc& desc)
 	}
 
 	m_State.Reset();
+	m_State.id = generateTiming;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
 void EMotionInstance::Destroy()
 {
+	m_JointMatrix.clear();
 	m_Desc.pResource = NULL;
 }

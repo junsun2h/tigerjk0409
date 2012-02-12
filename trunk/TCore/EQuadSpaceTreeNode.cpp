@@ -12,6 +12,7 @@
 
 EQuadSpaceTreeNode::EQuadSpaceTreeNode()
 	: m_bInitialized(false)
+	, m_bCulled(true)
 {
 
 }
@@ -26,6 +27,7 @@ void EQuadSpaceTreeNode::Init(CQuad& area, UINT spaceID )
 	m_Area = area;
 	m_bInitialized = true;
 	m_SpaceID = spaceID;
+	m_bCulled = true;
 }
 
 void EQuadSpaceTreeNode::Destroy()
@@ -33,7 +35,7 @@ void EQuadSpaceTreeNode::Destroy()
 	m_bInitialized = false;
 }
 
-void EQuadSpaceTreeNode::Register(IEntity* pEntity)
+void EQuadSpaceTreeNode::Regist(IEntity* pEntity)
 {
 	TYPE_ENTITY_MAP::CPair* itr = m_EntityMap.Lookup( pEntity->GetID() );
 	if( itr == NULL )
@@ -43,13 +45,13 @@ void EQuadSpaceTreeNode::Register(IEntity* pEntity)
 	}
 }
 
-void EQuadSpaceTreeNode::UnRegister(IEntity* pEntity)
+void EQuadSpaceTreeNode::UnRegist(IEntity* pEntity)
 {
 	TYPE_ENTITY_MAP::CPair* itr = m_EntityMap.Lookup( pEntity->GetID() );
 	if( itr == NULL )
 		assert(0);
 
-	itr->m_value->RemoveSpaceID(m_SpaceID);
+	pEntity->RemoveSpaceID(m_SpaceID);
 	m_EntityMap.RemoveKey( pEntity->GetID() );
 }
 
@@ -86,5 +88,33 @@ void EQuadSpaceTreeNode::Render()
 		IEntityProxyRender* pProxy = (IEntityProxyRender*)itr->m_value->GetProxy(ENTITY_PROXY_RENDER);
 		if( pProxy != NULL )
 			pProxy->Render();
+	}
+}
+
+void EQuadSpaceTreeNode::OnCulled()
+{
+	m_bCulled = true;
+
+	POSITION pos = m_EntityMap.GetStartPosition();
+	TYPE_ENTITY_MAP::CPair* itr = NULL;
+
+	while (pos)
+	{
+		itr = m_EntityMap.GetNext(pos);
+		itr->m_value->SetCull( true );
+	}
+}
+
+void EQuadSpaceTreeNode::OnBecomeVisible()
+{
+	m_bCulled = false;
+
+	POSITION pos = m_EntityMap.GetStartPosition();
+	TYPE_ENTITY_MAP::CPair* itr = NULL;
+
+	while (pos)
+	{
+		itr = m_EntityMap.GetNext(pos);
+		itr->m_value->SetCull( false );
 	}
 }

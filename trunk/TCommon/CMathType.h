@@ -1,6 +1,7 @@
 #pragma once
 
 #define _XM_NO_INTRINSICS_
+#define XM_NO_OPERATOR_OVERLOADS
 
 #include <WTypes.h>
 #include "xnamath.h"

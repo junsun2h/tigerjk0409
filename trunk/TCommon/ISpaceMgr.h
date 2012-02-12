@@ -9,5 +9,5 @@ struct ISpaceMgr
 	virtual void		Render() = 0;
 
 	virtual void		UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc) =0;
-	virtual void		UpdateEntitySpace(IEntity* pEntity) =0;
+	virtual void		UpdateEntitySpaceList(IEntity* pEntity) =0;
 };

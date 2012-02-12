@@ -10,6 +10,7 @@
 #include "ISpaceMgr.h"
 #include "IEntityProxy.h"
 #include "IEntity.h"
+#include "IActorMgr.h"
 
 #include "EEntityProxyActor.h"
 #include "EEntityProxyCamera.h"
@@ -18,7 +19,6 @@
 #include "EEntity.h"
 
 
-CObjectPool<EEntityProxyActor>	g_MemPoolProxyActor(100);
 CObjectPool<EEntityProxyCamera>	g_MemPoolProxyCamera(100);
 CObjectPool<EEntityProxyRender>	g_MemPoolProxyRender(100);
 
@@ -26,7 +26,7 @@ void RemoveProxyFromMemeory(IEntityProxy* pProxy)
 {
 	eENTITY_PROXY_TYPE type = pProxy->GetType();
 
-	if( type == ENTITY_PROXY_ACTOR )			{	return g_MemPoolProxyActor.Remove(pProxy);	}
+	if( type == ENTITY_PROXY_ACTOR )			{	return GLOBAL::ActorMgr()->Remove(pProxy);	}
 	else if( type == ENTITY_PROXY_RENDER )		{	return g_MemPoolProxyRender.Remove(pProxy);	}
 	else if( type == ENTITY_PROXY_CAMERA )		{	return g_MemPoolProxyCamera.Remove(pProxy);	}
 	else
@@ -37,6 +37,7 @@ void RemoveProxyFromMemeory(IEntityProxy* pProxy)
 
 EEntity::EEntity()
 	: m_pParent(NULL)
+	, m_bCulled(true)
 {
 }
 
@@ -86,6 +87,17 @@ void EEntity::Destroy()
 	m_WorldAABB.Reset();
 }
 
+bool EEntity::IsVisible()
+{
+	if( GetProxy(ENTITY_PROXY_RENDER) == NULL )
+		return false;
+
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//    Culling information
+//////////////////////////////////////////////////////////////////////////
 void EEntity::AddSpaceID(UINT id)
 {
 	TYPE_SPACE_IDS::iterator itr = m_SpaceIDList.begin();
@@ -111,13 +123,6 @@ void EEntity::RemoveSpaceID(UINT id)
 	}
 }
 
-bool EEntity::IsVisible()
-{
-	if( GetProxy(ENTITY_PROXY_RENDER) == NULL )
-		return false;
-
-	return true;
-}
 
 //////////////////////////////////////////////////////////////////////////
 //    transform functions
@@ -250,7 +255,7 @@ void EEntity::OnTransformChanged()
 	if( m_LocalEntityAABB.IsValid() )
 	{
 		m_WorldAABB.AddAABB( m_WorldTM, m_LocalEntityAABB.GetMin(), m_LocalEntityAABB.GetMax() );
-		GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
+		GLOBAL::SpaceMgr()->UpdateEntitySpaceList(this);
 	}
 
 	int count = m_Children.size();
@@ -288,7 +293,7 @@ void EEntity::RotateLocalAxis(CVector3 axis, float radian)
 
 	XMMATRIX rotTM = XMMatrixRotationAxis( axis.ToXMVEECTOR(), radian );
 
-	rotTM = m_WorldTM * rotTM;
+	rotTM = XMMatrixMultiply( m_WorldTM, rotTM );
 
 	rotTM.r[3].x = m_WorldPos.x;
 	rotTM.r[3].y = m_WorldPos.y;
@@ -415,7 +420,7 @@ IEntityProxy* EEntity::CreateProxy( eENTITY_PROXY_TYPE type )
 	if( pProxy != NULL)
 		return pProxy;
 
-	if( type == ENTITY_PROXY_ACTOR)			{	pProxy = g_MemPoolProxyActor.GetNew();	}
+	if( type == ENTITY_PROXY_ACTOR)			{	pProxy = GLOBAL::ActorMgr()->GetNew();	}
 	else if( type == ENTITY_PROXY_CAMERA)	{	pProxy = g_MemPoolProxyCamera.GetNew();	}
 	else if( type == ENTITY_PROXY_RENDER )	{	pProxy = g_MemPoolProxyRender.GetNew();	}
 
@@ -468,7 +473,7 @@ void EEntity::ADDLocalEntityAABB(CVector3 min, CVector3 max)
 {
 	m_LocalEntityAABB.AddAABB(min, max);
 	UpdateWorldAABB();
-	GLOBAL::SpaceMgr()->UpdateEntitySpace(this);
+	GLOBAL::SpaceMgr()->UpdateEntitySpaceList(this);
 }
 
 void EEntity::UpdateWorldAABB()

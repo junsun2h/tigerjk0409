@@ -2,6 +2,8 @@
 
 #include "IEngine.h"
 
+struct IActorMgr;
+
 
 namespace GLOBAL
 {
@@ -11,4 +13,5 @@ namespace GLOBAL
 	ILoader*			Loader();
 	IResourceMemMgr*	ResourceMemMgr();
 	ISpaceMgr*			SpaceMgr();
+	IActorMgr*			ActorMgr();
 }

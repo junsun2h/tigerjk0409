@@ -1,5 +1,7 @@
 #pragma once
 
+typedef	ATL::CAtlMap<UINT, EQuadSpaceTreeNode*>	TYPE_SPACE_NODE_MAP;
+typedef	std::vector<EQuadSpaceTreeNode*>		TYPE_VISIBLE_SPACE_LIST;
 
 
 class EQuadSpaceTreeMgr : public ISpaceMgr
@@ -13,15 +15,14 @@ public:
 private:
 	void				Destroy() override;
 	void				UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc) override;
-	void				UpdateEntitySpace(IEntity* pEntity) override;
+	void				UpdateEntitySpaceList(IEntity* pEntity) override;
+	void				UpdateEntityCull(IEntity* pEntity);
+
 	void				Render() override;
 
 	EQuadSpaceTreeNode*	GetSpace(float x, float y);
 	EQuadSpaceTreeNode*	GetSpace(UINT id);
-	void				AssignSpace(IEntity* pEntity);
-
-	typedef	ATL::CAtlMap<UINT, EQuadSpaceTreeNode*>	TYPE_SPACE_NODE_MAP;
-	typedef	std::vector<EQuadSpaceTreeNode*>		TYPE_VISIBLE_SPACE_LIST;
+	void				RegistEntityToSpaceNode(IEntity* pEntity);
 
 	CObjectPool<EQuadSpaceTreeNode>		m_SpaceNodePool;
 	

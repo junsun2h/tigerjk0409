@@ -67,9 +67,6 @@
     <ClInclude Include="CFrustrum.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="CMaterial.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
     <ClInclude Include="CColiision.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
@@ -113,6 +110,9 @@
       <Filter>Interface_Engine</Filter>
     </ClInclude>
     <ClInclude Include="IResourceMemMgr.h">
+      <Filter>Interface_Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IActorMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
   </ItemGroup>

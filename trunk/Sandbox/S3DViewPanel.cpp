@@ -141,7 +141,7 @@ void S3DViewPanel::OnMouseEvent(wxMouseEvent& event)
 			if( list.size() > 0 )
 			{
 				IEntity* pSelectedEntity = *list.begin();
-				pSelectMgr->Select( pSelectedEntity );
+				pSelectMgr->SelectEntity( pSelectedEntity );
 				GLOBAL::PropertyPanel()->SetObject( pSelectedEntity );
 			}
 			else
