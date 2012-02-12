@@ -20,7 +20,7 @@ eMOTION_PLAY_STATE EMotionInstance::VisibleUpdate(float timeDelta)
 	UpdateFrame(timeDelta);
 	UpdateBlendWeight(timeDelta);
 	UpdateMatrix();
-
+	
 	return m_State.ePlayState;
 }
 
@@ -52,9 +52,10 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 
 	m_State.passedTime += timeDelta;
 
-	float ratio = m_State.passedTime/m_Desc.timePerFrame;
-	m_State.currentKey = int(ratio);
-
+	float frame = m_State.passedTime/m_TimePerFrame;
+	float fkey = frame/m_Desc.pResource->frameInterval;
+	m_State.currentKey = int(fkey);
+	
 	if( m_State.passedTime > m_Desc.length )
 	{
 		m_State.loopCount++;
@@ -68,7 +69,7 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 		}
 	}
 
-	m_State.blendRatio = ratio - int(ratio);
+	m_State.blendRatio = fkey - m_State.currentKey;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -109,9 +110,11 @@ void EMotionInstance::UpdateMatrix()
 
 	if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END )
 	{
+		UINT lastKey = m_Desc.pResource->jointList[0].keys.size() -1;
+
 		for( UINT i =0; i< jointCount ; ++i )
 		{
-			const CMotionKey& key = m_Desc.pResource->jointList[i].keys[m_Desc.samplingCount -1];
+			const CMotionKey& key = m_Desc.pResource->jointList[i].keys[lastKey];
 			
 			m_JointMatrix[i].rot = key.rot;
 			m_JointMatrix[i].pos = key.pos;
@@ -158,18 +161,24 @@ void EMotionInstance::Init(CMotionDesc* pDesc, long generateTiming)
 		return;
 
 	m_Desc = *pDesc;
-	m_Desc.timePerFrame = 1.0f/m_Desc.pResource->frameRate;
-	m_Desc.samplingCount = m_Desc.pResource->jointList[0].keys.size() -1;
+	m_TimePerFrame = 1.0f/m_Desc.pResource->frameRate;
 	m_Desc.length = m_Desc.pResource->totalFrame / float(m_Desc.pResource->frameRate);
 
 	UINT jointCount = pDesc->pResource->jointList.size();
 	if( m_JointMatrix.size() != jointCount )
 	{
 		m_JointMatrix.clear();
-		m_JointMatrix.reserve( jointCount );
+		for( UINT i=0; i < jointCount; ++i )
+			m_JointMatrix.push_back( CMotionTransform() );
 	}
 
 	m_State.Reset();
+
+	if( m_Desc.fBlendInTime == 0)
+		m_State.ePlayState = MOTION_PLAY;
+	else
+		m_State.ePlayState = MOTION_PLAY_FADE_IN;
+
 	m_State.id = generateTiming;
 }
 

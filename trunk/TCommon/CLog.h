@@ -1,3 +1,5 @@
+#pragma once
+
 #include <windows.h>
 #include <fstream>
 #include <stdio.h>
@@ -10,7 +12,7 @@
 
 namespace CLOG
 {
-	void InitLogSystem()
+	inline void InitLogSystem()
 	{
 		FILE *pFile;
 		

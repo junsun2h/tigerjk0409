@@ -15,7 +15,6 @@ struct CMotionDesc
 	int		Priority;
 
 	float	timePerFrame;
-	UINT	samplingCount;
 	float	length;
 
 	const CResourceMotion*	pResource;

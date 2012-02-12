@@ -148,10 +148,10 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 	pDevice->RenderGeometry(pBoxZ);
 	pDevice->RenderGeometry(pBoxCenter);
 
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxX->RID);
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxY->RID);
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxZ->RID);
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pBoxCenter->RID);
+	pAssetMgr->Remove(pBoxX);
+	pAssetMgr->Remove(pBoxY);
+	pAssetMgr->Remove(pBoxZ);
+	pAssetMgr->Remove(pBoxCenter);
 
 	RenderAxis(tm, scale);
 }
@@ -274,9 +274,9 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 	pDevice->RenderGeometry(pConeY);
 	pDevice->RenderGeometry(pConeZ);
 	
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pConeX->RID);
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pConeY->RID);
-	pAssetMgr->Remove(RESOURCE_GEOMETRY, pConeZ->RID);
+	pAssetMgr->Remove(pConeX);
+	pAssetMgr->Remove(pConeY);
+	pAssetMgr->Remove(pConeZ);
 
 	RenderAxis(tm, scale);
 }

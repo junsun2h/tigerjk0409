@@ -108,7 +108,11 @@ void SMotionTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 
 	pUnSafeActor->motionList.push_back( pMotion );
 
-	wxString fullPath = wxString("\\Data\\actor\\") + wxString(pUnSafeActor->name );
+	wchar_t	path[MAX_PATH];
+	GetCurrentDirectory( MAX_PATH, path);
+	wxString fullPath = wxString(path) + wxString("\\Data\\actor\\") + wxString(pUnSafeActor->name ) + wxString(".tac");
+	if ( !DeleteFile( fullPath ) )
+		assert(0);
 
 	SRAW_FILE_LOADER::SaveActorToFile( pUnSafeActor, fullPath);
 

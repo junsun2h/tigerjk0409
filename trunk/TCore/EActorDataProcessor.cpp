@@ -68,6 +68,10 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		ECopyString(strMotion, &pSrcBits);
 		CResourceMotion* motion = (CResourceMotion*)pAssetMgr->GetResource(RESOURCE_MOTION, strMotion);
+		
+		if( motion == NULL)
+			motion = (CResourceMotion*)GLOBAL::Loader()->LoadForward( strMotion, RESOURCE_FILE_MOTION);
+
 		pActor->motionList.push_back(motion);
 	}
 

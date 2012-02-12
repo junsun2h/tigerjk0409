@@ -68,6 +68,7 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 			m_pJointEntities[joint.parentIndex]->AttachChild(pJointEntity, true);
 
 		m_pJointEntities.push_back(pJointEntity);
+		m_AnimationMatrix.push_back( CMotionTransform() );
 	}
 
 	m_AnimationMatrix.reserve( pResource->jointList.size() );
@@ -122,9 +123,9 @@ void EEntityProxyActor::Update(float deltaTime)
 		return;
 
 	if( m_pEntity->IsCulled() )
-		VisibleUpdate(deltaTime);
-	else
 		CulledUpdate(deltaTime);
+	else
+		VisibleUpdate(deltaTime); 
 }
 
 void EEntityProxyActor::VisibleUpdate(float deltaTime)
