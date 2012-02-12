@@ -30,5 +30,5 @@ private:
 
 	MOTION_POSE				m_JointMatrix;
 
- // this is for sorting by generation timing
+	float					m_TimePerFrame;
 };

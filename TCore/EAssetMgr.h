@@ -30,12 +30,14 @@ public:
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, long id ) override;
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, const char* name ) override	{ return GetResource(type, GET_HASH_KEY(name) ); }
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, std::string name ) override	{ return GetResource(type, GET_HASH_KEY(name) ); }
-	const TYPE_RESOURCE_MAP*	GetResources( eRESOURCE_TYPE type ) override					{ return &m_ResourceMap[type]; }
+
+	const TYPE_RESOURCE_MAP*	GetResourceMap( eRESOURCE_TYPE type ) override					{ return &m_ResourceMap[type]; }
 
 	void						Reload( eRESOURCE_TYPE type, long id );
 
 	void						Clear() override;
 
+	void						Remove(const CResourceBase* pResource) override			{	Remove( pResource->Type(), pResource->RID);}
 	void						Remove(eRESOURCE_TYPE type, long id) override;
 	void						Remove(eRESOURCE_TYPE type, std::string& name) override	{	Remove(type, GET_HASH_KEY(name));	}
 	void						Remove(eRESOURCE_TYPE type, const char* name) override	{	Remove(type, GET_HASH_KEY(name));	}

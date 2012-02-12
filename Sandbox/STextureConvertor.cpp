@@ -516,5 +516,5 @@ void SaveTextureToPNGFile(const CResourceTexture* pTexture, eTEXTURE_FORMAT text
 
 	CResourceBase* pChangedTexture = GLOBAL::Engine()->Loader()->LoadForward( "temp.dds", "temp" , RESOURCE_FILE_TEXTURE );
 	GLOBAL::Engine()->RDevice()->SaveTextureToFile( (CResourceTexture*)pChangedTexture, IMG_FILE_PNG, "temp.png" );
-	GLOBAL::Engine()->AssetMgr()->Remove(RESOURCE_TEXTURE, pChangedTexture->RID);
+	GLOBAL::Engine()->AssetMgr()->Remove( pChangedTexture);
 }

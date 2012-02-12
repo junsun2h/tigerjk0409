@@ -253,10 +253,9 @@ void EEntity::OnTransformChanged()
 
 	m_WorldAABB.Reset();
 	if( m_LocalEntityAABB.IsValid() )
-	{
 		m_WorldAABB.AddAABB( m_WorldTM, m_LocalEntityAABB.GetMin(), m_LocalEntityAABB.GetMax() );
-		GLOBAL::SpaceMgr()->UpdateEntitySpaceList(this);
-	}
+
+	GLOBAL::SpaceMgr()->UpdateEntitySpaceList(this);
 
 	int count = m_Children.size();
 	for(int i= 0; i < count; i++)

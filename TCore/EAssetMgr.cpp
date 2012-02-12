@@ -99,6 +99,7 @@ void EAssetMgr::Clear()
 	}
 }
 
+
 //-----------------------------------------------------------------------------------------------------------------------
 void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 {
@@ -155,6 +156,7 @@ CResourceBase* EAssetMgr::CreateResource( eRESOURCE_TYPE type, const char* name)
 
 	pResource->loadState = RESOURCE_MEMORY_CREATED;
 	pResource->RID = GET_HASH_KEY( name );
+	strcpy_s( pResource->name, name);
 	m_ResourceMap[type].SetAt( pResource->RID, pResource );
 
 	return pResource;

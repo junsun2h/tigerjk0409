@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CDefine.h"
+#include "CLog.h"
 
 struct IRDevice;		
 struct IAssetMgr;
