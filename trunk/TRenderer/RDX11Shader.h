@@ -13,6 +13,9 @@ struct SHADER_COMPILE_DESC
 	D3D11_INPUT_ELEMENT_DESC*	pLayout;
 	UINT						layoutSize;
 
+	D3D11_SO_DECLARATION_ENTRY*	pOutPutLayout;
+	UINT						OuputLayoutSize;
+
 	LPCSTR		debugName;
 
 	SHADER_COMPILE_DESC()
@@ -38,6 +41,7 @@ public:
 public:
 	void				CreateVS( SHADER_COMPILE_DESC& desc);
 	void				CreatePS( SHADER_COMPILE_DESC& desc);
+	void				CreateGS( SHADER_COMPILE_DESC& desc);
 
 	void				SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)		{ m_Topology = topology; }
 	void				SetRenderState(	const GRAPHIC_DEVICE_DESC desc);
@@ -51,7 +55,7 @@ private:
 	ID3D11VertexShader*			m_pVertexShader;
 	ID3D11PixelShader*			m_pPixelShader;	
 	ID3D11GeometryShader*		m_pGeometryShader;
-	
+
 	ID3D11InputLayout*			m_pVertexLayout;
 
 	D3D_PRIMITIVE_TOPOLOGY		m_Topology;

@@ -45,6 +45,24 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 	CResourceActor* pActor = (CResourceActor*)pAssetMgr->CreateResource( RESOURCE_ACTOR, m_name.c_str() );
 	pActor->loadState = RESOURCE_LOAD_STARTED;
 
+	// mesh data
+	uint8 meshCount = 0;
+	ECopyData( &meshCount, &pSrcBits,  1 );
+
+	for(uint8 i=0; i< meshCount; ++i)
+	{
+		char strMesh[64];
+
+		ECopyString(strMesh, &pSrcBits);
+		CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, strMesh);
+
+		if( pMesh == NULL)
+			pMesh = (CResourceMesh*)GLOBAL::Loader()->LoadForward( strMesh, RESOURCE_FILE_MESH);
+
+		pActor->meshList.push_back(pMesh);
+	}
+
+	// joint data
 	uint8 jointCount;
 	ECopyData( &jointCount, &pSrcBits,  1 );
 
@@ -59,6 +77,7 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		pActor->jointList.push_back(joint);
 	}
 
+	// motion data
 	uint8 motionCount = 0;
 	ECopyData( &motionCount, &pSrcBits,  1 );
 

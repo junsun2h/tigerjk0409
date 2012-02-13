@@ -78,6 +78,8 @@ namespace SRAW_FILE_LOADER
 		void ChangeCoordsys(TCOODSYS coodSys_);
 
 		TCOODSYS	coordSys;
+
+		std::vector<std::string>	meshNames;
 		std::vector<RAW_ACTOR_NODE>	joints;
 	};
 

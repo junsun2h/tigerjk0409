@@ -134,7 +134,7 @@ void RDX11Device::Present()
 //----------------------------------------------------------------------------------------------------------
 bool RDX11Device::Resize(int width, int height)
 {
-	return GLOBAL::Resize(height, width);
+	return GLOBAL::Resize(width, height);
 }
 
 //----------------------------------------------------------------------------------------------------------

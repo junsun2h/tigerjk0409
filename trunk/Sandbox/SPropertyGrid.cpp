@@ -150,16 +150,16 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 
 		_itoa(i, buf, 32);
 		Append(new wxPropertyCategory( wxString("Geometry") + wxString(buf) ));
-		Append(new wxStringProperty(  "Vertex Type", wxPG_LABEL, wxString( VERTEX_TYPE_STRING(pGeometry->eVertexType))) );
-		Append(new wxIntProperty(  "Vertex Count", wxPG_LABEL, pGeometry->vertexCount) );
+		Append(new wxStringProperty(  "Vertex Type" + wxString(buf), wxPG_LABEL, wxString( VERTEX_TYPE_STRING(pGeometry->eVertexType))) );
+		Append(new wxIntProperty(  "Vertex Count" + wxString(buf), wxPG_LABEL, pGeometry->vertexCount) );
 
 		if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
-			Append(new wxStringProperty(  "Index Type", wxPG_LABEL, wxString("16Bit")) );
+			Append(new wxStringProperty(  "Index Type" + wxString(buf), wxPG_LABEL, wxString("16Bit")) );
 		else
-			Append(new wxStringProperty(  "Index Type", wxPG_LABEL, wxString("16Bit")) );
+			Append(new wxStringProperty(  "Index Type" + wxString(buf), wxPG_LABEL, wxString("16Bit")) );
 
-		Append(new wxIntProperty(  "Polygon Count", wxPG_LABEL, pGeometry->primitiveCount) );
-		Append(new wxFileProperty(  "Default Material", wxString(pGeometry->mtrlName)) );
+		Append(new wxIntProperty(  "Polygon Count" + wxString(buf), wxPG_LABEL, pGeometry->primitiveCount) );
+		Append(new wxFileProperty(  "Default Material" + wxString(buf), wxString(pGeometry->mtrlName)) );
 	}
 }
 
@@ -168,6 +168,15 @@ void SPropertyGrid::Set( const CResourceActor* pActor )
 	ClearProperties();
 
 	Append( new wxIntProperty( "Joint Num", wxPG_LABEL, pActor->jointList.size()) );
+	Append( new wxIntProperty( "Motion Num", wxPG_LABEL, pActor->motionList.size()) );
+	Append( new wxPropertyCategory( "Meshs" ) );
+
+	char buf[32];
+	for( UINT i =0; i< pActor->meshList.size(); ++i)
+	{
+		_itoa(i, buf, 32);
+		Append(new wxStringProperty(  "Mesh" + wxString(buf), wxPG_LABEL, wxString( pActor->meshList[i]->name)) );
+	}
 }
 
 void SPropertyGrid::Set( const CResourceMotion* pMotion )
