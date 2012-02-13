@@ -36,6 +36,8 @@ PS_INPUT VS( VS_INPUT In )
 	float4 normal = In.Normal/127.f;
 
     OUT.Pos = mul( In.Pos, m_WVP );
+	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;
+
 	OUT.Tex = In.Tex;
 	OUT.ViewNormal = normal;//mul(normal, m_WV);
     OUT.Depth = mul( In.Pos, m_WV ).z ;
