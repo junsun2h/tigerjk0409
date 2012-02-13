@@ -1,8 +1,5 @@
 #pragma once
 
-#include "SGlobal.h"
-
-
 class SPropertyGrid;
 
 class SMotionTreeCtrl : public wxTreeCtrl

@@ -1,8 +1,5 @@
 #pragma once
 
-#include "wx/wx.h"
-
-
 enum eDRAG_OBJECT_TYPE
 {
 	DND_ACTOR,

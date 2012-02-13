@@ -1,10 +1,5 @@
 #pragma once
 
-#include "SGlobal.h"
-#include "wx/wx.h"
-#include "wx/propgrid/manager.h"
-#include "wx/propgrid/advprops.h"
-
 
 WX_PG_DECLARE_VARIANT_DATA(CVector3)
 

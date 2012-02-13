@@ -14,7 +14,7 @@ public:
 	void	RenderMover(XMMATRIX& tm, float scale) override;
 	void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) override;
 	void	RenderWorldGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
-	void	RenderText(RENDER_TEXT_QUAD& text) override;
+	void	RenderText(RENDER_TEXT_QUAD* pText) override;
 	
 public:
 	void	Destroy();

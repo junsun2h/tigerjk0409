@@ -1,6 +1,6 @@
 #pragma warning(disable:4996)
 
-#include "STextureConvertor.h"
+#include "SGlobal.h"
 #include "ATI_Compress.h"
 
 #include <stdio.h>
@@ -10,7 +10,14 @@
 #include "d3d9types.h"
 #include "ATI_Compress.h"
 
-#include "SGlobal.h"
+#include "CResource.h"
+
+#include "IAssetMgr.h"
+#include "IRDevice.h"
+#include "ILoader.h"
+
+#include "STextureConvertor.h"
+
 // ATI_Compress_Test_Helpers.cpp
 //
 

@@ -1,4 +1,4 @@
-#include "CQuad.h"
+#include "CDefine.h"
 
 #include "IRDevice.h"
 #include "ISpaceMgr.h"

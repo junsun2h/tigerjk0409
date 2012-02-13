@@ -1,8 +1,12 @@
 #include "wx/wx.h"
 
-#include "SGlobal.h"
+#include "CResource.h"
 
 #include "IMotionInstance.h"
+#include "IEntityProxy.h"
+#include "IEntity.h"
+
+#include "SGlobal.h"
 
 #include "SAnimationToolBar.h"
 #include "SSelectionMgr.h"

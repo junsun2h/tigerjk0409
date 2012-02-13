@@ -1,9 +1,5 @@
 #pragma once
 
-#include "SGlobal.h"
-#include "wx/wx.h"
-#include "wx/treectrl.h"
-
 class SPropertyGrid;
 
 class SSceneTreeCtrl : public wxTreeCtrl

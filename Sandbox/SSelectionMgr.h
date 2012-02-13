@@ -1,11 +1,12 @@
 #pragma once
 
-#include "SGlobal.h"
-#include "CGeometryConstructor.h"
+
 
 #define  TRANSFORM_HELPER_EXTENT	50
 
 typedef std::vector<IEntity*>	TYPE_SELECTED_ENTITIES;
+
+enum eDIRECTION;
 
 enum eTRANSFORM_MODE
 {

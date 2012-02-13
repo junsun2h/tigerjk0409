@@ -1,7 +1,18 @@
-#include "SMainToolBar.h"
-#include "S3DViewPanel.h"
+#include "wx/wx.h"
+#include "wx/aui/aui.h"
+
+#include "CDefine.h"
+
+#include "IRDevice.h"
+#include "IEntity.h"
+
 #include "SGlobal.h"
+
+#include "SMainFrame.h"
+#include "S3DViewPanel.h"
 #include "SSelectionMgr.h"
+
+#include "SMainToolBar.h"
 
 
 SMainToolBar::SMainToolBar(wxWindow *parent, wxWindowID id)

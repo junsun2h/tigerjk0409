@@ -1,4 +1,4 @@
-#include "CQuad.h"
+#include "CMathType.h"
 #include "CCamera.h"
 #include "IRDevice.h"
 

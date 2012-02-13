@@ -1,5 +1,8 @@
-#include "SDragAndDropState.h"
+#include "wx/wx.h"
 #include "wx/dnd.h"
+
+#include "SDragAndDropState.h"
+
 
 SDragAndDragDesc g_DragAndDropState;
 bool			 g_bHoldDragItem = false;

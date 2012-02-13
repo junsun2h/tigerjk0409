@@ -3,8 +3,8 @@
 #include "CUnitPool.h"
 #include "CFrustrum.h"
 #include "CMathType.h"
-#include "CQuad.h"
 #include "CAABB.h"
+#include "CQuad.h"
 
 #include "ISpaceMgr.h"
 #include "IEntity.h"

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SMainToolBar.h"
-
 class SMainMenuBar: public wxMenuBar
 {
 public:

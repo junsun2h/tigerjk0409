@@ -1,7 +1,7 @@
 #include <atlcoll.h>
 
-#include "CQuad.h"
 #include "CUnitPool.h"
+#include "CQuad.h"
 
 #include "CAABB.h"
 #include "IEntity.h"

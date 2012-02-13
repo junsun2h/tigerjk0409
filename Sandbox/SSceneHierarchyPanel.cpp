@@ -1,11 +1,26 @@
-#include "SSceneHierarchyPanel.h"
-#include "wx/treectrl.h"
+#include "wx/wx.h"
+#include "wx/aui/aui.h"
 #include "wx/dnd.h"
+#include "wx/treectrl.h"
+
+#include "CResource.h"
+#include "CGeometryConstructor.h"
+
+#include "IEntityMgr.h"
+#include "IEntity.h"
+#include "IAssetMgr.h"
+#include "IEntityProxy.h"
+
+#include "SGlobal.h"
+
 #include "SPropertyPanel.h"
 #include "SSelectionMgr.h"
 #include "SDragAndDropState.h"
 #include "SCreateEntityDlg.h"
 #include "SMainFrame.h"
+
+#include "SSceneHierarchyPanel.h"
+
 
 class SAssetDragAndDrop : public wxTextDropTarget
 {

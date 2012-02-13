@@ -1,3 +1,10 @@
+#include "wx/wx.h"
+#include "wx/treectrl.h"
+
+#include "CResource.h"
+
+#include "IEntityProxy.h"
+
 #include "SPropertyGrid.h"
 #include "SPropertyPanel.h"
 #include "SSceneTreeCtrl.h"

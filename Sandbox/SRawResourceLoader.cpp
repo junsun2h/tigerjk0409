@@ -1,8 +1,13 @@
-#include "CResource.h"
 #include <iostream>
 #include <fstream>
 
+#include "wx/wx.h"
+
+#include "CDefine.h"
+#include "CResource.h"
+
 #include "SRawResourceLoader.h"
+
 
 namespace SRAW_FILE_LOADER
 {
