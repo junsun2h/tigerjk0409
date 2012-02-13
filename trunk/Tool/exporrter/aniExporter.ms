@@ -15,6 +15,7 @@ fn fnCollectObject arrNodes obj =
 rollout treeview_rollout "Animation Exporter"
 (
 	dotNetControl tv "TreeView" width: 160 height:150 align:#center
+	dotNetControl tvMesh "TreeView" width: 160 height:50 align:#center
 	
 	button BTN_insert "insert" width:80 height:24	
 	button BTN_delete "delete" width:80 height:24
@@ -50,6 +51,14 @@ rollout treeview_rollout "Animation Exporter"
 		
 		TV_addChildren tv obj
  	)
+	
+	fn fnGetRoot o=
+	(
+		if o.parent == undefined then
+			return o
+		else
+			return fnGetRoot o
+	)	
 
 	fn BakeAnimation arrNodes =
 	(
@@ -69,10 +78,14 @@ rollout treeview_rollout "Animation Exporter"
 	(
 		for o in  $selection do
 		(
-			if classof o == biped_object then
-				TV_Insert o.controller.rootNode
-			else
-				TV_Insert o
+			local modSkin= o.modifiers[#Skin]
+			if modSkin != undefined and (SkinOps.GetNumberBones modSkin) > 0 then 
+			(
+				name = SkinOps.GetBoneName modSkin 1 0				
+				TV_Insert ( fnGetRoot (getnodebyname name) )
+			)
+			
+			tvMesh.Nodes.add o.name
 		)
 	)
 	
@@ -171,6 +184,8 @@ rollout treeview_rollout "Animation Exporter"
 	
 			append arrSnap ( BakeAnimation arrNodes )
 			
+			format "mesh/%/\n" tvMesh.nodes.item[i].text to:out_file
+			
 			for n = 1 to arrNodes.count do 
 			(
 				if arrNodes[n].parent != undefined then
@@ -193,5 +208,5 @@ rollout treeview_rollout "Animation Exporter"
 	)	
 )
 try(destroyDialog treeview_rollout)catch()
-createDialog treeview_rollout 162 400
+createDialog treeview_rollout 162 450
 
