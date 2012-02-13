@@ -1,9 +1,6 @@
 #pragma once
 
-#include "wx/wx.h"
-#include "SGlobal.h"
-#include "wx/aui/aui.h"
-
+struct IEntity;
 
 enum MAIN_FRAME_WIDGET_ID
 {

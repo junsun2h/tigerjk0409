@@ -1,5 +1,5 @@
-#include "CQuad.h"
 #include "CResource.h"
+#include "CColor.h"
 
 #include "IRDevice.h"
 #include "IAssetMgr.h"

@@ -1,5 +1,4 @@
 #include "CResource.h"
-#include "CQuad.h"
 
 #include "IRDevice.h"
 #include "IEntityProxy.h"

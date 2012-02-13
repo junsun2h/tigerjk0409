@@ -1,7 +1,6 @@
 #include "CGeometryConstructor.h"
 #include "CGrowableArray.h"
 #include "CColor.h"
-#include "CQuad.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -446,8 +445,8 @@ void RDX11RenderHelper::DrawLine()
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD& text)
+void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD* pText)
 {
-	GLOBAL::FontRenderer()->Render(text);
+	GLOBAL::FontRenderer()->Render(pText);
 }
 

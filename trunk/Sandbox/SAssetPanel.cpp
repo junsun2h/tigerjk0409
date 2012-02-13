@@ -1,14 +1,25 @@
-#include "SAssetPanel.h"
-
-#include "CFileUtility.h"
-
+#include "wx/wx.h"
 #include "wx/treectrl.h"
 #include "wx/filename.h"
 #include "wx/dnd.h"
+#include "wx/popupwin.h"
+
+#include "CResource.h"
+#include "CFileUtility.h"
+#include "CGeometryConstructor.h"
+
+#include "IAssetMgr.h"
+#include "ILoader.h"
+
+#include "SGlobal.h"
+#include "STexturePopupWindow.h"
 #include "SPropertyPanel.h"
 #include "SSelectionMgr.h"
 #include "SRawResourceLoader.h"
 #include "SDragAndDropState.h"
+
+#include "SAssetPanel.h"
+
 
 class SFileDragAndDrop : public wxFileDropTarget
 {

@@ -1,8 +1,8 @@
 #include "CResource.h"
 #include "CGrowableArray.h"
 #include "CAABB.h"
-#include "CQuad.h"
 #include "CTimer.h"
+#include "CQuad.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"

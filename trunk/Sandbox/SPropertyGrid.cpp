@@ -1,3 +1,16 @@
+#include "wx/wx.h"
+
+
+#include "CResource.h"
+#include "CAABB.h"
+#include "CCamera.h"
+
+#include "IEntity.h"
+#include "IEntityProxy.h"
+#include "IAssetMgr.h"
+
+#include "SGlobal.h"
+
 #include "SPropertyGrid.h"
 #include "SPropertyPanel.h"
 #include "SVectorProperty.h"

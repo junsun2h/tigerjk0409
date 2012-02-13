@@ -1,8 +1,20 @@
+#include "wx/wx.h"
+#include "wx/aui/aui.h"
+
+#include "CColiision.h"
+#include "CPlane.h"
+#include "CGeometryConstructor.h"
+#include "CCamera.h"
+#include "CColor.h"
+
+#include "IEntity.h"
+#include "IEntityProxy.h"
+
+#include "SGlobal.h"
+#include "SMainFrame.h"
 #include "SPropertyPanel.h"
 #include "SMainMenuBar.h"
-#include "CColiision.h"
-#include "CLog.h"
-#include "CPlane.h"
+
 #include "SSelectionMgr.h"
 
 #define MAX_COLLISION_DISTANCE	10000000000.0f

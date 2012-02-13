@@ -1,3 +1,5 @@
+#include "wx/wx.h"
+#include "wx/aui/aui.h"
 #include "SMainFrame.h"
 
 

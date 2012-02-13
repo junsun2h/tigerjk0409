@@ -1,3 +1,14 @@
+#include "wx/wx.h"
+#include "wx/treectrl.h"
+#include "wx/popupwin.h"
+
+#include "CResource.h"
+
+#include "IEntityProxy.h"
+#include "IEntity.h"
+
+
+#include "SGlobal.h"
 #include "SPropertyGrid.h"
 #include "STexturePopupWindow.h"
 #include "STextureConvertor.h"

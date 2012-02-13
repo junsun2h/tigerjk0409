@@ -1,8 +1,5 @@
 #pragma once
 
-#include "SGlobal.h"
-#include "wx/wx.h"
-#include "wx/popupwin.h"
 
 class SCanvas: public wxScrolledWindow
 {

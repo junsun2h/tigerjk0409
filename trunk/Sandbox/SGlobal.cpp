@@ -1,3 +1,20 @@
+#include "wx/wx.h"
+#include "wx/aui/aui.h"
+#include "wx/filename.h"
+#include "wx/treectrl.h"
+
+#include "CDefine.h"
+#include "CEngineParam.h"
+
+#include "IRenderHelper.h"
+#include "IEntityProxy.h"
+#include "IRDevice.h"
+#include "IEntityMgr.h"
+#include "IAssetMgr.h"
+#include "ILoader.h"
+#include "IEntity.h"
+#include "ISpaceMgr.h"
+
 #include "SGlobal.h"
 #include "SSceneHierarchyPanel.h"
 #include "SAssetPanel.h"

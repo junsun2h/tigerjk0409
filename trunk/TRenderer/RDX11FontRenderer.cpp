@@ -42,7 +42,7 @@ bool RDX11FontRenderer::SetFontFile(const char* fontDDS)
 
 
 //--------------------------------------------------------------------------------------
-void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD& text)
+void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD* pText)
 {
 	float screenWidth = (float)GLOBAL::DeviceInfo().width;
 	float screenHeight = (float)GLOBAL::DeviceInfo().height;
@@ -52,18 +52,18 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD& text)
 	float fGlyphSizeY = 42.0f / screenHeight;
 
 
-	float fRectLeft = text.rc.left / screenWidth;
-	float fRectTop = 1.0f - text.rc.top / screenHeight;
+	float fRectLeft = pText->rc.left / screenWidth;
+	float fRectTop = 1.0f - pText->rc.top / screenHeight;
 
 	fRectLeft = fRectLeft * 2.0f - 1.0f;
 	fRectTop = fRectTop * 2.0f - 1.0f;
 
-	int NumChars = (int)wcslen( text.strMsg );
-	if ( text.bCenter ) 
+	int NumChars = (int)wcslen( pText->strMsg );
+	if ( pText->bCenter ) 
 	{
-		float fRectRight = text.rc.right / screenWidth;
+		float fRectRight = pText->rc.right / screenWidth;
 		fRectRight = fRectRight * 2.0f - 1.0f;
-		float fRectBottom = 1.0f - text.rc.bottom / screenHeight;
+		float fRectBottom = 1.0f - pText->rc.bottom / screenHeight;
 		fRectBottom = fRectBottom * 2.0f - 1.0f;
 		float fcenterx = ((fRectRight - fRectLeft) - (float)NumChars*fGlyphSizeX) *0.5f;
 		float fcentery = ((fRectTop - fRectBottom) - (float)1*fGlyphSizeY) *0.5f;
@@ -78,14 +78,14 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD& text)
 	float fDepth = 0.5f;
 	for( int i=0; i<NumChars; i++ )
 	{
-		if( text.strMsg[i] == '\n' )
+		if( pText->strMsg[i] == '\n' )
 		{
 			fRectLeft = fOriginalLeft;
 			fRectTop -= fGlyphSizeY;
 
 			continue;
 		}
-		else if( text.strMsg[i] < 32 || text.strMsg[i] > 126 )
+		else if( pText->strMsg[i] < 32 || pText->strMsg[i] > 126 )
 		{
 			continue;
 		}
@@ -94,39 +94,39 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD& text)
 		CVertexPCT SpriteVertex;
 		float fRectRight = fRectLeft + fGlyphSizeX;
 		float fRectBottom = fRectTop - fGlyphSizeY;
-		float fTexLeft = ( text.strMsg[i] - 32 ) * fCharTexSizeX;
+		float fTexLeft = ( pText->strMsg[i] - 32 ) * fCharTexSizeX;
 		float fTexRight = fTexLeft + fCharTexSizeX;
 
 		// tri1
 		SpriteVertex.vPos = CVector3( fRectLeft, fRectTop, fDepth );
 		SpriteVertex.vTex = XMHALF2( fTexLeft, fTexTop );
-		SpriteVertex.vColor = text.clr;
+		SpriteVertex.vColor = pText->clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectRight, fRectTop, fDepth );
 		SpriteVertex.vTex = XMHALF2( fTexRight, fTexTop );
-		SpriteVertex.vColor =  text.clr;
+		SpriteVertex.vColor =  pText->clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectLeft, fRectBottom, fDepth );
 		SpriteVertex.vTex = XMHALF2( fTexLeft, fTexBottom );
-		SpriteVertex.vColor =  text.clr;
+		SpriteVertex.vColor =  pText->clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		// tri2
 		SpriteVertex.vPos = CVector3( fRectRight, fRectTop, fDepth );
 		SpriteVertex.vTex = XMHALF2( fTexRight, fTexTop );
-		SpriteVertex.vColor =  text.clr;
+		SpriteVertex.vColor =  pText->clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectRight, fRectBottom, fDepth );
 		SpriteVertex.vTex = XMHALF2( fTexRight, fTexBottom );
-		SpriteVertex.vColor =  text.clr;
+		SpriteVertex.vColor =  pText->clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		SpriteVertex.vPos = CVector3( fRectLeft, fRectBottom, fDepth );
 		SpriteVertex.vTex = XMHALF2( fTexLeft, fTexBottom );
-		SpriteVertex.vColor =  text.clr;
+		SpriteVertex.vColor =  pText->clr;
 		m_FontVertices.Add( SpriteVertex );
 
 		fRectLeft += fGlyphSizeX;
@@ -135,9 +135,9 @@ void RDX11FontRenderer::FillVertex( RENDER_TEXT_QUAD& text)
 
 
 //--------------------------------------------------------------------------------------
-void RDX11FontRenderer::Render( RENDER_TEXT_QUAD& text)
+void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 {
-	FillVertex( text );
+	FillVertex( pText );
 
 	ID3D11Device* pd3dDevice = GLOBAL::D3DDevice();
 	ID3D11DeviceContext* pd3dImmediateContext = GLOBAL::D3DContext();

@@ -4,8 +4,6 @@
 #include <windows.h>
 #include <CGuid.h>
 
-#include "CQuad.h"
-
 #include "IRDevice.h"
 
 #include "RDefine.h"

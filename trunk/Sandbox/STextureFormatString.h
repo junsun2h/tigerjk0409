@@ -1,7 +1,5 @@
 #pragma once
 
-#include "CResource.h"
-
 
 const char* PixelFormatToString( eTEXTURE_FORMAT format )
 {

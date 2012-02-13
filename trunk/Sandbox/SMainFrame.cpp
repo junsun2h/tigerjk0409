@@ -1,7 +1,19 @@
+#include "wx/wx.h"
+#include "wx/aui/aui.h"
 #include "wx/filename.h"
+#include "wx/treectrl.h"
 
+#include "CResource.h"
 
+#include "IRDevice.h"
+#include "IEntity.h"
+#include "IEntityMgr.h"
+#include "IEntityProxy.h"
+
+#include "SGlobal.h"
 #include "SMainFrame.h"
+
+#include "SMainToolBar.h"
 #include "S3DViewPanel.h"
 #include "SSceneHierarchyPanel.h"
 #include "SAssetPanel.h"
@@ -10,6 +22,7 @@
 #include "SPropertyPanel.h"
 #include "SCreateEntityDlg.h"
 #include "SSelectionMgr.h"
+
 
 
 

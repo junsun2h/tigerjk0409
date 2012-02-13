@@ -1,6 +1,22 @@
-#include "S3DViewPanel.h"
+#include "wx/wx.h"
+
+#include "CResource.h"
+#include "CEngineParam.h"
+#include "CQuad.h"
+#include "CTimer.h"
+#include "CAABB.h"
+#include "CCamera.h"
+
+#include "IRDevice.h"
+#include "IEntityProxy.h"
+#include "IEntity.h"
+#include "IRenderHelper.h"
+
+#include "SGlobal.h"
 #include "SSelectionMgr.h"
 #include "SPropertyPanel.h"
+
+#include "S3DViewPanel.h"
 
 
 
@@ -74,7 +90,7 @@ void S3DViewPanel::PostRender()
 	textFPS.rc.bottom = 100;
 	textFPS.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	pRenderHelper->RenderText(textFPS);
+	pRenderHelper->RenderText(&textFPS);
 	pRenderHelper->RenderWorldGrid( XMMatrixIdentity(), 5000, 100 );
 
 	TYPE_SELECTED_ENTITIES*	selcetedEntities =	GLOBAL::SelectionMgr()->List();

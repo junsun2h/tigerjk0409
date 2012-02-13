@@ -1,5 +1,4 @@
 #include "CResource.h"
-#include "CQuad.h"
 #include "CCamera.h"
 
 #include "IRDevice.h"

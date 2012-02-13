@@ -2,6 +2,13 @@
 #include "wx/treectrl.h"
 #include "wx/dnd.h"
 
+#include "CResource.h"
+
+#include "IAssetMgr.h"
+#include "IEntityProxy.h"
+
+#include "SGlobal.h"
+
 #include "SPropertyGrid.h"
 #include "SPropertyPanel.h"
 #include "SDragAndDropState.h"
