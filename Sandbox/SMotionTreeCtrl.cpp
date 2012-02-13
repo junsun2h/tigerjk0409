@@ -57,6 +57,7 @@ void SMotionTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	if(  event.GetItem() == GetRootItem() )
 	{
 		m_pGrid->ClearProperties();
+		m_pGrid->Set( m_pActor);
 	}
 	else
 	{

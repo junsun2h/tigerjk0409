@@ -369,6 +369,8 @@ struct CJoint
 
 typedef std::vector<CJoint>					JOINT_LIST;
 typedef std::vector<const CResourceMotion*>	MOTION_LIST;
+typedef std::vector<const CResourceMesh*>	MESH_LIST;
+
 
 class CResourceActor : public CResourceBase
 {
@@ -381,11 +383,13 @@ class CResourceActor : public CResourceBase
 	}
 	void Destroy() override	
 	{
+		meshList.clear();
 		jointList.clear();	
 		motionList.clear();
 	}
 
 public:
+	MESH_LIST			meshList;
 	JOINT_LIST			jointList;
 	MOTION_LIST			motionList;
 

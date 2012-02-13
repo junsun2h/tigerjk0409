@@ -115,8 +115,12 @@ namespace SRAW_FILE_LOADER
 		while (!feof (fp))
 		{
 			fgets (buf, sizeof (buf), fp);
-
-			if( strncmp( buf, "node", 4) == 0 )
+		
+			if( strncmp( buf, "mesh", 4) == 0 )
+			{
+				rawActor.meshNames.push_back( strtok_s( &buf[4], delimiters , &pContext ) );
+			}
+			else if( strncmp( buf, "node", 4) == 0 )
 			{
 				RAW_ACTOR_NODE transform;
 
@@ -617,7 +621,7 @@ namespace SRAW_FILE_LOADER
 	//------------------------------------------------------------------------------------------------------
 	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name )
 	{
-		CObjectPool<CResourceGeometry> memPool;
+		CObjectPool<CResourceGeometry> memPool(10);
 
 		GEOMETRY_LIST	vecGeometries;
 
@@ -702,6 +706,16 @@ namespace SRAW_FILE_LOADER
 		UINT version = ACTOR_FILE_VERSION;
 		file.write( (char*)&version, 4);
 
+		// mesh info
+		uint8 meshSize = pRawActor->meshNames.size();
+		file.write( (char*)&meshSize, 1);
+
+		for (UINT i=0; i < meshSize; ++i)
+		{
+			WriteString( &file, pRawActor->meshNames[i].c_str() );
+		}
+
+		// joint info
 		uint8 size = jointList.size();
 		file.write( (char*)&size, 1);
 
@@ -715,6 +729,7 @@ namespace SRAW_FILE_LOADER
 			WriteString( &file, joint.parentName );
 		}
 
+		// motion info
 		uint8 motionList = 0;
 		file.write( (char*)&motionList, 1);
 
@@ -806,6 +821,16 @@ namespace SRAW_FILE_LOADER
 		UINT version = ACTOR_FILE_VERSION;
 		file.write( (char*)&version, 4);
 
+		// mesh info
+		uint8 meshSize = pActor->meshList.size();
+		file.write( (char*)&meshSize, 1);
+
+		for (UINT i=0; i < meshSize; ++i)
+		{
+			WriteString( &file, pActor->meshList[i]->name );
+		}
+
+		// joint Info
 		uint8 jointSize = pActor->jointList.size();
 		file.write( (char*)&jointSize, 1);
 
@@ -819,6 +844,7 @@ namespace SRAW_FILE_LOADER
 			WriteString( &file, joint.parentName );
 		}
 
+		// motion Info
 		uint8 motionSize = pActor->motionList.size();
 		file.write( (char*)&motionSize, 1);
 		for (UINT i=0; i < motionSize; ++i)

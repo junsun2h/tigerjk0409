@@ -151,3 +151,32 @@ void RDX11ShaderBase::CreatePS( SHADER_COMPILE_DESC& desc )
 
 	SAFE_RELEASE( pBlob );
 }
+
+void RDX11ShaderBase::CreateGS( SHADER_COMPILE_DESC& desc)
+{
+	HRESULT hr = S_OK;
+	ID3DBlob* pBlob = NULL;
+
+	if( desc.szFileName == NULL)
+		CompileShader(desc, &pBlob);
+	else
+		CompileShaderFromFile( desc, &pBlob );
+
+	V( GLOBAL::D3DDevice()->CreateGeometryShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &m_pGeometryShader ) );
+
+#if defined( DEBUG ) || defined( _DEBUG )
+	DXUT_SetDebugName( m_pPixelShader, desc.debugName );
+#endif
+
+	SAFE_RELEASE( pBlob );
+
+	TDXERROR( GLOBAL::D3DDevice()->CreateGeometryShaderWithStreamOutput( pBlob->GetBufferPointer()
+																, pBlob->GetBufferSize()
+																, desc.pOutPutLayout
+																, desc.OuputLayoutSize
+																, NULL
+																, 0
+																, 0
+																, NULL
+																, &m_pGeometryShader) ); 
+}
