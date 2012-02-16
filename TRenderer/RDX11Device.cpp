@@ -2,9 +2,13 @@
 #include "CCamera.h"
 #include "CEngineParam.h"
 
+#include "RDefine.h"
+
 #include "IEntity.h"
 #include "IEntityProxy.h"
-#include "IRDevice.h"
+#include "IRDX11Device.h"
+#include "IShader.h"
+#include "IRenderStateMgr.h"
 
 #include "RDX11Global.h"
 #include "RDX11Device.h"
@@ -98,6 +102,9 @@ void RDX11Device::RenderGeometry(CResourceGeometry*	pGeometry)
 		assert(0);
 		return;
 	}
+
+	GLOBAL::RenderStateMgr()->SetVertexInput( pGeometry->eVertexType );
+	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	UINT offset[1] = { 0 };
 	UINT stride[1];

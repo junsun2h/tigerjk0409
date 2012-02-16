@@ -1,7 +1,11 @@
+#include "RDefine.h"
+
 #include "CResource.h"
 #include "CCamera.h"
 
-#include "IRDevice.h"
+#include "IRDX11Device.h"
+#include "IRenderStateMgr.h"
+#include "IShader.h"
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
@@ -48,11 +52,6 @@ char g_strLineEffectFile[] = \
 
 RDX11ShaderLine::RDX11ShaderLine()
 {
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
 
 	SHADER_COMPILE_DESC desc;
 
@@ -60,9 +59,8 @@ RDX11ShaderLine::RDX11ShaderLine()
 	desc.SrcDataSize = sizeof(g_strLineEffectFile);
 	desc.szEntrypoint = "VS";
 	desc.szShaderModel = "vs_4_0_level_9_1";
-	desc.pLayout = layout;
-	desc.layoutSize = ARRAYSIZE( layout );
 	desc.debugName = "LineVS";
+	desc.eVertexyType = FVF_3FP_1DC;
 	desc.flag = D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
 
 	CreateVS(desc);
@@ -80,7 +78,6 @@ RDX11ShaderLine::RDX11ShaderLine()
 	renderDesc.BlendState = BLEND_NONE;
 
 	SetRenderState( renderDesc );
-	SetTopology( D3D_PRIMITIVE_TOPOLOGY_LINELIST );
 }
 
 

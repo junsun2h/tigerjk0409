@@ -2,11 +2,16 @@
 #include "CGrowableArray.h"
 #include "CColor.h"
 
+#include "RDefine.h"
+
 #include "IEntity.h"
 #include "IEntityProxy.h"
-#include "IRDevice.h"
+#include "IRDX11Device.h"
 #include "IRenderHelper.h"
 #include "IAssetMgr.h"
+#include "IRenderStateMgr.h"
+#include "IShader.h"
+#include "IFontRenderer.h"
 
 #include "RDefine.h"
 #include "RDX11Global.h"
@@ -437,6 +442,8 @@ void RDX11RenderHelper::DrawLine()
 	UINT Stride = sizeof( CVertexPC );
 	UINT Offset = 0;
 
+	GLOBAL::RenderStateMgr()->SetTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC);
 	pContext->IASetVertexBuffers( 0, 1, &m_pLineBuffer, &Stride, &Offset );
 	pContext->Draw( m_LineVertices.GetSize(), 0 );
 

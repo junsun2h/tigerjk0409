@@ -1,5 +1,9 @@
 #pragma once
 
+#include "RDefine.h"
+#include "CVertex.h"
+
+
 
 enum ALPHA_BLEND_TYPE
 {
@@ -80,4 +84,8 @@ struct IRenderStateMgr
 	virtual void	SetRasterizer(RASTERIZER_TYPE RasterizerState) = 0;
 	virtual void	SetBlend(ALPHA_BLEND_TYPE BlendState, float* pblendFactor = NULL, UINT sampleMask = 0xffffffff) = 0;
 	virtual void	SetDepthStancil(DEPTH_STENCIL_TYPE DepthStencilState, UINT StencilRef = NULL) = 0;
+
+	virtual void	SetVertexInput(eCVERTEX_TYPE type) = 0;
+	virtual void	CreateInputLayout(eCVERTEX_TYPE	eVertexyType, ID3DBlob* pBlob) = 0;
+	virtual	void	SetTopology(D3D_PRIMITIVE_TOPOLOGY topology) =0;
 };

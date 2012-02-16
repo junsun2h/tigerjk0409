@@ -99,6 +99,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IRDX11Device.h" />
+    <ClInclude Include="IRenderStateMgr.h" />
+    <ClInclude Include="IShader.h" />
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11Device.h" />
     <ClInclude Include="RDX11FontRenderer.h" />

@@ -1,6 +1,9 @@
+#include <atlcoll.h>
+
 #include "CDefine.h"
 
-#include "IRDevice.h"
+#include "IRDX11Device.h"
+#include "IRenderStateMgr.h"
 
 #include "RDX11Global.h"
 #include "RDX11RenderStateMgr.h"
@@ -8,6 +11,8 @@
 
 RDX11RenderStateMgr::RDX11RenderStateMgr()
 	: m_bCreated(false)
+	, m_currentVertexType(FVF_INVALID)
+	, m_currentTopology(D3D_PRIMITIVE_TOPOLOGY_UNDEFINED)
 {
 }
 
@@ -54,6 +59,20 @@ void RDX11RenderStateMgr::Destroy()
 	for (int i=0; i < NUM_SAMPLER_TYPE; ++i)
 	{
 		SAFE_RELEASE(m_SamplerStates[i]);
+	}
+
+	// clear input
+	{
+		POSITION pos = m_InputLayoutMap.GetStartPosition();
+		INPUT_LAYOUT_MAP::CPair* itr = NULL;
+
+		while (pos)
+		{
+			itr = m_InputLayoutMap.GetNext(pos);
+			SAFE_RELEASE( itr->m_value );
+		}
+
+		m_InputLayoutMap.RemoveAll();
 	}
 
 	m_bCreated = false;
@@ -301,4 +320,88 @@ void RDX11RenderStateMgr::SetDepthStancil(DEPTH_STENCIL_TYPE depthStencil, UINT 
 	pContext->OMSetDepthStencilState( m_pDepthStencilType[depthStencil], StencilRef );
 	m_CurrentDesc.DepthStencil = depthStencil;
 	m_CurrentDesc.StencilRef = StencilRef;
+}
+
+void RDX11RenderStateMgr::CreateInputLayout( eCVERTEX_TYPE eVertexyType, ID3DBlob* pBlob)
+{
+	if( pBlob == NULL )
+		return;
+
+	ID3D11Device* pD3Device = GLOBAL::D3DDevice();
+	ID3D11InputLayout* pD3DLayout = NULL;
+
+	if( m_InputLayoutMap.Lookup(eVertexyType) != NULL )
+		return;
+
+	if( eVertexyType == FVF_3FP_1DC )
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+	else if( eVertexyType == FVF_3FP_1DC_2HT )
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",  0, DXGI_FORMAT_R16G16_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+	else if( eVertexyType == FVF_4HP_4BN_2HT)
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+	else if( eVertexyType == FVF_4HP_4BN_2HT_4BW )
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BONES", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "WEIGHTS", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+
+	m_InputLayoutMap.SetAt( eVertexyType, pD3DLayout);
+}
+
+void RDX11RenderStateMgr::SetVertexInput(eCVERTEX_TYPE type)
+{
+	if( type == m_currentVertexType )
+		return;
+
+	INPUT_LAYOUT_MAP::CPair* pInputLayout = m_InputLayoutMap.Lookup( type );
+
+	if( pInputLayout == NULL )
+	{
+		assert(0);
+		return;
+	}
+
+	GLOBAL::D3DContext()->IASetInputLayout( pInputLayout->m_value );
+}
+
+void RDX11RenderStateMgr::SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)
+{
+	if( m_currentTopology == topology )
+		return;
+
+	GLOBAL::D3DContext()->IASetPrimitiveTopology( topology );
 }

@@ -1,7 +1,10 @@
+#include "RDefine.h"
 #include "CResource.h"
 
-#include "IRDevice.h"
+#include "IRDX11Device.h"
 #include "IEntityProxy.h"
+#include "IShader.h"
+#include "IRenderStateMgr.h"
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
@@ -48,7 +51,6 @@ RDX11ShaderBase::RDX11ShaderBase()
 	: m_pVertexShader(NULL)
 	, m_pPixelShader(NULL)	
 	, m_pGeometryShader(NULL)
-	, m_pVertexLayout(NULL)
 {
 }
 
@@ -81,10 +83,6 @@ void RDX11ShaderBase::Begin()
 		pContext->PSSetShader( m_pPixelShader, NULL, 0 );
 	else
 		pContext->PSSetShader( NULL, NULL, 0 );
-	
-
-	pContext->IASetPrimitiveTopology( m_Topology );
-	pContext->IASetInputLayout( m_pVertexLayout	);
 }
 
 
@@ -101,7 +99,6 @@ void RDX11ShaderBase::Destroy()
 	SAFE_RELEASE(m_pVertexShader)
 	SAFE_RELEASE(m_pPixelShader)
 	SAFE_RELEASE(m_pGeometryShader)
-	SAFE_RELEASE(m_pVertexLayout)
 }
 
 
@@ -122,11 +119,8 @@ void RDX11ShaderBase::CreateVS( SHADER_COMPILE_DESC& desc)
 	if( desc.debugName != 0)
 		DXUT_SetDebugName( m_pVertexShader, desc.debugName );
 #endif
-
-	if( desc.layoutSize != 0 )
-	{
-		V( GLOBAL::D3DDevice()->CreateInputLayout( desc.pLayout, desc.layoutSize, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &m_pVertexLayout ) );
-	}
+	
+	GLOBAL::RenderStateMgr()->CreateInputLayout(desc.eVertexyType, pBlob);
 
 	SAFE_RELEASE( pBlob );
 }
@@ -154,6 +148,8 @@ void RDX11ShaderBase::CreatePS( SHADER_COMPILE_DESC& desc )
 
 void RDX11ShaderBase::CreateGS( SHADER_COMPILE_DESC& desc)
 {
+	assert(0);
+	/*
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
 
@@ -179,4 +175,5 @@ void RDX11ShaderBase::CreateGS( SHADER_COMPILE_DESC& desc)
 																, 0
 																, NULL
 																, &m_pGeometryShader) ); 
+	*/
 }

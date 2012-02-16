@@ -63,6 +63,12 @@
       <Filter>Interface</Filter>
     </ClInclude>
     <ClInclude Include="RDX11FontRenderer.h" />
+    <ClInclude Include="IShader.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderStateMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
