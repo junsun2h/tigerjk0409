@@ -1,9 +1,10 @@
 #include <atlcoll.h>
-
+#include "RDefine.h"
 #include "CResource.h"
 
-#include "IRDevice.h"
 #include "IEntityProxy.h"
+#include "IShader.h"
+#include "IRDX11Device.h"
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
@@ -50,16 +51,19 @@ void RDX11ShaderMgr::Destroy()
 		}		
 	}
 
-	POSITION pos = m_ShaderMap.GetStartPosition();
-	SHADER_MAP::CPair* itr = NULL;
-
-	while (pos)
+	// clear shader
 	{
-		itr = m_ShaderMap.GetNext(pos);
-		SAFE_DELETE( itr->m_value );
-	}
+		POSITION pos = m_ShaderMap.GetStartPosition();
+		SHADER_MAP::CPair* itr = NULL;
 
-	m_ShaderMap.RemoveAll();
+		while (pos)
+		{
+			itr = m_ShaderMap.GetNext(pos);
+			SAFE_DELETE( itr->m_value );
+		}
+
+		m_ShaderMap.RemoveAll();
+	}
 }
 
 
@@ -137,5 +141,4 @@ void RDX11ShaderMgr::UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYP
 {
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
-
 }

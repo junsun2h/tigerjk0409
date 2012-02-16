@@ -1,13 +1,15 @@
 #pragma once
 
+#include "RDefine.h"
 #include "IEngine.h"
 
-#include "RDefine.h"
-#include "IShader.h"
-#include "IRenderStateMgr.h"
-#include "IRDX11Device.h"
 #include "IRenderTargetMgr.h"
-#include "IFontRenderer.h"
+
+struct IRenderStateMgr;
+struct IRDX11Device;
+struct IShader;
+struct IShaderMgr;
+struct IFontRenderer;
 
 
 namespace GLOBAL

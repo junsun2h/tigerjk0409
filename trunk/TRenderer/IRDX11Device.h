@@ -1,6 +1,7 @@
 #pragma once
 
-
+#include "RDefine.h"
+#include "IRDevice.h"
 
 struct IRDX11Device : public IRDevice
 {

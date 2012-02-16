@@ -1,19 +1,21 @@
 #include <atlcoll.h>
 
+#include "CVertex.h"
 #include "CResource.h"
 #include "CGrowableArray.h"
 #include "CCamera.h"
 #include "CEngineParam.h"
 #include "CQuad.h"
 
-#include "IRDevice.h"
+#include "RDefine.h"
+
+#include "IRDX11Device.h"
 #include "IShader.h"
 #include "IFontRenderer.h"
 #include "IRenderHelper.h"
 #include "IRenderStateMgr.h"
 #include "IRenderTargetMgr.h"
 
-#include "RDefine.h"
 #include "IRDX11Device.h"
 
 #include "RDX11RenderStateMgr.h"

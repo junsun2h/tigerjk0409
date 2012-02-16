@@ -1,6 +1,11 @@
+#include "RDefine.h"
+
 #include "CMathType.h"
 #include "CCamera.h"
-#include "IRDevice.h"
+
+#include "IRDX11Device.h"
+#include "IRenderStateMgr.h"
+#include "IShader.h"
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
@@ -9,20 +14,12 @@
 
 RDX11ShaderMPassMesh::RDX11ShaderMPassMesh()
 {
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
 	SHADER_COMPILE_DESC desc;
 
 	desc.szFileName = "Shader\\MPassMesh.vs";
 	desc.szEntrypoint = "VS";
 	desc.szShaderModel = "vs_4_0";
-	desc.pLayout = layout;
-	desc.layoutSize = ARRAYSIZE( layout );
-	desc.debugName = "ShaderGPassLambert_VS";
+	desc.eVertexyType = FVF_3FP_1DC;
 
 	CreateVS(desc);
 
@@ -38,7 +35,6 @@ RDX11ShaderMPassMesh::RDX11ShaderMPassMesh()
 	renderDesc.BlendState = BLEND_NONE;
 
 	SetRenderState(renderDesc);
-	SetTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }
 
 void RDX11ShaderMPassMesh::SetShaderContants(XMMATRIX& tm)

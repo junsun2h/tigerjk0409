@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IRenderStateMgr.h"
+
 
 struct SHADER_COMPILE_DESC
 {
@@ -9,13 +11,8 @@ struct SHADER_COMPILE_DESC
 	LPCSTR		szEntrypoint; 
 	LPCSTR		szShaderModel; 
 	UINT		flag;
-
-	D3D11_INPUT_ELEMENT_DESC*	pLayout;
-	UINT						layoutSize;
-
-	D3D11_SO_DECLARATION_ENTRY*	pOutPutLayout;
-	UINT						OuputLayoutSize;
-
+	eCVERTEX_TYPE	eVertexyType;
+	
 	LPCSTR		debugName;
 
 	SHADER_COMPILE_DESC()
@@ -43,7 +40,6 @@ public:
 	void				CreatePS( SHADER_COMPILE_DESC& desc);
 	void				CreateGS( SHADER_COMPILE_DESC& desc);
 
-	void				SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)		{ m_Topology = topology; }
 	void				SetRenderState(	const GRAPHIC_DEVICE_DESC desc);
 
 	void				ApplyRenderState();
@@ -51,14 +47,9 @@ public:
 
 
 private:
-	
 	ID3D11VertexShader*			m_pVertexShader;
 	ID3D11PixelShader*			m_pPixelShader;	
 	ID3D11GeometryShader*		m_pGeometryShader;
-
-	ID3D11InputLayout*			m_pVertexLayout;
-
-	D3D_PRIMITIVE_TOPOLOGY		m_Topology;
 
 	GRAPHIC_DEVICE_DESC			m_RenderState;
 };

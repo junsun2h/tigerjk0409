@@ -1,7 +1,9 @@
 #include "CDefine.h"
+#include "RDefine.h"
 
-#include "IRDevice.h"
+#include "IRDX11Device.h"
 #include "ISpaceMgr.h"
+#include "IShader.h"
 
 #include "RDX11Global.h"
 #include "RDX11RenderStrategeDeffered.h"

@@ -1,7 +1,11 @@
+#include "RDefine.h"
+
 #include "CResource.h"
 
-#include "IRDevice.h"
+#include "IRenderStateMgr.h"
+#include "IRDX11Device.h"
 #include "IEntityProxy.h"
+#include "IShader.h"
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
@@ -45,22 +49,13 @@ char g_strFontFxFile[] = \
 
 RDX11ShaderFont::RDX11ShaderFont()
 {
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD",  0, DXGI_FORMAT_R16G16_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
 	SHADER_COMPILE_DESC desc;
 
 	desc.pSrc = g_strFontFxFile;
 	desc.SrcDataSize = sizeof(g_strFontFxFile);
 	desc.szEntrypoint = "VS";
 	desc.szShaderModel = "vs_4_0_level_9_1";
-	desc.pLayout = layout;
-	desc.layoutSize = ARRAYSIZE( layout );
-	desc.debugName = "FontVS";
+	desc.eVertexyType = FVF_3FP_1DC_2HT;
 	desc.flag = D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
 
 	CreateVS(desc);
@@ -77,5 +72,4 @@ RDX11ShaderFont::RDX11ShaderFont()
 	renderDesc.BlendState = BLEND_ADD_BY_ALPHA;
 
 	SetRenderState(renderDesc);
-	SetTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }

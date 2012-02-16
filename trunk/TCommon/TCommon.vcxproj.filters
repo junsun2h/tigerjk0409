@@ -79,12 +79,6 @@
     <ClInclude Include="CLog.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderStateMgr.h">
-      <Filter>Interface_Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="IShader.h">
-      <Filter>Interface_Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="IRenderTargetMgr.h">
       <Filter>Interface_Renderer</Filter>
     </ClInclude>

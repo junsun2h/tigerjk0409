@@ -4,7 +4,10 @@
 
 
 #include "IEntityProxy.h"
-#include "IRDevice.h"
+#include "IRDX11Device.h"
+#include "IRenderStateMgr.h"
+#include "IShader.h"
+#include "IFontRenderer.h"
 
 #include "RDX11Global.h"
 #include "RDX11FontRenderer.h"
@@ -180,6 +183,8 @@ void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
 
 	GLOBAL::ShaderMgr()->GetShader(EFFECT_FONT)->Begin();
+	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC_2HT);
 
 	// Draw
 	UINT Stride = sizeof( CVertexPCT );

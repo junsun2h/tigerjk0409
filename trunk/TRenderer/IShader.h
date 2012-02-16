@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CVertex.h"
+
 
 enum EFFECT_TYPE
 {
