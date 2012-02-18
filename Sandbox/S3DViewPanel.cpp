@@ -83,7 +83,7 @@ void S3DViewPanel::PostRender()
 	int FPS = GLOBAL::Engine()->GlobalTimer()->GetFPS();
 
 	RENDER_TEXT_QUAD textFPS;
-	_itow_s(FPS, textFPS.strMsg, 5);
+	_itow_s(FPS, textFPS.strMsg, 5, 10);
 	textFPS.rc.left = 0;
 	textFPS.rc.top = 0;
 	textFPS.rc.right = 100;
