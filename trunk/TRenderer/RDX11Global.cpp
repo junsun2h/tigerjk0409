@@ -9,14 +9,12 @@
 
 #include "RDefine.h"
 
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IShader.h"
 #include "IFontRenderer.h"
 #include "IRenderHelper.h"
 #include "IRenderStateMgr.h"
 #include "IRenderTargetMgr.h"
-
-#include "IRDX11Device.h"
 
 #include "RDX11RenderStateMgr.h"
 #include "RDX11RenderTargetMgr.h"
@@ -53,7 +51,7 @@ namespace GLOBAL
 	const CCAMERA_DESC*			CameraDesc()				{ return &g_pCurrentCameraDesc; }
 	void						SetCameraDesc(CCAMERA_DESC* pDesc)	{ g_pCurrentCameraDesc = *pDesc; }
 
-	IRDX11Device*				RDevice()					{ return &g_RDX11Device; }
+	IRDevice*					RDevice()					{ return &g_RDX11Device; }
 	IRenderStateMgr*			RenderStateMgr()			{ return &g_StateRepository; }
 	IShaderMgr*					ShaderMgr()					{ return &g_ShaderMgr; }
 	IFontRenderer*				FontRenderer()				{ return &g_FontRenderer; }

@@ -2,7 +2,7 @@
 
 #include "CDefine.h"
 
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IRenderStateMgr.h"
 
 #include "RDX11Global.h"

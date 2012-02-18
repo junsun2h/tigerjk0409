@@ -4,10 +4,6 @@
 #include <windows.h>
 #include <CGuid.h>
 
-#include "IRDevice.h"
-
-#include "RDefine.h"
-#include "IRDX11Device.h"
 
 #include "RDX11Global.h"
 

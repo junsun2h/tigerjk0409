@@ -1,7 +1,7 @@
 #include "CResource.h"
 #include "CColor.h"
 
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IAssetMgr.h"
 
 #include "RDX11Global.h"

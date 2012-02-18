@@ -4,7 +4,7 @@
 
 
 #include "IEntityProxy.h"
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IRenderStateMgr.h"
 #include "IShader.h"
 #include "IFontRenderer.h"

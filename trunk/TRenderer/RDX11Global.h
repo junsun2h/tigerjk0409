@@ -3,10 +3,10 @@
 #include "RDefine.h"
 #include "IEngine.h"
 
+#include "IRDevice.h"
 #include "IRenderTargetMgr.h"
 
 struct IRenderStateMgr;
-struct IRDX11Device;
 struct IShader;
 struct IShaderMgr;
 struct IFontRenderer;
@@ -23,7 +23,7 @@ namespace GLOBAL
 	const CCAMERA_DESC*			CameraDesc();
 	void						SetCameraDesc(CCAMERA_DESC* pDesc);
 
-	IRDX11Device*				RDevice();
+	IRDevice*					RDevice();
 	IRenderStateMgr*			RenderStateMgr();
 	IShaderMgr*					ShaderMgr();
 	IRenderHelper*				RenderHelper();

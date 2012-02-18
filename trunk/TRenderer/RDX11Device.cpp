@@ -6,7 +6,7 @@
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IShader.h"
 #include "IRenderStateMgr.h"
 
@@ -230,13 +230,6 @@ ID3D11Buffer* RDX11Device::CreateBuffer(void* pData ,int size, UINT bindFlag, D3
 {
 	ID3D11Buffer* pBuffer = NULL;
 	
-	RecreateBuffer( &pBuffer, pData, size, bindFlag, usage);
-
-	return pBuffer;
-}
-
-void RDX11Device::RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage)
-{
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof(bd) );
 	bd.Usage = usage;
@@ -247,19 +240,22 @@ void RDX11Device::RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size,
 		bd.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 	else
 		bd.CPUAccessFlags = 0;
-	
+
 	if( pData != NULL)
 	{
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory( &InitData, sizeof(InitData) );
 		InitData.pSysMem = pData;
-		TDXERROR( GLOBAL::D3DDevice()->CreateBuffer( &bd, &InitData, ppBuffer ) );
+		GLOBAL::D3DDevice()->CreateBuffer( &bd, &InitData, &pBuffer );
 	}
 	else
 	{
-		TDXERROR( GLOBAL::D3DDevice()->CreateBuffer( &bd, NULL, ppBuffer ) );
+		GLOBAL::D3DDevice()->CreateBuffer( &bd, NULL, &pBuffer );
 	}
+
+	return pBuffer;
 }
+
 
 CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture)
 {
