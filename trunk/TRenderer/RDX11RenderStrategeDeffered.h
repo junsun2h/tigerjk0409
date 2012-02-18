@@ -3,13 +3,21 @@
 
 class RDX11RenderStrategeDeffered : public IRenderStrategy
 {
-	void		RenderScene() override;
-
 public:
-	void		SkinPass();
-	void		ShadowPass();
-	void		GeometryPass();
-	void		LightPass();
-	void		SSAOPass();
-	void		MaterialPass();
+	RDX11RenderStrategeDeffered();
+
+	void			RenderFrame(CCAMERA_DESC* pCameraDesc) override;
+	void			RenderGeometry(CResourceGeometry* pGeometry) override;
+
+	void			SetMaterial(const CResourceMtrl* pMaterial) override;
+	void			SetTransform( const XMMATRIX& worldTM ) override;
+
+	eRENDER_PASS	GetCurrentPass() override			{ return m_currentRenderPass; }
+
+private:
+	void			OpaquePass();
+	void			TransparentPass();
+
+private:
+	eRENDER_PASS		m_currentRenderPass;
 };

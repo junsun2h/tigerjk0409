@@ -78,7 +78,7 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		ECopyString(pGeometry->mtrlName, &pSrcBits);
 
-		GLOBAL::Engine()->RDevice()->CreateGraphicBuffer( pGeometry );
+		GLOBAL::RDevice()->CreateGraphicBuffer( pGeometry );
 		pGeometry->loadState = RESOURCE_LOAD_FINISHED;
 
 		pMesh->goemetries[i] = pGeometry->RID;

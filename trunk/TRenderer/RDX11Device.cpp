@@ -36,7 +36,6 @@ RDeviceDesc	RDX11Device::GetDeviceSetting()
 	return GLOBAL::DeviceInfo();
 }
 
-
 //----------------------------------------------------------------------------------------------------------
 bool RDX11Device::StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine)
 {
@@ -64,71 +63,6 @@ void RDX11Device::SetViewport(float width, float height, float MinDepth, float M
 	vp.TopLeftY = TopLeftY;
 
 	GLOBAL::D3DContext()->RSSetViewports( 1, &vp );
-}
-
-//----------------------------------------------------------------------------------------------------------
-void RDX11Device::RenderFrame(CCAMERA_DESC* pCameraDesc)
-{
-	CCAMERA_DESC desc;
-
-	desc = *pCameraDesc;
-	desc.ProjTM._33 /= desc.farClip;
-	desc.ProjTM._43 /= desc.farClip;
-
-	GLOBAL::SetCameraDesc(&desc);
-
-	// update global shader constant
-	CCAMERA_DESC cameraConstant = desc;
-	cameraConstant.ViewTM = XMMatrixTranspose( desc.ViewTM );
-	cameraConstant.ProjTM = XMMatrixTranspose( desc.ProjTM );
-	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), SM_BUF12_192BYTE_SLOT1, PS_SHADER );
-
-	m_pCurrentRenderStrategy->RenderScene();
-}
-
-
-//----------------------------------------------------------------------------------------------------------
-void RDX11Device::RenderElement( CResourceGeometry*	pGeometry, CResourceMtrl* pMtrl, IEntityProxyRender* pRenderProxy)
-{
-	GLOBAL::ShaderMgr()->GetCurrentShader()->SetShaderContants( pMtrl );
-	GLOBAL::ShaderMgr()->GetCurrentShader()->SetShaderContants( pRenderProxy->GetEntity()->GetWorldTM() );
-	RenderGeometry(pGeometry);
-}
-
-void RDX11Device::RenderGeometry(CResourceGeometry*	pGeometry)
-{
-	if( pGeometry->loadState != RESOURCE_LOAD_FINISHED )
-	{
-		assert(0);
-		return;
-	}
-
-	GLOBAL::RenderStateMgr()->SetVertexInput( pGeometry->eVertexType );
-	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	UINT offset[1] = { 0 };
-	UINT stride[1];
-
-	if( pGeometry->pGraphicMemoryVertexBufferOut != NULL)
-	{
-		stride[0] = VERTEX_STRIDE(pGeometry->eVertexType) + 4;
-		GLOBAL::D3DContext()->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBufferOut, stride, offset );
-	}
-	else
-	{
-		stride[0] = VERTEX_STRIDE(pGeometry->eVertexType);
-		GLOBAL::D3DContext()->IASetVertexBuffers( 0, 1, (ID3D11Buffer**)&pGeometry->pGraphicMemoryVertexBuffer, stride, offset );
-	}
-
-	if( pGeometry->pIndexBuffer != NULL)
-	{
-		if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
-			GLOBAL::D3DContext()->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
-		else
-			GLOBAL::D3DContext()->IASetIndexBuffer( (ID3D11Buffer*)pGeometry->pGraphicMemoryIndexBuffer, DXGI_FORMAT_R32_UINT, 0 );
-
-		GLOBAL::D3DContext()->DrawIndexed( pGeometry->primitiveCount * 3, 0, 0 );
-	}
 }
 
 //----------------------------------------------------------------------------------------------------------

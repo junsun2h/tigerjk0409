@@ -8,16 +8,17 @@
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
-#include "RDX11ShaderLine.h"
-#include "RDX11ShaderFont.h"
-#include "RDX11ShaderGPassLambert.h"
-#include "RDX11ShaderMPassMesh.h"
+
+#include "RDX11ShaderGPass.h"
+#include "RDX11ShaderMPass.h"
 
 #include "RDX11ShaderMgr.h"
 
 
 RDX11ShaderMgr::RDX11ShaderMgr()
-	: m_pCurrentShader(NULL)
+	: m_pCurrentVS(NULL)
+	, m_pCurrentPS(NULL)
+	, m_pCurrentGS(NULL)
 {
 
 }
@@ -29,12 +30,56 @@ RDX11ShaderMgr::~RDX11ShaderMgr()
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::init()
 {
-	m_ShaderMap.SetAt( EFFECT_FONT, new RDX11ShaderFont);
-	m_ShaderMap.SetAt( EFFECT_LINE, new RDX11ShaderLine);
-	m_ShaderMap.SetAt( EFFECT_GPASS_LAMBERT, new RDX11ShaderGPassLambert);
-	m_ShaderMap.SetAt( EFFECT_MPASS_MESH, new RDX11ShaderMPassMesh );
+	// Geometry Pass
+	m_ShaderMap.SetAt( GPASS_VS_LAMBERT, new RDX11VSGPassLambert);
+	m_ShaderMap.SetAt( GPASS_VS_LAMBERT_WEIGHT, new RDX11VSGPassLambertWeight);
+	m_ShaderMap.SetAt( GPASS_VS_NORMALMAP, new RDX11VSGPassNormalMap);
+	m_ShaderMap.SetAt( GPASS_VS_NORMALMAP_WEIGHT, new RDX11VSGPassNormalMapWeight);
+
+	m_ShaderMap.SetAt( GPASS_PS_LAMBERT, new RDX11PSGPassBase);
+
+	// Material Pass
+	m_ShaderMap.SetAt( MPASS_VS_COLOR, new RDX11VSMPassColor);
+	m_ShaderMap.SetAt( MPASS_VS_FONT, new RDX11VSMPassFont);
+	m_ShaderMap.SetAt( MPASS_PS_COLOR, new RDX11PSMPassColor);
+	m_ShaderMap.SetAt( MPASS_PS_FONT, new RDX11PSMPassFont);
 }
 
+bool RDX11ShaderMgr::SetCurrentShader(IShader* pShader)
+{
+	if( pShader == NULL)
+	{
+		assert(0);
+		return false;
+	}
+
+	if( pShader->ShaderType() == VERTEX_SHADER )
+	{
+		if( m_pCurrentVS == pShader )
+			return false;
+
+		m_pCurrentVS = pShader;
+		pShader->Begin();
+	}
+	else if( pShader->ShaderType() == PIXEL_SHADER )
+	{
+		if( m_pCurrentPS == pShader )
+			return false;
+
+		m_pCurrentPS = pShader;
+		pShader->Begin();
+	}
+	else if( pShader->ShaderType() == GEOMETRY_SHADER )
+	{
+		if( m_pCurrentGS == pShader )
+			return false;
+
+		m_pCurrentGS = pShader;
+		pShader->Begin();
+	}
+
+	return true;
+}
 
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::Destroy()
@@ -68,7 +113,7 @@ void RDX11ShaderMgr::Destroy()
 
 
 //------------------------------------------------------------------------------------------------------------
-IShader* RDX11ShaderMgr::GetShader(EFFECT_TYPE type)
+IShader* RDX11ShaderMgr::GetShader(eEFFECT_TYPE type)
 {
 	SHADER_MAP::CPair* pShader = m_ShaderMap.Lookup( type );
 	if( pShader != NULL )
@@ -106,7 +151,7 @@ UINT RDX11ShaderMgr::GetDXBufSize(SHADER_CONST_BUFFER_SLOT slot)
 
 
 //------------------------------------------------------------------------------------------------------------
-void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_BUFFER_SLOT slot, SHADER_TYPE type)
+void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_BUFFER_SLOT slot, eSHADER_TYPE type)
 {
 	HRESULT hr = S_OK;
 	byte pData[256];
@@ -128,11 +173,11 @@ void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_
 		pContext->UpdateSubresource( pDXBuffer, 0, NULL, pData, 0, 0 );
 	}
 
-	if( type == VS_SHADER )
+	if( type == VERTEX_SHADER )
 		pContext->VSSetConstantBuffers( slot, 1, &pDXBuffer );
-	else if( type == GS_SHADER )
+	else if( type == GEOMETRY_SHADER )
 		pContext->GSSetConstantBuffers( slot, 1, &pDXBuffer );
-	else if( type == PS_SHADER )
+	else if( type == PIXEL_SHADER )
 		pContext->PSSetConstantBuffers( slot, 1, &pDXBuffer );
 }
 

@@ -103,7 +103,7 @@ void EAssetMgr::Clear()
 //-----------------------------------------------------------------------------------------------------------------------
 void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 {
-	IRDevice* pRDevice = GLOBAL::Engine()->RDevice();
+	IRDevice* pRDevice = GLOBAL::RDevice();
 
 	CResourceBase* pResource = m_ResourceMap[type].Lookup( id )->m_value;
 

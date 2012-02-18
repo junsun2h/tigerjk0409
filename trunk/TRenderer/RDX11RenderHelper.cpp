@@ -56,9 +56,13 @@ void RDX11RenderHelper::RenderSkeleton(IEntity* pEntity)
 		m_LineVertices.Add(v1);
 	}
 
-	XMMATRIX tm = XMMatrixIdentity();
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	// Set Line Shader
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants( XMMatrixIdentity() );
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	
 	DrawLine();
 }
 
@@ -66,8 +70,10 @@ void RDX11RenderHelper::RenderSkeleton(IEntity* pEntity)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 {
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	// Set Line Shader
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 
 	CVertexPC v1;
 
@@ -99,14 +105,14 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 {
-	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_MPASS_MESH);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
-	
-	pShader->Begin();
-	pShader->SetShaderContants( tm);
 
 	CResourceGeometry* pBoxX = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep1");
 	CResourceGeometry* pBoxY = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep2");
@@ -137,6 +143,8 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxCenter, param);
 
 	IRDX11Device* pDevice = GLOBAL::RDevice();
+	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
+
 	pDevice->CreateGraphicBuffer( pBoxX);
 	pDevice->CreateGraphicBuffer( pBoxY);
 	pDevice->CreateGraphicBuffer( pBoxZ);
@@ -146,11 +154,12 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 	pBoxY->loadState = RESOURCE_LOAD_FINISHED;
 	pBoxZ->loadState = RESOURCE_LOAD_FINISHED;
 	pBoxCenter->loadState = RESOURCE_LOAD_FINISHED;
-	
-	pDevice->RenderGeometry(pBoxX);
-	pDevice->RenderGeometry(pBoxY);
-	pDevice->RenderGeometry(pBoxZ);
-	pDevice->RenderGeometry(pBoxCenter);
+
+	pRenderer->SetTransform(tm);
+	pRenderer->RenderGeometry(pBoxX);
+	pRenderer->RenderGeometry(pBoxY);
+	pRenderer->RenderGeometry(pBoxZ);
+	pRenderer->RenderGeometry(pBoxCenter);
 
 	pAssetMgr->Remove(pBoxX);
 	pAssetMgr->Remove(pBoxY);
@@ -163,8 +172,9 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 {
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(tm);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
@@ -231,15 +241,16 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 {
-	IShader* pShader = GLOBAL::ShaderMgr()->GetShader(EFFECT_MPASS_MESH);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+
 	IRDX11Device* pDevice = GLOBAL::RDevice();
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
-	pShader->Begin();
-	pShader->SetShaderContants(tm);
-
 	CResourceGeometry* pConeX = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep1");
 	CResourceGeometry* pConeY = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep2");
 	CResourceGeometry* pConeZ = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep3");
@@ -274,9 +285,10 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 	pConeY->loadState = RESOURCE_LOAD_FINISHED;
 	pConeZ->loadState = RESOURCE_LOAD_FINISHED;
 
-	pDevice->RenderGeometry(pConeX);
-	pDevice->RenderGeometry(pConeY);
-	pDevice->RenderGeometry(pConeZ);
+	pRenderer->SetTransform(tm);
+	pRenderer->RenderGeometry(pConeX);
+	pRenderer->RenderGeometry(pConeY);
+	pRenderer->RenderGeometry(pConeZ);
 	
 	pAssetMgr->Remove(pConeX);
 	pAssetMgr->Remove(pConeY);
@@ -304,8 +316,9 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(mtWorld);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 	DrawLine();
 }
 
@@ -394,8 +407,9 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_LINE)->SetShaderContants(mtWorld);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(mtWorld);
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 	DrawLine();
 }
 
@@ -420,16 +434,8 @@ void RDX11RenderHelper::DrawLine()
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	// Copy the sprites over
+	// refresh vertex buffer
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
-
-	D3D11_BOX destRegion;
-	destRegion.left = 0;
-	destRegion.right = dataBytes;
-	destRegion.top = 0;
-	destRegion.bottom = 1;
-	destRegion.front = 0;
-	destRegion.back = 1;
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	if ( S_OK == pContext->Map( m_pLineBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource ) ) 
 	{ 

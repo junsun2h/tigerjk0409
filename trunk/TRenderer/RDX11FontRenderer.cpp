@@ -178,11 +178,11 @@ void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 		pd3dImmediateContext->Unmap(m_pFontBuffer, 0);
 	}
 
-	ID3D11ShaderResourceView* pOldTexture = NULL;
-	pd3dImmediateContext->PSGetShaderResources( 0, 1, &pOldTexture );
 	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
 
-	GLOBAL::ShaderMgr()->GetShader(EFFECT_FONT)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_FONT)->Begin();
+	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_FONT)->Begin();
+
 	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC_2HT);
 
@@ -192,8 +192,6 @@ void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 	pd3dImmediateContext->IASetVertexBuffers( 0, 1, &m_pFontBuffer, &Stride, &Offset );
 	pd3dImmediateContext->Draw( m_FontVertices.GetSize(), 0 );
 
-	pd3dImmediateContext->PSSetShaderResources( 0, 1, &pOldTexture );
-	SAFE_RELEASE( pOldTexture );
 
 	m_FontVertices.Reset();
 }
