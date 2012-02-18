@@ -30,9 +30,25 @@ void RDX11VSGPassBase::SetShaderContants(const XMMATRIX& tm)
 	modelVS.wv = XMMatrixTranspose( modelVS.wv );
 	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
 
-	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VERTEX_SHADER );
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), 11, VERTEX_SHADER );
 }
 
+
+void RDX11VSGPassLambertWeight::SetShaderContants(XMMATRIX* tm, UINT size)
+{
+	for(UINT i =0; i< size; ++i)
+		tm[1] = XMMatrixTranspose( tm[i] );
+
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &tm, sizeof(XMMATRIX) * size, 12, VERTEX_SHADER );
+}
+
+void RDX11VSGPassNormalMapWeight::SetShaderContants(XMMATRIX* tm, UINT size)
+{
+	for(UINT i =0; i< size; ++i)
+		tm[1] = XMMatrixTranspose( tm[i] );
+
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &tm, sizeof(XMMATRIX) * size, 12, VERTEX_SHADER );
+}
 
 //------------------------------------------------------------------------------------------------------------
 // Vertex Shader
@@ -49,7 +65,6 @@ RDX11VSGPassLambert::RDX11VSGPassLambert()
 	CreateVS(desc);
 }
 
-
 RDX11VSGPassLambertWeight::RDX11VSGPassLambertWeight()
 {
 	SHADER_COMPILE_DESC desc;
@@ -61,7 +76,6 @@ RDX11VSGPassLambertWeight::RDX11VSGPassLambertWeight()
 
 	CreateVS(desc);
 }
-
 
 RDX11VSGPassNormalMap::RDX11VSGPassNormalMap()
 {

@@ -20,7 +20,8 @@ RDX11ShaderMgr::RDX11ShaderMgr()
 	, m_pCurrentPS(NULL)
 	, m_pCurrentGS(NULL)
 {
-
+	memset(m_ConstBuffer, 0, 4 * NUM_SHADER_TYPE * MAX_SHADER_CONSTANT_SLOT );
+	memset(m_ConstBufferSize, 0, 4 * NUM_SHADER_TYPE * MAX_SHADER_CONSTANT_SLOT );
 }
 
 RDX11ShaderMgr::~RDX11ShaderMgr()
@@ -84,17 +85,19 @@ bool RDX11ShaderMgr::SetCurrentShader(IShader* pShader)
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::Destroy()
 {
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
+	pContext->VSSetShader( NULL, NULL, 0 );
+	pContext->PSSetShader( NULL, NULL, 0 );
+	pContext->GSSetShader( NULL, NULL, 0 );
+
 	for( int i=0; i < NUM_SHADER_TYPE; ++i)
 	{
-		POSITION pos = m_ConstBufferMap[i].GetStartPosition();
-		CONST_BUFFER_MAP::CPair* itr = NULL;
-
-		while (pos)
-		{
-			itr = m_ConstBufferMap[i].GetNext(pos);
-			SAFE_RELEASE( itr->m_value );
-		}		
+		for( int slot = 0; slot < MAX_SHADER_CONSTANT_SLOT; slot++)
+			SAFE_RELEASE( m_ConstBuffer[i][slot] );
 	}
+
+	memset(m_ConstBuffer, 0, 4 * NUM_SHADER_TYPE * MAX_SHADER_CONSTANT_SLOT );
+	memset(m_ConstBufferSize, 0, 4 * NUM_SHADER_TYPE * MAX_SHADER_CONSTANT_SLOT );
 
 	// clear shader
 	{
@@ -123,32 +126,6 @@ IShader* RDX11ShaderMgr::GetShader(eEFFECT_TYPE type)
 }
 
 
-//------------------------------------------------------------------------------------------------------------
-UINT RDX11ShaderMgr::GetDXBufSize(SHADER_CONST_BUFFER_SLOT slot)
-{
-	switch(slot)
-	{
-	case SM_BUF0_16BYTE_SLOT0: return 16;		
-	case SM_BUF1_16BYTE_SLOT1: return 16;
-	case SM_BUF2_16BYTE_SLOT2: return 16;
-	case SM_BUF3_32BYTE_SLOT0: return 32;		
-	case SM_BUF4_32BYTE_SLOT1: return 32;
-	case SM_BUF5_32BYTE_SLOT2: return 32;
-	case SM_BUF6_64BYTE_SLOT0: return 64;		
-	case SM_BUF7_64BYTE_SLOT1: return 64;
-	case SM_BUF8_64BYTE_SLOT2: return 64;
-	case SM_BUF9_128BYTE_SLOT0: return 128;	
-	case SM_BUF10_128BYTE_SLOT1: return 128;
-	case SM_BUF11_192BYTE_SLOT0: return 192;
-	case SM_BUF12_192BYTE_SLOT1: return 192;
-	case SM_BUF13_256BYTE_SLOT0: return 256;
-	default:
-		assert(0);
-	}
-
-	return 0;
-}
-
 void CreateConstantBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage = D3D11_USAGE_DEFAULT)
 {
 	D3D11_BUFFER_DESC bd;
@@ -176,39 +153,51 @@ void CreateConstantBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT b
 }
 
 //------------------------------------------------------------------------------------------------------------
-void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_BUFFER_SLOT slot, eSHADER_TYPE type)
+void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type)
 {
-	HRESULT hr = S_OK;
-	byte pData[256];
-
-	memcpy( pData, pScr, size );
-
-	ID3D11Buffer* pDXBuffer = NULL;
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
-	CONST_BUFFER_MAP::CPair* pBuffer = m_ConstBufferMap[type].Lookup( slot );
-	if( pBuffer == NULL )
+	if( m_ConstBuffer[type][slot] == NULL )
 	{
-		CreateConstantBuffer( &pDXBuffer, pData, GetDXBufSize(slot), D3D11_BIND_CONSTANT_BUFFER );
-		m_ConstBufferMap[type].SetAt( slot, pDXBuffer);
+		CreateConstantBuffer( &m_ConstBuffer[type][slot], pScr, size, D3D11_BIND_CONSTANT_BUFFER );
+		m_ConstBufferSize[type][slot] = size;
 	}
 	else
 	{
-		pDXBuffer = pBuffer->m_value;
-		pContext->UpdateSubresource( pDXBuffer, 0, NULL, pData, 0, 0 );
+		if( size > m_ConstBufferSize[type][slot] )
+		{
+			SAFE_RELEASE( m_ConstBuffer[type][slot] );
+			CreateConstantBuffer( &m_ConstBuffer[type][slot], pScr, size, D3D11_BIND_CONSTANT_BUFFER );
+			m_ConstBufferSize[type][slot] = size;
+		}
+		else
+		{
+			byte pData[1024 * 10];	// 10k
+			memcpy( pData, pScr, size );
+			pContext->UpdateSubresource( m_ConstBuffer[type][slot], 0, NULL, pData, 0, 0 );
+		}
 	}
 
 	if( type == VERTEX_SHADER )
-		pContext->VSSetConstantBuffers( slot, 1, &pDXBuffer );
+		pContext->VSSetConstantBuffers( slot, 1, &m_ConstBuffer[type][slot] );
 	else if( type == GEOMETRY_SHADER )
-		pContext->GSSetConstantBuffers( slot, 1, &pDXBuffer );
+		pContext->GSSetConstantBuffers( slot, 1, &m_ConstBuffer[type][slot] );
 	else if( type == PIXEL_SHADER )
-		pContext->PSSetConstantBuffers( slot, 1, &pDXBuffer );
+		pContext->PSSetConstantBuffers( slot, 1, &m_ConstBuffer[type][slot] );
 }
 
 
 void RDX11ShaderMgr::UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYPE textureType)
 {
-	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
-	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
+}
+
+void RDX11ShaderMgr::UpdateTexture(CResourceTexture* pTexture, UINT slot)
+{
+	if( pTexture == NULL)
+	{
+		ID3D11ShaderResourceView* pSRV = NULL;
+		GLOBAL::D3DContext()->PSSetShaderResources( slot, 1, &pSRV );
+	}
+	else
+		GLOBAL::D3DContext()->PSSetShaderResources( slot, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
 }

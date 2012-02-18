@@ -40,9 +40,11 @@ struct IRenderStrategy
 	virtual	void	RenderFrame(CCAMERA_DESC* pCameraDesc) =0;
 	virtual void	RenderGeometry(CResourceGeometry* pGeometry) =0;
 
-	virtual void	SetMaterial(const CResourceMtrl* pMaterial) = 0;
-	virtual	void	SetTransform( const XMMATRIX& worldTM ) = 0;
+	virtual void	SetMaterial(const CResourceMtrl* pMaterial, const CResourceGeometry* pGeometry) = 0;
 
+	virtual	void	SetTransform( const XMMATRIX& worldTM ) = 0;
+	virtual void	SetJointTransforms( XMMATRIX* pJointTM, UINT size ) = 0;
+	
 	virtual eRENDER_PASS	GetCurrentPass() = 0;
 };
 

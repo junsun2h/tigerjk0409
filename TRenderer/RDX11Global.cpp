@@ -11,6 +11,7 @@
 
 #include "IRDevice.h"
 #include "IShader.h"
+#include "ILoader.h"
 #include "IFontRenderer.h"
 #include "IRenderHelper.h"
 #include "IRenderStateMgr.h"
@@ -150,7 +151,9 @@ namespace GLOBAL
 
 		// initialize subsystem
 		g_ShaderMgr.init();
-		g_FontRenderer.SetFontFile( "Data\\font\\Font.dds");
+
+		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->Loader()->LoadForward( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE );
+		g_FontRenderer.SetFontTexture( pTexture);
 
 		g_RDX11Device.SetRenderStrategy(RS_DEFFERED);
 

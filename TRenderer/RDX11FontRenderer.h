@@ -7,7 +7,7 @@ class RDX11FontRenderer : public IFontRenderer
 public:
 	RDX11FontRenderer();
 
-	bool		SetFontFile(const char* fontDDS) override;
+	void		SetFontTexture( CResourceTexture* pTexture) override;
 	void		Destroy() override;
 	void		Render( RENDER_TEXT_QUAD* pText ) override;
 
@@ -17,5 +17,5 @@ private:
 	ID3D11Buffer*					m_pFontBuffer;
 	UINT							m_FontBufferBytes;
 	CGrowableArray<CVertexPCT>		m_FontVertices;
-	ID3D11ShaderResourceView*		m_pFontSRV;
+	CResourceTexture*				m_pTexture;
 };

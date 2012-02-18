@@ -15,20 +15,18 @@ public:
 	IShader*		GetCurrentVS() override					{ return m_pCurrentVS; }
 	IShader*		GetCurrentPS() override					{ return m_pCurrentPS; }
 	IShader*		GetCurrentGS() override					{ return m_pCurrentGS; }
-	void			UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_BUFFER_SLOT slot, eSHADER_TYPE type) override;
+	
+	void			UpdateShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) override;
 	void			UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYPE textureType);
-
-private:
-	UINT			GetDXBufSize(SHADER_CONST_BUFFER_SLOT slot);
-
-
-	typedef ATL::CAtlMap<UINT, ID3D11Buffer*>	CONST_BUFFER_MAP;
-	CONST_BUFFER_MAP	m_ConstBufferMap[NUM_SHADER_TYPE];
+	void			UpdateTexture(CResourceTexture* pTexture, UINT slot) override;
+	
+	ID3D11Buffer*	m_ConstBuffer[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
+	UINT			m_ConstBufferSize[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
 
 	typedef ATL::CAtlMap<long, IShader*>	SHADER_MAP;
 
-	SHADER_MAP			m_ShaderMap;
-	IShader*			m_pCurrentVS;
-	IShader*			m_pCurrentPS;
-	IShader*			m_pCurrentGS;
+	SHADER_MAP		m_ShaderMap;
+	IShader*		m_pCurrentVS;
+	IShader*		m_pCurrentPS;
+	IShader*		m_pCurrentGS;
 };

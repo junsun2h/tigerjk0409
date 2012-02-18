@@ -67,6 +67,15 @@ struct CVertexPNTW
 	XMUBYTE4	fWeight;
 };
 
+struct CVertexHPNTW
+{
+	XMHALF4		vPos;
+	XMBYTE4		vNormal;
+	XMHALF2		vTex;
+	XMUBYTE4	boneIDs;
+	XMUBYTE4	fWeight;
+};
+
 inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)
 {
 	switch(type)
@@ -79,6 +88,8 @@ inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)
 
 	case FVF_4HP:				return new CVertexHP[size];
 	case FVF_4HP_4BN_2HT:		return new CVertexHPNT[size];
+	case FVF_4HP_4BN_2HT_4BW:	return new CVertexHPNTW[size];
+
 	default:
 		assert(0);
 	}
@@ -100,6 +111,7 @@ inline size_t VERTEX_STRIDE(eCVERTEX_TYPE type)
 
 	case FVF_4HP:				return 8;
 	case FVF_4HP_4BN_2HT:		return 16;
+	case FVF_4HP_4BN_2HT_4BW:	return 24;
 	default:
 		assert(0);
 	}
@@ -120,6 +132,7 @@ inline const char* VERTEX_TYPE_STRING(eCVERTEX_TYPE type)
 
 	case FVF_4HP:				return ENUMSTR(FVF_4HP);
 	case FVF_4HP_4BN_2HT:		return ENUMSTR(FVF_4HP_4BN_2HT);
+	case FVF_4HP_4BN_2HT_4BW:	return ENUMSTR(FVF_4HP_4BN_2HT_4BW);
 	default:
 		assert(0);
 	}
