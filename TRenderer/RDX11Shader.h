@@ -21,35 +21,57 @@ struct SHADER_COMPILE_DESC
 	}
 };
 
-
-class RDX11ShaderBase : public IShader
+//---------------------------------------------------------------------------------------------------------------
+class RDX11VertexShaderBase : public IShader
 {
 public:
-	RDX11ShaderBase();
-	virtual ~RDX11ShaderBase();
+	RDX11VertexShaderBase()	: m_pVertexShader(NULL)	{}
+	virtual ~RDX11VertexShaderBase()	{ Destroy();}
 
 	virtual void		Begin() override;
-	virtual void		End() override {}
-
-	virtual void		SetShaderContants(IEntityProxyRender* pRenderProxy) override {}
-	virtual void		SetShaderContants(CResourceMtrl* pMaterial) override {}
-	virtual void		SetShaderContants(XMMATRIX& tm) override {}
-
-public:
 	void				CreateVS( SHADER_COMPILE_DESC& desc);
-	void				CreatePS( SHADER_COMPILE_DESC& desc);
-	void				CreateGS( SHADER_COMPILE_DESC& desc);
 
-	void				SetRenderState(	const GRAPHIC_DEVICE_DESC desc);
-
-	void				ApplyRenderState();
-	void				Destroy();
-
+	eSHADER_TYPE		ShaderType()		{ return VERTEX_SHADER; }
+	void				Destroy()			{ SAFE_RELEASE(m_pVertexShader); }
 
 private:
 	ID3D11VertexShader*			m_pVertexShader;
-	ID3D11PixelShader*			m_pPixelShader;	
-	ID3D11GeometryShader*		m_pGeometryShader;
+};
 
+
+//---------------------------------------------------------------------------------------------------------------
+class RDX11PixelShaderBase : public IShader
+{
+public:
+	RDX11PixelShaderBase()	: m_pPixelShader(NULL)	{}
+	virtual ~RDX11PixelShaderBase()	{ Destroy();}
+
+	virtual void		Begin() override;
+	void				CreatePS( SHADER_COMPILE_DESC& desc);
+	void				SetRenderState(	const GRAPHIC_DEVICE_DESC desc);
+
+	eSHADER_TYPE		ShaderType()		{ return PIXEL_SHADER; }
+	void				Destroy()			{ SAFE_RELEASE(m_pPixelShader); }
+
+private:
+	ID3D11PixelShader*			m_pPixelShader;	
 	GRAPHIC_DEVICE_DESC			m_RenderState;
+};
+
+
+//---------------------------------------------------------------------------------------------------------------
+class RDX11GeometryShaderBase : public IShader
+{
+public:
+	RDX11GeometryShaderBase()	: m_pGeometryShader(NULL)	{}
+	virtual ~RDX11GeometryShaderBase()	{ Destroy();}
+
+	virtual void		Begin() override;
+	void				CreateGS( SHADER_COMPILE_DESC& desc);
+
+	eSHADER_TYPE		ShaderType()		{ return GEOMETRY_SHADER; }
+	void				Destroy()			{ SAFE_RELEASE(m_pGeometryShader); }
+
+private:
+	ID3D11GeometryShader*		m_pGeometryShader;
 };

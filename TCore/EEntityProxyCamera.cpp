@@ -70,7 +70,7 @@ void EEntityProxyCamera::SetViewDescFromWorldMatrix()
 
 void EEntityProxyCamera::GetPickRayFromScreen(UINT screenX, UINT screenY, CVector3& origin, CVector3& direction)
 {
-	RDeviceDesc deviceDesc = GLOBAL::Engine()->RDevice()->GetDeviceSetting();
+	RDeviceDesc deviceDesc = GLOBAL::RDevice()->GetDeviceSetting();
 
 	// Compute the vector of the pick ray in screen space
 	CVector3 v;

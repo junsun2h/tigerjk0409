@@ -4,6 +4,7 @@
 #include "IRDevice.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
+#include "IShader.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
@@ -68,11 +69,11 @@ bool EEntityProxyRender::IsRenderGeometry(long geometryID )
 
 void EEntityProxyRender::Render()
 {
-	IRDevice* pRDevice = GLOBAL::Engine()->RDevice();
+	IRenderStrategy* pRenderer = GLOBAL::Renderer();
 	long currentFrame = GLOBAL::Engine()->GetCurrentFrame();
 
 	// don't render if it's already rendered in this frame
-	eRENDER_PASS currentPass = pRDevice->GetCurrentPass();
+	eRENDER_PASS currentPass = pRenderer->GetCurrentPass();
 	if( m_RenderedFrame[currentPass] == currentFrame )
 		return;
 
@@ -80,8 +81,8 @@ void EEntityProxyRender::Render()
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
-		pRDevice->RenderElement( m_vecRenderElement[i].pGeometry, 
-								m_vecRenderElement[i].pMtrl,
-								this);
+		pRenderer->SetMaterial(  m_vecRenderElement[i].pMtrl);
+		pRenderer->SetTransform( GetEntity()->GetWorldTM() );
+		pRenderer->RenderGeometry( m_vecRenderElement[i].pGeometry );
 	}
 }

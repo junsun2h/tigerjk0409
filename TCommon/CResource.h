@@ -398,23 +398,26 @@ public:
 };
 
 //-------------------------------------------------------------------------------------------------
-enum eSHADER_TYPE
+enum eEFFECT_TYPE
 {
-	SHADER_SKIN_MESH_PASS,
-	SHADER_SHADOWMAP_PASS,
-	SHADER_CSM_SHADOWMAP_PASS,
-	SHADER_SHADOW_BLUR_PASS,
-	SHADER_LIGHT_PASS1_LAMBERT,
-	SHADER_LIGHT_PASS1_NORMALMAP,
-	SHADER_LIGHT_PASS2,
-	SHADER_LIGHT_PASS2_DIRECTIONAL,
-	SHADER_SSAO,
-	SHADER_SSAO_BLUR,
-	SHADER_SCENE_2D,
-	SHADER_SCENE_LINE,
-	SHADER_SCENE_MESH,
-};
+	GPASS_VS_LAMBERT,
+	GPASS_VS_LAMBERT_WEIGHT,
+	GPASS_VS_NORMALMAP,
+	GPASS_VS_NORMALMAP_WEIGHT,
 
+	GPASS_PS_LAMBERT,
+
+	//////////////////////////////////////////////////////////////////////////
+	MPASS_VS_FONT,
+	MPASS_VS_COLOR,
+
+	MPASS_PS_FONT,
+	MPASS_PS_COLOR,
+
+	NUM_EFFECT_TYPE,
+
+	INVAILD_EFFECT,
+};
 
 enum eTEXTURE_TYPE
 {
@@ -435,7 +438,7 @@ class CResourceMtrl : public CResourceBase
 
 public:
 	long			RID_textures[NUM_TEXTURE_TYPE];
-	eSHADER_TYPE	shaderType;
+	eEFFECT_TYPE	effectType;
 
 	eRESOURCE_TYPE	Type() const override		{ return RESOURCE_MATERIAL; }
 	std::string		strType() override	{ return ENUMSTR(RESOURCE_MATERIAL); }

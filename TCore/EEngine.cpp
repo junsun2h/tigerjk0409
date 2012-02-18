@@ -106,7 +106,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	CCAMERA_DESC cameraDesc;
 	pCamera->CopyDesc(&cameraDesc);
-	m_pRenderer->RenderFrame( &cameraDesc );
+	m_pRenderer->GetRenderer()->RenderFrame( &cameraDesc );
 
 	if( pRenderCallback )
 		pRenderCallback->PostRender();

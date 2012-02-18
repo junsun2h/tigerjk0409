@@ -106,6 +106,9 @@
     <ClInclude Include="IActorMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
+    <ClInclude Include="IShader.h">
+      <Filter>Interface_Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

@@ -11,6 +11,7 @@
 #include "ILoader.h"
 #include "ISpaceMgr.h"
 #include "IActorMgr.h"
+#include "IRDevice.h"
 
 #include "EEntity.h"
 #include "EEntityMgr.h"
@@ -34,12 +35,14 @@ namespace GLOBAL
 	EQuadSpaceTreeMgr	g_QuadSpaceMgr;
 	EActorMgr			g_ActorMgr;
 
+	IRDevice*			RDevice()			{ return g_Engine.RDevice(); }
 	IEngine*			Engine()			{ return &g_Engine;}
 	IAssetMgr*			AssetMgr() 			{ return &g_AssetMgr; }
 	IEntityMgr*			EntityMgr() 		{ return &g_EntityMgr; }
 	ILoader*			Loader() 			{ return &g_Loader; }
 	ISpaceMgr*			SpaceMgr() 			{ return &g_QuadSpaceMgr; }
 	IActorMgr*			ActorMgr()			{ return &g_ActorMgr; }
+	IRenderStrategy*	Renderer()			{ return g_Engine.RDevice()->GetRenderer(); }
 }
 
 
