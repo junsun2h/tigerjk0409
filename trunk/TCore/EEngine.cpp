@@ -86,6 +86,7 @@ void EEngine::Resize(UINT width, UINT height)
 void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback)
 {
 	float deltaTime = m_GlobalTimer.GetElapsedTime();
+	m_GlobalTimer.CountFPS(deltaTime);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 1) update Render independent system
