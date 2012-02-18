@@ -172,9 +172,7 @@ inline float CTimer::GetElapsedTime()
 	// See the explanation about clamping in CDXUTTimer::GetTimeValues()
 	if( fElapsedTime < 0.0f )
 		fElapsedTime = 0.0f;
-
-	CountFPS(fElapsedTime);
-
+	
 	return ( float )fElapsedTime;
 }
 
