@@ -100,9 +100,9 @@ bool RDX11RenderTargetMgr::CreateMainFrameTarget()
 
 void RDX11RenderTargetMgr::CreateDefferedTarget(int cx, int cy)
 {
-	CreateRenderTarget( cx, cy, COLOR_FORMAT_R10G10B10A2_UNORM, RT_GPASS1, "GPassTarget1");
-	CreateRenderTarget( cx, cy, COLOR_FORMAT_R8G8B8A8_UNORM, RT_GPASS3, "GPassTarget3");
-	CreateRenderTarget( cx, cy, COLOR_FORMAT_R8G8B8A8_UNORM, RT_LPASS, "LPassTarget");
+//	CreateRenderTarget( cx, cy, COLOR_FORMAT_R10G10B10A2_UNORM, RT_GPASS1, "GPassTarget1");
+//	CreateRenderTarget( cx, cy, COLOR_FORMAT_R8G8B8A8_UNORM, RT_GPASS3, "GPassTarget3");
+//	CreateRenderTarget( cx, cy, COLOR_FORMAT_R8G8B8A8_UNORM, RT_LPASS, "LPassTarget");
 }
 
 bool RDX11RenderTargetMgr::Resize(int cx, int cy, bool bFullScreen)

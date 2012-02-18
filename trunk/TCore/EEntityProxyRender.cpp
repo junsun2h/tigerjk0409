@@ -81,8 +81,30 @@ void EEntityProxyRender::Render()
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
-		pRenderer->SetMaterial(  m_vecRenderElement[i].pMtrl);
+		pRenderer->SetMaterial( m_vecRenderElement[i].pMtrl, m_vecRenderElement[i].pGeometry );
+
+		if( SetSkinMatrix( m_vecRenderElement[i].pGeometry ) == false)
+			return;
+
 		pRenderer->SetTransform( GetEntity()->GetWorldTM() );
 		pRenderer->RenderGeometry( m_vecRenderElement[i].pGeometry );
 	}
+}
+
+bool EEntityProxyRender::SetSkinMatrix( CResourceGeometry* pGeometry)
+{
+	if( pGeometry->IsSkinedMesh() )
+	{
+		IEntityProxyActor* pActor = (IEntityProxyActor*)GetEntity()->GetProxy(ENTITY_PROXY_ACTOR);
+		if( pActor == NULL )
+		{
+			assert(0);
+			return false;
+		}
+		
+		MOTION_POSE_MATRIX* pMotionPoseMatrix = pActor->GetAnimatoinMatrix();
+		GLOBAL::Renderer()->SetJointTransforms( &(*pMotionPoseMatrix)[0], pMotionPoseMatrix->size() ); 
+	}
+
+	return true;
 }

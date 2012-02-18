@@ -11,7 +11,9 @@ class EEntityProxyActor : public IEntityProxyActor
 public:
 	void					Destroy();
 
-	JOINT_ENTITY_LIST*		GetJointEntities() override { return &m_pJointEntities; }
+	JOINT_ENTITY_LIST*		GetJointEntities() override		{ return &m_pJointEntities; }
+	MOTION_POSE_MATRIX*		GetAnimatoinMatrix() override	{ return &m_AnimationMatrix; }
+
 	const CResourceActor*	GetResource() override;
 	void					SetActor(const CResourceActor* pResource) override;
 
@@ -39,6 +41,7 @@ private:
 	JOINT_ENTITY_LIST		m_pJointEntities;
 
 	MOTION_INSTANCE_LIST	m_PlayingMotionList;
-	MOTION_POSE				m_AnimationMatrix;
+	MOTION_POSE				m_AnimationPos;
+	MOTION_POSE_MATRIX		m_AnimationMatrix;
 	bool					m_bPause;
 };

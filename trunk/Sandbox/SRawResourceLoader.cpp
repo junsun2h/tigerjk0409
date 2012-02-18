@@ -444,14 +444,15 @@ namespace SRAW_FILE_LOADER
 
 		if( pRawMesh->weightList.size() > 0 )
 		{
-			CVertexPNTW* pVertexBuf = new CVertexPNTW[ pGeometry->vertexCount ];
-			pGeometry->eVertexType = FVF_3FP_4BN_2HT_4BW;
+			CVertexHPNTW* pVertexBuf = new CVertexHPNTW[ pGeometry->vertexCount ];
+			pGeometry->eVertexType = FVF_4HP_4BN_2HT_4BW;
 
 			for (UNIFIED_VERTEX_MAP::iterator itrVertex = vertexMap.begin(); itrVertex != vertexMap.end(); itrVertex++ )
 			{
-				CVertexPNTW* pVertex = &pVertexBuf[itrVertex->second];
+				CVertexHPNTW* pVertex = &pVertexBuf[itrVertex->second];
 
-				pVertex->vPos = pRawMesh->posList[itrVertex->first.p];
+				CVector3& vec3 = pRawMesh->posList[itrVertex->first.p];
+				pVertex->vPos = XMHALF4( vec3.x, vec3.y, vec3.z, 1);
 
 				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
 				pVertex->vTex = XMHALF2( uv.x, uv.y );

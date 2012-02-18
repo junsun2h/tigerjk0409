@@ -15,10 +15,10 @@
 
 //--------------------------------------------------------------------------------------
 RDX11FontRenderer::RDX11FontRenderer()
+	: m_pTexture(NULL)
 {
 	m_pFontBuffer = NULL;
 	m_FontBufferBytes = 0;
-	m_pFontSRV = NULL;
 }
 
 //--------------------------------------------------------------------------------------
@@ -26,21 +26,13 @@ void RDX11FontRenderer::Destroy()
 {
 	SAFE_RELEASE( m_pFontBuffer );
 	m_FontBufferBytes = 0;
-	SAFE_RELEASE( m_pFontSRV );
 }
 
 
 //--------------------------------------------------------------------------------------
-bool RDX11FontRenderer::SetFontFile(const char* fontDDS)
+void RDX11FontRenderer::SetFontTexture(CResourceTexture* pTexture)
 {
-	HRESULT hr = S_OK;
-
-	D3DX11CreateShaderResourceViewFromFileA( GLOBAL::D3DDevice(), fontDDS, NULL, NULL, &m_pFontSRV, &hr);
-
-	if( hr == S_OK )
-		return true;
-
-	return false;
+	m_pTexture = pTexture;
 }
 
 
@@ -163,14 +155,6 @@ void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 		DXUT_SetDebugName( m_pFontBuffer, "FontVertexBuffer" );
 	}
 
-	// Copy the sprites over
-	D3D11_BOX destRegion;
-	destRegion.left = 0;
-	destRegion.right = FontDataBytes;
-	destRegion.top = 0;
-	destRegion.bottom = 1;
-	destRegion.front = 0;
-	destRegion.back = 1;
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	if ( S_OK == pd3dImmediateContext->Map( m_pFontBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource ) ) 
 	{ 
@@ -178,10 +162,11 @@ void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 		pd3dImmediateContext->Unmap(m_pFontBuffer, 0);
 	}
 
-	pd3dImmediateContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
+	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_FONT)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_FONT)->Begin();
+	pShaderMgr->UpdateTexture( m_pTexture, 0);
+	pShaderMgr->GetShader(MPASS_VS_FONT)->Begin();
+	pShaderMgr->GetShader(MPASS_PS_FONT)->Begin();
 
 	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC_2HT);
@@ -191,7 +176,6 @@ void RDX11FontRenderer::Render( RENDER_TEXT_QUAD*  pText)
 	UINT Offset = 0;
 	pd3dImmediateContext->IASetVertexBuffers( 0, 1, &m_pFontBuffer, &Stride, &Offset );
 	pd3dImmediateContext->Draw( m_FontVertices.GetSize(), 0 );
-
 
 	m_FontVertices.Reset();
 }

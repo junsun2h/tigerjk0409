@@ -34,6 +34,8 @@ struct CMotionDesc;
 struct IMotionInstance;
 typedef std::vector<IMotionInstance*>	MOTION_INSTANCE_LIST;
 typedef std::vector<IEntity*>			JOINT_ENTITY_LIST;
+typedef std::vector<XMMATRIX>			MOTION_POSE_MATRIX;
+
 
 struct IEntityProxyActor : IEntityProxy
 {
@@ -41,6 +43,8 @@ struct IEntityProxyActor : IEntityProxy
 	virtual const char*				GetTypeString()		{ return "ENTITY_PROXY_ACTOR"; }
 
 	virtual	JOINT_ENTITY_LIST*		GetJointEntities() =0;
+	virtual MOTION_POSE_MATRIX*		GetAnimatoinMatrix() =0;
+
 	virtual const CResourceActor*	GetResource() = 0;
 	virtual	void					SetActor(const CResourceActor* pResource) = 0;
 

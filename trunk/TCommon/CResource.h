@@ -272,6 +272,13 @@ class CResourceGeometry : public CResourceBase
 	}
 
 public:
+	bool			IsSkinedMesh() const
+	{
+		if( eVertexType == FVF_3FP_4BN_2HT_4BW || eVertexType == FVF_4HP_4BN_2HT_4BW )
+			return true;
+		return false;
+	}
+
 	eCVERTEX_TYPE	eVertexType;
 	UINT			vertexCount;
 	void*			pVertexBuffer;

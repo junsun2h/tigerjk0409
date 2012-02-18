@@ -83,7 +83,6 @@ struct CMotionTransform
 
 typedef std::vector<CMotionTransform>	MOTION_POSE;
 
-
 struct IMotionInstance
 {
 	virtual void	Destroy() = 0;

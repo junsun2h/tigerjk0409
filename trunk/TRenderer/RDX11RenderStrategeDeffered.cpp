@@ -31,7 +31,7 @@ void RDX11RenderStrategeDeffered::RenderFrame(CCAMERA_DESC* pCameraDesc)
 	CCAMERA_DESC cameraConstant = desc;
 	cameraConstant.ViewTM = XMMatrixTranspose( desc.ViewTM );
 	cameraConstant.ProjTM = XMMatrixTranspose( desc.ProjTM );
-	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), SM_BUF12_192BYTE_SLOT1, PIXEL_SHADER );
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), 12, PIXEL_SHADER );
 
 	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
 
@@ -86,7 +86,7 @@ void RDX11RenderStrategeDeffered::RenderGeometry(CResourceGeometry* pGeometry)
 	}
 }
 
-void RDX11RenderStrategeDeffered::SetMaterial(const CResourceMtrl* pMaterial)
+void RDX11RenderStrategeDeffered::SetMaterial(const CResourceMtrl* pMaterial, const CResourceGeometry* pGeometry)
 {
 	//1. decide Effect
 	//2. set Shader
@@ -95,13 +95,21 @@ void RDX11RenderStrategeDeffered::SetMaterial(const CResourceMtrl* pMaterial)
 	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 	if( pMaterial == NULL)
 	{
-		pShaderMgr->GetShader(GPASS_VS_LAMBERT)->Begin();
+		if( pGeometry->IsSkinedMesh() )
+			pShaderMgr->GetShader(GPASS_VS_LAMBERT_WEIGHT)->Begin();
+		else
+			pShaderMgr->GetShader(GPASS_VS_LAMBERT)->Begin();
+
 		pShaderMgr->GetShader(GPASS_PS_LAMBERT)->Begin();
 	}
 }
 
 void RDX11RenderStrategeDeffered::SetTransform( const XMMATRIX& worldTM )
 {	
-	IShader* pShader = GLOBAL::ShaderMgr()->GetCurrentVS();
-	pShader->SetShaderContants(worldTM);
+	GLOBAL::ShaderMgr()->GetCurrentVS()->SetShaderContants(worldTM);
+}
+
+void RDX11RenderStrategeDeffered::SetJointTransforms( XMMATRIX* pJointTM, UINT size )
+{	
+	GLOBAL::ShaderMgr()->GetCurrentVS()->SetShaderContants( pJointTM, size);
 }

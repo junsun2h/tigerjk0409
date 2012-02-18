@@ -27,7 +27,7 @@ void RDX11VSMPassBase::SetShaderContants(const XMMATRIX& tm)
 	modelVS.wvp = XMMatrixMultiply( modelVS.wvp, pCamera->ProjTM ); 
 	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
 
-	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), SM_BUF11_192BYTE_SLOT0, VERTEX_SHADER );
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &modelVS, sizeof( TModelVS), 11, VERTEX_SHADER );
 }
 
 //------------------------------------------------------------------------------------------------------------

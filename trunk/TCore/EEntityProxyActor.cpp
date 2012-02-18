@@ -53,6 +53,8 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 
 	IEntityMgr* pEntityMgr = GLOBAL::EntityMgr();
 
+	//---------------------------------------------------------------------
+	// create Joints
 	for( UINT i=0 ; i < pResource->jointList.size(); ++i )
 	{
 		const CJoint& joint = pResource->jointList[i];
@@ -68,10 +70,19 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 			m_pJointEntities[joint.parentIndex]->AttachChild(pJointEntity, true);
 
 		m_pJointEntities.push_back(pJointEntity);
-		m_AnimationMatrix.push_back( CMotionTransform() );
+		m_AnimationPos.push_back( CMotionTransform() );
+		m_AnimationMatrix.push_back( XMMatrixIdentity() );
 	}
 
-	m_AnimationMatrix.reserve( pResource->jointList.size() );
+	m_AnimationPos.reserve( pResource->jointList.size() );
+
+	//---------------------------------------------------------------------
+	// make instance of meshes
+	IEntityProxyRender* pProxy = (IEntityProxyRender*)m_pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
+	for( UINT i=0; i < pResource->meshList.size(); ++i)
+	{
+		pProxy->Insert( pResource->meshList[i]->RID);
+	}
 }
 
 void EEntityProxyActor::Destroy()
@@ -85,9 +96,11 @@ void EEntityProxyActor::Destroy()
 
 	m_pJointEntities.clear();
 	m_PlayingMotionList.clear();
+	m_AnimationMatrix.clear();
+
 	m_pEntity = NULL;
 	m_pResource = NULL;
-	m_AnimationMatrix.clear();
+	m_AnimationPos.clear();
 	m_bPause = false;
 }
 
@@ -135,8 +148,8 @@ void EEntityProxyActor::VisibleUpdate(float deltaTime)
 	// reset animation matrix to Figure mode
 	for(UINT i=0; i < jointCount; ++i)
 	{
-		m_AnimationMatrix[i].pos = m_pResource->jointList[i].pos;
-		m_AnimationMatrix[i].rot = m_pResource->jointList[i].rot;
+		m_AnimationPos[i].pos = m_pResource->jointList[i].pos;
+		m_AnimationPos[i].rot = m_pResource->jointList[i].rot;
 	}
 
 	// Update animation
@@ -156,7 +169,7 @@ void EEntityProxyActor::VisibleUpdate(float deltaTime)
 			continue;
 		}
 
-		pMotionInstance->ApplyToMotionPose( &m_AnimationMatrix );
+		pMotionInstance->ApplyToMotionPose( &m_AnimationPos );
 		itr++;
 	}
 
@@ -192,9 +205,9 @@ void EEntityProxyActor::ApplyAnimationToActor()
 
 	for(UINT i=0; i < jointCount; ++i)
 	{
-		XMMATRIX tm = XMMatrixRotationQuaternion( m_AnimationMatrix[i].rot.m128 );
-		tm.r[3] = m_AnimationMatrix[i].pos.ToXMVEECTOR();
+		m_AnimationMatrix[i] = XMMatrixRotationQuaternion( m_AnimationPos[i].rot.m128 );
+		m_AnimationMatrix[i].r[3] = m_AnimationPos[i].pos.ToXMVEECTOR();
 
-		m_pJointEntities[i]->SetLocalTM(tm);
+		m_pJointEntities[i]->SetLocalTM(m_AnimationMatrix[i]);
 	}
 }

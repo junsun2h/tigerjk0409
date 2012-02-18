@@ -18,6 +18,8 @@ struct RDX11VSGPassLambert : public RDX11VSGPassBase
 struct RDX11VSGPassLambertWeight : public RDX11VSGPassBase
 {
 	RDX11VSGPassLambertWeight();
+
+	void	SetShaderContants(XMMATRIX* tm, UINT size) override;
 };
 
 
@@ -30,6 +32,8 @@ struct RDX11VSGPassNormalMap : public RDX11VSGPassBase
 struct RDX11VSGPassNormalMapWeight : public RDX11VSGPassBase
 {
 	RDX11VSGPassNormalMapWeight();
+
+	void	SetShaderContants(XMMATRIX* tm, UINT size) override;
 };
 
 
