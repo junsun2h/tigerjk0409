@@ -2,7 +2,7 @@
 
 
 
-class RDX11Device : public IRDX11Device
+class RDX11Device : public IRDevice
 {
 public:
 	RDX11Device();
@@ -28,12 +28,6 @@ public:
 	IRenderStrategy*	GetRenderer() override				{ return m_pCurrentRenderStrategy; }
 
 	RDeviceDesc			GetDeviceSetting() override;
-
-public:
-	/////////////////////////////////////////////////////////////////////////
-	// IRDX11Device
-	//////////////////////////////////////////////////////////////////////////
-	void				RecreateBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage = D3D11_USAGE_DEFAULT) override;
 
 public:
 	void				SetRenderStrategy(eRENDER_STRATEGY strategy);

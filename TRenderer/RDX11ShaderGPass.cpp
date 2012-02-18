@@ -3,7 +3,7 @@
 #include "CResource.h"
 #include "CCamera.h"
 
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IEntityProxy.h"
 #include "IRenderStateMgr.h"
 #include "IShader.h"

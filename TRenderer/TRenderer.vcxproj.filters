@@ -41,9 +41,6 @@
     <ClInclude Include="RDX11RenderStrategeDeffered.h" />
     <ClInclude Include="RDX11MultiThreadRenderer.h" />
     <ClInclude Include="RDX11Global.h" />
-    <ClInclude Include="IRDX11Device.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
     <ClInclude Include="RDX11FontRenderer.h" />
     <ClInclude Include="IRenderStateMgr.h">
       <Filter>Interface</Filter>

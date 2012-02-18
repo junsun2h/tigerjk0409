@@ -6,7 +6,7 @@
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IRenderHelper.h"
 #include "IAssetMgr.h"
 #include "IRenderStateMgr.h"
@@ -142,7 +142,7 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxCenter, param);
 
-	IRDX11Device* pDevice = GLOBAL::RDevice();
+	IRDevice* pDevice = GLOBAL::RDevice();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
 
 	pDevice->CreateGraphicBuffer( pBoxX);
@@ -245,7 +245,7 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
 	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 
-	IRDX11Device* pDevice = GLOBAL::RDevice();
+	IRDevice* pDevice = GLOBAL::RDevice();
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
 

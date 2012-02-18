@@ -4,7 +4,7 @@
 
 #include "IEntityProxy.h"
 #include "IShader.h"
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 
 #include "RDX11Global.h"
 #include "RDX11Shader.h"
@@ -149,6 +149,31 @@ UINT RDX11ShaderMgr::GetDXBufSize(SHADER_CONST_BUFFER_SLOT slot)
 	return 0;
 }
 
+void CreateConstantBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT bindFlag, D3D11_USAGE usage = D3D11_USAGE_DEFAULT)
+{
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof(bd) );
+	bd.Usage = usage;
+	bd.ByteWidth = size;
+	bd.BindFlags = bindFlag;
+
+	if( usage == D3D11_USAGE_STAGING )
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	else
+		bd.CPUAccessFlags = 0;
+
+	if( pData != NULL)
+	{
+		D3D11_SUBRESOURCE_DATA InitData;
+		ZeroMemory( &InitData, sizeof(InitData) );
+		InitData.pSysMem = pData;
+		TDXERROR( GLOBAL::D3DDevice()->CreateBuffer( &bd, &InitData, ppBuffer ) );
+	}
+	else
+	{
+		TDXERROR( GLOBAL::D3DDevice()->CreateBuffer( &bd, NULL, ppBuffer ) );
+	}
+}
 
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_BUFFER_SLOT slot, eSHADER_TYPE type)
@@ -164,7 +189,7 @@ void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, SHADER_CONST_
 	CONST_BUFFER_MAP::CPair* pBuffer = m_ConstBufferMap[type].Lookup( slot );
 	if( pBuffer == NULL )
 	{
-		GLOBAL::RDevice()->RecreateBuffer( &pDXBuffer, pData, GetDXBufSize(slot), D3D11_BIND_CONSTANT_BUFFER );
+		CreateConstantBuffer( &pDXBuffer, pData, GetDXBufSize(slot), D3D11_BIND_CONSTANT_BUFFER );
 		m_ConstBufferMap[type].SetAt( slot, pDXBuffer);
 	}
 	else

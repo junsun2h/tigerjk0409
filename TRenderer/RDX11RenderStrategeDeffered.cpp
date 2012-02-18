@@ -3,7 +3,7 @@
 #include "CCamera.h"
 #include "RDefine.h"
 
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "ISpaceMgr.h"
 #include "IShader.h"
 #include "IRenderStateMgr.h"

@@ -1,7 +1,7 @@
 #include "RDefine.h"
 #include "CResource.h"
 
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 #include "IEntityProxy.h"
 #include "IShader.h"
 #include "IRenderStateMgr.h"

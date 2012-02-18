@@ -7,7 +7,7 @@
 
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
-#include "IRDX11Device.h"
+#include "IRDevice.h"
 
 #include "RDX11MultiThreadRenderer.h"
 
