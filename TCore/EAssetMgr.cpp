@@ -19,12 +19,7 @@ CObjectPool<CResourceMtrl>		g_MemPoolMtrl(100);
 CResourceBase* MemGetNew(eRESOURCE_TYPE type)
 {
 	if( type == RESOURCE_GEOMETRY )			{	return g_MemPoolGeometry.GetNew();	}
-	else if( type == RESOURCE_TEXTURE )		
-	{
-		CResourceTexture* pTexture = g_MemPoolTexture.GetNew();
-		pTexture->Init();
-		return pTexture;	
-	}
+	else if( type == RESOURCE_TEXTURE )		{	return g_MemPoolTexture.GetNew(); }
 	else if( type == RESOURCE_MESH )		{	return g_MemPoolMesh.GetNew();	}
 	else if( type == RESOURCE_ACTOR )		{	return g_MemPoolActor.GetNew();	}
 	else if( type == RESOURCE_MOTION )		{	return g_MemPoolMotion.GetNew();	}

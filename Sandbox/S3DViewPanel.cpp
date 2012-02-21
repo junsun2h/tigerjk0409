@@ -59,7 +59,12 @@ void S3DViewPanel::OnIdle(wxIdleEvent& event)
 		m_bSetup = true;
 	}
 
-	GLOBAL::Engine()->UpdateAndRender( GLOBAL::ObserverCamera(), this);
+	if( GLOBAL::ObserverCamera() != NULL)
+	{
+		CCAMERA_DESC cameraDesc;
+		GLOBAL::ObserverCamera()->CopyDesc(&cameraDesc);
+		GLOBAL::Engine()->UpdateAndRender( &cameraDesc, this);
+	}
 
 	event.RequestMore();
 }

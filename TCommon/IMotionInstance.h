@@ -85,8 +85,6 @@ typedef std::vector<CMotionTransform>	MOTION_POSE;
 
 struct IMotionInstance
 {
-	virtual void	Destroy() = 0;
-
 	virtual const CMotionDesc*	GetDesc() = 0;
 	virtual const CMotionState*	GetState() = 0;							
 	virtual eMOTION_PLAY_STATE	VisibleUpdate(float timeDelta) = 0;

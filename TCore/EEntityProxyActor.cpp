@@ -15,7 +15,6 @@
 CObjectPool<EMotionInstance>	g_MemPoolMotionInstance(1000);
 
 
-
 //----------------------------------------------------------------------------------------------------------------------------
 bool SORT_MOTION_INSTANCE(IMotionInstance* pA, IMotionInstance* pB)
 {
@@ -27,6 +26,11 @@ bool SORT_MOTION_INSTANCE(IMotionInstance* pA, IMotionInstance* pB)
 
 
 //----------------------------------------------------------------------------------------------------------------------------
+EEntityProxyActor::~EEntityProxyActor()
+{
+	Destroy();
+}
+
 const CResourceActor* EEntityProxyActor::GetResource()
 {
 	return m_pResource;

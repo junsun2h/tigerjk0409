@@ -21,7 +21,7 @@ public:
 	ISpaceMgr*			SpaceMgr() override;
 	long				GetCurrentFrame() override;
 
-	void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) override;
+	void				UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback) override;
 
 private:
 	IRDevice*			m_pRenderer;

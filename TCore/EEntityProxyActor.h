@@ -6,7 +6,7 @@ class EEntityProxyActor : public IEntityProxyActor
 	// only object pool can make&delete this class
 	friend CObjectPool<EEntityProxyActor>;
 	EEntityProxyActor(){}
-	~EEntityProxyActor(){}
+	~EEntityProxyActor();
 
 public:
 	void					Destroy();

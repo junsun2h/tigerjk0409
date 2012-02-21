@@ -18,8 +18,6 @@ public:
 	bool			IsVisible() override;
 
 private:
-	void			Destroy();
-
 	UINT			m_ID;
 	std::string		m_Name;
 	std::list<UINT>	m_SpaceIDList;

@@ -5,11 +5,11 @@
 class EMotionInstance : public IMotionInstance
 {
 	friend CObjectPool<EMotionInstance>;
+	EMotionInstance(){}
+	~EMotionInstance();
+
 public:
 	void					Init(CMotionDesc* pDesc, long generateTiming);
-
-
-	void					Destroy() override;
 
 	const CMotionDesc*		GetDesc() override			{ return &m_Desc;}
 	const CMotionState*		GetState() override			{ return &m_State;}

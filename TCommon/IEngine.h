@@ -13,6 +13,7 @@ struct ISpaceMgr;
 struct IEntityProxyCamera;
 struct IRenderingCallback;
 struct CENGINE_INIT_PARAM;
+struct CCAMERA_DESC;
 
 class CTimer;
 
@@ -32,5 +33,5 @@ struct IEngine
 	virtual ISpaceMgr*			SpaceMgr() =0;
 	virtual long				GetCurrentFrame() =0;
 
-	virtual void				UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback) = 0;
+	virtual void				UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback) = 0;
 };
