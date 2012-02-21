@@ -110,6 +110,11 @@ void EEntityProxyActor::Destroy()
 
 void EEntityProxyActor::Play(CMotionDesc* pDesc)
 {
+#ifndef _PUBLISH
+	if( m_pJointEntities.size() != pDesc->pResource->jointList.size() )
+		assert(0);
+#endif
+
 	m_bPause = false;
 
 	static long generateTiming = 0;
