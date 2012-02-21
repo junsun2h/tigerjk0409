@@ -9,7 +9,6 @@ class EQuadSpaceTreeNode
 
 public:
 	void		Init(CQuad&	area, UINT spaceID );
-	void		Destroy();
 	void		Regist(IEntity* pEntity);
 	void		UnRegist(IEntity* pEntity);
 	UINT		GetID()						{ return m_SpaceID; }

@@ -35,6 +35,7 @@ typedef std::vector<IEntity*>	TYPE_ENTITY_LIST;
 
 struct IEntity
 {
+	virtual ~IEntity(){}
 	virtual	UINT			GetID()	= 0;
 	virtual std::string		GetName() = 0;
 	virtual	bool			IsVisible() = 0;

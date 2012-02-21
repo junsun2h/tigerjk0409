@@ -38,10 +38,7 @@ void RemoveProxyFromMemeory(IEntityProxy* pProxy)
 EEntity::EEntity()
 	: m_pParent(NULL)
 	, m_bCulled(true)
-{
-}
-
-void EEntity::Init(std::string& name, UINT id)
+	, m_ID(0)
 {
 	m_LocalPos = CVector3(0,0,0);
 	m_LocalScale = CVector3(1,1,1);
@@ -50,9 +47,7 @@ void EEntity::Init(std::string& name, UINT id)
 	m_WorldScale = CVector3(1,1,1);
 	m_WorldRotation = CQuat(0,0,0,1);
 	m_pParent = NULL;
-	m_Name = name;
-	m_ID = id;
-
+	
 	m_LocalTM = XMMatrixIdentity();
 	m_WorldTM = XMMatrixIdentity();
 
@@ -60,12 +55,13 @@ void EEntity::Init(std::string& name, UINT id)
 	m_WorldAABB.Reset();
 }
 
-EEntity::~EEntity()
+void EEntity::Init(std::string& name, UINT id)
 {
-	Destroy();
+	m_Name = name;
+	m_ID = id;
 }
 
-void EEntity::Destroy()
+EEntity::~EEntity()
 {
 	DeleteAllProxy();
 	DetachAllChild();
@@ -81,10 +77,6 @@ void EEntity::Destroy()
 		assert(0);
 
 	m_SpaceIDList.clear();
-	m_ID = -1;
-
-	m_LocalEntityAABB.Reset();
-	m_WorldAABB.Reset();
 }
 
 bool EEntity::IsVisible()

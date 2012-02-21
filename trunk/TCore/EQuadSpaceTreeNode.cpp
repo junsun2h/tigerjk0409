@@ -19,7 +19,6 @@ EQuadSpaceTreeNode::EQuadSpaceTreeNode()
 
 EQuadSpaceTreeNode::~EQuadSpaceTreeNode()
 {
-	Destroy();
 }
 
 void EQuadSpaceTreeNode::Init(CQuad& area, UINT spaceID )
@@ -28,11 +27,6 @@ void EQuadSpaceTreeNode::Init(CQuad& area, UINT spaceID )
 	m_bInitialized = true;
 	m_SpaceID = spaceID;
 	m_bCulled = true;
-}
-
-void EQuadSpaceTreeNode::Destroy()
-{
-	m_bInitialized = false;
 }
 
 void EQuadSpaceTreeNode::Regist(IEntity* pEntity)

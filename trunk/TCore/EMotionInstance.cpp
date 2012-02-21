@@ -5,6 +5,12 @@
 #include "EMotionInstance.h"
 
 
+EMotionInstance::~EMotionInstance()
+{
+	m_JointMatrix.clear();
+	m_Desc.pResource = NULL;
+}
+
 //--------------------------------------------------------------------------------------------------------------------
 eMOTION_PLAY_STATE EMotionInstance::VisibleUpdate(float timeDelta)
 {
@@ -180,11 +186,4 @@ void EMotionInstance::Init(CMotionDesc* pDesc, long generateTiming)
 		m_State.ePlayState = MOTION_PLAY_FADE_IN;
 
 	m_State.id = generateTiming;
-}
-
-//--------------------------------------------------------------------------------------------------------------------
-void EMotionInstance::Destroy()
-{
-	m_JointMatrix.clear();
-	m_Desc.pResource = NULL;
 }

@@ -84,9 +84,7 @@ struct CResourceBase
 	virtual eRESOURCE_TYPE	Type() const	{ return RESOURCE_INVALID; }
 	virtual std::string		strType()  { return ""; }
 	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(loadState)); }
-
-	virtual void			Destroy(){}
-
+	
 	CResourceBase()
 		: RID(-1)
 		, loadState(RESOURCE_LOAD_NONE)
@@ -212,8 +210,15 @@ class CResourceTexture : public CResourceBase
 {
 	// only object pool can make&delete this class
 	friend CObjectPool<CResourceTexture>;
-	CResourceTexture(){}
-
+	CResourceTexture()
+	{
+		pShaderResourceView = NULL;
+		pRenderTargetView = NULL;
+		pTextureSource = NULL;
+		usage = TEXTURE_NORMAL;
+		Format = COLOR_FORMAT_UNKNOWN;
+		bDeleteMemoryAfterLoading = false;
+	}
 public:
 	void*				pShaderResourceView;
 	void*				pRenderTargetView;
@@ -227,18 +232,8 @@ public:
 	UINT				height;
 	UINT				MipLevels;
 
-	void Init()
-	{
-		pShaderResourceView = NULL;
-		pRenderTargetView = NULL;
-		pTextureSource = NULL;
-		usage = TEXTURE_NORMAL;
-		Format = COLOR_FORMAT_UNKNOWN;
-		bDeleteMemoryAfterLoading = false;
-	}
-
 	eRESOURCE_TYPE	Type() const override		{ return RESOURCE_TEXTURE; }
-	std::string		strType() override	{ return ENUMSTR(RESOURCE_TEXTURE); }
+	std::string		strType() override			{ return ENUMSTR(RESOURCE_TEXTURE); }
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -261,11 +256,6 @@ class CResourceGeometry : public CResourceBase
 	}
 
 	~CResourceGeometry()
-	{
-		Destroy();
-	}
-
-	void Destroy() override
 	{
 		SAFE_DELETE_ARRAY(pVertexBuffer);
 		SAFE_DELETE_ARRAY(pIndexBuffer);
@@ -346,12 +336,9 @@ class CResourceMotion : public CResourceBase
 	CResourceMotion(){}
 	~CResourceMotion()
 	{
-		Destroy();
-	}
-	void Destroy() override	
-	{
 		jointList.clear();	
 	}
+
 public:
 	uint8				frameRate;
 	UINT				totalFrame;
@@ -385,10 +372,6 @@ class CResourceActor : public CResourceBase
 	friend CObjectPool<CResourceActor>;
 	CResourceActor(){}
 	~CResourceActor()
-	{
-		Destroy();
-	}
-	void Destroy() override	
 	{
 		meshList.clear();
 		jointList.clear();	

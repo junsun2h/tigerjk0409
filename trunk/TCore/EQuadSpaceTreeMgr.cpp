@@ -30,7 +30,7 @@ void EQuadSpaceTreeMgr::Init(UINT worldSize, UINT divideCount)
 	m_WorldStart = - int(m_WorldSize / 2);
 	m_WorldUnitLength = m_WorldSize / m_DivideCount;
 
-	m_SpaceNodePool.Init( divideCount * divideCount );
+	m_SpaceNodePool.Reserve( divideCount * divideCount );
 }
 
 void EQuadSpaceTreeMgr::Destroy()

@@ -83,7 +83,7 @@ void EEngine::Resize(UINT width, UINT height)
 }
 
 
-void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* pRenderCallback)
+void EEngine::UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback)
 {
 	float deltaTime = m_GlobalTimer.GetElapsedTime();
 	m_GlobalTimer.CountFPS(deltaTime);
@@ -94,7 +94,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list
-	GLOBAL::SpaceMgr()->UpdateVisibleSpaceList(pCamera->GetDesc());
+	GLOBAL::SpaceMgr()->UpdateVisibleSpaceList( pCameraDesc );
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system
@@ -105,9 +105,7 @@ void EEngine::UpdateAndRender(IEntityProxyCamera* pCamera, IRenderingCallback* p
 	if( pRenderCallback )
 		pRenderCallback->PreRender();
 
-	CCAMERA_DESC cameraDesc;
-	pCamera->CopyDesc(&cameraDesc);
-	m_pRenderer->GetRenderer()->RenderFrame( &cameraDesc );
+	m_pRenderer->GetRenderer()->RenderFrame( pCameraDesc );
 
 	if( pRenderCallback )
 		pRenderCallback->PostRender();

@@ -10,7 +10,6 @@ class EEntityProxyCamera : public IEntityProxyCamera
 
 public:
 	void					Init(IEntity* pEntity) override;
-	void					Destroy(){}
 
 	IEntity*				GetEntity()	override						{ return m_pEntity;}
 	void					ProcessEvent( EntityEvent &event ) override;

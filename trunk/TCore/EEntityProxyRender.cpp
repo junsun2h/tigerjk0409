@@ -10,13 +10,6 @@
 #include "EEntityProxyRender.h"
 
 
-
-void EEntityProxyRender::Destroy()
-{
-	m_vecRenderElement.clear();
-	memset( m_RenderedFrame, 0, sizeof(m_RenderedFrame) );
-}
-
 void EEntityProxyRender::Init(IEntity* pEntity)
 {
 	memset( m_RenderedFrame, 0, sizeof(m_RenderedFrame) );
