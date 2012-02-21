@@ -458,30 +458,17 @@ namespace SRAW_FILE_LOADER
 				pVertex->vTex = XMHALF2( uv.x, uv.y );
 
 				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
-				pVertex->vNormal = XMBYTE4( normal.x, normal.y, normal.z, 0 );	
+				pVertex->vNormal.x = normal.x * 127;
+				pVertex->vNormal.y = normal.y * 127;
+				pVertex->vNormal.z = normal.z * 127;
 
 				RAW_WEIGHT& w = pRawMesh->weightList[itrVertex->first.p];
 
-				if( w.count == 1 )
-				{
-					pVertex->fWeight = XMUBYTE4( w.weight[0], 0, 0, 0);
-					pVertex->boneIDs = XMUBYTE4( w.bone[0], 0, 0, 0);
-				}
-				else if( w.count == 2 )
-				{
-					pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], 0, 0);
-					pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], 0, 0);
-				}
-				else if( w.count == 3 )
-				{
-					pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], w.weight[2], 0);
-					pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], 0);
-				}
-				else if( w.count == 4 )
-				{
-					pVertex->fWeight = XMUBYTE4( w.weight[0], w.weight[1], w.weight[2], w.weight[3]);
-					pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], w.bone[3]);
-				}
+				pVertex->fWeight.x = w.weight[0] * 255;
+				pVertex->fWeight.y = w.weight[1] * 255;
+				pVertex->fWeight.z = w.weight[2] * 255;
+				pVertex->fWeight.w = w.weight[3] * 255;
+				pVertex->boneIDs = XMUBYTE4( w.bone[0], w.bone[1], w.bone[2], w.bone[3]);
 			}
 
 			pGeometry->pVertexBuffer = pVertexBuf;

@@ -12,6 +12,10 @@ namespace SRAW_FILE_LOADER
 		int		count;
 		float	weight[3];
 		uint8	bone[4];
+		RAW_WEIGHT()
+		{
+			memset(this, 0, sizeof(RAW_WEIGHT) );
+		}
 	};
 
 	struct RAW_ACTOR_NODE
