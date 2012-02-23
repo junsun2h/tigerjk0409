@@ -27,11 +27,25 @@ void RDX11RenderStrategeDeffered::RenderFrame(CCAMERA_DESC* pCameraDesc)
 
 	GLOBAL::SetCameraDesc(&desc);
 
-	// update global shader constant
+	// update global camera info
 	CCAMERA_DESC cameraConstant = desc;
 	cameraConstant.ViewTM = XMMatrixTranspose( desc.ViewTM );
 	cameraConstant.ProjTM = XMMatrixTranspose( desc.ProjTM );
 	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), 12, PIXEL_SHADER );
+
+	// update global sun light info
+	struct SunBuffer
+	{
+		CVector3	direction;
+		float		intensity;
+		CVector3	ambientColor;
+		float		ambientIntensity;
+	}sunDesc;
+
+	sunDesc.direction = CVector3::TransformNormal( CVector3(1,1,1), pCameraDesc->ViewTM );
+	sunDesc.direction = CVector3::Normalize(sunDesc.direction);
+	sunDesc.ambientColor = CVector3(0.1f, 0.f, 0.f);
+	GLOBAL::ShaderMgr()->UpdateShaderConstant( &sunDesc, sizeof( SunBuffer), 11, PIXEL_SHADER );
 
 	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
 
