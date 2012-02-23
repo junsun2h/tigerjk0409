@@ -255,7 +255,6 @@ void RDX11RenderStateMgr::CreateSampler(ID3D11Device* pD3Device)
 	TDXERROR( pD3Device->CreateSamplerState( &SamDesc, &m_SamplerStates[ANSIO16_SAMPLER] ) );
 
 	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	SamDesc.MaxLOD = 0;
 
 	TDXERROR( pD3Device->CreateSamplerState( &SamDesc, &m_SamplerStates[POINT_SAMPLER] ) );
 }
