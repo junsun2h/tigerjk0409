@@ -26,6 +26,15 @@ cbuffer CB_Camera : register( b12 )
 };
 
 
+cbuffer CB_Sun : register( b11 )
+{
+	float3	g_SunDirection;
+	float	g_SunIntensity;
+	float3	g_ambientColor;
+	float	g_ambientIntensity;	
+};
+
+
 #define SPECULAR_NONE 0
 #define SPECULAR_PHONG 1
 #define SPECULAR_MAP 2

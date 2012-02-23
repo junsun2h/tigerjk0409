@@ -319,6 +319,7 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(mtWorld);
 	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_ON);
 	DrawLine();
 }
 
