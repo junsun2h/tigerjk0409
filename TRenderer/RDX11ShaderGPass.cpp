@@ -59,7 +59,7 @@ RDX11VSGPassLambert::RDX11VSGPassLambert()
 
 	desc.szFileName = "Shader\\GPass.vs";
 	desc.szEntrypoint = "VS";
-	desc.szShaderModel = "vs_4_0";
+	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_4HP_4BN_2HT;
 
 	CreateVS(desc);
@@ -71,7 +71,7 @@ RDX11VSGPassLambertWeight::RDX11VSGPassLambertWeight()
 
 	desc.szFileName = "Shader\\GPass.vs";
 	desc.szEntrypoint = "VS_SKIN";
-	desc.szShaderModel = "vs_4_0";
+	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_4HP_4BN_2HT_4BW;
 
 	CreateVS(desc);
@@ -83,7 +83,7 @@ RDX11VSGPassNormalMap::RDX11VSGPassNormalMap()
 
 	desc.szFileName = "Shader\\GPass.vs";
 	desc.szEntrypoint = "VS";
-	desc.szShaderModel = "vs_4_0";
+	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_4HP_4BN_2HT;
 
 	CreateVS(desc);
@@ -95,7 +95,7 @@ RDX11VSGPassNormalMapWeight::RDX11VSGPassNormalMapWeight()
 
 	desc.szFileName = "Shader\\GPass.vs";
 	desc.szEntrypoint = "VS";
-	desc.szShaderModel = "vs_4_0";
+	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_4HP_4BN_2HT;
 
 	CreateVS(desc);
@@ -112,7 +112,7 @@ RDX11PSGPassBase::RDX11PSGPassBase()
 
 	desc.szFileName = "Shader\\GPass.ps";
 	desc.szEntrypoint = "PS";
-	desc.szShaderModel = "ps_4_0";
+	desc.szShaderModel = "ps_4_0_level_9_3";
 
 	CreatePS(desc);
 
