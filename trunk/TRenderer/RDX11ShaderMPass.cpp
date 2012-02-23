@@ -40,7 +40,7 @@ RDX11VSMPassColor::RDX11VSMPassColor()
 
 	desc.szFileName = "Shader\\MPass.vs";
 	desc.szEntrypoint = "VS_COLOR";
-	desc.szShaderModel = "vs_4_0";
+	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_3FP_1DC;
 
 	CreateVS(desc);
@@ -52,7 +52,7 @@ RDX11VSMPassFont::RDX11VSMPassFont()
 
 	desc.szFileName = "Shader\\MPass.vs";
 	desc.szEntrypoint = "VS_FONT";
-	desc.szShaderModel = "vs_4_0";
+	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_3FP_1DC_2HT;
 
 	CreateVS(desc);
@@ -69,7 +69,7 @@ RDX11PSMPassColor::RDX11PSMPassColor()
 
 	desc.szFileName = "Shader\\MPass.ps";
 	desc.szEntrypoint = "PS_COLOR";
-	desc.szShaderModel = "ps_4_0";
+	desc.szShaderModel = "ps_4_0_level_9_3";
 
 	CreatePS(desc);
 
@@ -88,7 +88,7 @@ RDX11PSMPassFont::RDX11PSMPassFont()
 
 	desc.szFileName = "Shader\\MPass.ps";
 	desc.szEntrypoint = "PS_FONT";
-	desc.szShaderModel = "ps_4_0";
+	desc.szShaderModel = "ps_4_0_level_9_3";
 
 	CreatePS(desc);
 
