@@ -217,26 +217,6 @@ fn fnExportMesh tmesh filePath =
 	
 	-- export material files
 	fnExportMtrl tmesh filePath
-	
-	-- export actor file
-	if arrBoneNames.count > 0 then
-	(
-		out_name = filePath + "/" + tmesh.name + ".tac"
-		out_file = createfile out_name
-		
-		format "bone %\n" arrBoneNames.count to:out_file
-
-		for i = 1 to arrBoneNames.count do 
-		(
-			p = arrBonePos[i]
-			r = arrBoneRot[i]				
-			format "% % % % % % % %\n" arrBoneNames[i] p.x p.y p.z r.x r.y r.z r.w to:out_file
-		)
-		
-		format "end\n" to:out_file
-		
-		close out_file	
-	)		
 )
 
 rollout RolloutExporter "MeshExporter" width:162 height:300
