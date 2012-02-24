@@ -392,15 +392,23 @@ namespace SRAW_FILE_LOADER
 				{
 					fgets (buf, sizeof (buf), fp);
 					RAW_WEIGHT w;
-					w.count = atoi( strtok_s( buf, delimiters , &pContext ) );
-					if( w.count > 4)
-						w.count = 4;
 
-					for(int j=0 ; j < w.count ; ++j )
+					int count = atoi( strtok_s( buf, delimiters , &pContext ) );
+					for( int wi=0; wi < count; ++ wi)
 					{
-						w.bone[j] = atoi( strtok_s( NULL, delimiters , &pContext ) );
-						if ( j < 3 )
-							w.weight[j] = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+						if( wi > 3 )
+							break;
+
+						uint8 Index = atoi( strtok_s( NULL, delimiters , &pContext ) );
+						float weight = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
+						
+						if( weight < 0.01f )
+							continue;
+
+						w.bone[w.count] = Index;
+						w.weight[w.count] = weight;
+
+						w.count++;
 					}
 
 					RawMesh.weightList.push_back( w );

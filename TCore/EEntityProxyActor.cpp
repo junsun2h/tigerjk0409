@@ -91,13 +91,6 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 
 void EEntityProxyActor::Destroy()
 {
-	IEntityMgr* pEntityMgr = GLOBAL::EntityMgr();
-	
-	for(int i = m_pJointEntities.size() -1 ; i > -1 ; --i )
-	{
-		pEntityMgr->RemoveEntity( m_pJointEntities[i]->GetID() );
-	}
-
 	m_pJointEntities.clear();
 	m_PlayingMotionList.clear();
 	m_AnimationMatrix.clear();

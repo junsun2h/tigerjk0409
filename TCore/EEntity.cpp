@@ -55,7 +55,7 @@ EEntity::EEntity()
 	m_WorldAABB.Reset();
 }
 
-void EEntity::Init(std::string& name, UINT id)
+void EEntity::Init(std::string& name, long id)
 {
 	m_Name = name;
 	m_ID = id;
