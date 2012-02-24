@@ -9,16 +9,16 @@ class EEntity : public IEntity
 	virtual ~EEntity();
 
 public:
-	void			Init(std::string& name, UINT id) override;
+	void			Init(std::string& name, long id) override;
 
-	UINT			GetID() override			{ return m_ID; };
+	long			GetID() override			{ return m_ID; };
 	std::string		GetName() override			{ return m_Name; }
 
 	void			SendEvent( EntityEvent &e ) override;
 	bool			IsVisible() override;
 
 private:
-	UINT			m_ID;
+	long			m_ID;
 	std::string		m_Name;
 	std::list<UINT>	m_SpaceIDList;
 

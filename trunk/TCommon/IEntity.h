@@ -36,11 +36,11 @@ typedef std::vector<IEntity*>	TYPE_ENTITY_LIST;
 struct IEntity
 {
 	virtual ~IEntity(){}
-	virtual	UINT			GetID()	= 0;
+	virtual	long			GetID()	= 0;
 	virtual std::string		GetName() = 0;
 	virtual	bool			IsVisible() = 0;
 
-	virtual	void			Init(std::string& name, UINT id) = 0;
+	virtual	void			Init(std::string& name, long id) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// culling information

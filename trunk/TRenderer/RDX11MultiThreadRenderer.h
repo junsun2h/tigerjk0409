@@ -8,6 +8,29 @@ enum eRENDER_BUFFER
 	NUM_RENDER_BUFFER,
 };
 
+
+struct CRenderCommandBase
+{
+	CResourceGeometry*	pGeometry;
+	XMMATRIX			worldTM;
+	CResourceMtrl*		pMaterial;
+};
+
+
+struct CRenderCommandSkin : public CRenderCommandBase
+{
+	XMMATRIX*			refSkinTM;
+	UINT				refSkinTMCount;
+};
+
+
+
+struct IRenderCommandMgr
+{
+	byte*						AddCommand(eRENDER_COMMAND cmd, size_t bufBytes);
+};
+
+
 class RDX11MultyThreadRenderer
 {
 	CGrowableArray <eRENDER_COMMAND> m_Jobs;

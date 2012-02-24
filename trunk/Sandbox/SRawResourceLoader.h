@@ -10,7 +10,7 @@ namespace SRAW_FILE_LOADER
 	struct RAW_WEIGHT
 	{
 		int		count;
-		float	weight[3];
+		float	weight[4];
 		uint8	bone[4];
 		RAW_WEIGHT()
 		{
