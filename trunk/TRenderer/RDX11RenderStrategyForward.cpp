@@ -12,7 +12,6 @@
 #include "RDX11RenderStrategyForward.h"
 
 RDX11RenderStrategeForward::RDX11RenderStrategeForward()
-	: m_currentRenderPass(OPAQUE_PASS)
 {
 
 }
@@ -48,20 +47,6 @@ void RDX11RenderStrategeForward::RenderFrame(CCAMERA_DESC* pCameraDesc)
 	GLOBAL::ShaderMgr()->UpdateShaderConstant( &sunDesc, sizeof( SunBuffer), 11, PIXEL_SHADER );
 
 	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
-
-	OpaquePass();
-	TransparentPass();
-}
-
-void RDX11RenderStrategeForward::OpaquePass()
-{
-	m_currentRenderPass = OPAQUE_PASS;
-	GLOBAL::Engine()->SpaceMgr()->Render();
-}
-
-void RDX11RenderStrategeForward::TransparentPass()
-{
-	m_currentRenderPass = TRANSPARENT_PASS;
 }
 
 void RDX11RenderStrategeForward::RenderGeometry(CResourceGeometry* pGeometry)

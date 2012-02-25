@@ -4,7 +4,7 @@
 
 struct IEntityProxyCamera;
 
-class S3DViewPanel : public wxPanel, IRenderingCallback
+class S3DViewPanel : public wxPanel
 {
 public:
 	S3DViewPanel(wxWindow* parent);
@@ -22,10 +22,8 @@ private:
 	bool	UpdateDrag(wxMouseEvent& e);
 
 	void	PickFromScreen(TYPE_ENTITY_LIST& list, long x, long y);
-
-	virtual void PostRender() override;
-	
-	bool				m_bSetup;
+		
+	bool	m_bSetup;
 
 	DECLARE_EVENT_TABLE()
 };

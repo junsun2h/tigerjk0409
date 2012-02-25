@@ -8,7 +8,6 @@
 
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
-#include "IRDevice.h"
 #include "IEntityMgr.h"
 #include "IAssetMgr.h"
 #include "ILoader.h"

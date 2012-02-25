@@ -1,9 +1,9 @@
 #include "CResource.h"
 
 #include "IEntity.h"
-#include "IRDevice.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
+#include "IRenderCommand.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
@@ -11,7 +11,7 @@
 
 void EEntityProxyRender::Init(IEntity* pEntity)
 {
-	memset( m_RenderedFrame, 0, sizeof(m_RenderedFrame) );
+	m_RenderedFrame = -1;
 	m_pEntity = pEntity;
 }
 
@@ -61,42 +61,47 @@ bool EEntityProxyRender::IsRenderGeometry(long geometryID )
 
 void EEntityProxyRender::Render()
 {
-	IRenderStrategy* pRenderer = GLOBAL::Renderer();
+	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::AsyncRenderer()->GetFillCommandQueue();
 	long currentFrame = GLOBAL::Engine()->GetCurrentFrame();
 
-	// don't render if it's already rendered in this frame
-	eRENDER_PASS currentPass = pRenderer->GetCurrentPass();
-	if( m_RenderedFrame[currentPass] == currentFrame )
+	if( m_RenderedFrame == currentFrame )
 		return;
 
-	m_RenderedFrame[currentPass] = currentFrame; 
+	m_RenderedFrame = currentFrame; 
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
-		pRenderer->SetMaterial( m_vecRenderElement[i].pMtrl, m_vecRenderElement[i].pGeometry );
-
-		if( SetSkinMatrix( m_vecRenderElement[i].pGeometry ) == false)
-			return;
-
-		pRenderer->SetTransform( GetEntity()->GetWorldTM() );
-		pRenderer->RenderGeometry( m_vecRenderElement[i].pGeometry );
-	}
-}
-
-bool EEntityProxyRender::SetSkinMatrix( CResourceGeometry* pGeometry)
-{
-	if( pGeometry->IsSkinedMesh() )
-	{
-		IEntityProxyActor* pActor = (IEntityProxyActor*)GetEntity()->GetProxy(ENTITY_PROXY_ACTOR);
-		if( pActor == NULL )
+		if( m_vecRenderElement[i].pGeometry->IsSkinedMesh() )
 		{
-			assert(0);
-			return false;
-		}
-		
-		MOTION_POSE_MATRIX* pMotionPoseMatrix = pActor->GetAnimatoinMatrix();
-		GLOBAL::Renderer()->SetJointTransforms( &(*pMotionPoseMatrix)[0], pMotionPoseMatrix->size() ); 
-	}
+			IEntityProxyActor* pActor = (IEntityProxyActor*)GetEntity()->GetProxy(ENTITY_PROXY_ACTOR);
+			if( pActor == NULL )
+			{
+				assert(0);
+				return;
+			}
+			MOTION_POSE_MATRIX* pMotionPoseMatrix = pActor->GetAnimatoinMatrix();
 
-	return true;
+			CRenderParamSkin param;
+			param.pGeometry = m_vecRenderElement[i].pGeometry;
+			param.pMaterial = m_vecRenderElement[i].pMtrl;
+			param.worldTM = GetEntity()->GetWorldTM();
+			param.refSkinTM = pMotionPoseMatrix->GetData();
+			param.refSkinTMCount = pMotionPoseMatrix->GetSize();
+
+			pCommandQueue->AddCommandStart(RC_DRAW_OBJECT_SKIN);
+			pCommandQueue->AddParam( param);
+			pCommandQueue->AddCommandEnd();
+		}
+		else
+		{
+			CRenderParam param;
+			param.pGeometry = m_vecRenderElement[i].pGeometry;
+			param.pMaterial = m_vecRenderElement[i].pMtrl;
+			param.worldTM = GetEntity()->GetWorldTM();
+
+			pCommandQueue->AddCommandStart(RC_DRAW_OBJECT);
+			pCommandQueue->AddParam( param);
+			pCommandQueue->AddCommandEnd();
+		}
+	}
 }

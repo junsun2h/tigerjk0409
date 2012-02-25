@@ -5,7 +5,6 @@
 
 #include "CResource.h"
 
-#include "IRDevice.h"
 #include "IEntity.h"
 #include "IEntityMgr.h"
 #include "IEntityProxy.h"

@@ -103,6 +103,9 @@
     <ClInclude Include="IRenderCommand.h">
       <Filter>Interface_Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="CCommandBuffer.h">
+      <Filter>DataStructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DataStructure">

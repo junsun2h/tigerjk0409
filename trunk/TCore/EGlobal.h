@@ -4,6 +4,7 @@
 
 struct IActorMgr;
 struct IRenderStrategy;
+struct IRenderCommandMgr;
 
 
 namespace GLOBAL
@@ -16,4 +17,5 @@ namespace GLOBAL
 	ISpaceMgr*			SpaceMgr();
 	IActorMgr*			ActorMgr();
 	IRenderStrategy*	Renderer();
+	IRenderCommandMgr*	AsyncRenderer();
 }
