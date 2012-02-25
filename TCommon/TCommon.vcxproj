@@ -79,20 +79,10 @@
     <ClInclude Include="CResource.h" />
     <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="CVertex.h" />
-    <ClInclude Include="IActorMgr.h" />
-    <ClInclude Include="IAssetMgr.h" />
-    <ClInclude Include="IEngine.h" />
     <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CThread.h" />
-    <ClInclude Include="IEntity.h" />
-    <ClInclude Include="IEntityMgr.h" />
-    <ClInclude Include="IEntityProxy.h" />
-    <ClInclude Include="ILoader.h" />
-    <ClInclude Include="IMotionInstance.h" />
     <ClInclude Include="CMathType.h" />
-    <ClInclude Include="IRenderer.h" />
-    <ClInclude Include="ISpaceMgr.h" />
     <ClInclude Include="xnamath.h" />
   </ItemGroup>
   <ItemGroup>

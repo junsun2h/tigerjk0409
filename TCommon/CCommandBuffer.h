@@ -175,7 +175,7 @@ public:
 	}
 
 	template<class T>
-	void	PopData(T*& pData)
+	void	PopData(T*& pData, size_t& size)
 	{
 		if( m_pSafty == 0)
 		{
@@ -184,7 +184,7 @@ public:
 		}
 
 		// pop size
-		size_t size = (size_t)*m_pBottom;
+		size = (size_t)*m_pBottom;
 		m_pBottom += 4;
 
 		// pop data

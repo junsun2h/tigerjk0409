@@ -3,9 +3,6 @@
 #include "CEngineParam.h"
 
 #include "RDefine.h"
-
-#include "IEntity.h"
-#include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IShader.h"
 #include "IRenderStateMgr.h"

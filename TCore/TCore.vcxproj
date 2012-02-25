@@ -52,7 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;TCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\TCommon;..\..\SDK\vld\include;..\TRenderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\TCommon;.\Include;..\..\SDK\vld\include;..\TRenderer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,6 +122,16 @@
     <ClInclude Include="EQuadSpaceTreeNode.h" />
     <ClInclude Include="ERenderer.h" />
     <ClInclude Include="EWinFileLoader.h" />
+    <ClInclude Include="Include\IActorMgr.h" />
+    <ClInclude Include="Include\IAssetMgr.h" />
+    <ClInclude Include="Include\IEngine.h" />
+    <ClInclude Include="Include\IEntity.h" />
+    <ClInclude Include="Include\IEntityMgr.h" />
+    <ClInclude Include="Include\IEntityProxy.h" />
+    <ClInclude Include="Include\ILoader.h" />
+    <ClInclude Include="Include\IMotionInstance.h" />
+    <ClInclude Include="Include\IRenderer.h" />
+    <ClInclude Include="Include\ISpaceMgr.h" />
     <ClInclude Include="ThirdParty\tinyxml\tinystr.h" />
     <ClInclude Include="ThirdParty\tinyxml\tinyxml.h" />
   </ItemGroup>

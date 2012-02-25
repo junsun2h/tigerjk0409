@@ -7,7 +7,7 @@ public:
 	RDX11RenderHelper();
 
 public:
-	void	RenderSkeleton(IEntity* pEntity) override;
+	void	RenderLine( CVertexPC* pVetex, UINT size) override;
 	void	RenderAxis(XMMATRIX& tm, float scale) override;
 	void	RenderScaler(XMMATRIX& tm, float scale) override;
 	void	RenderRotator(XMMATRIX& tm, float scale) override;

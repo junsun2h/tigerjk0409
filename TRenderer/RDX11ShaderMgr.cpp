@@ -2,7 +2,6 @@
 #include "RDefine.h"
 #include "CResource.h"
 
-#include "IEntityProxy.h"
 #include "IShader.h"
 #include "IRDevice.h"
 

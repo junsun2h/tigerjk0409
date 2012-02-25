@@ -2,7 +2,6 @@
 #include "CResource.h"
 
 #include "IRDevice.h"
-#include "IEntityProxy.h"
 #include "IShader.h"
 #include "IRenderStateMgr.h"
 
