@@ -67,7 +67,7 @@ struct IRDevice
 
 	virtual bool				Resize(int width, int height) = 0;
 
-	virtual	IRenderStrategy*	GetRenderer() = 0;
+	virtual	IRenderStrategy*	GetRenderStrategy() = 0;
 	virtual IRenderHelper*		GetRenderHelper() = 0;
 	virtual	RDeviceDesc			GetDeviceSetting() = 0;
 

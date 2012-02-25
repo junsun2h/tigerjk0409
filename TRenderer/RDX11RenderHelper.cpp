@@ -148,7 +148,7 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxCenter, param);
 
 	IRDevice* pDevice = GLOBAL::RDevice();
-	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
+	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
 	pDevice->CreateGraphicBuffer( pBoxX);
 	pDevice->CreateGraphicBuffer( pBoxY);
@@ -252,7 +252,7 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 
 	IRDevice* pDevice = GLOBAL::RDevice();
 	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
-	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
+	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry

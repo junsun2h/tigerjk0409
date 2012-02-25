@@ -3,7 +3,7 @@
 #include "IEntity.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
-#include "IRenderCommand.h"
+#include "IRenderer.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
@@ -61,7 +61,7 @@ bool EEntityProxyRender::IsRenderGeometry(long geometryID )
 
 void EEntityProxyRender::Render()
 {
-	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::AsyncRenderer()->GetFillCommandQueue();
+	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::Renderer()->GetFillCommandQueue();
 	long currentFrame = GLOBAL::Engine()->GetCurrentFrame();
 
 	if( m_RenderedFrame == currentFrame )

@@ -7,6 +7,7 @@ class CResourceGeometry;
 class CResourceMtrl;
 struct CCAMERA_DESC;
 struct IRenderingCallback;
+struct RENDER_TEXT_QUAD;
 
 
 enum eRENDER_BUFFER
@@ -48,11 +49,21 @@ struct CRenderParamSkin : public CRenderParam
 
 
 
-struct IRenderCommandMgr
+struct IRenderer
 {
-	virtual void	FlushAndWait() = 0;
-	virtual void	FlushWithoutWait() = 0;
+	virtual void	RenderSkeleton(IEntity* pEntity) = 0;
+	virtual void	RenderAxis(XMMATRIX& tm, float scale) = 0;
+	virtual void	RenderScaler(XMMATRIX& tm, float scale) = 0;
+	virtual void	RenderRotator(XMMATRIX& tm, float scale) =0;
+	virtual	void	RenderMover(XMMATRIX& tm, float scale) =0;
+	virtual void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) = 0;
+	virtual void	RenderWorldGrid(XMMATRIX& mtWorld, int size, int segmentCount) = 0;
+	virtual	void	RenderText(RENDER_TEXT_QUAD* pText) = 0;
+};
 
+
+struct IEngineRenderer : public IRenderer
+{
 	virtual	bool	InitAsyncRenderThreadObjects() =0;
 	virtual void	AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback) = 0;
 
