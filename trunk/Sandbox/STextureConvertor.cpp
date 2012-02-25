@@ -13,7 +13,6 @@
 #include "CResource.h"
 
 #include "IAssetMgr.h"
-#include "IRDevice.h"
 #include "ILoader.h"
 
 #include "STextureConvertor.h"

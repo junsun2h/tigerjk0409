@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RDefine.h"
-#include "IEngine.h"
 
 #include "IRDevice.h"
 #include "IRenderTargetMgr.h"
@@ -13,8 +12,6 @@ struct IShaderMgr;
 
 namespace GLOBAL
 {
-	IEngine*					Engine();
-
 	ID3D11Device*				D3DDevice();
 	ID3D11DeviceContext*		D3DContext();
 
@@ -31,6 +28,6 @@ namespace GLOBAL
 	void						Present();
 	bool						Resize(int width, int height);
 
-	bool						StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine);
+	bool						StartUp(const CENGINE_INIT_PARAM* pParam);
 	void						ShutDown();
 }

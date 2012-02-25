@@ -94,6 +94,8 @@
     <ClCompile Include="RDX11ShaderMPass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IRDevice.h" />
+    <ClInclude Include="IRenderHelper.h" />
     <ClInclude Include="IRenderStateMgr.h" />
     <ClInclude Include="IRenderTargetMgr.h" />
     <ClInclude Include="IShader.h" />

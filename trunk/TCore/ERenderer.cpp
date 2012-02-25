@@ -119,7 +119,7 @@ void ERenderer::RT_ProcessCommand()
 			}break;
 		case RC_DRAW_OBJECT:
 			{
-				CRenderParamSkin* pParam;
+				CRenderParam* pParam;
 				pQueue->PopParam(pParam);
 				pRenderStrategy->SetMaterial( pParam->pMaterial, pParam->pGeometry);
 				pRenderStrategy->SetTransform( pParam->worldTM );

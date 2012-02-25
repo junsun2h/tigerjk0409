@@ -130,10 +130,10 @@ bool RDX11RenderTargetMgr::Resize(int cx, int cy, bool bFullScreen)
 	
 	for( int i=0; i < NUM_DEFFERED_RENDER_TARGET; ++i)
 	{
-		GLOBAL::RDevice()->RemoveGraphicBuffer( m_DefferdRenderTargets[i] );
-		m_DefferdRenderTargets[i]->Width = cx;
-		m_DefferdRenderTargets[i]->height = cy;
-		GLOBAL::RDevice()->CreateGraphicBuffer( m_DefferdRenderTargets[i] );
+		GLOBAL::RDevice()->RemoveGraphicBuffer( &m_DefferdRenderTargets[i] );
+		m_DefferdRenderTargets[i].Width = cx;
+		m_DefferdRenderTargets[i].height = cy;
+		GLOBAL::RDevice()->CreateGraphicBuffer( &m_DefferdRenderTargets[i] );
 	}
 	
 	return true;
@@ -155,16 +155,11 @@ void RDX11RenderTargetMgr::ClearAndSetMaineFrame()
 
 void RDX11RenderTargetMgr::CreateRenderTarget(int width, int height, eTEXTURE_FORMAT format, eDEFFERED_RENDER_TARGET target, const char* name)
 {
-	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
+	m_DefferdRenderTargets[target].height = height;
+	m_DefferdRenderTargets[target].Width = width;
+	m_DefferdRenderTargets[target].usage = TEXTURE_RENDER_RAGET;
+	m_DefferdRenderTargets[target].Format = format;
+	m_DefferdRenderTargets[target].MipLevels = 1;
 
-	CResourceTexture* pRenderTargetTexture = (CResourceTexture*)pAssetMgr->CreateResource(RESOURCE_TEXTURE, name);
-	pRenderTargetTexture->height = height;
-	pRenderTargetTexture->Width = width;
-	pRenderTargetTexture->usage = TEXTURE_RENDER_RAGET;
-	pRenderTargetTexture->Format = format;
-	pRenderTargetTexture->MipLevels = 1;
-
-	GLOBAL::RDevice()->CreateGraphicBuffer(pRenderTargetTexture);
-
-	m_DefferdRenderTargets[target] = pRenderTargetTexture;
+	GLOBAL::RDevice()->CreateGraphicBuffer( &m_DefferdRenderTargets[target]);
 }

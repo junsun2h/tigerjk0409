@@ -5,7 +5,7 @@
 struct IActorMgr;
 struct IRenderer;
 struct IEngineRenderer;
-
+struct IRDevice;
 
 namespace GLOBAL
 {

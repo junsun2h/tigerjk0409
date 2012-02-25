@@ -2,12 +2,10 @@
 
 #include "CDefine.h"
 #include "CLog.h"
-
-struct IRDevice;		
+		
 struct IAssetMgr;
 struct IEntity;
 struct IEntityMgr;	
-struct IRenderHelper;	
 struct ILoader;
 struct ISpaceMgr;		
 struct IEntityProxyCamera;
