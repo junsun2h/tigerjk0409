@@ -1,37 +1,9 @@
 #pragma once
 
 
-enum eRENDER_BUFFER
-{
-	RENDER_BUFFER_0,
-	RENDER_BUFFER_1,
-	NUM_RENDER_BUFFER,
-};
 
 
-struct CRenderCommandBase
-{
-	CResourceGeometry*	pGeometry;
-	XMMATRIX			worldTM;
-	CResourceMtrl*		pMaterial;
-};
-
-
-struct CRenderCommandSkin : public CRenderCommandBase
-{
-	XMMATRIX*			refSkinTM;
-	UINT				refSkinTMCount;
-};
-
-
-
-struct IRenderCommandMgr
-{
-	byte*						AddCommand(eRENDER_COMMAND cmd, size_t bufBytes);
-};
-
-
-class RDX11MultyThreadRenderer
+class ERenderCommandMgr : public IRenderCommandMgr
 {
 	CGrowableArray <eRENDER_COMMAND> m_Jobs;
 	CRITICAL_SECTION			m_csRenderQueue;
@@ -51,8 +23,8 @@ class RDX11MultyThreadRenderer
 	IRDevice*					m_pRDevice;
 
 public:
-	RDX11MultyThreadRenderer();
-	~RDX11MultyThreadRenderer();
+	ERenderCommandMgr();
+	~ERenderCommandMgr();
 
 	bool                        InitAsyncRenderThreadObjects();
 	void						WaitUntilFlushFinished();
@@ -60,6 +32,7 @@ private:
 	void						RT_SignalFlushFinshed();
 
 private:
+	byte*						AddCommand(eRENDER_COMMAND cmd, CRenderCommandBase* pCommand) = 0;
 	unsigned int                RT_RenderThreadProc();
 	void		                RT_ProcessCommand();
 
@@ -68,19 +41,13 @@ private:
 	bool						IsRenderThread();
 	bool						IsMainThread();
 
-	byte*						AddCommand(eRENDER_COMMAND cmd, size_t bufBytes);
 
 	void						FlushAndWait();
 	void						FlushWithoutWait();
 
 private:	
-	_inline void	AddDWORD(byte*& ptr, uint32 nVal);
+	void						AddDWORD(byte*& ptr, uint32 nVal);
 };
 
 
 
-_inline void RDX11MultyThreadRenderer::AddDWORD(byte*& ptr, uint32 nVal)
-{
-	*(uint32*)ptr = nVal;
-	ptr += sizeof(uint32);
-}

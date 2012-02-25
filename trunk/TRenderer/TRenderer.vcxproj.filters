@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="RDX11Device.cpp" />
-    <ClCompile Include="RDX11Miscellaneous.cpp" />
     <ClCompile Include="RDX11RenderHelper.cpp" />
     <ClCompile Include="RDX11Shader.cpp">
       <Filter>Shader</Filter>
@@ -13,21 +12,19 @@
       <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="RDX11RenderTargetMgr.cpp" />
-    <ClCompile Include="RDX11RenderStrategeDeffered.cpp" />
-    <ClCompile Include="RDX11MultiThreadRenderer.cpp" />
-    <ClCompile Include="RDX11Global.cpp" />
-    <ClCompile Include="RDX11FontRenderer.cpp" />
     <ClCompile Include="RDX11ShaderGPass.cpp">
       <Filter>Shader\fx</Filter>
     </ClCompile>
     <ClCompile Include="RDX11ShaderMPass.cpp">
       <Filter>Shader\fx</Filter>
     </ClCompile>
+    <ClCompile Include="RDX11RenderStrategyForward.cpp" />
+    <ClCompile Include="RDX11Global.cpp" />
+    <ClCompile Include="RDefine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RDefine.h" />
     <ClInclude Include="RDX11Device.h" />
-    <ClInclude Include="RDX11Miscellaneous.h" />
     <ClInclude Include="RDX11DDS.h" />
     <ClInclude Include="RDX11RenderHelper.h" />
     <ClInclude Include="RDX11Shader.h">
@@ -38,10 +35,6 @@
     </ClInclude>
     <ClInclude Include="RDX11RenderStateMgr.h" />
     <ClInclude Include="RDX11RenderTargetMgr.h" />
-    <ClInclude Include="RDX11RenderStrategeDeffered.h" />
-    <ClInclude Include="RDX11MultiThreadRenderer.h" />
-    <ClInclude Include="RDX11Global.h" />
-    <ClInclude Include="RDX11FontRenderer.h" />
     <ClInclude Include="IRenderStateMgr.h">
       <Filter>Interface</Filter>
     </ClInclude>
@@ -51,6 +44,14 @@
     <ClInclude Include="RDX11ShaderMPass.h">
       <Filter>Shader\fx</Filter>
     </ClInclude>
+    <ClInclude Include="IRenderTargetMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IShader.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="RDX11RenderStrategyForward.h" />
+    <ClInclude Include="RDX11Global.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">

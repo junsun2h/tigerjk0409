@@ -4,7 +4,6 @@
 #include "IRDevice.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
-#include "IShader.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"

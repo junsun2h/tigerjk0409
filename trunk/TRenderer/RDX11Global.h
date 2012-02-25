@@ -9,7 +9,6 @@
 struct IRenderStateMgr;
 struct IShader;
 struct IShaderMgr;
-struct IFontRenderer;
 
 
 namespace GLOBAL
@@ -28,7 +27,6 @@ namespace GLOBAL
 	IShaderMgr*					ShaderMgr();
 	IRenderHelper*				RenderHelper();
 	IRenderTargetMgr*			RenderTargetMgr();
-	IFontRenderer*				FontRenderer();
 
 	void						Present();
 	bool						Resize(int width, int height);

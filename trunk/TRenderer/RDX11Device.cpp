@@ -11,8 +11,10 @@
 #include "IRenderStateMgr.h"
 
 #include "RDX11Global.h"
+#include "RDX11RenderStrategyForward.h"
+
 #include "RDX11Device.h"
-#include "RDX11RenderStrategeDeffered.h"
+
 
 
 
@@ -302,8 +304,8 @@ bool RDX11Device::SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FIL
 
 void RDX11Device::SetRenderStrategy(eRENDER_STRATEGY strategy)
 {
-	static RDX11RenderStrategeDeffered s_DefferedStrategy;
+	static RDX11RenderStrategeForward s_DefferedStrategy;
 
-	if( strategy == RS_DEFFERED )
+	if( strategy == RENDER_STRATEGY_FORWARD )
 		m_pCurrentRenderStrategy = &s_DefferedStrategy;
 }
