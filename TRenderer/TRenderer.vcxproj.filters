@@ -52,6 +52,12 @@
     </ClInclude>
     <ClInclude Include="RDX11RenderStrategyForward.h" />
     <ClInclude Include="RDX11Global.h" />
+    <ClInclude Include="IRDevice.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderHelper.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">

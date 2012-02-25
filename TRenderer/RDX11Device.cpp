@@ -39,10 +39,10 @@ RDeviceDesc	RDX11Device::GetDeviceSetting()
 }
 
 //----------------------------------------------------------------------------------------------------------
-bool RDX11Device::StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine)
+bool RDX11Device::StartUp(const CENGINE_INIT_PARAM* pParam)
 {
 	m_HWND = (HWND)pParam->hWnd;
-	return GLOBAL::StartUp(pParam, pEngine);
+	return GLOBAL::StartUp(pParam);
 }
 
 

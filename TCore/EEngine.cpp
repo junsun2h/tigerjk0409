@@ -5,6 +5,7 @@
 #include "CLog.h"
 #include "CEngineParam.h"
 #include "CCamera.h"
+#include "CResource.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -15,6 +16,7 @@
 #include "IRDevice.h"
 #include "IActorMgr.h"
 #include "IRenderer.h"
+#include "IRenderHelper.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -60,8 +62,11 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 		return false;
 
 	GLOBAL::g_pRenderer = FuncCreateRenderer();
-	GLOBAL::g_pRenderer->StartUp( pParam, this );
+	GLOBAL::g_pRenderer->StartUp( pParam );
 
+	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Loader()->LoadForward( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE );
+
+	GLOBAL::RDevice()->GetRenderHelper()->SetFontTexture( pTexture);
 	GLOBAL::Renderer()->InitAsyncRenderThreadObjects();
 
 	//////////////////////////////////////////////////////////////////////////

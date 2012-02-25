@@ -48,6 +48,11 @@ struct CRenderParamSkin : public CRenderParam
 };
 
 
+struct IRenderingCallback
+{
+	virtual void PreRender(){}
+	virtual void PostRender(){}
+};
 
 struct IRenderer
 {

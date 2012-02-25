@@ -37,12 +37,6 @@
     <ClInclude Include="ILoader.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderHelper.h">
-      <Filter>Interface_Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="IRDevice.h">
-      <Filter>Interface_Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="CTimer.h">
       <Filter>DataStructure</Filter>
     </ClInclude>
@@ -119,9 +113,6 @@
     </Filter>
     <Filter Include="Interface_Engine">
       <UniqueIdentifier>{ce05e76d-47ed-4db3-8c3f-a500dfe75778}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interface_Renderer">
-      <UniqueIdentifier>{6c45c971-f053-411a-8ca6-5a598fc84f9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

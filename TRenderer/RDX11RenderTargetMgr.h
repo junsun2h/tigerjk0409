@@ -21,5 +21,5 @@ struct RDX11RenderTargetMgr : public IRenderTargetMgr
 	void	Destroy();
 	void	ClearAndSetMaineFrame() override;
 
-	CResourceTexture*			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
+	CResourceTexture			m_DefferdRenderTargets[NUM_DEFFERED_RENDER_TARGET];
 };

@@ -208,8 +208,7 @@ enum eTEXTURE_FORMAT
 
 class CResourceTexture : public CResourceBase
 {
-	// only object pool can make&delete this class
-	friend CObjectPool<CResourceTexture>;
+public:
 	CResourceTexture()
 	{
 		pShaderResourceView = NULL;
@@ -219,7 +218,7 @@ class CResourceTexture : public CResourceBase
 		Format = COLOR_FORMAT_UNKNOWN;
 		bDeleteMemoryAfterLoading = false;
 	}
-public:
+
 	void*				pShaderResourceView;
 	void*				pRenderTargetView;
 	void*				pTextureSource;
@@ -239,8 +238,7 @@ public:
 //-------------------------------------------------------------------------------------------------
 class CResourceGeometry : public CResourceBase
 {
-	// only object pool can make&delete this class
-	friend CObjectPool<CResourceGeometry>;
+public:
 	CResourceGeometry()
 		: pVertexBuffer(NULL)
 		, pIndexBuffer(NULL)
@@ -261,7 +259,6 @@ class CResourceGeometry : public CResourceBase
 		SAFE_DELETE_ARRAY(pIndexBuffer);
 	}
 
-public:
 	bool			IsSkinedMesh() const
 	{
 		if( eVertexType == FVF_3FP_4BN_2HT_4BW || eVertexType == FVF_4HP_4BN_2HT_4BW )

@@ -11,7 +11,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 	// IRDevice
 	//////////////////////////////////////////////////////////////////////////
-	bool				StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine) override;
+	bool				StartUp(const CENGINE_INIT_PARAM* pParam) override;
 	void				ShutDown() override;
 
 	void				Present() override;

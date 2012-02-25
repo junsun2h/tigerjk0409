@@ -9,8 +9,6 @@
 
 #include "IEntityProxy.h"
 #include "IEntity.h"
-#include "IRenderHelper.h"
-#include "IRDevice.h"
 #include "IRenderer.h"
 #include "SGlobal.h"
 #include "SSelectionMgr.h"

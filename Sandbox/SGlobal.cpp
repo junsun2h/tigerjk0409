@@ -6,7 +6,6 @@
 #include "CDefine.h"
 #include "CEngineParam.h"
 
-#include "IRenderHelper.h"
 #include "IEntityProxy.h"
 #include "IEntityMgr.h"
 #include "IAssetMgr.h"

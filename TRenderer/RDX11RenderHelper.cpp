@@ -114,15 +114,14 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
 	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 
-	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
-
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
+	CObjectPool<CResourceGeometry> memPool(10);
 
-	CResourceGeometry* pBoxX = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep1");
-	CResourceGeometry* pBoxY = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep2");
-	CResourceGeometry* pBoxZ = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep3");
-	CResourceGeometry* pBoxCenter = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep4");
+	CResourceGeometry boxX;
+	CResourceGeometry boxY;
+	CResourceGeometry boxZ;
+	CResourceGeometry boxCenter;
 
 	BOX_MAKE_PARAM param;
 	param.color = COLOR_RED;
@@ -130,46 +129,46 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
 	param.max = CVector3(5.f,5.f,5.f);
 	param.offset = CVector3(scale, 0, 0);
 
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxX, param);
+	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxX, param);
 
 	param.color = COLOR_GREEN;
 	param.offset = CVector3(0, scale, 0);
 
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxY, param);
+	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxY, param);
 
 	param.color = COLOR_BLUE;
 	param.offset = CVector3(0, 0, scale);
 
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxZ, param);
+	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxZ, param);
 
 	param.color = COLOR_GRAY;
 	param.offset = CVector3(0, 0, 0);
 
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( pBoxCenter, param);
+	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxCenter, param);
 
 	IRDevice* pDevice = GLOBAL::RDevice();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
-	pDevice->CreateGraphicBuffer( pBoxX);
-	pDevice->CreateGraphicBuffer( pBoxY);
-	pDevice->CreateGraphicBuffer( pBoxZ);
-	pDevice->CreateGraphicBuffer( pBoxCenter);
+	pDevice->CreateGraphicBuffer( &boxX);
+	pDevice->CreateGraphicBuffer( &boxY);
+	pDevice->CreateGraphicBuffer( &boxZ);
+	pDevice->CreateGraphicBuffer( &boxCenter);
 	
-	pBoxX->loadState = RESOURCE_LOAD_FINISHED;
-	pBoxY->loadState = RESOURCE_LOAD_FINISHED;
-	pBoxZ->loadState = RESOURCE_LOAD_FINISHED;
-	pBoxCenter->loadState = RESOURCE_LOAD_FINISHED;
+	boxX.loadState = RESOURCE_LOAD_FINISHED;
+	boxY.loadState = RESOURCE_LOAD_FINISHED;
+	boxZ.loadState = RESOURCE_LOAD_FINISHED;
+	boxCenter.loadState = RESOURCE_LOAD_FINISHED;
 
 	pRenderer->SetTransform(tm);
-	pRenderer->RenderGeometry(pBoxX);
-	pRenderer->RenderGeometry(pBoxY);
-	pRenderer->RenderGeometry(pBoxZ);
-	pRenderer->RenderGeometry(pBoxCenter);
+	pRenderer->RenderGeometry(&boxX);
+	pRenderer->RenderGeometry(&boxY);
+	pRenderer->RenderGeometry(&boxZ);
+	pRenderer->RenderGeometry(&boxCenter);
 
-	pAssetMgr->Remove(pBoxX);
-	pAssetMgr->Remove(pBoxY);
-	pAssetMgr->Remove(pBoxZ);
-	pAssetMgr->Remove(pBoxCenter);
+	pDevice->RemoveGraphicBuffer( &boxX);
+	pDevice->RemoveGraphicBuffer( &boxY);
+	pDevice->RemoveGraphicBuffer( &boxZ);
+	pDevice->RemoveGraphicBuffer( &boxCenter);
 
 	RenderAxis(tm, scale);
 }
@@ -251,14 +250,13 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 
 	IRDevice* pDevice = GLOBAL::RDevice();
-	IAssetMgr* pAssetMgr = GLOBAL::Engine()->AssetMgr();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Create Geometry
-	CResourceGeometry* pConeX = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep1");
-	CResourceGeometry* pConeY = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep2");
-	CResourceGeometry* pConeZ = (CResourceGeometry*)pAssetMgr->CreateResource(RESOURCE_GEOMETRY, "tmep3");
+	CResourceGeometry coneX;
+	CResourceGeometry coneY;
+	CResourceGeometry coneZ;
 
 	CONE_MAKE_PARAM param;
 	param.color = COLOR_RED;
@@ -268,36 +266,36 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
 	param.offset = CVector3(scale, 0, 0);
 	param.segment = 10;
 
-	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeX, param);
+	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &coneX, param);
 
 	param.color = COLOR_GREEN;
 	param.direction = Y_AXIS;
 	param.offset = CVector3(0, scale, 0);
 
-	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeY, param);
+	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &coneY, param);
 
 	param.color = COLOR_BLUE;
 	param.direction = Z_AXIS;
 	param.offset = CVector3(0, 0, scale);
 
-	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( pConeZ, param);
+	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &coneZ, param);
 	
-	pDevice->CreateGraphicBuffer( pConeX);
-	pDevice->CreateGraphicBuffer( pConeY);
-	pDevice->CreateGraphicBuffer( pConeZ);
+	pDevice->CreateGraphicBuffer( &coneX);
+	pDevice->CreateGraphicBuffer( &coneY);
+	pDevice->CreateGraphicBuffer( &coneZ);
 
-	pConeX->loadState = RESOURCE_LOAD_FINISHED;
-	pConeY->loadState = RESOURCE_LOAD_FINISHED;
-	pConeZ->loadState = RESOURCE_LOAD_FINISHED;
+	coneX.loadState = RESOURCE_LOAD_FINISHED;
+	coneY.loadState = RESOURCE_LOAD_FINISHED;
+	coneZ.loadState = RESOURCE_LOAD_FINISHED;
 
 	pRenderer->SetTransform(tm);
-	pRenderer->RenderGeometry(pConeX);
-	pRenderer->RenderGeometry(pConeY);
-	pRenderer->RenderGeometry(pConeZ);
-	
-	pAssetMgr->Remove(pConeX);
-	pAssetMgr->Remove(pConeY);
-	pAssetMgr->Remove(pConeZ);
+	pRenderer->RenderGeometry( &coneX);
+	pRenderer->RenderGeometry( &coneY);
+	pRenderer->RenderGeometry( &coneZ);
+
+	pDevice->RemoveGraphicBuffer( &coneX);
+	pDevice->RemoveGraphicBuffer( &coneY);
+	pDevice->RemoveGraphicBuffer( &coneZ);
 
 	RenderAxis(tm, scale);
 }

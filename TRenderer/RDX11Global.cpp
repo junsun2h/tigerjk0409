@@ -26,8 +26,6 @@
 
 namespace GLOBAL
 {
-	IEngine*					g_pEngine = NULL;
-
 	ID3D11Device*				g_D3Device = NULL;
 	ID3D11DeviceContext*		g_D3DeviceContext = NULL;
 
@@ -39,8 +37,6 @@ namespace GLOBAL
 	RDX11RenderTargetMgr		g_RenderTargetMgr;
 	RDX11RenderHelper			g_RenderHelper;
 	RDX11ShaderMgr				g_ShaderMgr;
-
-	IEngine*					Engine()					{ return g_pEngine; }
 
 	ID3D11Device*				D3DDevice()					{ return g_D3Device;}
 	ID3D11DeviceContext*		D3DContext()				{ return g_D3DeviceContext; }
@@ -72,7 +68,7 @@ namespace GLOBAL
 		return g_RenderTargetMgr.Resize(width, height, false);
 	}
 
-	bool StartUp(const CENGINE_INIT_PARAM* pParam, IEngine* pEngine)
+	bool StartUp(const CENGINE_INIT_PARAM* pParam)
 	{
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 
@@ -130,10 +126,7 @@ namespace GLOBAL
 				break;
 		}
 		TDXERROR(hr);
-
-		// set global variables
-		g_pEngine = pEngine;
-
+		
 		g_DeviceSetting.width = pParam->width;
 		g_DeviceSetting.height = pParam->height;
 
@@ -146,10 +139,6 @@ namespace GLOBAL
 
 		// initialize subsystem
 		g_ShaderMgr.init();
-
-		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->Loader()->LoadForward( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE );
-		g_RenderHelper.SetFontTexture( pTexture);
-
 		g_RDX11Device.SetRenderStrategy(RENDER_STRATEGY_FORWARD);
 
 		return true;
