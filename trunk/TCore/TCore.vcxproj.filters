@@ -99,6 +99,9 @@
     <Filter Include="Animation">
       <UniqueIdentifier>{dcbe14ee-e617-486a-a9c2-1fb647eac215}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{8b527078-c3a4-4fce-88fe-2c87c3a706d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEngine.h" />
@@ -157,5 +160,35 @@
       <Filter>EntitySystem\EntityProxy</Filter>
     </ClInclude>
     <ClInclude Include="ERenderer.h" />
+    <ClInclude Include="Include\IActorMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IAssetMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IEngine.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IEntity.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IEntityMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IEntityProxy.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ILoader.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IMotionInstance.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IRenderer.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ISpaceMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

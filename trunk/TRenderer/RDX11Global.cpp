@@ -11,7 +11,6 @@
 
 #include "IRDevice.h"
 #include "IShader.h"
-#include "ILoader.h"
 #include "IRenderHelper.h"
 #include "IRenderStateMgr.h"
 #include "IRenderTargetMgr.h"

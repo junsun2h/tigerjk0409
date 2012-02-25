@@ -2,7 +2,6 @@
 #include "CColor.h"
 
 #include "IRDevice.h"
-#include "IAssetMgr.h"
 
 #include "RDX11Global.h"
 #include "RDX11RenderTargetMgr.h"

@@ -136,10 +136,10 @@ void ERenderer::RT_ProcessCommand()
 			}break;
 		case RC_DRAW_HELPER_Skeleton:
 			{
-				IEntity* pEntity;
-
-				pQueue->PopAddress(pEntity);
-				pRenderHelper->RenderSkeleton(pEntity);
+				CVertexPC* pVertex;
+				size_t size;
+				pQueue->PopData(pVertex, size);
+				pRenderHelper->RenderLine(pVertex, size);
 			}break;
 		case RC_DRAW_HELPER_Axis:
 			{
@@ -306,10 +306,10 @@ void ERenderer::AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRend
 }
 
 
-void ERenderer::RenderSkeleton(IEntity* pEntity)
+void ERenderer::RenderLine(CVertexPC* pVertex,int size)
 {
 	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Skeleton);
-	m_CommandQueue[m_FillBufferID].AddAddress(pEntity);
+	m_CommandQueue[m_FillBufferID].AddData(pVertex, size);
 	m_CommandQueue[m_FillBufferID].AddCommandEnd();
 }
 

@@ -12,7 +12,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	IRenderer
 private:	
-	void			RenderSkeleton(IEntity* pEntity) override;
+	void			RenderLine(CVertexPC* pVertex,int size) override;
 	void			RenderAxis(XMMATRIX& tm, float scale) override;
 	void			RenderScaler(XMMATRIX& tm, float scale) override;
 	void			RenderRotator(XMMATRIX& tm, float scale) override;

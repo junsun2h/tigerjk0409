@@ -51,7 +51,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;__WXMSW__;__WXDEBUG__;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\SDK\wxWidgets293\include;..\..\SDK\wxWidgets293\lib\vc_lib\mswud;..\TCommon;..\..\SDK\vld\include;..\..\SDK\ATI_Compress\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\TCommon;..\TCore\Include;..\..\SDK\wxWidgets293\include;..\..\SDK\wxWidgets293\lib\vc_lib\mswud;..\..\SDK\vld\include;..\..\SDK\ATI_Compress\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

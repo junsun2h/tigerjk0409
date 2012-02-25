@@ -5,11 +5,8 @@
 
 #include "RDefine.h"
 
-#include "IEntity.h"
-#include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IRenderHelper.h"
-#include "IAssetMgr.h"
 #include "IRenderStateMgr.h"
 #include "IShader.h"
 
@@ -42,24 +39,13 @@ void RDX11RenderHelper::Destroy()
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderSkeleton(IEntity* pEntity)
+void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, UINT size)
 {
-	IEntityProxyActor* pActor = (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR);
-	if( pActor == NULL)
-		return;
-
-	JOINT_ENTITY_LIST* pJointEntitesList = pActor->GetJointEntities();
-
 	CVertexPC v1;
 	v1.color = COLOR_RED;
 
-	for( UINT i=1; i < pJointEntitesList->size(); ++i)
-	{
-		v1.vPos = (*pJointEntitesList)[i]->GetWorldPos();
-		m_LineVertices.Add(v1);
-		v1.vPos = (*pJointEntitesList)[i]->GetParent()->GetWorldPos();
-		m_LineVertices.Add(v1);
-	}
+	for( UINT i=1; i < size; ++i)
+		m_LineVertices.Add( pVetex[i]);
 
 	// Set Line Shader
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();

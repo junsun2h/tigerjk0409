@@ -77,7 +77,23 @@ public:
 			}
 
 			// Draw skeleton if it has a actor
-			pRenderer->RenderSkeleton(pEntity);
+			/*			pRenderer->RenderSkeleton(pEntity);
+			IEntityProxyActor* pActor = (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR);
+			if( pActor == NULL)
+			return;
+
+			JOINT_ENTITY_LIST* pJointEntitesList = pActor->GetJointEntities();
+			CVertexPC v1;
+			v1.color = COLOR_RED;
+
+			for( UINT i=1; i < pJointEntitesList->size(); ++i)
+			{
+			v1.vPos = (*pJointEntitesList)[i]->GetWorldPos();
+			m_LineVertices.Add(v1);
+			v1.vPos = (*pJointEntitesList)[i]->GetParent()->GetWorldPos();
+			m_LineVertices.Add(v1);
+			}
+			*/
 		}
 	}
 }g_PostRenderer;

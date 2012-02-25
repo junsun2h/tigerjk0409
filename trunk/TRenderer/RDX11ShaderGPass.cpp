@@ -4,7 +4,6 @@
 #include "CCamera.h"
 
 #include "IRDevice.h"
-#include "IEntityProxy.h"
 #include "IRenderStateMgr.h"
 #include "IShader.h"
 

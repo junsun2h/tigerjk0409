@@ -1,118 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="CThreadSafeQueue.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CGrowableArray.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
     <ClInclude Include="xnamath.h">
       <Filter>3rdParty\xnamath</Filter>
     </ClInclude>
-    <ClInclude Include="CMathType.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CColor.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CUnitPool.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="IAssetMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="IEngine.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntity.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntityMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntityProxy.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="ILoader.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="CTimer.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CThread.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CResource.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CDefine.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CVertex.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CLine.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CPlane.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CFrustrum.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CColiision.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="ISpaceMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="CGeometryConstructor.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CLog.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CEngineParam.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CQuad.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CCamera.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CAABB.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="CFileUtility.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="IMotionInstance.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="IActorMgr.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="CCommandBuffer.h">
-      <Filter>DataStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="IRenderer.h">
-      <Filter>Interface_Engine</Filter>
-    </ClInclude>
+    <ClInclude Include="CAABB.h" />
+    <ClInclude Include="CVertex.h" />
+    <ClInclude Include="CCamera.h" />
+    <ClInclude Include="CColiision.h" />
+    <ClInclude Include="CColor.h" />
+    <ClInclude Include="CCommandBuffer.h" />
+    <ClInclude Include="CDefine.h" />
+    <ClInclude Include="CEngineParam.h" />
+    <ClInclude Include="CFileUtility.h" />
+    <ClInclude Include="CFrustrum.h" />
+    <ClInclude Include="CGeometryConstructor.h" />
+    <ClInclude Include="CGrowableArray.h" />
+    <ClInclude Include="CLine.h" />
+    <ClInclude Include="CLog.h" />
+    <ClInclude Include="CMathType.h" />
+    <ClInclude Include="CPlane.h" />
+    <ClInclude Include="CQuad.h" />
+    <ClInclude Include="CResource.h" />
+    <ClInclude Include="CThread.h" />
+    <ClInclude Include="CThreadSafeQueue.h" />
+    <ClInclude Include="CTimer.h" />
+    <ClInclude Include="CUnitPool.h" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="DataStructure">
-      <UniqueIdentifier>{ccf5d848-30a0-4ed3-80be-93a79aa124bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParty">
       <UniqueIdentifier>{f54b609a-b5c7-43aa-a37f-fd4813f7c6bb}</UniqueIdentifier>
     </Filter>
     <Filter Include="3rdParty\xnamath">
       <UniqueIdentifier>{67b9e097-a762-422f-979a-30a1af10ddc7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interface_Engine">
-      <UniqueIdentifier>{ce05e76d-47ed-4db3-8c3f-a500dfe75778}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
