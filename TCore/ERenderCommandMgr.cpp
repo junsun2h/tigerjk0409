@@ -4,12 +4,15 @@
 #include "CGrowableArray.h"
 #include "CEngineParam.h"
 #include "CCamera.h"
+#include "CCommandBuffer.h"
 
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IRenderCommand.h"
+#include "ISpaceMgr.h"
 
+#include "EGlobal.h"
 #include "ERenderCommandMgr.h"
 
 
@@ -37,13 +40,7 @@ ERenderCommandMgr::~ERenderCommandMgr()
 bool ERenderCommandMgr::InitAsyncRenderThreadObjects( )
 {
 	m_MainThreadID = ::GetCurrentThreadId();
-
-	LONG MaxSemaphoreCount = LONG_MAX;
-	m_hRenderQueueSemaphore = CreateSemaphore( NULL, 0, MaxSemaphoreCount, NULL );
-
-	// Create the queue critical sections
-	InitializeCriticalSection( &m_csRenderQueue );
-
+	
 	// Create the thread
 	m_hRenderThread = ( HANDLE )_beginthreadex( NULL, 0, _RenderThreadProc, ( LPVOID )this, CREATE_SUSPENDED, &m_RenderThreadID );
 	// we would set thread affinity here if we wanted to lock this thread to a processor
@@ -95,44 +92,89 @@ unsigned int ERenderCommandMgr::RT_RenderThreadProc()
 	return 0;
 }
 
-
 //--------------------------------------------------------------------------------------
 void ERenderCommandMgr::RT_ProcessCommand()
 {
+	IRenderHelper* pRenderHelper = GLOBAL::RDevice()->GetRenderHelper();
+	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderer();
+
 	assert (IsRenderThread());
 
 	if ( m_bReadyToFlush == false )
 		return;
+	CCommandBuffer<eRENDER_COMMAND>* pQueue = &m_CommandQueue[m_ProcBufferID];
 
-	int index = 0;
-	byte *pP;
-	while ( index < m_CommandQueue[m_ProcBufferID].GetSize() )
+	while ( !pQueue->IsEmpty() )
 	{
-		pP = &m_CommandQueue[m_ProcBufferID][index];
-		index += sizeof(int);
-		byte cmd = (byte)*((int *)pP);
+		eRENDER_COMMAND cmd = pQueue->PopCommandStart();
 
 		switch(cmd)
 		{
-		case RC_RESET_DEVICE:
-			break;
+		case RC_RenderFrame:
+			{
+				CCAMERA_DESC* pParam;
+				pQueue->PopParam(pParam);
+				pRenderer->RenderFrame(pParam);
+			}break;
+		case RC_DRAW_OBJECT:
+			{
+				CRenderParamSkin* pParam;
+				pQueue->PopParam(pParam);
+				pRenderer->SetMaterial( pParam->pMaterial, pParam->pGeometry);
+				pRenderer->SetTransform( pParam->worldTM );
+				pRenderer->RenderGeometry( pParam->pGeometry);
+			}break;
+		case RC_DRAW_OBJECT_SKIN:
+			{
+				CRenderParamSkin* pParam;
+				pQueue->PopParam(pParam);
+				pRenderer->SetMaterial( pParam->pMaterial, pParam->pGeometry);
+				pRenderer->SetTransform( pParam->worldTM );
+				pRenderer->SetJointTransforms( pParam->refSkinTM, pParam->refSkinTMCount );
+				pRenderer->RenderGeometry( pParam->pGeometry);
+			}break;
+		case RC_DRAW_HELPER_Skeleton:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_Axis:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_Scaler:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_Rotator:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_Mover:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_Box:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_WorldGrid:
+			{
+
+			}break;
+		case RC_DRAW_HELPER_Text:
+			{
+
+			}break;
 		default:
 			assert(0);
 		}
+
+		pQueue->PopCommandEnd();
 	}
 
+	GLOBAL::RDevice()->Present();
+
 	m_bReadyToFlush = false;
-}
-
-
-//--------------------------------------------------------------------------------------
-byte* ERenderCommandMgr::AddCommand(eRENDER_COMMAND cmd, CRenderCommandBase* pCommand)
-{
-	assert (IsMainThread());
-
-//	byte* ptr = m_CommandQueue[m_FillBufferID].GrowSize( sizeof(uint32) + bufBytes ); 
-//	AddDWORD(ptr, cmd);
-	return NULL;
 }
 
 
@@ -151,7 +193,6 @@ void ERenderCommandMgr::FlushAndWait()
 	WaitUntilFlushFinished();
 
 	m_ProcBufferID = tempBufferID;
-	m_CommandQueue[m_FillBufferID].RemoveAll();
 }
 
 
@@ -173,13 +214,15 @@ void ERenderCommandMgr::FlushWithoutWait()
 //--------------------------------------------------------------------------------------
 void ERenderCommandMgr::WaitUntilFlushFinished()
 {
+	HWND hwnd = GLOBAL::RDevice()->GetHWND();
+
 	while(m_bReadyToFlush)
 	{
 #ifdef WIN32
-		if ( m_pRDevice->GetHWND() )
+		if ( hwnd )
 		{
 			MSG msg;
-			while (PeekMessage(&msg, m_pRDevice->GetHWND(), 0, 0, PM_REMOVE))
+			while (PeekMessage(&msg, hwnd, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
@@ -189,8 +232,26 @@ void ERenderCommandMgr::WaitUntilFlushFinished()
 	}
 }
 
-void ERenderCommandMgr::AddDWORD(byte*& ptr, uint32 nVal)
+//--------------------------------------------------------------------------------------
+void ERenderCommandMgr::AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback)
 {
-	*(uint32*)ptr = nVal;
-	ptr += sizeof(uint32);
+	FlushWithoutWait();
+
+	if( m_CommandQueue[m_FillBufferID].IsEmpty() == false)
+	{
+		assert(0);
+		return;
+	}
+
+	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_RenderFrame);
+	m_CommandQueue[m_FillBufferID].AddParam(pCameraDesc);
+	m_CommandQueue[m_FillBufferID].AddCommandEnd();
+
+//	if( pRenderCallback )
+//		pRenderCallback->PreRender();
+
+	GLOBAL::Engine()->SpaceMgr()->Render();
+
+//	if( pRenderCallback )
+//		pRenderCallback->PostRender();
 }

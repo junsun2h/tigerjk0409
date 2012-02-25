@@ -1,5 +1,8 @@
 #pragma once
 
+#include "CGrowableArray.h"
+
+
 struct IEntity;
 struct EntityEvent;
 struct CCAMERA_DESC;
@@ -34,7 +37,7 @@ struct CMotionDesc;
 struct IMotionInstance;
 typedef std::vector<IMotionInstance*>	MOTION_INSTANCE_LIST;
 typedef std::vector<IEntity*>			JOINT_ENTITY_LIST;
-typedef std::vector<XMMATRIX>			MOTION_POSE_MATRIX;
+typedef CGrowableArray<XMMATRIX>		MOTION_POSE_MATRIX;
 
 
 struct IEntityProxyActor : IEntityProxy

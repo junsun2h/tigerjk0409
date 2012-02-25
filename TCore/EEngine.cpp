@@ -14,6 +14,7 @@
 #include "ISpaceMgr.h"
 #include "IRDevice.h"
 #include "IActorMgr.h"
+#include "IRenderCommand.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -56,6 +57,8 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 
 	m_pRenderer = FuncCreateRenderer();
 	m_pRenderer->StartUp( pParam, this );
+
+	GLOBAL::AsyncRenderer()->InitAsyncRenderThreadObjects();
 
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
@@ -100,17 +103,7 @@ void EEngine::UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRe
 	// 3) update render dependent system
 	GLOBAL::ActorMgr()->Update(deltaTime);
 
-	//////////////////////////////////////////////////////////////////////////
-	// 4) render current frame
-	if( pRenderCallback )
-		pRenderCallback->PreRender();
-
-	m_pRenderer->GetRenderer()->RenderFrame( pCameraDesc );
-
-	if( pRenderCallback )
-		pRenderCallback->PostRender();
-
-	m_pRenderer->Present();
+	GLOBAL::AsyncRenderer()->AsyncRender( pCameraDesc , pRenderCallback);
 
 	m_CurrentFrame++;
 }

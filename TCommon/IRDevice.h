@@ -16,11 +16,6 @@ class CResourceMtrl;
 enum eIMAGE_FILE_FORMAT;
 
 
-enum eRENDER_COMMAND
-{
-	RC_RESET_DEVICE,
-};
-
 enum eRENDER_STRATEGY
 {
 	RENDER_STRATEGY_FORWARD,
@@ -29,8 +24,8 @@ enum eRENDER_STRATEGY
 
 enum eRENDER_PASS
 {
-	OPAQUE_PASS,
-	TRANSPARENT_PASS,
+	RENDER_PASS_OPAQUE,
+	RENDER_PASS_TRANSPARENT,
 
 	NUM_RENDER_PASS
 };
@@ -45,8 +40,6 @@ struct IRenderStrategy
 
 	virtual	void	SetTransform( const XMMATRIX& worldTM ) = 0;
 	virtual void	SetJointTransforms( XMMATRIX* pJointTM, UINT size ) = 0;
-	
-	virtual eRENDER_PASS	GetCurrentPass() = 0;
 };
 
 struct RDeviceDesc

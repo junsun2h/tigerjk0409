@@ -3,7 +3,6 @@
 
 #include "CDefine.h"
 
-#include "IRDevice.h"
 #include "IEntity.h"
 
 #include "SGlobal.h"

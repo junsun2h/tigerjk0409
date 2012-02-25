@@ -24,9 +24,8 @@ public:
 	void					Render() override;
 
 private:
-	bool					SetSkinMatrix( CResourceGeometry* pGeometry);
 
 	IEntity*				m_pEntity;
 	RENDER_ELEMENT_LIST		m_vecRenderElement;
-	long					m_RenderedFrame[NUM_RENDER_PASS];
+	long					m_RenderedFrame;
 };

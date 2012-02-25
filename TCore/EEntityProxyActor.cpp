@@ -57,6 +57,8 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 
 	IEntityMgr* pEntityMgr = GLOBAL::EntityMgr();
 
+	m_AnimationMatrix.SetSize( pResource->jointList.size() );
+
 	//---------------------------------------------------------------------
 	// create Joints
 	for( UINT i=0 ; i < pResource->jointList.size(); ++i )
@@ -75,7 +77,7 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 
 		m_pJointEntities.push_back(pJointEntity);
 		m_AnimationPos.push_back( CMotionTransform() );
-		m_AnimationMatrix.push_back( XMMatrixIdentity() );
+		m_AnimationMatrix.Add( XMMatrixIdentity() );
 	}
 
 	m_AnimationPos.reserve( pResource->jointList.size() );
@@ -93,7 +95,7 @@ void EEntityProxyActor::Destroy()
 {
 	m_pJointEntities.clear();
 	m_PlayingMotionList.clear();
-	m_AnimationMatrix.clear();
+	m_AnimationMatrix.Reset();
 
 	m_pEntity = NULL;
 	m_pResource = NULL;
@@ -199,7 +201,6 @@ void EEntityProxyActor::CulledUpdate(float deltaTime)
 		itr++;
 	}
 }
-
 
 void EEntityProxyActor::ApplyAnimationToActor()
 {
