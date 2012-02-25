@@ -12,7 +12,6 @@
 #include "IRDevice.h"
 #include "IShader.h"
 #include "ILoader.h"
-#include "IFontRenderer.h"
 #include "IRenderHelper.h"
 #include "IRenderStateMgr.h"
 #include "IRenderTargetMgr.h"
@@ -20,7 +19,6 @@
 #include "RDX11RenderStateMgr.h"
 #include "RDX11RenderTargetMgr.h"
 #include "RDX11Device.h"
-#include "RDX11FontRenderer.h"
 #include "RDX11RenderHelper.h"
 #include "RDX11ShaderMgr.h"
 #include "RDX11Global.h"
@@ -41,7 +39,6 @@ namespace GLOBAL
 	RDX11RenderTargetMgr		g_RenderTargetMgr;
 	RDX11RenderHelper			g_RenderHelper;
 	RDX11ShaderMgr				g_ShaderMgr;
-	RDX11FontRenderer			g_FontRenderer;
 
 	IEngine*					Engine()					{ return g_pEngine; }
 
@@ -55,7 +52,6 @@ namespace GLOBAL
 	IRDevice*					RDevice()					{ return &g_RDX11Device; }
 	IRenderStateMgr*			RenderStateMgr()			{ return &g_StateRepository; }
 	IShaderMgr*					ShaderMgr()					{ return &g_ShaderMgr; }
-	IFontRenderer*				FontRenderer()				{ return &g_FontRenderer; }
 	IRenderTargetMgr*			RenderTargetMgr()			{ return &g_RenderTargetMgr; }
 	IRenderHelper*				RenderHelper()				{ return &g_RenderHelper; }
 
@@ -152,16 +148,15 @@ namespace GLOBAL
 		g_ShaderMgr.init();
 
 		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Engine()->Loader()->LoadForward( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE );
-		g_FontRenderer.SetFontTexture( pTexture);
+		g_RenderHelper.SetFontTexture( pTexture);
 
-		g_RDX11Device.SetRenderStrategy(RS_DEFFERED);
+		g_RDX11Device.SetRenderStrategy(RENDER_STRATEGY_FORWARD);
 
 		return true;
 	}
 
 	void ShutDown()
 	{
-		g_FontRenderer.Destroy();
 		g_RenderHelper.Destroy();
 		g_RenderTargetMgr.Destroy();
 		g_StateRepository.Destroy();

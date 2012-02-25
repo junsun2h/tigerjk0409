@@ -87,14 +87,12 @@
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="IEntityMgr.h" />
     <ClInclude Include="IEntityProxy.h" />
-    <ClInclude Include="IFontRenderer.h" />
     <ClInclude Include="ILoader.h" />
     <ClInclude Include="IMotionInstance.h" />
     <ClInclude Include="IRDevice.h" />
     <ClInclude Include="CMathType.h" />
+    <ClInclude Include="IRenderCommand.h" />
     <ClInclude Include="IRenderHelper.h" />
-    <ClInclude Include="IRenderTargetMgr.h" />
-    <ClInclude Include="IShader.h" />
     <ClInclude Include="ISpaceMgr.h" />
     <ClInclude Include="xnamath.h" />
   </ItemGroup>

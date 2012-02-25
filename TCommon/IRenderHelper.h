@@ -3,6 +3,7 @@
 
 struct IEntity;
 struct RENDER_TEXT_QUAD;
+class CResourceTexture;
 
 
 struct IRenderHelper
@@ -15,4 +16,6 @@ struct IRenderHelper
 	virtual void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) = 0;
 	virtual void	RenderWorldGrid(XMMATRIX& mtWorld, int size, int segmentCount) = 0;
 	virtual	void	RenderText(RENDER_TEXT_QUAD* pText) = 0;
+
+	virtual void	SetFontTexture( CResourceTexture* pTexture) =0;
 };

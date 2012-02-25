@@ -1,4 +1,4 @@
-#include "RDX11Miscellaneous.h"
+#include "RDefine.h"
 #include <d3d9types.h>
 
 
@@ -8,10 +8,10 @@
 
 //-------------------------------------------------------------------------------------- 
 HRESULT DXUTSnapD3D11Screenshot( LPCTSTR szFileName, 
-								 D3DX11_IMAGE_FILE_FORMAT iff,
-								IDXGISwapChain *pSwap,
-								ID3D11DeviceContext *dc,
-								ID3D11Device *pDevice )
+	D3DX11_IMAGE_FILE_FORMAT iff,
+	IDXGISwapChain *pSwap,
+	ID3D11DeviceContext *dc,
+	ID3D11Device *pDevice )
 {
 	if (!pSwap)
 		return E_FAIL;

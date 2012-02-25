@@ -9,15 +9,15 @@
 #include "IRenderStateMgr.h"
 
 #include "RDX11Global.h"
-#include "RDX11RenderStrategeDeffered.h"
+#include "RDX11RenderStrategyForward.h"
 
-RDX11RenderStrategeDeffered::RDX11RenderStrategeDeffered()
+RDX11RenderStrategeForward::RDX11RenderStrategeForward()
 	: m_currentRenderPass(OPAQUE_PASS)
 {
 
 }
 
-void RDX11RenderStrategeDeffered::RenderFrame(CCAMERA_DESC* pCameraDesc)
+void RDX11RenderStrategeForward::RenderFrame(CCAMERA_DESC* pCameraDesc)
 {
 	CCAMERA_DESC desc;
 
@@ -53,18 +53,18 @@ void RDX11RenderStrategeDeffered::RenderFrame(CCAMERA_DESC* pCameraDesc)
 	TransparentPass();
 }
 
-void RDX11RenderStrategeDeffered::OpaquePass()
+void RDX11RenderStrategeForward::OpaquePass()
 {
 	m_currentRenderPass = OPAQUE_PASS;
 	GLOBAL::Engine()->SpaceMgr()->Render();
 }
 
-void RDX11RenderStrategeDeffered::TransparentPass()
+void RDX11RenderStrategeForward::TransparentPass()
 {
 	m_currentRenderPass = TRANSPARENT_PASS;
 }
 
-void RDX11RenderStrategeDeffered::RenderGeometry(CResourceGeometry* pGeometry)
+void RDX11RenderStrategeForward::RenderGeometry(CResourceGeometry* pGeometry)
 {
 	if( pGeometry->loadState != RESOURCE_LOAD_FINISHED )
 	{
@@ -100,7 +100,7 @@ void RDX11RenderStrategeDeffered::RenderGeometry(CResourceGeometry* pGeometry)
 	}
 }
 
-void RDX11RenderStrategeDeffered::SetMaterial(const CResourceMtrl* pMaterial, const CResourceGeometry* pGeometry)
+void RDX11RenderStrategeForward::SetMaterial(const CResourceMtrl* pMaterial, const CResourceGeometry* pGeometry)
 {
 	//1. decide Effect
 	//2. set Shader
@@ -118,12 +118,12 @@ void RDX11RenderStrategeDeffered::SetMaterial(const CResourceMtrl* pMaterial, co
 	}
 }
 
-void RDX11RenderStrategeDeffered::SetTransform( const XMMATRIX& worldTM )
+void RDX11RenderStrategeForward::SetTransform( const XMMATRIX& worldTM )
 {	
 	GLOBAL::ShaderMgr()->GetCurrentVS()->SetShaderContants(worldTM);
 }
 
-void RDX11RenderStrategeDeffered::SetJointTransforms( XMMATRIX* pJointTM, UINT size )
+void RDX11RenderStrategeForward::SetJointTransforms( XMMATRIX* pJointTM, UINT size )
 {	
 	GLOBAL::ShaderMgr()->GetCurrentVS()->SetShaderContants( pJointTM, size);
 }

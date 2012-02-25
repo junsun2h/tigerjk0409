@@ -14,12 +14,14 @@ RDX11RenderStateMgr::RDX11RenderStateMgr()
 	, m_currentVertexType(FVF_INVALID)
 	, m_currentTopology(D3D_PRIMITIVE_TOPOLOGY_UNDEFINED)
 {
+	memset( m_pBlendType, 0, sizeof(m_pBlendType) );
+	memset( m_pRasterizerType, 0, sizeof(m_pRasterizerType) );
+	memset( m_pDepthStencilType, 0, sizeof(m_pDepthStencilType) );
+	memset( m_SamplerStates, 0, sizeof(m_SamplerStates) );
 }
 
 RDX11RenderStateMgr::~RDX11RenderStateMgr()
 {
-	if( m_bCreated )
-		Destroy();
 }
 
 void RDX11RenderStateMgr::Init()
@@ -268,30 +270,6 @@ void RDX11RenderStateMgr::ApplyRenderState(const GRAPHIC_DEVICE_DESC& desc)
 	pContext->OMSetBlendState( m_pBlendType[desc.BlendState], desc.blendFactor, desc.sampleMask );
 
 	m_CurrentDesc = desc;
-}
-
-//--------------------------------------------------------------------------------------
-void RDX11RenderStateMgr::StoreCurrentState()
-{
-	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
-
-	pContext->OMGetDepthStencilState( &m_pStoredDepthStencil, &m_StoredStencilRef );
-	pContext->RSGetState( &m_pStoredRasterizer );
-	pContext->OMGetBlendState( &m_pStoredBlend, m_StoredBlendFactor, &m_StoredSampleMask );
-}
-
-//--------------------------------------------------------------------------------------
-void RDX11RenderStateMgr::RestoreSavedState()
-{
-	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
-
-	pContext->OMSetDepthStencilState( m_pStoredDepthStencil, m_StoredStencilRef );
-	pContext->RSSetState( m_pStoredRasterizer );
-	pContext->OMSetBlendState( m_pStoredBlend, m_StoredBlendFactor, m_StoredSampleMask );
-
-	SAFE_RELEASE( m_pStoredDepthStencil );
-	SAFE_RELEASE( m_pStoredRasterizer );
-	SAFE_RELEASE( m_pStoredBlend );
 }
 
 void RDX11RenderStateMgr::SetRasterizer(RASTERIZER_TYPE RasterizerState)

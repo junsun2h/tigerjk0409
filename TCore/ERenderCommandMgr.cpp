@@ -8,8 +8,9 @@
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
 #include "IRDevice.h"
+#include "IRenderCommand.h"
 
-#include "RDX11MultiThreadRenderer.h"
+#include "ERenderCommandMgr.h"
 
 
 #define CHECK_COMMAND(ptr)	\
@@ -18,22 +19,22 @@
 //--------------------------------------------------------------------------------------
 unsigned int WINAPI _RenderThreadProc( LPVOID lpParameter )
 {
-	return ( ( RDX11MultyThreadRenderer* )lpParameter )->RT_RenderThreadProc();
+	return ( ( ERenderCommandMgr* )lpParameter )->RT_RenderThreadProc();
 }
 
-RDX11MultyThreadRenderer::RDX11MultyThreadRenderer()
+ERenderCommandMgr::ERenderCommandMgr()
 {
 	m_FillBufferID  = 0;
 	m_ProcBufferID  = 1;
 }
 
-RDX11MultyThreadRenderer::~RDX11MultyThreadRenderer()
+ERenderCommandMgr::~ERenderCommandMgr()
 {
 
 }
 
 //--------------------------------------------------------------------------------------
-bool RDX11MultyThreadRenderer::InitAsyncRenderThreadObjects( )
+bool ERenderCommandMgr::InitAsyncRenderThreadObjects( )
 {
 	m_MainThreadID = ::GetCurrentThreadId();
 
@@ -53,7 +54,7 @@ bool RDX11MultyThreadRenderer::InitAsyncRenderThreadObjects( )
 
 
 //--------------------------------------------------------------------------------------
-bool RDX11MultyThreadRenderer::IsRenderThread()
+bool ERenderCommandMgr::IsRenderThread()
 {
 	if (::GetCurrentThreadId() == m_RenderThreadID )
 		return true;
@@ -62,7 +63,7 @@ bool RDX11MultyThreadRenderer::IsRenderThread()
 
 
 //--------------------------------------------------------------------------------------
-bool RDX11MultyThreadRenderer::IsMainThread()
+bool ERenderCommandMgr::IsMainThread()
 {
 	if (::GetCurrentThreadId() == m_MainThreadID )
 		return true;
@@ -71,7 +72,7 @@ bool RDX11MultyThreadRenderer::IsMainThread()
 
 
 //--------------------------------------------------------------------------------------
-unsigned int RDX11MultyThreadRenderer::RT_RenderThreadProc()
+unsigned int ERenderCommandMgr::RT_RenderThreadProc()
 {
 	while( !m_bDone )
 	{
@@ -96,7 +97,7 @@ unsigned int RDX11MultyThreadRenderer::RT_RenderThreadProc()
 
 
 //--------------------------------------------------------------------------------------
-void RDX11MultyThreadRenderer::RT_ProcessCommand()
+void ERenderCommandMgr::RT_ProcessCommand()
 {
 	assert (IsRenderThread());
 
@@ -125,18 +126,18 @@ void RDX11MultyThreadRenderer::RT_ProcessCommand()
 
 
 //--------------------------------------------------------------------------------------
-byte* RDX11MultyThreadRenderer::AddCommand(eRENDER_COMMAND cmd, size_t bufBytes)
+byte* ERenderCommandMgr::AddCommand(eRENDER_COMMAND cmd, CRenderCommandBase* pCommand)
 {
 	assert (IsMainThread());
 
-	byte* ptr = m_CommandQueue[m_FillBufferID].GrowSize( sizeof(uint32) + bufBytes ); 
-	AddDWORD(ptr, cmd);
-	return ptr;
+//	byte* ptr = m_CommandQueue[m_FillBufferID].GrowSize( sizeof(uint32) + bufBytes ); 
+//	AddDWORD(ptr, cmd);
+	return NULL;
 }
 
 
 //--------------------------------------------------------------------------------------
-void RDX11MultyThreadRenderer::FlushAndWait()
+void ERenderCommandMgr::FlushAndWait()
 {
 	if ( IsRenderThread() )
 		return;
@@ -155,7 +156,7 @@ void RDX11MultyThreadRenderer::FlushAndWait()
 
 
 //--------------------------------------------------------------------------------------
-void RDX11MultyThreadRenderer::FlushWithoutWait()
+void ERenderCommandMgr::FlushWithoutWait()
 {
 	assert (IsMainThread());
 
@@ -170,7 +171,7 @@ void RDX11MultyThreadRenderer::FlushWithoutWait()
 
 
 //--------------------------------------------------------------------------------------
-void RDX11MultyThreadRenderer::WaitUntilFlushFinished()
+void ERenderCommandMgr::WaitUntilFlushFinished()
 {
 	while(m_bReadyToFlush)
 	{
@@ -188,3 +189,8 @@ void RDX11MultyThreadRenderer::WaitUntilFlushFinished()
 	}
 }
 
+void ERenderCommandMgr::AddDWORD(byte*& ptr, uint32 nVal)
+{
+	*(uint32*)ptr = nVal;
+	ptr += sizeof(uint32);
+}

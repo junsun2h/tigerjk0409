@@ -15,15 +15,27 @@ public:
 	void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) override;
 	void	RenderWorldGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
 	void	RenderText(RENDER_TEXT_QUAD* pText) override;
-	
-public:
-	void	Destroy();
-	void	ApplyRenderState();
 
+	void	SetFontTexture( CResourceTexture* pTexture) override	{	m_pFontTexture = pTexture;	}
+
+	void	Destroy();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Line
 private:
 	void	DrawLine();
 
 	UINT						m_LineBufferBytes;
 	CGrowableArray<CVertexPC>	m_LineVertices;
 	ID3D11Buffer*				m_pLineBuffer;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Font
+private:
+	void	FillFontVertex( RENDER_TEXT_QUAD* pText );
+
+	ID3D11Buffer*				m_pFontBuffer;
+	UINT						m_FontBufferBytes;
+	CGrowableArray<CVertexPCT>	m_FontVertices;
+	CResourceTexture*			m_pFontTexture;
 };

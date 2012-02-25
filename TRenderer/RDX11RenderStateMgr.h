@@ -11,8 +11,8 @@ public:
 	virtual void	Init() override;
 	virtual void	Destroy() override;
 
-	virtual void	StoreCurrentState() override;
-	virtual void	RestoreSavedState() override;
+	virtual void	StoreCurrentState() override 	{	m_TemporaySavedDesc = m_CurrentDesc;	}
+	virtual void	RestoreSavedState() override	{	ApplyRenderState(m_TemporaySavedDesc);	}
 
 	virtual void	ApplyRenderState(const GRAPHIC_DEVICE_DESC& desc) override;
 	virtual void	SetRasterizer(RASTERIZER_TYPE RasterizerState) override;
@@ -30,21 +30,14 @@ private:
 	void						CreateRasterizerStates(ID3D11Device* pD3Device);
 	void						CreateDepthStencilStates(ID3D11Device* pD3Device);
 
-	bool						m_bCreated;
-	GRAPHIC_DEVICE_DESC			m_CurrentDesc;
-
 	ID3D11BlendState*			m_pBlendType[NUM_ALPHA_BLEND_TYPE];
 	ID3D11RasterizerState*		m_pRasterizerType[NUM_RASTERIZER_TYPE];
 	ID3D11DepthStencilState*	m_pDepthStencilType[NUM_DEPTH_STENCIL];
 	ID3D11SamplerState*			m_SamplerStates[NUM_SAMPLER_TYPE];
-	
-	// temporary object to save device states
-	ID3D11DepthStencilState*	m_pStoredDepthStencil;
-	UINT						m_StoredStencilRef;
-	ID3D11RasterizerState*		m_pStoredRasterizer;
-	ID3D11BlendState*			m_pStoredBlend;
-	float						m_StoredBlendFactor[4];
-	UINT						m_StoredSampleMask;
+
+	bool						m_bCreated;
+	GRAPHIC_DEVICE_DESC			m_CurrentDesc;
+	GRAPHIC_DEVICE_DESC			m_TemporaySavedDesc;
 
 	typedef ATL::CAtlMap<eCVERTEX_TYPE, ID3D11InputLayout*>	INPUT_LAYOUT_MAP;
 	INPUT_LAYOUT_MAP			m_InputLayoutMap;
