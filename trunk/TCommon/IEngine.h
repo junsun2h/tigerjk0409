@@ -14,6 +14,7 @@ struct IEntityProxyCamera;
 struct IRenderingCallback;
 struct CENGINE_INIT_PARAM;
 struct CCAMERA_DESC;
+struct IRenderer;
 
 class CTimer;
 
@@ -23,11 +24,10 @@ struct IEngine
 	virtual bool				ShutDown() = 0;
 	virtual void				Resize(UINT width, UINT height) = 0;
 
-	virtual IRDevice*			RDevice() = 0;
 	virtual IAssetMgr*			AssetMgr() = 0;
 	virtual IEntityMgr*			EntityMgr() =0;
+	virtual IRenderer*			Renderer() = 0;
 
-	virtual IRenderHelper*		RenderHelper() =0;
 	virtual CTimer*				GlobalTimer() = 0;
 	virtual ILoader*			Loader() = 0;
 	virtual ISpaceMgr*			SpaceMgr() =0;

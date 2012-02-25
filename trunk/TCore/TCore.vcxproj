@@ -96,7 +96,7 @@
     <ClCompile Include="EMotionDataProcessor.cpp" />
     <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
-    <ClCompile Include="ERenderCommandMgr.cpp" />
+    <ClCompile Include="ERenderer.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
     <ClCompile Include="ThirdParty\tinyxml\tinystr.cpp" />
     <ClCompile Include="ThirdParty\tinyxml\tinyxml.cpp" />
@@ -120,8 +120,8 @@
     <ClInclude Include="EMotionDataProcessor.h" />
     <ClInclude Include="EQuadSpaceTreeMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h" />
+    <ClInclude Include="ERenderer.h" />
     <ClInclude Include="EWinFileLoader.h" />
-    <ClInclude Include="ERenderCommandMgr.h" />
     <ClInclude Include="ThirdParty\tinyxml\tinystr.h" />
     <ClInclude Include="ThirdParty\tinyxml\tinyxml.h" />
   </ItemGroup>

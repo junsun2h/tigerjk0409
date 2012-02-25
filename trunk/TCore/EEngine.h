@@ -10,12 +10,10 @@ public:
 	bool				ShutDown() override;
 	void				Resize(UINT width, UINT height) override;
 
-	IRDevice*			RDevice() override;
-	
 	IAssetMgr*			AssetMgr() override;
 	IEntityMgr*			EntityMgr() override;
+	IRenderer*			Renderer() override;
 
-	IRenderHelper*		RenderHelper() override;
 	CTimer*				GlobalTimer() override;
 	ILoader*			Loader() override;
 	ISpaceMgr*			SpaceMgr() override;
@@ -24,8 +22,6 @@ public:
 	void				UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback) override;
 
 private:
-	IRDevice*			m_pRenderer;
-
 	long				m_CurrentFrame;
 	CTimer				m_GlobalTimer;
 };

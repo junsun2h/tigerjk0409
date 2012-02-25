@@ -313,7 +313,7 @@ CResourceBase* ELoader::LoadForward(const char* fileName, char* name, eRESOURCE_
 	else if(RESOURCE_FILE_TEXTURE == type )
 	{
 		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
-		GLOBAL::Engine()->RDevice()->CreateTextureFromFile(fileName, pTexture);
+		GLOBAL::RDevice()->CreateTextureFromFile(fileName, pTexture);
 		pTexture->loadState = RESOURCE_LOAD_FINISHED;
 		return pTexture;
 	}

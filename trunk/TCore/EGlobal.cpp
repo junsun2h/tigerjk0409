@@ -13,7 +13,7 @@
 #include "ISpaceMgr.h"
 #include "IActorMgr.h"
 #include "IRDevice.h"
-#include "IRenderCommand.h"
+#include "IRenderer.h"
 
 #include "EEntity.h"
 #include "EEntityMgr.h"
@@ -22,7 +22,7 @@
 #include "EQuadSpaceTreeNode.h"
 #include "EQuadSpaceTreeMgr.h"
 #include "EActorMgr.h"
-#include "ERenderCommandMgr.h"
+#include "ERenderer.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -37,17 +37,17 @@ namespace GLOBAL
 	ELoader				g_Loader;
 	EQuadSpaceTreeMgr	g_QuadSpaceMgr;
 	EActorMgr			g_ActorMgr;
-	ERenderCommandMgr	g_RenderCommandMgr;
+	ERenderer			g_Renderer;
+	IRDevice*			g_pRenderer = NULL;
 
-	IRDevice*			RDevice()			{ return g_Engine.RDevice(); }
+	IRDevice*			RDevice()			{ return g_pRenderer; }
 	IEngine*			Engine()			{ return &g_Engine;}
 	IAssetMgr*			AssetMgr() 			{ return &g_AssetMgr; }
 	IEntityMgr*			EntityMgr() 		{ return &g_EntityMgr; }
 	ILoader*			Loader() 			{ return &g_Loader; }
 	ISpaceMgr*			SpaceMgr() 			{ return &g_QuadSpaceMgr; }
 	IActorMgr*			ActorMgr()			{ return &g_ActorMgr; }
-	IRenderStrategy*	Renderer()			{ return g_Engine.RDevice()->GetRenderer(); }
-	IRenderCommandMgr*	AsyncRenderer()		{ return &g_RenderCommandMgr;}
+	IEngineRenderer*	Renderer()			{ return &g_Renderer;}
 }
 
 

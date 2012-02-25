@@ -11,7 +11,7 @@
 #include "IEntity.h"
 #include "IRenderHelper.h"
 #include "IRDevice.h"
-
+#include "IRenderer.h"
 #include "SGlobal.h"
 #include "SSelectionMgr.h"
 #include "SPropertyPanel.h"
@@ -24,8 +24,8 @@ class PostRenderer : public IRenderingCallback
 public:
 	virtual void PostRender() override
 	{
-		IRenderHelper* pRenderHelper	= GLOBAL::Engine()->RenderHelper();
-		eTRANSFORM_MODE mode			= GLOBAL::SelectionMgr()->GetTransformMode();
+		IRenderer* pRenderer	= GLOBAL::Engine()->Renderer();
+		eTRANSFORM_MODE mode	= GLOBAL::SelectionMgr()->GetTransformMode();
 
 		int FPS = GLOBAL::Engine()->GlobalTimer()->GetFPS();
 
@@ -37,8 +37,8 @@ public:
 		textFPS.rc.bottom = 100;
 		textFPS.clr = CColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
-		pRenderHelper->RenderText(&textFPS);
-		pRenderHelper->RenderWorldGrid( XMMatrixIdentity(), 5000, 100 );
+		pRenderer->RenderText(&textFPS);
+		pRenderer->RenderWorldGrid( XMMatrixIdentity(), 5000, 100 );
 
 		TYPE_SELECTED_ENTITIES*	selcetedEntities =	GLOBAL::SelectionMgr()->List();
 
@@ -53,33 +53,33 @@ public:
 
 			if( mode == TRANSFORM_MOVE) 
 			{
-				pRenderHelper->RenderMover( tm, TRANSFORM_HELPER_EXTENT );
+				pRenderer->RenderMover( tm, TRANSFORM_HELPER_EXTENT );
 			}
 			else if( mode == TRANSFORM_ROTATE) 
 			{
-				pRenderHelper->RenderRotator( tm, TRANSFORM_HELPER_EXTENT);
+				pRenderer->RenderRotator( tm, TRANSFORM_HELPER_EXTENT);
 			}
 			else if( mode == TRANSFORM_SCALE)
 			{
-				pRenderHelper->RenderScaler( tm, TRANSFORM_HELPER_EXTENT );
+				pRenderer->RenderScaler( tm, TRANSFORM_HELPER_EXTENT );
 			}
 
-			pRenderHelper->RenderAxis( pEntity->GetWorldTM() , TRANSFORM_HELPER_EXTENT);
+			pRenderer->RenderAxis( pEntity->GetWorldTM() , TRANSFORM_HELPER_EXTENT);
 
 			const CAABB* pWorldAABB = pEntity->GetWorldAABB();
 
 			// Draw Bounding Box
 			if( pWorldAABB->IsValid() )
 			{
-				pRenderHelper->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
+				pRenderer->RenderBox( XMMatrixIdentity(), pWorldAABB->GetMin(), pWorldAABB->GetMax() ,COLOR_GRAY );
 
 				const CAABB* pLocalEntityAABB = pEntity->GetLocalEntityAABB();
 				if( pLocalEntityAABB->IsValid() )
-					pRenderHelper->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
+					pRenderer->RenderBox( pEntity->GetWorldTM(), pLocalEntityAABB->GetMin(), pLocalEntityAABB->GetMax() ,COLOR_WHITE );
 			}
 
 			// Draw skeleton if it has a actor
-			pRenderHelper->RenderSkeleton(pEntity);
+			pRenderer->RenderSkeleton(pEntity);
 		}
 	}
 }g_PostRenderer;

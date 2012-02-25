@@ -25,7 +25,7 @@ public:
 	bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) override;
 
 	IRenderHelper*		GetRenderHelper() override;
-	IRenderStrategy*	GetRenderer() override				{ return m_pCurrentRenderStrategy; }
+	IRenderStrategy*	GetRenderStrategy() override				{ return m_pCurrentRenderStrategy; }
 
 	RDeviceDesc			GetDeviceSetting() override;
 

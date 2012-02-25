@@ -100,11 +100,11 @@
     <ClInclude Include="IActorMgr.h">
       <Filter>Interface_Engine</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderCommand.h">
-      <Filter>Interface_Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="CCommandBuffer.h">
       <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Interface_Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

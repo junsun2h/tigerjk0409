@@ -63,7 +63,7 @@
     <ClCompile Include="EActorMgr.cpp">
       <Filter>EntitySystem\EntityProxy</Filter>
     </ClCompile>
-    <ClCompile Include="ERenderCommandMgr.cpp" />
+    <ClCompile Include="ERenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -156,6 +156,6 @@
     <ClInclude Include="EActorMgr.h">
       <Filter>EntitySystem\EntityProxy</Filter>
     </ClInclude>
-    <ClInclude Include="ERenderCommandMgr.h" />
+    <ClInclude Include="ERenderer.h" />
   </ItemGroup>
 </Project>

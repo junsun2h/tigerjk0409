@@ -3,8 +3,8 @@
 #include "IEngine.h"
 
 struct IActorMgr;
-struct IRenderStrategy;
-struct IRenderCommandMgr;
+struct IRenderer;
+struct IEngineRenderer;
 
 
 namespace GLOBAL
@@ -16,6 +16,5 @@ namespace GLOBAL
 	ILoader*			Loader();
 	ISpaceMgr*			SpaceMgr();
 	IActorMgr*			ActorMgr();
-	IRenderStrategy*	Renderer();
-	IRenderCommandMgr*	AsyncRenderer();
+	IEngineRenderer*	Renderer();
 }

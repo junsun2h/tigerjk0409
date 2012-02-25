@@ -518,10 +518,11 @@ void ChangeDDSFile(const char* pszSourceFile, const char* pszDestFile, eTEXTURE_
 void SaveTextureToPNGFile(const CResourceTexture* pTexture, eTEXTURE_FORMAT textureFormat)
 {
 	// TODO: bug
+	/*
 	GLOBAL::Engine()->RDevice()->SaveTextureToFile(pTexture, IMG_FILE_DDS, "temp.dds" );
 	ChangeDDSFile("temp.dds", "temp.dds", COLOR_FORMAT_R8G8B8A8_TYPELESS);
 
 	CResourceBase* pChangedTexture = GLOBAL::Engine()->Loader()->LoadForward( "temp.dds", "temp" , RESOURCE_FILE_TEXTURE );
 	GLOBAL::Engine()->RDevice()->SaveTextureToFile( (CResourceTexture*)pChangedTexture, IMG_FILE_PNG, "temp.png" );
-	GLOBAL::Engine()->AssetMgr()->Remove( pChangedTexture);
+	GLOBAL::Engine()->AssetMgr()->Remove( pChangedTexture);*/
 }
