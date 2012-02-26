@@ -51,18 +51,18 @@ public:
 
 			if( mode == TRANSFORM_MOVE) 
 			{
-				pRenderer->RenderMover( tm, TRANSFORM_HELPER_EXTENT );
+				pRenderer->RenderMover( tm );
 			}
 			else if( mode == TRANSFORM_ROTATE) 
 			{
-				pRenderer->RenderRotator( tm, TRANSFORM_HELPER_EXTENT);
+				pRenderer->RenderRotator( tm);
 			}
 			else if( mode == TRANSFORM_SCALE)
 			{
-				pRenderer->RenderScaler( tm, TRANSFORM_HELPER_EXTENT );
+				pRenderer->RenderScaler( tm );
 			}
 
-			pRenderer->RenderAxis( pEntity->GetWorldTM() , TRANSFORM_HELPER_EXTENT);
+			pRenderer->RenderAxis( pEntity->GetWorldTM() );
 
 			const CAABB* pWorldAABB = pEntity->GetWorldAABB();
 
@@ -77,23 +77,25 @@ public:
 			}
 
 			// Draw skeleton if it has a actor
-			/*			pRenderer->RenderSkeleton(pEntity);
 			IEntityProxyActor* pActor = (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR);
-			if( pActor == NULL)
-			return;
-
-			JOINT_ENTITY_LIST* pJointEntitesList = pActor->GetJointEntities();
-			CVertexPC v1;
-			v1.color = COLOR_RED;
-
-			for( UINT i=1; i < pJointEntitesList->size(); ++i)
+			if( pActor != NULL)
 			{
-			v1.vPos = (*pJointEntitesList)[i]->GetWorldPos();
-			m_LineVertices.Add(v1);
-			v1.vPos = (*pJointEntitesList)[i]->GetParent()->GetWorldPos();
-			m_LineVertices.Add(v1);
+				JOINT_ENTITY_LIST* pJointEntitesList = pActor->GetJointEntities();
+				CVertexPC buff[512];
+
+				int vertIndex = 0;
+				for( UINT i=1; i < pJointEntitesList->size(); ++i)
+				{
+					buff[vertIndex].vPos = (*pJointEntitesList)[i]->GetWorldPos();
+					buff[vertIndex].color = COLOR_RED;
+					vertIndex++;
+					buff[vertIndex].vPos = (*pJointEntitesList)[i]->GetParent()->GetWorldPos();
+					buff[vertIndex].color = COLOR_RED;
+					vertIndex++;
+				}
+
+				pRenderer->RenderLine( buff, vertIndex );
 			}
-			*/
 		}
 	}
 }g_PostRenderer;

@@ -137,49 +137,34 @@ void ERenderer::RT_ProcessCommand()
 		case RC_DRAW_HELPER_Skeleton:
 			{
 				CVertexPC* pVertex;
-				size_t size;
-				pQueue->PopData(pVertex, size);
-				pRenderHelper->RenderLine(pVertex, size);
+				int* count;
+				pQueue->PopData(pVertex);
+				pQueue->PopParam(count);
+				pRenderHelper->RenderLine(pVertex, *count);
 			}break;
 		case RC_DRAW_HELPER_Axis:
 			{
 				XMMATRIX* tm;
-				float* scale;
-
 				pQueue->PopParam(tm);
-				pQueue->PopParam(scale);
-
-				pRenderHelper->RenderAxis(*tm, *scale);
+				pRenderHelper->RenderAxis(*tm);
 			}break;
 		case RC_DRAW_HELPER_Scaler:
 			{
 				XMMATRIX* tm;
-				float* scale;
-
 				pQueue->PopParam(tm);
-				pQueue->PopParam(scale);
-
-				pRenderHelper->RenderScaler(*tm, *scale);
+				pRenderHelper->RenderScaler(*tm);
 			}break;
 		case RC_DRAW_HELPER_Rotator:
 			{
 				XMMATRIX* tm;
-				float* scale;
-
 				pQueue->PopParam(tm);
-				pQueue->PopParam(scale);
-
-				pRenderHelper->RenderRotator(*tm, *scale);
+				pRenderHelper->RenderRotator(*tm);
 			}break;
 		case RC_DRAW_HELPER_Mover:
 			{
 				XMMATRIX* tm;
-				float* scale;
-
 				pQueue->PopParam(tm);
-				pQueue->PopParam(scale);
-
-				pRenderHelper->RenderMover(*tm, *scale);
+				pRenderHelper->RenderMover(*tm);
 			}break;
 		case RC_DRAW_HELPER_Box:
 			{
@@ -306,42 +291,39 @@ void ERenderer::AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRend
 }
 
 
-void ERenderer::RenderLine(CVertexPC* pVertex,int size)
+void ERenderer::RenderLine(CVertexPC* pVertex,int count)
 {
 	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Skeleton);
-	m_CommandQueue[m_FillBufferID].AddData(pVertex, size);
+	m_CommandQueue[m_FillBufferID].AddData(pVertex, sizeof(CVertexPC) * count);
+	m_CommandQueue[m_FillBufferID].AddParam(count);
 	m_CommandQueue[m_FillBufferID].AddCommandEnd();
 }
 
-void ERenderer::RenderAxis(XMMATRIX& tm, float scale)
+void ERenderer::RenderAxis(XMMATRIX& tm)
 {
 	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Axis);
 	m_CommandQueue[m_FillBufferID].AddParam(tm);
-	m_CommandQueue[m_FillBufferID].AddParam(scale);
 	m_CommandQueue[m_FillBufferID].AddCommandEnd();
 }
 
-void ERenderer::RenderScaler(XMMATRIX& tm, float scale)
+void ERenderer::RenderScaler(XMMATRIX& tm)
 {
 	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Scaler);
 	m_CommandQueue[m_FillBufferID].AddParam(tm);
-	m_CommandQueue[m_FillBufferID].AddParam(scale);
 	m_CommandQueue[m_FillBufferID].AddCommandEnd();
 }
 
-void ERenderer::RenderRotator(XMMATRIX& tm, float scale)
+void ERenderer::RenderRotator(XMMATRIX& tm)
 {
 	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Rotator);
 	m_CommandQueue[m_FillBufferID].AddParam(tm);
-	m_CommandQueue[m_FillBufferID].AddParam(scale);
 	m_CommandQueue[m_FillBufferID].AddCommandEnd();
 }
 
-void ERenderer::RenderMover(XMMATRIX& tm, float scale)
+void ERenderer::RenderMover(XMMATRIX& tm)
 {
 	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Mover);
 	m_CommandQueue[m_FillBufferID].AddParam(tm);
-	m_CommandQueue[m_FillBufferID].AddParam(scale);
 	m_CommandQueue[m_FillBufferID].AddCommandEnd();
 }
 
