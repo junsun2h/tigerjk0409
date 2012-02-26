@@ -14,6 +14,7 @@
 #include "RDX11Global.h"
 #include "RDX11RenderHelper.h"
 
+#define HELPER_OBJ_SCALE 50
 
 //--------------------------------------------------------------------------------------------------------------------
 RDX11RenderHelper::RDX11RenderHelper()
@@ -25,6 +26,82 @@ RDX11RenderHelper::RDX11RenderHelper()
 {
 }
 
+//--------------------------------------------------------------------------------------------------------------------
+void RDX11RenderHelper::CreateHelperObjects()
+{
+	IRDevice* pDevice = GLOBAL::RDevice();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Create scaler Geometry
+	{
+		BOX_MAKE_PARAM param;
+		param.color = COLOR_RED;
+		param.min = CVector3(-5.f,-5.f,-5.f);
+		param.max = CVector3(5.f,5.f,5.f);
+		param.offset = CVector3(HELPER_OBJ_SCALE, 0, 0);
+
+		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxX, param);
+
+		param.color = COLOR_GREEN;
+		param.offset = CVector3(0, HELPER_OBJ_SCALE, 0);
+
+		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxY, param);
+
+		param.color = COLOR_BLUE;
+		param.offset = CVector3(0, 0, HELPER_OBJ_SCALE);
+
+		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxZ, param);
+
+		param.color = COLOR_GRAY;
+		param.offset = CVector3(0, 0, 0);
+
+		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxCenter, param);
+
+		pDevice->CreateGraphicBuffer( &m_BoxX);
+		pDevice->CreateGraphicBuffer( &m_BoxY);
+		pDevice->CreateGraphicBuffer( &m_BoxZ);
+		pDevice->CreateGraphicBuffer( &m_BoxCenter);
+
+		m_BoxX.loadState = RESOURCE_LOAD_FINISHED;
+		m_BoxY.loadState = RESOURCE_LOAD_FINISHED;
+		m_BoxZ.loadState = RESOURCE_LOAD_FINISHED;
+		m_BoxCenter.loadState = RESOURCE_LOAD_FINISHED;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Create mover Geometry
+	{
+		CONE_MAKE_PARAM param;
+		param.color = COLOR_RED;
+		param.radius = 5;
+		param.height = 15;
+		param.direction = X_AXIS;
+		param.offset = CVector3(HELPER_OBJ_SCALE, 0, 0);
+		param.segment = 10;
+
+		CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &m_ConeX, param);
+
+		param.color = COLOR_GREEN;
+		param.direction = Y_AXIS;
+		param.offset = CVector3(0, HELPER_OBJ_SCALE, 0);
+
+		CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &m_ConeY, param);
+
+		param.color = COLOR_BLUE;
+		param.direction = Z_AXIS;
+		param.offset = CVector3(0, 0, HELPER_OBJ_SCALE);
+
+		CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &m_ConeZ, param);
+
+		pDevice->CreateGraphicBuffer( &m_ConeX);
+		pDevice->CreateGraphicBuffer( &m_ConeY);
+		pDevice->CreateGraphicBuffer( &m_ConeZ);
+
+		m_ConeX.loadState = RESOURCE_LOAD_FINISHED;
+		m_ConeY.loadState = RESOURCE_LOAD_FINISHED;
+		m_ConeZ.loadState = RESOURCE_LOAD_FINISHED;
+	}
+}
 
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::Destroy()
@@ -35,16 +112,27 @@ void RDX11RenderHelper::Destroy()
 
 	SAFE_RELEASE( m_pFontBuffer );
 	m_FontBufferBytes = 0;
+
+	IRDevice* pDevice = GLOBAL::RDevice();
+
+	pDevice->RemoveGraphicBuffer( &m_BoxX);
+	pDevice->RemoveGraphicBuffer( &m_BoxY);
+	pDevice->RemoveGraphicBuffer( &m_BoxZ);
+	pDevice->RemoveGraphicBuffer( &m_BoxCenter);
+
+	pDevice->RemoveGraphicBuffer( &m_ConeX);
+	pDevice->RemoveGraphicBuffer( &m_ConeY);
+	pDevice->RemoveGraphicBuffer( &m_ConeZ);
 }
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, UINT size)
+void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 {
 	CVertexPC v1;
 	v1.color = COLOR_RED;
 
-	for( UINT i=1; i < size; ++i)
+	for( int i=0; i < count; ++i)
 		m_LineVertices.Add( pVetex[i]);
 
 	// Set Line Shader
@@ -59,7 +147,7 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, UINT size)
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
+void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 {
 	// Set Line Shader
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
@@ -72,21 +160,21 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 	v1.color = COLOR_RED;
 	m_LineVertices.Add(v1);
 
-	v1.vPos = CVector3(scale, 0.0f, 0.0f);
+	v1.vPos = CVector3(HELPER_OBJ_SCALE, 0.0f, 0.0f);
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(0.0f, 0.0f, 0.0f);
 	v1.color = COLOR_BLUE;
 	m_LineVertices.Add(v1);
 
-	v1.vPos = CVector3(0.0f, 0.0f, scale);
+	v1.vPos = CVector3(0.0f, 0.0f, HELPER_OBJ_SCALE);
 	m_LineVertices.Add(v1);
 
 	v1.vPos = CVector3(0.0f, 0, 0.0f);
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	v1.vPos = CVector3(0.0f, scale, 0.0f);
+	v1.vPos = CVector3(0.0f, HELPER_OBJ_SCALE, 0.0f);
 	m_LineVertices.Add(v1);
 
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
@@ -94,73 +182,25 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm, float scale)
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderScaler(XMMATRIX& tm, float scale)
+void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 {
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
 	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Create Geometry
-	CObjectPool<CResourceGeometry> memPool(10);
-
-	CResourceGeometry boxX;
-	CResourceGeometry boxY;
-	CResourceGeometry boxZ;
-	CResourceGeometry boxCenter;
-
-	BOX_MAKE_PARAM param;
-	param.color = COLOR_RED;
-	param.min = CVector3(-5.f,-5.f,-5.f);
-	param.max = CVector3(5.f,5.f,5.f);
-	param.offset = CVector3(scale, 0, 0);
-
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxX, param);
-
-	param.color = COLOR_GREEN;
-	param.offset = CVector3(0, scale, 0);
-
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxY, param);
-
-	param.color = COLOR_BLUE;
-	param.offset = CVector3(0, 0, scale);
-
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxZ, param);
-
-	param.color = COLOR_GRAY;
-	param.offset = CVector3(0, 0, 0);
-
-	CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &boxCenter, param);
-
-	IRDevice* pDevice = GLOBAL::RDevice();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
-	pDevice->CreateGraphicBuffer( &boxX);
-	pDevice->CreateGraphicBuffer( &boxY);
-	pDevice->CreateGraphicBuffer( &boxZ);
-	pDevice->CreateGraphicBuffer( &boxCenter);
-	
-	boxX.loadState = RESOURCE_LOAD_FINISHED;
-	boxY.loadState = RESOURCE_LOAD_FINISHED;
-	boxZ.loadState = RESOURCE_LOAD_FINISHED;
-	boxCenter.loadState = RESOURCE_LOAD_FINISHED;
-
 	pRenderer->SetTransform(tm);
-	pRenderer->RenderGeometry(&boxX);
-	pRenderer->RenderGeometry(&boxY);
-	pRenderer->RenderGeometry(&boxZ);
-	pRenderer->RenderGeometry(&boxCenter);
+	pRenderer->RenderGeometry(&m_BoxX);
+	pRenderer->RenderGeometry(&m_BoxY);
+	pRenderer->RenderGeometry(&m_BoxZ);
+	pRenderer->RenderGeometry(&m_BoxCenter);
 
-	pDevice->RemoveGraphicBuffer( &boxX);
-	pDevice->RemoveGraphicBuffer( &boxY);
-	pDevice->RemoveGraphicBuffer( &boxZ);
-	pDevice->RemoveGraphicBuffer( &boxCenter);
-
-	RenderAxis(tm, scale);
+	RenderAxis(tm);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
+void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 {
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
@@ -171,7 +211,7 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 
 	for( int iRing = 0; iRing < 2; ++iRing )
 	{
-		float radius = scale + iRing * 2;
+		float radius = HELPER_OBJ_SCALE + iRing * 2.f;
 		UINT segment = 20;
 
 		v1.vPos.x = 0.0f;
@@ -225,65 +265,24 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm, float scale)
 		DrawLine();
 	}
 
-	RenderAxis(tm, scale);
+	RenderAxis(tm);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderMover(XMMATRIX& tm, float scale)
+void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 {
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
 	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
 	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
 
-	IRDevice* pDevice = GLOBAL::RDevice();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Create Geometry
-	CResourceGeometry coneX;
-	CResourceGeometry coneY;
-	CResourceGeometry coneZ;
-
-	CONE_MAKE_PARAM param;
-	param.color = COLOR_RED;
-	param.radius = 5;
-	param.height = 15;
-	param.direction = X_AXIS;
-	param.offset = CVector3(scale, 0, 0);
-	param.segment = 10;
-
-	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &coneX, param);
-
-	param.color = COLOR_GREEN;
-	param.direction = Y_AXIS;
-	param.offset = CVector3(0, scale, 0);
-
-	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &coneY, param);
-
-	param.color = COLOR_BLUE;
-	param.direction = Z_AXIS;
-	param.offset = CVector3(0, 0, scale);
-
-	CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &coneZ, param);
-	
-	pDevice->CreateGraphicBuffer( &coneX);
-	pDevice->CreateGraphicBuffer( &coneY);
-	pDevice->CreateGraphicBuffer( &coneZ);
-
-	coneX.loadState = RESOURCE_LOAD_FINISHED;
-	coneY.loadState = RESOURCE_LOAD_FINISHED;
-	coneZ.loadState = RESOURCE_LOAD_FINISHED;
-
 	pRenderer->SetTransform(tm);
-	pRenderer->RenderGeometry( &coneX);
-	pRenderer->RenderGeometry( &coneY);
-	pRenderer->RenderGeometry( &coneZ);
+	pRenderer->RenderGeometry( &m_ConeX);
+	pRenderer->RenderGeometry( &m_ConeY);
+	pRenderer->RenderGeometry( &m_ConeZ);
 
-	pDevice->RemoveGraphicBuffer( &coneX);
-	pDevice->RemoveGraphicBuffer( &coneY);
-	pDevice->RemoveGraphicBuffer( &coneZ);
-
-	RenderAxis(tm, scale);
+	RenderAxis(tm);
 }
 
 

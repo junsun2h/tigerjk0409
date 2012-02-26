@@ -12,11 +12,11 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	IRenderer
 private:	
-	void			RenderLine(CVertexPC* pVertex,int size) override;
-	void			RenderAxis(XMMATRIX& tm, float scale) override;
-	void			RenderScaler(XMMATRIX& tm, float scale) override;
-	void			RenderRotator(XMMATRIX& tm, float scale) override;
-	void			RenderMover(XMMATRIX& tm, float scale) override;
+	void			RenderLine(CVertexPC* pVertex,int count) override;
+	void			RenderAxis(XMMATRIX& tm) override;
+	void			RenderScaler(XMMATRIX& tm) override;
+	void			RenderRotator(XMMATRIX& tm) override;
+	void			RenderMover(XMMATRIX& tm) override;
 	void			RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) override;
 	void			RenderWorldGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
 	void			RenderText(RENDER_TEXT_QUAD* pText) override;

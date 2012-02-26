@@ -137,6 +137,7 @@ namespace GLOBAL
 		g_RDX11Device.SetViewport( (float)g_DeviceSetting.width, (float)g_DeviceSetting.height);
 
 		// initialize subsystem
+		g_RenderHelper.CreateHelperObjects();
 		g_ShaderMgr.init();
 		g_RDX11Device.SetRenderStrategy(RENDER_STRATEGY_FORWARD);
 
