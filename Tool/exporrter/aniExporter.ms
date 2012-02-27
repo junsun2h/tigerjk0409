@@ -76,13 +76,20 @@ rollout treeview_rollout "Animation Exporter"
 	
 	on BTN_insert pressed  do
 	(
+		max modify mode
+
 		for o in  $selection do
 		(
 			local modSkin= o.modifiers[#Skin]
 			if modSkin != undefined and (SkinOps.GetNumberBones modSkin) > 0 then 
 			(
-				name = SkinOps.GetBoneName modSkin 1 0				
-				TV_Insert ( fnGetRoot (getnodebyname name) )
+				name = SkinOps.GetBoneName modSkin 1 0
+				joint = getnodebyname name;
+				
+				if classof joint == biped_object then
+					TV_Insert joint.controller.rootNode
+				else
+					TV_Insert ( fnGetRoot (getnodebyname name) )
 			)
 			
 			tvMesh.Nodes.add o.name
@@ -172,6 +179,11 @@ rollout treeview_rollout "Animation Exporter"
 		
 		out_file = createfile file
 
+		-- write mesh names
+		for i = 0 to tvMesh.nodes.count - 1 do
+		(
+			format "mesh/%/\n" tvMesh.nodes.item[i].text to:out_file
+		)
 		
 		for i = 0 to tv.nodes.count - 1 do
 		(
@@ -184,8 +196,7 @@ rollout treeview_rollout "Animation Exporter"
 	
 			append arrSnap ( BakeAnimation arrNodes )
 			
-			format "mesh/%/\n" tvMesh.nodes.item[i].text to:out_file
-			
+
 			for n = 1 to arrNodes.count do 
 			(
 				if arrNodes[n].parent != undefined then
@@ -205,6 +216,7 @@ rollout treeview_rollout "Animation Exporter"
 		close out_file
 		
 		tv.nodes.clear()
+		tvMesh.nodes.clear()
 	)	
 )
 try(destroyDialog treeview_rollout)catch()
