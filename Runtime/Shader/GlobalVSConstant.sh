@@ -1,4 +1,4 @@
-#define MAX_BONE_MATRICES 50
+#define MAX_BONE_MATRICES 55
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables

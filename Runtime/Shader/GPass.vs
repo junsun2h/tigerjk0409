@@ -11,9 +11,9 @@ void ProcessWeight(inout float4 pos, inout float3 normal, in uint4 Bones, in uin
 	
 	for(int i=0; i <4; i++)
 	{
-		if( Weights[i] < 10 )
+		if( Weights[i] == 0 )
 			break;
-			
+
 		float weight = Weights[i]/255.f;
 		worldPos += weight * mul(  pos, g_aniMatrix[ Bones[i] ] );
 		worldNormal += weight * mul( normal, g_aniMatrix[ Bones[i] ] );
