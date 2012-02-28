@@ -89,7 +89,7 @@ fn fnExportMesh tmesh filePath =
 	-- export transform
 	pos = in coordsys parent tmesh.pos;
 	rot = in coordsys parent tmesh.rotation;	
-	format "transform\n% % %\n% % % %\n" pos.x pos.y pos.z rot.x rot.y rot.z rot.z to:out_file
+	format "transform\n%/%/%/\n%/%/%/%/\n" pos.x pos.y pos.z rot.x rot.y rot.z rot.z to:out_file
 	
 	-- export material
 	format "\nmaterial\n%\n" ( classOf tmesh.material ) to:out_file
@@ -99,13 +99,13 @@ fn fnExportMesh tmesh filePath =
 		for i =1 to tmesh.material.count do 
 		(
 			if tmesh.material[i] == undefined then 
-				format "%\n" none to:out_file
+				format "%/\n" none to:out_file
 			else 
-				format "%\n" tmesh.material[i] .name to:out_file	
+				format "%/\n" tmesh.material[i] .name to:out_file	
 		)
 	)
 	else if classOf tmesh.material != UndefinedClass then 
-		format "%\n" tmesh.material.name to:out_file
+		format "%/\n" tmesh.material.name to:out_file
 
 	addModifier tmesh ( Edit_Normals() ) -- to get normal information	
 
@@ -142,16 +142,10 @@ fn fnExportMesh tmesh filePath =
 			
 			matLocal = copy obj.transform
 
-			if obj.parent == undefined then 
-			(
-				append arrBoneNames ( boneName + " NULL" )
-			)
-			else
-			(
+			if obj.parent != undefined then 
 				matLocal = obj.transform * ( inverse obj.parent.transform )
-				append arrBoneNames ( boneName + " " + obj.parent .name )
-			)
-			
+
+			append arrBoneNames boneName			
 			append arrBonePos matLocal.pos
 			append arrBoneRot matLocal.rotation
 		)
@@ -171,27 +165,27 @@ fn fnExportMesh tmesh filePath =
 	)
 	
 	format "\nposition %\n" arrVert.count to:out_file
-	for vert in arrVert do format "% % %\n" vert.x vert.y vert.z to:out_file
+	for vert in arrVert do format "%/%/%/\n" vert.x vert.y vert.z to:out_file
 	format "end\n" to:out_file
 
 	format "\nnormal %\n" arrNormal.count to:out_file
-	for normal in arrNormal do format "% % %\n" normal.x normal.y normal.z to:out_file
+	for normal in arrNormal do format "%/%/%/\n" normal.x normal.y normal.z to:out_file
 	format "end\n" to:out_file
 
 	format "\nuv %\n" arrUV.count to:out_file
-	for uv in arrUV do format "% %\n" uv.x uv.y to:out_file
+	for uv in arrUV do format "%/%/\n" uv.x uv.y to:out_file
 	format "end\n" to:out_file
 
 	format "\nfacePos %\n" arrFaces.count to:out_file
-	for face in arrFaces do format "% % %\n" face[1] face[2] face[3] to:out_file
+	for face in arrFaces do format "%/%/%/\n" face[1] face[2] face[3] to:out_file
 	format "end\n" to:out_file
 
 	format "\nfaceUV %\n" arrUVFaces.count to:out_file
-	for uvFace in arrUVFaces do format "% % %\n" uvFace[1] uvFace[2] uvFace[3] to:out_file
+	for uvFace in arrUVFaces do format "%/%/%/\n" uvFace[1] uvFace[2] uvFace[3] to:out_file
 	format "end\n" to:out_file
 
 	format "\nfaceNormal %\n" arrNormalFaces.count to:out_file
-	for normalFace in arrNormalFaces do format "% % %\n" normalFace[1] normalFace[2] normalFace[3] to:out_file
+	for normalFace in arrNormalFaces do format "%/%/%/\n" normalFace[1] normalFace[2] normalFace[3] to:out_file
 	format "end\n" to:out_file
 	
 	if classOf tmesh.material == Multimaterial then
@@ -203,11 +197,17 @@ fn fnExportMesh tmesh filePath =
 
 	if arrBoneNames.count > 0 then
 	(
+		format "\nusingBone %\n" arrBoneNames.count to:out_file	
+		for boneName in arrBoneNames do
+		(
+			format "%/\n" boneName to:out_file
+		)
+
 		format "\nweight %\n" arrVertWeight.count to:out_file		
 		for vertWeight in arrVertWeight  do
 		(
-			format "% " vertWeight.count to:out_file
-			for w in vertWeight  do format "% % " w.ID w.weight to:out_file
+			format "%/" vertWeight.count to:out_file
+			for w in vertWeight  do format "%/%/" w.ID w.weight to:out_file
 			format "\n" to:out_file			
 		)
 		format "end\n" to:out_file
