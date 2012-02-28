@@ -174,7 +174,7 @@ void SSceneHierarchyTreeCtrl::OnDrop(wxPoint point, const wxString& text)
 	else if( desc.type == DND_MESH )
 	{
 		IEntityProxyRender* pProxy = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
-		pProxy->Insert( pAssetMgr->GetResource(RESOURCE_MESH, desc.strParam.char_str())->RID );
+		pProxy->CreateRenderElement( pAssetMgr->GetResource(RESOURCE_MESH, desc.strParam.char_str())->RID );
 	}
 }
 
@@ -200,7 +200,7 @@ void SSceneHierarchyTreeCtrl::CreateEntity()
 	{
 		IEntityProxyRender* pProxy = (IEntityProxyRender*)pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
 		const CResourceBase* pResource = pAssetMgr->GetResource(RESOURCE_MESH, desc.strParam.char_str());
-		pProxy->Insert( pResource->RID );
+		pProxy->CreateRenderElement( pResource->RID );
 	}
 }
 

@@ -1,11 +1,11 @@
-#include <algorithm>
-
+﻿#include <algorithm>
 #include "CResource.h"
 
 #include "IEntity.h"
 #include "IEntityMgr.h"
 #include "IEntityProxy.h"
 #include "IMotionInstance.h"
+#include "IAssetMgr.h"
 
 #include "EGlobal.h"
 #include "EMotionInstance.h"
@@ -56,8 +56,11 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 	m_pResource = pResource;
 
 	IEntityMgr* pEntityMgr = GLOBAL::EntityMgr();
+	UINT jointCount = pResource->jointList.size();
 
-	m_AnimationMatrix.SetSize( pResource->jointList.size() );
+	m_AnimationMatrix.SetSize( jointCount );
+	m_InvBindMatrix.SetSize( jointCount );
+	m_AnimationPos.reserve( pResource->jointList.size() );
 
 	//---------------------------------------------------------------------
 	// create Joints
@@ -74,27 +77,57 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 			m_pEntity->AttachChild( pJointEntity, true );
 		else
 			m_pJointEntities[joint.parentIndex]->AttachChild(pJointEntity, true);
+		
+		m_InvBindMatrix.Add( XMMATRIX_UTIL::Inverse(NULL, pJointEntity->GetWorldTM() ) );
 
 		m_pJointEntities.push_back(pJointEntity);
 		m_AnimationPos.push_back( CMotionTransform() );
 		m_AnimationMatrix.Add( XMMatrixIdentity() );
 	}
 
-	m_AnimationPos.reserve( pResource->jointList.size() );
-
 	//---------------------------------------------------------------------
 	// make instance of meshes
+	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
+
 	IEntityProxyRender* pProxy = (IEntityProxyRender*)m_pEntity->GetProxy(ENTITY_PROXY_RENDER, true);
 	for( UINT i=0; i < pResource->meshList.size(); ++i)
 	{
-		pProxy->Insert( pResource->meshList[i]->RID);
+		// map bone's map between Actor & Mesh
+		SKIN_REF_MATRIX mapBetweenMeshAndActor;
+		CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource( RESOURCE_MESH, pResource->meshList[i]->RID );
+		for( UINT bi = 0; bi < pMesh->skinBoneList.size(); ++bi )
+		{
+			int index = -1;
+			for(UINT ji =0; ji < jointCount; ++ji)
+			{
+				if( pMesh->skinBoneList[bi] == pResource->jointList[ji].name )
+					index = ji;
+			}
+
+			if( index == -1 )
+			{
+				assert(0);
+				mapBetweenMeshAndActor.push_back( NULL );
+			}
+			else
+			{
+				mapBetweenMeshAndActor.push_back( &m_AnimationMatrix[index] );
+			}
+		}
+
+		m_SkinMatrices.push_back( mapBetweenMeshAndActor );
+		pProxy->CreateRenderElement( pMesh->RID, i );
 	}
 }
 
 void EEntityProxyActor::Destroy()
 {
 	m_pJointEntities.clear();
+
+	for( UINT i=0 ; i < m_PlayingMotionList.size(); ++i )
+		g_MemPoolMotionInstance.Remove( m_PlayingMotionList[i]);
 	m_PlayingMotionList.clear();
+
 	m_AnimationMatrix.Reset();
 
 	m_pEntity = NULL;
@@ -105,12 +138,8 @@ void EEntityProxyActor::Destroy()
 
 void EEntityProxyActor::Play(CMotionDesc* pDesc)
 {
-#ifndef _PUBLISH
-	if( m_pJointEntities.size() != pDesc->pResource->jointList.size() )
-		assert(0);
-#endif
-
 	m_bPause = false;
+	pDesc->pResourceActor = m_pResource;
 
 	static long generateTiming = 0;
 
@@ -204,7 +233,18 @@ void EEntityProxyActor::CulledUpdate(float deltaTime)
 
 void EEntityProxyActor::ApplyAnimationToActor()
 {
+	/*
+	for i to weightCount
+		v += [v * InvBindWorldi * JointWorldi * invWorldE] * weight
+
+	InvBindWorldi: Inverse world bind-pose matrix of joint i
+	JointWorldi: World Transformation matrix of joint i
+	invWorldE: Inverse Transformation matrix of Entity
+	*/
+
 	UINT jointCount = m_pJointEntities.size();
+
+	XMMATRIX invWorld = XMMATRIX_UTIL::Inverse(NULL, m_pEntity->GetWorldTM() );
 
 	for(UINT i=0; i < jointCount; ++i)
 	{
@@ -212,5 +252,8 @@ void EEntityProxyActor::ApplyAnimationToActor()
 		m_AnimationMatrix[i].r[3] = m_AnimationPos[i].pos.ToXMVEECTOR();
 
 		m_pJointEntities[i]->SetLocalTM(m_AnimationMatrix[i]);
+
+		m_AnimationMatrix[i] = XMMatrixMultiply( m_InvBindMatrix[i], m_pJointEntities[i]->GetWorldTM() );
+		m_AnimationMatrix[i] = XMMatrixMultiply( m_AnimationMatrix[i], invWorld );
 	}
 }

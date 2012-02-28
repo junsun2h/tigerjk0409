@@ -20,7 +20,7 @@ void EEntityProxyRender::ProcessEvent( EntityEvent &event )
 
 }
 
-bool EEntityProxyRender::Insert(long meshID )
+bool EEntityProxyRender::CreateRenderElement(long meshID, int indexInActor )
 {
 	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
 	CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, meshID);
@@ -35,6 +35,9 @@ bool EEntityProxyRender::Insert(long meshID )
 			continue;
 
 		item.pMtrl = (CResourceMtrl*)pAssetMgr->GetResource( RESOURCE_MATERIAL, item.pGeometry->defaultMtrl);
+
+		if( indexInActor != -1)
+			item.IndexInActor = indexInActor;
 
 		m_vecRenderElement.push_back( item );
 	}
@@ -68,6 +71,7 @@ void EEntityProxyRender::Render()
 		return;
 
 	m_RenderedFrame = currentFrame; 
+	XMMATRIX matrixBuf[100]; 
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
@@ -79,17 +83,22 @@ void EEntityProxyRender::Render()
 				assert(0);
 				return;
 			}
-			MOTION_POSE_MATRIX* pMotionPoseMatrix = pActor->GetAnimatoinMatrix();
+
+			SKIN_REF_MATRIX* pSkinRefMatrix = pActor->GetSkinReferenceMatrix( m_vecRenderElement[i].IndexInActor );
+	
+			UINT size = pSkinRefMatrix->size();
+			for( UINT si = 0; si < size; ++si)
+				memcpy( &matrixBuf[si], (*pSkinRefMatrix)[si], sizeof(XMMATRIX) );
 
 			CRenderParamSkin param;
 			param.pGeometry = m_vecRenderElement[i].pGeometry;
 			param.pMaterial = m_vecRenderElement[i].pMtrl;
 			param.worldTM = GetEntity()->GetWorldTM();
-			param.refSkinTM = pMotionPoseMatrix->GetData();
-			param.refSkinTMCount = pMotionPoseMatrix->GetSize();
+			param.refSkinTMCount = size;
 
 			pCommandQueue->AddCommandStart(RC_DRAW_OBJECT_SKIN);
 			pCommandQueue->AddParam( param);
+			pCommandQueue->AddData(matrixBuf, sizeof(XMMATRIX) * size );
 			pCommandQueue->AddCommandEnd();
 		}
 		else

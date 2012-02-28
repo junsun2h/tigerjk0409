@@ -43,7 +43,6 @@ struct CRenderParam
 
 struct CRenderParamSkin : public CRenderParam
 {
-	XMMATRIX*			refSkinTM;
 	UINT				refSkinTMCount;
 };
 
@@ -69,7 +68,8 @@ struct IRenderer
 
 struct IEngineRenderer : public IRenderer
 {
-	virtual	bool	InitAsyncRenderThreadObjects() =0;
+	virtual bool	Init() =0;
+	virtual void	Destroy() =0;
 	virtual void	AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback) = 0;
 
 	virtual CCommandBuffer<eRENDER_COMMAND>*	GetFillCommandQueue() =0;

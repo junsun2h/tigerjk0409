@@ -66,6 +66,7 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 	{
 		m_State.loopCount++;
 		m_State.passedTime -= m_Desc.length;
+		m_State.blendRatio = fkey - m_State.currentKey;
 		m_State.currentKey = 0;
 
 		if( m_Desc.bLoop == false )
@@ -74,8 +75,10 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 			m_State.blendTime = 0;
 		}
 	}
-
-	m_State.blendRatio = fkey - m_State.currentKey;
+	else
+	{
+		m_State.blendRatio = fkey - m_State.currentKey;
+	}
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -113,49 +116,70 @@ void EMotionInstance::UpdateBlendWeight(float timeDelta)
 void EMotionInstance::UpdateMatrix()
 {
 	UINT jointCount = m_JointMatrix.size();
+	const MOTION_NODE_LIST& resourceJoint = m_Desc.pResource->jointList;
 
 	if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END )
 	{
-		UINT lastKey = m_Desc.pResource->jointList[0].keys.size() -1;
+		UINT lastKey = resourceJoint[0].keys.size() -1;
 
 		for( UINT i =0; i< jointCount ; ++i )
 		{
-			const CMotionKey& key = m_Desc.pResource->jointList[i].keys[lastKey];
+			const CMotionNode& node = resourceJoint[i];
+			const CMotionKey& key = node.keys[lastKey];
 			
-			m_JointMatrix[i].rot = key.rot;
-			m_JointMatrix[i].pos = key.pos;
+			m_JointMatrix[i].rot = node.keys[key.rotIndex].rot;
+			m_JointMatrix[i].pos = node.keys[key.posIndex].pos;
 		}
 		return;
 	}
-
-	for( UINT i =0; i< jointCount ; ++i )
+	else
 	{
-		const CMotionKey& key = m_Desc.pResource->jointList[i].keys[m_State.currentKey];
-		const CMotionKey& keyNext = m_Desc.pResource->jointList[i].keys[m_State.currentKey+1];
+		for( UINT i =0; i< jointCount ; ++i )
+		{
+			const CMotionNode& node = resourceJoint[i];
+			const CMotionKey& key = node.keys[m_State.currentKey];
+			const CMotionKey& keyNext = node.keys[m_State.currentKey+1];
 
-		m_JointMatrix[i].rot = XMQuaternionSlerp( key.rot.m128, keyNext.rot.m128, m_State.blendRatio );
-		m_JointMatrix[i].pos = CVector3::Lerp( key.pos, keyNext.pos, m_State.blendRatio );
+			// if transform doesn't changed, don't interpolate it.
+			if( key.rotIndex == keyNext.rotIndex )
+				m_JointMatrix[i].rot = node.keys[key.rotIndex].rot;
+			else
+				m_JointMatrix[i].rot = XMQuaternionSlerp( node.keys[key.rotIndex].rot.m128,	node.keys[key.rotIndex].rot.m128, m_State.blendRatio );
+
+			if( key.posIndex == keyNext.posIndex )
+				m_JointMatrix[i].pos = node.keys[key.posIndex].pos;
+			else
+				m_JointMatrix[i].pos = CVector3::Lerp( node.keys[key.posIndex].pos, node.keys[keyNext.posIndex].pos, m_State.blendRatio );
+		}
 	}
 }
 
 //--------------------------------------------------------------------------------------------------------------------
 void EMotionInstance::ApplyToMotionPose(MOTION_POSE* pMotionPose)
 {
-	UINT jointCount = m_JointMatrix.size();
+	UINT jointCount = pMotionPose->size();
 
 	if( m_State.weight < 1)
 	{
 		for( UINT i =0; i< jointCount ; ++i )
 		{
-			(*pMotionPose)[i].rot = XMQuaternionSlerp( (*pMotionPose)[i].rot.m128,  m_JointMatrix[i].rot.m128, m_State.weight );
-			(*pMotionPose)[i].pos = CVector3::Lerp( (*pMotionPose)[i].pos, m_JointMatrix[i].pos, m_State.weight );
+			if( m_MapBetweenActorAndNode[i] == -1 )
+				continue;
+
+			CMotionTransform& motionTM = m_JointMatrix[ m_MapBetweenActorAndNode[i] ];
+
+			(*pMotionPose)[i].rot = XMQuaternionSlerp( (*pMotionPose)[i].rot.m128, motionTM.rot.m128, m_State.weight );
+			(*pMotionPose)[i].pos = CVector3::Lerp( (*pMotionPose)[i].pos, motionTM.pos, m_State.weight );
 		}
 	}
 	else
 	{
 		for( UINT i =0; i< jointCount ; ++i )
 		{
-			(*pMotionPose)[i] = m_JointMatrix[i];
+			if( m_MapBetweenActorAndNode[i] == -1 )
+				continue;
+
+			(*pMotionPose)[i] = m_JointMatrix[ m_MapBetweenActorAndNode[i] ];
 		}
 	}
 }
@@ -163,21 +187,45 @@ void EMotionInstance::ApplyToMotionPose(MOTION_POSE* pMotionPose)
 //--------------------------------------------------------------------------------------------------------------------
 void EMotionInstance::Init(CMotionDesc* pDesc, long generateTiming)
 {
-	if( pDesc->pResource == NULL )
+	if( pDesc->pResource == NULL || pDesc->pResourceActor == NULL)
+	{
+		assert(0);
 		return;
+	}
 
 	m_Desc = *pDesc;
 	m_TimePerFrame = 1.0f/m_Desc.pResource->frameRate;
 	m_Desc.length = m_Desc.pResource->totalFrame / float(m_Desc.pResource->frameRate);
 
-	UINT jointCount = pDesc->pResource->jointList.size();
-	if( m_JointMatrix.size() != jointCount )
+	const CResourceMotion* pMotion = pDesc->pResource;
+	const CResourceActor* pActor = pDesc->pResourceActor;
+
+	//////////////////////////////////////////////////////////////////////////
+	// assign motion node matrix
+	UINT motionNodeCount = pMotion->jointList.size();
+	if( m_JointMatrix.size() != motionNodeCount )
 	{
 		m_JointMatrix.clear();
-		for( UINT i=0; i < jointCount; ++i )
+		for( UINT i=0; i < motionNodeCount; ++i )
 			m_JointMatrix.push_back( CMotionTransform() );
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// makes map between actor's nodes & motion's nodes
+	UINT actorNodeCount = pActor->jointList.size();
+	for(UINT i =0; i < actorNodeCount; ++i)
+	{
+		int index = -1;
+		for( UINT iM = 0; iM < motionNodeCount; ++iM )
+		{
+			if( strcmp(pActor->jointList[i].name, pMotion->jointList[iM].name) == 0 )
+				index = iM;
+		}
+		m_MapBetweenActorAndNode.push_back(index);
+	}	
+
+	//////////////////////////////////////////////////////////////////////////
+	// set animation states
 	m_State.Reset();
 
 	if( m_Desc.fBlendInTime == 0)

@@ -65,7 +65,7 @@ public:
 	void			SetLocalPos(const CVector3& _pos) override;
 	void			SetLocalScale(const CVector3& _scale) override;
 	void			SetLocalRot(const CQuat& _rot) override;
-	void			SetLocalTM(const XMMATRIX& tm) override;
+	void			SetLocalTM(const XMMATRIX& tm, bool bUpdateWorld = true) override;
 	void			SetWorldPos(const CVector3& _pos) override;
 	void			SetWorldRot(const CQuat& _rot) override;
 	void			SetWorldTM(const XMMATRIX& tm) override;

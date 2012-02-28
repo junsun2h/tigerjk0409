@@ -27,6 +27,7 @@ unsigned int WINAPI _RenderThreadProc( LPVOID lpParameter )
 }
 
 ERenderer::ERenderer()
+	: m_bDone(false)
 {
 	m_FillBufferID  = 0;
 	m_ProcBufferID  = 1;
@@ -38,7 +39,7 @@ ERenderer::~ERenderer()
 }
 
 //--------------------------------------------------------------------------------------
-bool ERenderer::InitAsyncRenderThreadObjects( )
+bool ERenderer::Init( )
 {
 	m_MainThreadID = ::GetCurrentThreadId();
 
@@ -50,7 +51,10 @@ bool ERenderer::InitAsyncRenderThreadObjects( )
 	return true;
 }
 
-
+void ERenderer::Destroy()
+{
+	m_bDone = true;
+}
 //--------------------------------------------------------------------------------------
 bool ERenderer::IsRenderThread()
 {
@@ -128,10 +132,12 @@ void ERenderer::RT_ProcessCommand()
 		case RC_DRAW_OBJECT_SKIN:
 			{
 				CRenderParamSkin* pParam;
+				XMMATRIX* pMatrix;
 				pQueue->PopParam(pParam);
+				pQueue->PopData( pMatrix );
 				pRenderStrategy->SetMaterial( pParam->pMaterial, pParam->pGeometry);
 				pRenderStrategy->SetTransform( pParam->worldTM );
-				pRenderStrategy->SetJointTransforms( pParam->refSkinTM, pParam->refSkinTMCount );
+				pRenderStrategy->SetJointTransforms( pMatrix, pParam->refSkinTMCount );
 				pRenderStrategy->RenderGeometry( pParam->pGeometry);
 			}break;
 		case RC_DRAW_HELPER_Skeleton:

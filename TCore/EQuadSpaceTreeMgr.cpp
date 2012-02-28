@@ -181,6 +181,20 @@ void EQuadSpaceTreeMgr::UpdateEntitySpaceList(IEntity* pEntity)
 	UpdateEntityCull(pEntity);
 }
 
+void EQuadSpaceTreeMgr::DeleteEntityFromSpace(IEntity* pEntity)
+{
+	std::vector<EQuadSpaceTreeNode*> erasingList;
+
+	// check escaped space IDs
+	TYPE_SPACE_IDS* spaceIDList = pEntity->GetSpaceIDList();
+	for(TYPE_SPACE_IDS::iterator itr = spaceIDList->begin() ; itr != spaceIDList->end(); itr++ )
+		erasingList.push_back( m_SpaceMap.Lookup( *itr )->m_value );
+
+	// erase escaped space IDs
+	for( UINT i=0; i < erasingList.size(); ++i)
+		erasingList[i]->UnRegist(pEntity);
+}
+
 void EQuadSpaceTreeMgr::UpdateEntityCull(IEntity* pEntity)
 {
 	TYPE_SPACE_IDS* spaceIDList = pEntity->GetSpaceIDList();

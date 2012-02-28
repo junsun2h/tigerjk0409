@@ -3,6 +3,7 @@
 
 struct IEntity;
 class CResourceMotion;
+class CResourceActor;
 
 
 struct CMotionDesc
@@ -18,6 +19,7 @@ struct CMotionDesc
 	float	length;
 
 	const CResourceMotion*	pResource;
+	const CResourceActor*	pResourceActor;
 
 	CMotionDesc()
 		: fBlendInTime(0.3f)
@@ -27,6 +29,7 @@ struct CMotionDesc
 		, bLoop(false)
 		, Priority(0)
 		, pResource(NULL)
+		, pResourceActor(NULL)
 	{
 	}
 };

@@ -67,7 +67,7 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Loader()->LoadForward( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE );
 
 	GLOBAL::RDevice()->GetRenderHelper()->SetFontTexture( pTexture);
-	GLOBAL::Renderer()->InitAsyncRenderThreadObjects();
+	GLOBAL::Renderer()->Init();
 
 	//////////////////////////////////////////////////////////////////////////
 	// initialize Asset manager
@@ -80,6 +80,8 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 
 bool EEngine::ShutDown()
 {
+	GLOBAL::Renderer()->Destroy();
+
 	// make sure deleting order
 	GLOBAL::AssetMgr()->Clear();
 	GLOBAL::RDevice()->ShutDown();

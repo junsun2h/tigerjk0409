@@ -16,6 +16,7 @@ private:
 	void				Destroy() override;
 	void				UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc) override;
 	void				UpdateEntitySpaceList(IEntity* pEntity) override;
+	void				DeleteEntityFromSpace(IEntity* pEntity) override;
 	void				UpdateEntityCull(IEntity* pEntity);
 
 	void				Render() override;

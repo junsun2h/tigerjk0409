@@ -76,7 +76,7 @@ EEntity::~EEntity()
 		m_Children.size() > 0)
 		assert(0);
 
-	m_SpaceIDList.clear();
+	GLOBAL::SpaceMgr()->DeleteEntityFromSpace(this);
 }
 
 bool EEntity::IsVisible()
@@ -147,11 +147,13 @@ void EEntity::SetLocalRot(const CQuat& _rot)
 	UpdateLocalTM();
 }
 
-inline void EEntity::SetLocalTM(const XMMATRIX& tm)
+inline void EEntity::SetLocalTM(const XMMATRIX& tm, bool bUpdateWorld)
 {
 	m_LocalTM = tm;
 	XMMATRIX_UTIL::Decompose(&m_LocalScale, &m_LocalRotation, &m_LocalPos, m_LocalTM);
-	UpdateWorldTM();
+
+	if( bUpdateWorld )
+		UpdateWorldTM();
 }
 
 inline void EEntity::UpdateLocalTM()

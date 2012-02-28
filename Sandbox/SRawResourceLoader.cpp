@@ -187,7 +187,7 @@ namespace SRAW_FILE_LOADER
 				std::vector<RAW_MOTION_KEY> keys;
 
 				int keyCount = rawMotion.totalFrame/rawMotion.frameInterval + 1;
-				if( rawMotion.totalFrame/float( rawMotion.frameRate) > keyCount )
+				if( float(rawMotion.totalFrame)/rawMotion.frameInterval > rawMotion.totalFrame/rawMotion.frameInterval )
 					keyCount++;
 
 				for( int i=0; i < keyCount; ++i)
@@ -220,7 +220,7 @@ namespace SRAW_FILE_LOADER
 	//------------------------------------------------------------------------------------------------------
 	bool LoadRawMesh(const char* strFileName, SRAW_MESH& RawMesh)
 	{
-		char* delimiters = " ";
+		char delimiters[2] = { '/', 0 };
 		char* pContext = NULL;
 
 #define READ_BUFFER_SIZE 256
@@ -384,6 +384,16 @@ namespace SRAW_FILE_LOADER
 					RawMesh.faceMtrlID.find( mtrlID )->second->push_back( i );
 				}
 			}
+			else if( strncmp( buf, "usingBone", 9 ) == 0 )
+			{
+				int count = atoi( &buf[10] );
+				RawMesh.weightBoneList.reserve( count );
+				for( int i=0; i < count; ++i )
+				{
+					fgets (buf, sizeof (buf), fp);
+					RawMesh.weightBoneList.push_back( strtok_s( buf, delimiters , &pContext ) );
+				}
+			}
 			else if( strncmp( buf, "weight", 6 ) == 0 )
 			{
 				int count = atoi( &buf[7] );	
@@ -400,6 +410,8 @@ namespace SRAW_FILE_LOADER
 							break;
 
 						uint8 Index = atoi( strtok_s( NULL, delimiters , &pContext ) );
+						Index--;
+
 						float weight = (float)atof( strtok_s( NULL, delimiters , &pContext ) );
 						
 						if( weight < 0.01f )
@@ -575,7 +587,7 @@ namespace SRAW_FILE_LOADER
 	}
 
 	//------------------------------------------------------------------------------------------------------
-	void SaveMeshToFile(GEOMETRY_LIST& geometries, CVector3& min, CVector3& max, wxString name)
+	void SaveMeshToFile(GEOMETRY_LIST& geometries, SRAW_MESH* pRawMesh, wxString name)
 	{
 		using namespace std;
 
@@ -585,8 +597,8 @@ namespace SRAW_FILE_LOADER
 		UINT version = MESH_FILE_VERSION;
 		file.write( (char*)&version, 4);
 
-		file.write( (char*)&min, 12);
-		file.write( (char*)&max, 12);
+		file.write( (char*)&pRawMesh->BBoxMin, 12);
+		file.write( (char*)&pRawMesh->BBoxMax, 12);
 
 		UINT size = geometries.size();
 		file.write( (char*)&size, 1);
@@ -610,6 +622,14 @@ namespace SRAW_FILE_LOADER
 			WriteString( &file, pGeometry->mtrlName );
 		}
 
+		UINT boneCount = pRawMesh->weightBoneList.size();
+		if( boneCount > 0 )
+		{
+			file.write( (char*)&boneCount, 1);
+			for( UINT i=0; i < boneCount; ++i)
+				WriteString( &file, pRawMesh->weightBoneList[i].c_str() );
+		}
+
 		file.close();
 	}
 
@@ -617,8 +637,6 @@ namespace SRAW_FILE_LOADER
 	//------------------------------------------------------------------------------------------------------
 	void SaveRawMeshToFile( SRAW_MESH* pRawMesh, wxString name )
 	{
-		CObjectPool<CResourceGeometry> memPool(10);
-
 		GEOMETRY_LIST	vecGeometries;
 
 		int mtrlCount = pRawMesh->faceMtrlID.size();
@@ -627,7 +645,7 @@ namespace SRAW_FILE_LOADER
 		{
 			//////////////////////////////////////////////////////////////////////////
 			// set geometry info
-			CResourceGeometry* pGeometry = memPool.GetNew();
+			CResourceGeometry* pGeometry = new (_alloca( sizeof(CResourceGeometry))) CResourceGeometry;
 			strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[0].c_str() );
 
 			CreateGeometry(pGeometry, pRawMesh , NULL);
@@ -643,7 +661,7 @@ namespace SRAW_FILE_LOADER
 				if( pMtrlIDList->size() == 0 )
 					continue;
 
-				CResourceGeometry* pGeometry = memPool.GetNew();
+				CResourceGeometry* pGeometry = new (_alloca( sizeof(CResourceGeometry))) CResourceGeometry;
 				strcpy_s( pGeometry->mtrlName, pRawMesh->mtrlList[i].c_str() );
 
 				CreateGeometry(pGeometry, pRawMesh , pMtrlIDList);
@@ -651,10 +669,7 @@ namespace SRAW_FILE_LOADER
 			}
 		}
 
-		SaveMeshToFile(vecGeometries, pRawMesh->BBoxMin, pRawMesh->BBoxMax, name);
-
-		for(UINT i =0; i< vecGeometries.size(); ++i)
-			memPool.Remove( vecGeometries[i] );
+		SaveMeshToFile(vecGeometries, pRawMesh, name);
 	}
 
 	//------------------------------------------------------------------------------------------------------
@@ -750,18 +765,17 @@ namespace SRAW_FILE_LOADER
 				CMotionKey key;
 				key.pos = (*pKeys)[iKey].pos;
 				key.rot = (*pKeys)[iKey].rot;
+				key.posIndex = iKey;
+				key.rotIndex = iKey;
 
-				if( iKey > 0 &&
-					CVector3::EQual( joint.keys[iKey - 1 ].pos , key.pos, 0.1f ) &&
-					CQuat::EQual( joint.keys[iKey - 1 ].rot, key.rot, 0.001f ) )
+				if( iKey > 0 )
 				{
-					key.bKeyChanged = false;
-					key.keyIndex = joint.keys[iKey - 1 ].keyIndex;
-				}
-				else
-				{
-					key.bKeyChanged = true;
-					key.keyIndex = 0;
+					CMotionKey& formerKey = joint.keys[iKey - 1 ];
+					if( CVector3::EQual( formerKey.pos , key.pos, 0.1f ) )
+						key.posIndex = formerKey.posIndex;
+
+					if( CQuat::EQual( formerKey.rot, key.rot, 0.001f ) )
+						key.rotIndex = formerKey.rotIndex;
 				}
 
 				joint.keys.push_back(key);
@@ -796,9 +810,13 @@ namespace SRAW_FILE_LOADER
 
 			for( UINT iKey = 0; iKey < joint.keys.size(); ++iKey )
 			{	
-				file.write( (char*)&joint.keys[iKey].bKeyChanged, 1);
-				if( joint.keys[iKey].bKeyChanged )
-					file.write( (char*)&joint.keys[iKey], 28);
+				file.write( (char*)&joint.keys[iKey].posIndex, 1);
+				if( joint.keys[iKey].posIndex == iKey)
+					file.write( (char*)&joint.keys[iKey].pos, sizeof(CVector3));
+
+				file.write( (char*)&joint.keys[iKey].rotIndex, 1);
+				if( joint.keys[iKey].rotIndex == iKey)
+					file.write( (char*)&joint.keys[iKey].rot, sizeof(CQuat));
 			}
 		}
 

@@ -24,7 +24,9 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	//	IEngineRenderer
 private:	
-	bool								InitAsyncRenderThreadObjects() override;
+	bool			Init() override;
+	void			Destroy() override;
+
 	virtual void						AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback) override;
 	CCommandBuffer<eRENDER_COMMAND>*	GetFillCommandQueue() override	{	return &m_CommandQueue[m_FillBufferID]; }
 
