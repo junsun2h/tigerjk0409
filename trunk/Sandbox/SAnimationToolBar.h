@@ -20,4 +20,7 @@ public:
 	virtual void OnStop( wxCommandEvent& event );
 	virtual void OnPlayTimeChanged( wxScrollEvent& event );
 	virtual void OnLoop( wxCommandEvent& event );
+
+private:
+	wxCheckBox*		m_pLoop;
 };

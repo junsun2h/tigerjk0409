@@ -63,6 +63,7 @@ namespace SRAW_FILE_LOADER
 		std::vector<CVector2> uvList;
 		std::vector<CVector3> normalList;
 		std::vector<RAW_WEIGHT> weightList;
+		std::vector<std::string> weightBoneList;
 
 		std::vector<int> facePos;
 		std::vector<int> faceNormal;

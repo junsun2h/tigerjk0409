@@ -15,7 +15,7 @@ public:
 	IEntity*				GetEntity()	override						{ return m_pEntity;}
 	void					ProcessEvent( EntityEvent &event ) override;
 
-	bool					Insert(long meshID ) override;
+	bool					CreateRenderElement(long meshID, int indexInActor = -1) override;
 	void					Remove(long slot) override;
 
 	const RENDER_ELEMENT_LIST&	GetRenderElements() override		{ return m_vecRenderElement; }

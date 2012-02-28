@@ -20,7 +20,8 @@ SAnimationToolBar::SAnimationToolBar(wxWindow *parent, wxWindowID id)
 	AddRadioTool( ID_ANIMATION_FREEZE, "freeze", wxImage("res/freeze.png") );
 
 	AddControl(new wxSlider(this, ID_ANIMATION_PLAYTIME, 0, 0, 100, wxDefaultPosition, wxSize(90, -1), wxSL_HORIZONTAL ) );
-	AddControl( new wxCheckBox( this, ID_ANIMATION_LOOP, wxT("Loop"), wxDefaultPosition, wxDefaultSize, 0 ) );
+	m_pLoop = new wxCheckBox( this, ID_ANIMATION_LOOP, wxT("Loop"), wxDefaultPosition, wxDefaultSize, 0 );
+	AddControl( m_pLoop );
 
 	this->Connect( ID_ANIMATION_PALY, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( SAnimationToolBar::OnPlay ) );
 	this->Connect( ID_ANIMATION_FREEZE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( SAnimationToolBar::OnFreeze ) );
@@ -52,6 +53,10 @@ void SAnimationToolBar::OnPlay( wxCommandEvent& event )
 		{
 			CMotionDesc desc;
 			desc.pResource = pActor->motionList[i];
+
+			if( m_pLoop->IsChecked())
+				desc.bLoop = true;
+
 			pActorProxy->Play( &desc );
 		}
 	}

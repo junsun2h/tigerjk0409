@@ -38,7 +38,7 @@ struct IMotionInstance;
 typedef std::vector<IMotionInstance*>	MOTION_INSTANCE_LIST;
 typedef std::vector<IEntity*>			JOINT_ENTITY_LIST;
 typedef CGrowableArray<XMMATRIX>		MOTION_POSE_MATRIX;
-
+typedef std::vector<XMMATRIX*>			SKIN_REF_MATRIX;
 
 struct IEntityProxyActor : IEntityProxy
 {
@@ -46,7 +46,7 @@ struct IEntityProxyActor : IEntityProxy
 	virtual const char*				GetTypeString()		{ return "ENTITY_PROXY_ACTOR"; }
 
 	virtual	JOINT_ENTITY_LIST*		GetJointEntities() =0;
-	virtual MOTION_POSE_MATRIX*		GetAnimatoinMatrix() =0;
+	virtual SKIN_REF_MATRIX*		GetSkinReferenceMatrix(UINT meshID) =0;
 
 	virtual const CResourceActor*	GetResource() = 0;
 	virtual	void					SetActor(const CResourceActor* pResource) = 0;
@@ -82,6 +82,7 @@ struct CRenderElement
 {
 	CResourceGeometry*	pGeometry;
 	CResourceMtrl*		pMtrl;
+	uint8				IndexInActor;
 };
 
 typedef	std::vector<CRenderElement>	RENDER_ELEMENT_LIST;
@@ -93,7 +94,7 @@ struct IEntityProxyRender : IEntityProxy
 
 	virtual const RENDER_ELEMENT_LIST&	GetRenderElements() = 0;
 	
-	virtual	bool					Insert( long meshID ) = 0;
+	virtual	bool					CreateRenderElement( long meshID, int indexInActor = -1) = 0;
 	virtual void					Remove(long slot) = 0;
 	virtual void					Render() = 0;
 };

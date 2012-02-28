@@ -108,7 +108,7 @@ void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 		char buf[32];
 		for( UINT i=0; i< vecRenderList.size(); ++i )
 		{
-			_itoa(i, buf, 32);
+			_itoa(i, buf, 10);
 			Append(new wxPropertyCategory(  wxString("Geometry") + wxString(buf) ));
 			Append( new wxStringProperty( wxString("Name"), wxPG_LABEL, vecRenderList[i].pGeometry->name) );
 
@@ -148,7 +148,7 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 	{
 		const CResourceGeometry* pGeometry = (const CResourceGeometry*)GLOBAL::Engine()->AssetMgr()->GetResource( RESOURCE_GEOMETRY, pMesh->goemetries[i] );
 
-		_itoa(i, buf, 32);
+		_itoa(i, buf, 10);
 		Append(new wxPropertyCategory( wxString("Geometry") + wxString(buf) ));
 		Append(new wxStringProperty(  "Vertex Type" + wxString(buf), wxPG_LABEL, wxString( VERTEX_TYPE_STRING(pGeometry->eVertexType))) );
 		Append(new wxIntProperty(  "Vertex Count" + wxString(buf), wxPG_LABEL, pGeometry->vertexCount) );
@@ -160,6 +160,16 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 
 		Append(new wxIntProperty(  "Polygon Count" + wxString(buf), wxPG_LABEL, pGeometry->primitiveCount) );
 		Append(new wxFileProperty(  "Default Material" + wxString(buf), wxString(pGeometry->mtrlName)) );
+	}
+
+	if( pMesh->skinBoneList.size() > 0 )
+	{
+		Append(new wxPropertyCategory( "BoneList" ));
+		for( UINT i=0; i < pMesh->skinBoneList.size(); ++i)
+		{
+			_itoa(i, buf, 10);
+			Append(new wxStringProperty( wxString("bone_") + buf, wxPG_LABEL, pMesh->skinBoneList[i] ) );
+		}
 	}
 }
 
@@ -174,7 +184,7 @@ void SPropertyGrid::Set( const CResourceActor* pActor )
 	char buf[32];
 	for( UINT i =0; i< pActor->meshList.size(); ++i)
 	{
-		_itoa(i, buf, 32);
+		_itoa(i, buf, 10);
 		Append(new wxStringProperty(  "Mesh" + wxString(buf), wxPG_LABEL, wxString( pActor->meshList[i]->name)) );
 	}
 }

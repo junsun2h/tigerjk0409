@@ -47,7 +47,8 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	ECopyData( &pMesh->max, &pSrcBits,  12 );
 	ECopyData( &pMesh->geometryNum, &pSrcBits,  1 );
 
-	char buf[32];
+	bool bSkinMesh = false;
+	char buf[64];
 	for(int i=0; i< pMesh->geometryNum; ++i)
 	{
 		_itoa_s( i, buf, 32);
@@ -81,7 +82,21 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		GLOBAL::RDevice()->CreateGraphicBuffer( pGeometry );
 		pGeometry->loadState = RESOURCE_LOAD_FINISHED;
 
+		if( pGeometry->IsSkinedMesh() )
+			bSkinMesh = true;
+
 		pMesh->goemetries[i] = pGeometry->RID;
+	}
+
+	if( bSkinMesh )
+	{
+		uint8 boneCount;
+		ECopyData( &boneCount, &pSrcBits,  1 );
+		for( UINT bi=0; bi < boneCount; ++bi )
+		{
+			ECopyString(buf, &pSrcBits);
+			pMesh->skinBoneList.push_back(buf);
+		}
 	}
 
 	pMesh->loadState = RESOURCE_LOAD_FINISHED;

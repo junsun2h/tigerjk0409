@@ -278,14 +278,17 @@ public:
 	void*			pGraphicMemoryIndexBuffer;
 
 	long			defaultMtrl;
-
+	
 	char			mtrlName[MAX_NAME_LENGTH];
+
 
 	eRESOURCE_TYPE	Type() const override { return RESOURCE_GEOMETRY; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_GEOMETRY); }
 };
 
 //-------------------------------------------------------------------------------------------------
+typedef std::vector<std::string>	SKIN_BONE_LIST;
+
 class CResourceMesh : public CResourceBase
 {
 	// only object pool can make&delete this class
@@ -301,6 +304,7 @@ public:
 	long			goemetries[MAX_GEOMETRY];
 	CVector3		min;
 	CVector3		max;
+	SKIN_BONE_LIST	skinBoneList;
 
 	eRESOURCE_TYPE	Type() const override { return RESOURCE_MESH; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MESH); }
@@ -311,8 +315,8 @@ struct CMotionKey
 {
 	CQuat		rot;
 	CVector3	pos;
-	uint8		keyIndex;	// same key index if bKeyChanged is FALSE
-	bool		bKeyChanged;
+	int8		posIndex;
+	int8		rotIndex;
 };
 
 typedef std::vector<CMotionKey>	MOTION_KEY_LIST;

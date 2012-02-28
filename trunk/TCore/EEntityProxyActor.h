@@ -12,7 +12,7 @@ public:
 	void					Destroy();
 
 	JOINT_ENTITY_LIST*		GetJointEntities() override		{ return &m_pJointEntities; }
-	MOTION_POSE_MATRIX*		GetAnimatoinMatrix() override	{ return &m_AnimationMatrix; }
+	SKIN_REF_MATRIX*		GetSkinReferenceMatrix(UINT meshID) override	{ return &m_SkinMatrices[meshID]; }
 
 	const CResourceActor*	GetResource() override;
 	void					SetActor(const CResourceActor* pResource) override;
@@ -43,5 +43,9 @@ private:
 	MOTION_INSTANCE_LIST	m_PlayingMotionList;
 	MOTION_POSE				m_AnimationPos;
 	MOTION_POSE_MATRIX		m_AnimationMatrix;
+	MOTION_POSE_MATRIX		m_InvBindMatrix;
+
+	std::vector<SKIN_REF_MATRIX> m_SkinMatrices;
+
 	bool					m_bPause;
 };

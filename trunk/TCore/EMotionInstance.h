@@ -29,6 +29,7 @@ private:
 	CMotionState			m_State;
 
 	MOTION_POSE				m_JointMatrix;
+	std::vector<int>		m_MapBetweenActorAndNode;
 
 	float					m_TimePerFrame;
 };

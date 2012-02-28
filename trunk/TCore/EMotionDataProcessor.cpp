@@ -54,7 +54,7 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 	ECopyData( &jointCount, &pSrcBits,  1 );
 
 	int keyCount = pMotion->totalFrame/pMotion->frameInterval + 1;
-	if( pMotion->totalFrame/float( pMotion->frameRate) > keyCount )
+	if( float(pMotion->totalFrame)/pMotion->frameInterval > pMotion->totalFrame/pMotion->frameInterval )
 		keyCount++;
 
 	for(uint8 i=0; i< jointCount; ++i)
@@ -68,16 +68,13 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 		{
 			CMotionKey key;
 
-			ECopyData( &key.bKeyChanged, &pSrcBits,  1 );
-			if( key.bKeyChanged )
-			{
-				ECopyData( &key, &pSrcBits,  28 );
-				key.keyIndex = iKey;
-			}
-			else
-			{
-				key.keyIndex = joint.keys[iKey-1].keyIndex;
-			}
+			ECopyData( &key.posIndex, &pSrcBits, 1 );
+			if( key.posIndex == iKey )
+				ECopyData( &key.pos, &pSrcBits, sizeof(CVector3) );
+
+			ECopyData( &key.rotIndex, &pSrcBits, 1 );
+			if( key.rotIndex == iKey )
+				ECopyData( &key.rot, &pSrcBits, sizeof(CQuat) );
 
 			joint.keys.push_back( key);
 		}
