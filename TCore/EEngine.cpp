@@ -48,7 +48,12 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 {
 	//////////////////////////////////////////////////////////////////////////
 	// load Render DLL
+#ifdef _DEBUG
+	HMODULE	renderDll = ::LoadLibrary( L"Rendererd.dll");
+#else
 	HMODULE	renderDll = ::LoadLibrary( L"Renderer.dll");
+#endif
+
 	if( renderDll == NULL )
 	{
 		assert(0);

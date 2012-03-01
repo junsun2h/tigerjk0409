@@ -33,7 +33,7 @@ public:
 
 private:
 	void					VisibleUpdate(float deltaTime);
-	void					CulledUpdate(float deltaTime);
+	void					InvisibleUpdate(float deltaTime);
 	void					ApplyAnimationToActor();
 
 	IEntity*				m_pEntity;

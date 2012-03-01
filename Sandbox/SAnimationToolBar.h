@@ -19,8 +19,9 @@ public:
 	virtual void OnFreeze( wxCommandEvent& event );
 	virtual void OnStop( wxCommandEvent& event );
 	virtual void OnPlayTimeChanged( wxScrollEvent& event );
-	virtual void OnLoop( wxCommandEvent& event );
 
 private:
+	IEntityProxyActor*	GetActor();
+
 	wxCheckBox*		m_pLoop;
 };

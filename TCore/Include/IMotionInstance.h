@@ -90,8 +90,7 @@ struct IMotionInstance
 {
 	virtual const CMotionDesc*	GetDesc() = 0;
 	virtual const CMotionState*	GetState() = 0;							
-	virtual eMOTION_PLAY_STATE	VisibleUpdate(float timeDelta) = 0;
-	virtual eMOTION_PLAY_STATE	CulledUpdate(float timeDelta) = 0;
+	virtual eMOTION_PLAY_STATE	Update(float timeDelta, bool bVisible) = 0;
 
 	virtual void	ApplyToMotionPose(MOTION_POSE* pMotionPose) = 0;
 }; 

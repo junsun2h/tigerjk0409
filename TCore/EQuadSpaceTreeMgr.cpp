@@ -159,6 +159,9 @@ void EQuadSpaceTreeMgr::UpdateVisibleSpaceList(const CCAMERA_DESC* pCameraDesc)
 
 void EQuadSpaceTreeMgr::UpdateEntitySpaceList(IEntity* pEntity)
 {	
+	if( pEntity->GetSpaceFlag() & ENTITY_NO_SPACE_UPDATE )
+		return;
+
 	std::vector<EQuadSpaceTreeNode*> erasingList;
 
 	// check escaped space IDs
