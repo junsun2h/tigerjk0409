@@ -28,14 +28,17 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//  culling information
 
-	TYPE_SPACE_IDS*	GetSpaceIDList() override		{ return &m_SpaceIDList;}
+	TYPE_SPACE_IDS*	GetSpaceIDList() override			{ return &m_SpaceIDList;}
 	void			AddSpaceID(UINT id) override;
 	void			RemoveSpaceID(UINT id) override;
-	bool			IsCulled() override				{ return m_bCulled; }
-	void			SetCull(bool bCulled) override	{ m_bCulled = bCulled;}
+	void			SetSpaceFlag(DWORD flag) override	{ m_SpaceFlag |= flag; }
+	DWORD			GetSpaceFlag() override				{ return m_SpaceFlag; }
+	bool			IsCulled() override					{ return m_bCulled; }
+	void			SetCull(bool bCulled) override		{ m_bCulled = bCulled;}
 
 private:
 	bool			m_bCulled;
+	DWORD			m_SpaceFlag;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -52,20 +55,20 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// transform
-	CVector3		GetLocalPos() override		{ return m_LocalPos;	}
-	CQuat			GetLocalRot() override		{ return m_LocalRotation;	}
-	CVector3		GetLocalScale() override	{ return m_LocalScale;	}
+	CVector3		GetLocalPos() override		{ return m_LocalTM.r[3];	}
+	CQuat			GetLocalRot() override;
+	CVector3		GetLocalScale() override;
 	XMMATRIX		GetLocalTM() override		{ return m_LocalTM;	}
 
-	CVector3		GetWorldPos() override		{ return m_WorldPos;	}
-	CVector3		GetWorldScale() override	{ return m_WorldScale;	}
-	CQuat			GetWorldRot() override		{ return m_WorldRotation;	}
+	CVector3		GetWorldPos() override		{ return m_WorldTM.r[3];	}
+	CVector3		GetWorldScale() override;
+	CQuat			GetWorldRot() override;
 	XMMATRIX		GetWorldTM() override		{ return m_WorldTM;	}
 
 	void			SetLocalPos(const CVector3& _pos) override;
 	void			SetLocalScale(const CVector3& _scale) override;
 	void			SetLocalRot(const CQuat& _rot) override;
-	void			SetLocalTM(const XMMATRIX& tm, bool bUpdateWorld = true) override;
+	void			SetLocalTM(const XMMATRIX& tm, bool bSkipUpdateWorld = false) override;
 	void			SetWorldPos(const CVector3& _pos) override;
 	void			SetWorldRot(const CQuat& _rot) override;
 	void			SetWorldTM(const XMMATRIX& tm) override;
@@ -73,21 +76,13 @@ public:
 	void			MoveOnLocalAxis(float x, float y, float z) override;
 	void			RotateLocalAxis(CVector3 axis, float radian) override;
 
-	void			UpdateLocalTM() override;
 	void			UpdateWorldTM() override;
 
 private:
 	void			UpdateLocalFromWorld();
 	void			OnTransformChanged();
 
-	CVector3		m_LocalPos;
-	CVector3		m_LocalScale;
-	CQuat			m_LocalRotation;
 	XMMATRIX		m_LocalTM;
-
-	CVector3		m_WorldPos;
-	CVector3		m_WorldScale;
-	CQuat			m_WorldRotation;
 	XMMATRIX		m_WorldTM;
 	
 public:

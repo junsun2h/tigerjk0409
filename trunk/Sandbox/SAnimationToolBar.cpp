@@ -28,7 +28,6 @@ SAnimationToolBar::SAnimationToolBar(wxWindow *parent, wxWindowID id)
 	this->Connect( ID_ANIMATION_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( SAnimationToolBar::OnStop ) );
 	
 	this->Connect( ID_ANIMATION_PLAYTIME, wxEVT_SCROLL_CHANGED, wxScrollEventHandler( SAnimationToolBar::OnPlayTimeChanged ) );
-	this->Connect( ID_ANIMATION_LOOP, wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SAnimationToolBar::OnLoop ) );
 
 	Realize();
 }
@@ -68,12 +67,24 @@ void SAnimationToolBar::OnFreeze( wxCommandEvent& event )
 
 void SAnimationToolBar::OnStop( wxCommandEvent& event )
 {
+	IEntityProxyActor* pActor = GetActor();
+	if( pActor == NULL )
+		return;
+
+	if( pActor->IsPlaying() )
+		pActor->Stop();
 }
 
 void SAnimationToolBar::OnPlayTimeChanged( wxScrollEvent& event )
 {
 }
 
-void SAnimationToolBar::OnLoop( wxCommandEvent& event )
+IEntityProxyActor*	SAnimationToolBar::GetActor()
 {
+	IEntity* pEntity = GLOBAL::SelectionMgr()->First();
+
+	if( pEntity == NULL )
+		return NULL;
+
+	return (IEntityProxyActor*)pEntity->GetProxy(ENTITY_PROXY_ACTOR);
 }

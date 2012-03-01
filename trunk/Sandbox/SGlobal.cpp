@@ -66,7 +66,11 @@ namespace GLOBAL
 
 	bool InitDevice(CENGINE_INIT_PARAM& engineParam)
 	{
+#ifdef _DEBUG
+		HMODULE	engineDll = ::LoadLibrary( L"Engined.dll");
+#else
 		HMODULE	engineDll = ::LoadLibrary( L"Engine.dll");
+#endif
 		if( engineDll == NULL )
 			return false;
 

@@ -12,7 +12,7 @@ EMotionInstance::~EMotionInstance()
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-eMOTION_PLAY_STATE EMotionInstance::VisibleUpdate(float timeDelta)
+eMOTION_PLAY_STATE EMotionInstance::Update(float timeDelta, bool bVisible)
 {
 	if( m_Desc.pResource == NULL)
 	{
@@ -24,31 +24,15 @@ eMOTION_PLAY_STATE EMotionInstance::VisibleUpdate(float timeDelta)
 		return MOTION_STOPPED;
 
 	UpdateFrame(timeDelta);
-	UpdateBlendWeight(timeDelta);
-	UpdateMatrix();
-	
-	return m_State.ePlayState;
-}
 
-
-//--------------------------------------------------------------------------------------------------------------------
-eMOTION_PLAY_STATE EMotionInstance::CulledUpdate(float timeDelta)
-{
-	if( m_Desc.pResource == NULL)
+	if( bVisible)
 	{
-		assert(0);
-		return MOTION_PLAY_INVAILD;
+		UpdateBlendWeight(timeDelta);
+		UpdateMatrix();
 	}
 
-	if( m_State.ePlayState == MOTION_STOPPED)
-		return MOTION_STOPPED;
-
-	UpdateFrame(timeDelta);
-	UpdateBlendWeight(timeDelta);
-
 	return m_State.ePlayState;
 }
-
 
 //--------------------------------------------------------------------------------------------------------------------
 void EMotionInstance::UpdateFrame(float timeDelta)

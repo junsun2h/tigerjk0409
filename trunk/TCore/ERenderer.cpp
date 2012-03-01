@@ -135,6 +135,7 @@ void ERenderer::RT_ProcessCommand()
 				XMMATRIX* pMatrix;
 				pQueue->PopParam(pParam);
 				pQueue->PopData( pMatrix );
+								
 				pRenderStrategy->SetMaterial( pParam->pMaterial, pParam->pGeometry);
 				pRenderStrategy->SetTransform( pParam->worldTM );
 				pRenderStrategy->SetJointTransforms( pMatrix, pParam->refSkinTMCount );

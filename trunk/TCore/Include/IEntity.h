@@ -23,12 +23,9 @@ struct EntityEvent
 	UINT			flags;
 };
 
-enum eENTITY_UPDATE_FLAG
+enum eENTITY_SPACE_FLAG
 {
-	ENTITY_UPDATE_NONE = 0,
-	ENTITY_PRE_UPDATE =	BIT(1),
-	ENTITY_PRO_UPDATE =	BIT(2),
-	ENTITY_UPDATE_BOTH = BIT(3)
+	ENTITY_NO_SPACE_UPDATE =	BIT(1)
 };
 
 typedef std::vector<IEntity*>	TYPE_ENTITY_LIST;
@@ -47,6 +44,8 @@ struct IEntity
 	virtual	TYPE_SPACE_IDS*	GetSpaceIDList() = 0;
 	virtual	void			AddSpaceID(UINT id) = 0;
 	virtual	void			RemoveSpaceID(UINT id) = 0;
+	virtual void			SetSpaceFlag(DWORD flag) = 0;
+	virtual DWORD			GetSpaceFlag() = 0;
 	virtual bool			IsCulled() =0;
 	virtual void			SetCull(bool bCulled) =0;
 
@@ -76,12 +75,11 @@ struct IEntity
 	virtual void			SetLocalPos(const CVector3& _pos) = 0;
 	virtual void			SetLocalScale(const CVector3& _scale) = 0;
 	virtual void			SetLocalRot(const CQuat& _rot) = 0;
-	virtual void			SetLocalTM(const XMMATRIX& tm, bool bUpdateWorld = true) = 0;
+	virtual void			SetLocalTM(const XMMATRIX& tm, bool bSkipUpdateWorld = false) = 0;
 	virtual void			SetWorldPos(const CVector3& _pos) = 0;
 	virtual void			SetWorldRot(const CQuat& _rot) = 0;
 	virtual void			SetWorldTM(const XMMATRIX& tm) = 0;
 
-	virtual void			UpdateLocalTM() = 0;
 	virtual void			UpdateWorldTM() = 0;
 
 	virtual void			MoveOnLocalAxis(float x, float y, float z) = 0;

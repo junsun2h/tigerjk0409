@@ -70,6 +70,7 @@ void EEntityProxyActor::SetActor(const CResourceActor* pResource)
 		std::string name = m_pEntity->GetName() + "_" + joint.name;
 		IEntity* pJointEntity = pEntityMgr->SpawnEntity( name );
 
+		pJointEntity->SetSpaceFlag( ENTITY_NO_SPACE_UPDATE );
 		pJointEntity->SetLocalPos( joint.pos );
 		pJointEntity->SetLocalRot( joint.rot );
 		
@@ -152,7 +153,7 @@ void EEntityProxyActor::Play(CMotionDesc* pDesc)
 
 void EEntityProxyActor::Stop()
 {
-
+	m_bPause = true;
 }
 
 bool EEntityProxyActor::IsPlaying()
@@ -169,7 +170,7 @@ void EEntityProxyActor::Update(float deltaTime)
 		return;
 
 	if( m_pEntity->IsCulled() )
-		CulledUpdate(deltaTime);
+		InvisibleUpdate(deltaTime);
 	else
 		VisibleUpdate(deltaTime); 
 }
@@ -190,7 +191,7 @@ void EEntityProxyActor::VisibleUpdate(float deltaTime)
 	for(; itr != m_PlayingMotionList.end(); )
 	{
 		IMotionInstance* pMotionInstance = *itr;
-		eMOTION_PLAY_STATE motionState = pMotionInstance->VisibleUpdate(deltaTime);
+		eMOTION_PLAY_STATE motionState = pMotionInstance->Update(deltaTime, true);
 
 		if( motionState == MOTION_READY )
 			continue;
@@ -209,13 +210,13 @@ void EEntityProxyActor::VisibleUpdate(float deltaTime)
 	ApplyAnimationToActor();
 }
 
-void EEntityProxyActor::CulledUpdate(float deltaTime)
+void EEntityProxyActor::InvisibleUpdate(float deltaTime)
 {
 	MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
 	for(; itr != m_PlayingMotionList.end(); )
 	{
 		IMotionInstance* pMotionInstance = *itr;
-		eMOTION_PLAY_STATE motionState = pMotionInstance->CulledUpdate(deltaTime);
+		eMOTION_PLAY_STATE motionState = pMotionInstance->Update(deltaTime, false);
 
 		if( motionState == MOTION_READY )
 			continue;
@@ -251,8 +252,13 @@ void EEntityProxyActor::ApplyAnimationToActor()
 		m_AnimationMatrix[i] = XMMatrixRotationQuaternion( m_AnimationPos[i].rot.m128 );
 		m_AnimationMatrix[i].r[3] = m_AnimationPos[i].pos.ToXMVEECTOR();
 
-		m_pJointEntities[i]->SetLocalTM(m_AnimationMatrix[i]);
+		m_pJointEntities[i]->SetLocalTM(m_AnimationMatrix[i], true);
+	}
 
+	m_pEntity->UpdateWorldTM();
+
+	for(UINT i=0; i < jointCount; ++i)
+	{
 		m_AnimationMatrix[i] = XMMatrixMultiply( m_InvBindMatrix[i], m_pJointEntities[i]->GetWorldTM() );
 		m_AnimationMatrix[i] = XMMatrixMultiply( m_AnimationMatrix[i], invWorld );
 	}
