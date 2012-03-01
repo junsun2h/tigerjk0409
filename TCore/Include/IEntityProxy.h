@@ -53,7 +53,6 @@ struct IEntityProxyActor : IEntityProxy
 
 	virtual void					Play(CMotionDesc* pdesc) = 0;
 	virtual void					Freeze() = 0;
-	virtual void					Stop() = 0;
 	virtual void					Resume() =0;
 	virtual bool					IsPlaying() = 0;
 

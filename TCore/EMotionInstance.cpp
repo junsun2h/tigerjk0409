@@ -12,7 +12,7 @@ EMotionInstance::~EMotionInstance()
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-eMOTION_PLAY_STATE EMotionInstance::Update(float timeDelta, bool bVisible)
+eMOTION_PLAY_STATE EMotionInstance::UpdateFrame(float timeDelta)
 {
 	if( m_Desc.pResource == NULL)
 	{
@@ -22,35 +22,21 @@ eMOTION_PLAY_STATE EMotionInstance::Update(float timeDelta, bool bVisible)
 
 	if( m_State.ePlayState == MOTION_STOPPED)
 		return MOTION_STOPPED;
-
-	UpdateFrame(timeDelta);
-
-	if( bVisible)
-	{
-		UpdateBlendWeight(timeDelta);
-		UpdateMatrix();
-	}
-
-	return m_State.ePlayState;
-}
-
-//--------------------------------------------------------------------------------------------------------------------
-void EMotionInstance::UpdateFrame(float timeDelta)
-{
-	if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END)
-		return;
-
-	m_State.passedTime += timeDelta;
-
-	float frame = m_State.passedTime/m_TimePerFrame;
-	float fkey = frame/m_Desc.pResource->frameInterval;
-	m_State.currentKey = int(fkey);
 	
+	if( m_State.ePlayState == MOTION_PLAY_FADE_OUT_AFTER_END)
+		return MOTION_PLAY_FADE_OUT_AFTER_END;
+
+	//////////////////////////////////////////////////////////////////////////
+	// update frame
+	m_State.passedTime += timeDelta;
 	if( m_State.passedTime > m_Desc.length )
 	{
 		m_State.loopCount++;
 		m_State.passedTime -= m_Desc.length;
-		m_State.blendRatio = fkey - m_State.currentKey;
+		float frame = m_State.passedTime/m_TimePerFrame;
+		float fkey = frame/m_Desc.pResource->frameInterval;
+
+		m_State.blendRatio = fkey - int(fkey);
 		m_State.currentKey = 0;
 
 		if( m_Desc.bLoop == false )
@@ -61,8 +47,14 @@ void EMotionInstance::UpdateFrame(float timeDelta)
 	}
 	else
 	{
+		float frame = m_State.passedTime/m_TimePerFrame;
+		float fkey = frame/m_Desc.pResource->frameInterval;
+		m_State.currentKey = int(fkey);
 		m_State.blendRatio = fkey - m_State.currentKey;
-	}
+	}	
+
+	UpdateBlendWeight(timeDelta);
+	return m_State.ePlayState;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -128,7 +120,7 @@ void EMotionInstance::UpdateMatrix()
 			if( key.rotIndex == keyNext.rotIndex )
 				m_JointMatrix[i].rot = node.keys[key.rotIndex].rot;
 			else
-				m_JointMatrix[i].rot = XMQuaternionSlerp( node.keys[key.rotIndex].rot.m128,	node.keys[key.rotIndex].rot.m128, m_State.blendRatio );
+				m_JointMatrix[i].rot = XMQuaternionSlerp( node.keys[key.rotIndex].rot.m128,	node.keys[keyNext.rotIndex].rot.m128, m_State.blendRatio );
 
 			if( key.posIndex == keyNext.posIndex )
 				m_JointMatrix[i].pos = node.keys[key.posIndex].pos;

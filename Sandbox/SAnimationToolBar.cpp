@@ -72,7 +72,7 @@ void SAnimationToolBar::OnStop( wxCommandEvent& event )
 		return;
 
 	if( pActor->IsPlaying() )
-		pActor->Stop();
+		pActor->Freeze();
 }
 
 void SAnimationToolBar::OnPlayTimeChanged( wxScrollEvent& event )

@@ -23,7 +23,6 @@ public:
 	void					Init(IEntity* pEntity) override;
 	
 	void					Play(CMotionDesc* pDesc) override;
-	void					Stop() override;
 	void					Freeze() override					{ m_bPause = true; }
 	void					Resume() override					{ m_bPause = false; }
 	bool					IsPlaying() override;
@@ -32,9 +31,8 @@ public:
 	void					Update(float deltaTime) override;
 
 private:
-	void					VisibleUpdate(float deltaTime);
-	void					InvisibleUpdate(float deltaTime);
 	void					ApplyAnimationToActor();
+	void					UpdateMotionFrame(float deltaTime);
 
 	IEntity*				m_pEntity;
 	const CResourceActor*	m_pResource;

@@ -767,7 +767,7 @@ namespace SRAW_FILE_LOADER
 				key.rot = (*pKeys)[iKey].rot;
 				key.posIndex = iKey;
 				key.rotIndex = iKey;
-
+				
 				if( iKey > 0 )
 				{
 					CMotionKey& formerKey = joint.keys[iKey - 1 ];
