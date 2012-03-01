@@ -5,9 +5,10 @@
 #include <math.h>
 #include <limits.h>
 #include <stdio.h>
-#include <vector>
 #include <map>
 #include <list>
+
+#include "CVector.h"
 
 // CRT's memory leak detection
 #if defined(DEBUG) || defined(_DEBUG)

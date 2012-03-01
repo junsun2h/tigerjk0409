@@ -285,9 +285,6 @@ struct CVector4{
 
 namespace XMMATRIX_UTIL
 {
-#ifdef _XM_NO_INTRINSICS_
-#undef _XM_NO_INTRINSICS_
-#endif
 	inline XMMATRIX	Inverse(CVector4* pDeterminant, const XMMATRIX& mt)		
 	{  
 		XMVECTOR _m128;

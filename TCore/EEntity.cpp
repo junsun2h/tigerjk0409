@@ -33,8 +33,6 @@ void RemoveProxyFromMemeory(IEntityProxy* pProxy)
 		assert(0);
 }
 
-
-
 EEntity::EEntity()
 	: m_pParent(NULL)
 	, m_bCulled(true)
@@ -280,19 +278,15 @@ void EEntity::MoveOnLocalAxis(float x, float y, float z)
 
 void EEntity::RotateLocalAxis(CVector3 axis, float radian)
 {
-	CVector3 pos = m_WorldTM.r[3];
+	CVector4 pos = m_WorldTM.r[3];
 
-	m_WorldTM.r[3].x = 0;
-	m_WorldTM.r[3].y = 0;
-	m_WorldTM.r[3].z = 0;
+	m_WorldTM.r[3] = CVector4( 0,0,0,1 ).m128;
 
 	XMMATRIX rotTM = XMMatrixRotationAxis( axis.ToXMVEECTOR(), radian );
 
 	rotTM = XMMatrixMultiply( m_WorldTM, rotTM );
 
-	rotTM.r[3].x = pos.x;
-	rotTM.r[3].y = pos.y;
-	rotTM.r[3].z = pos.z;
+	rotTM.r[3] = pos.m128;
 
 	SetWorldTM(rotTM);
 }
