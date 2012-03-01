@@ -14,14 +14,13 @@ public:
 	const CMotionDesc*		GetDesc() override			{ return &m_Desc;}
 	const CMotionState*		GetState() override			{ return &m_State;}
 
-	eMOTION_PLAY_STATE		Update(float timeDelta, bool bVisible) override;
+	eMOTION_PLAY_STATE		UpdateFrame(float timeDelta) override;
+	void					UpdateMatrix() override;
 
 	void					ApplyToMotionPose(MOTION_POSE* pMotionPose) override;
 
 private:
 	void					UpdateBlendWeight(float timeDelta);
-	void					UpdateFrame(float timeDelta);
-	void					UpdateMatrix();
 
 
 	CMotionDesc				m_Desc;

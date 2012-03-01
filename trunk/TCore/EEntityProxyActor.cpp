@@ -151,11 +151,6 @@ void EEntityProxyActor::Play(CMotionDesc* pDesc)
 	sort( m_PlayingMotionList.begin(), m_PlayingMotionList.end(), SORT_MOTION_INSTANCE);
 }
 
-void EEntityProxyActor::Stop()
-{
-	m_bPause = true;
-}
-
 bool EEntityProxyActor::IsPlaying()
 {
 	if( m_PlayingMotionList.size() == 0)
@@ -169,16 +164,63 @@ void EEntityProxyActor::Update(float deltaTime)
 	if( m_bPause == true || IsPlaying() == false)
 		return;
 
-	if( m_pEntity->IsCulled() )
-		InvisibleUpdate(deltaTime);
-	else
-		VisibleUpdate(deltaTime); 
+	UpdateMotionFrame(deltaTime);
+
+	if( m_pEntity->IsCulled() == false )
+		ApplyAnimationToActor(); 
 }
 
-void EEntityProxyActor::VisibleUpdate(float deltaTime)
+void EEntityProxyActor::UpdateMotionFrame(float deltaTime)
+{
+	// reverse iterate to update
+	for(int i = m_PlayingMotionList.size() -1; i > -1; i--)
+	{
+		IMotionInstance* pMotionInstance = m_PlayingMotionList[i];
+		eMOTION_PLAY_STATE motionState = pMotionInstance->UpdateFrame(deltaTime);
+
+		if( motionState == MOTION_READY )
+			continue;
+
+		// delete lower priority motions if animation reach to weight 1
+		if( pMotionInstance->GetState()->weight >= 1)
+		{
+			MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
+			for( ; *itr != pMotionInstance; )
+			{
+				g_MemPoolMotionInstance.Remove( *itr );
+				itr = m_PlayingMotionList.erase(itr);
+			}
+			break;
+		}
+	}
+
+	// forward iterate to delete motions
+	MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
+	for( ; itr != m_PlayingMotionList.end(); )
+	{
+		eMOTION_PLAY_STATE motionState = (*itr)->GetState()->ePlayState;
+		if( motionState == MOTION_STOPPED || motionState == MOTION_PLAY_INVAILD)
+		{
+			g_MemPoolMotionInstance.Remove( *itr );
+			itr = m_PlayingMotionList.erase(itr);
+			continue;
+		}
+		itr++;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// for i to weightCount
+//	 v += [v * InvBindWorldi * JointWorldi * invWorldE] * weight
+//
+// InvBindWorldi: Inverse world bind-pose matrix of joint i
+// JointWorldi: World Transformation matrix of joint i
+// invWorldE: Inverse Transformation matrix of Entity
+//----------------------------------------------------------------------------------------------------------------------
+void EEntityProxyActor::ApplyAnimationToActor()
 {
 	UINT jointCount = m_pJointEntities.size();
-	
+
 	// reset animation matrix to Figure mode
 	for(UINT i=0; i < jointCount; ++i)
 	{
@@ -186,64 +228,11 @@ void EEntityProxyActor::VisibleUpdate(float deltaTime)
 		m_AnimationPos[i].rot = m_pResource->jointList[i].rot;
 	}
 
-	// Update animation
-	MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
-	for(; itr != m_PlayingMotionList.end(); )
+	for( UINT i=0; i < m_PlayingMotionList.size(); ++i)
 	{
-		IMotionInstance* pMotionInstance = *itr;
-		eMOTION_PLAY_STATE motionState = pMotionInstance->Update(deltaTime, true);
-
-		if( motionState == MOTION_READY )
-			continue;
-
-		if( motionState == MOTION_STOPPED || motionState == MOTION_PLAY_INVAILD)
-		{
-			g_MemPoolMotionInstance.Remove( *itr );
-			itr = m_PlayingMotionList.erase(itr);
-			continue;
-		}
-
-		pMotionInstance->ApplyToMotionPose( &m_AnimationPos );
-		itr++;
+		m_PlayingMotionList[i]->UpdateMatrix();
+		m_PlayingMotionList[i]->ApplyToMotionPose( &m_AnimationPos );
 	}
-
-	ApplyAnimationToActor();
-}
-
-void EEntityProxyActor::InvisibleUpdate(float deltaTime)
-{
-	MOTION_INSTANCE_LIST::iterator itr = m_PlayingMotionList.begin();
-	for(; itr != m_PlayingMotionList.end(); )
-	{
-		IMotionInstance* pMotionInstance = *itr;
-		eMOTION_PLAY_STATE motionState = pMotionInstance->Update(deltaTime, false);
-
-		if( motionState == MOTION_READY )
-			continue;
-
-		if( motionState == MOTION_STOPPED || motionState == MOTION_PLAY_INVAILD)
-		{
-			g_MemPoolMotionInstance.Remove( *itr );
-			itr = m_PlayingMotionList.erase(itr);
-			continue;
-		}
-
-		itr++;
-	}
-}
-
-void EEntityProxyActor::ApplyAnimationToActor()
-{
-	/*
-	for i to weightCount
-		v += [v * InvBindWorldi * JointWorldi * invWorldE] * weight
-
-	InvBindWorldi: Inverse world bind-pose matrix of joint i
-	JointWorldi: World Transformation matrix of joint i
-	invWorldE: Inverse Transformation matrix of Entity
-	*/
-
-	UINT jointCount = m_pJointEntities.size();
 
 	XMMATRIX invWorld = XMMATRIX_UTIL::Inverse(NULL, m_pEntity->GetWorldTM() );
 
