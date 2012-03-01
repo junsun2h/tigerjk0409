@@ -26,6 +26,7 @@
     <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CUnitPool.h" />
+    <ClInclude Include="CVector.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="3rdParty">

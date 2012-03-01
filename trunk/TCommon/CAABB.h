@@ -152,9 +152,7 @@ inline XMMATRIX CAABB::CalculatCAABBCoordinate() const
 	XMMATRIX AABBCoordinate = XMMatrixIdentity();
 	CVector3 center = GetCenter();
 
-	AABBCoordinate.r[3].x = -center.x;
-	AABBCoordinate.r[3].y = -center.y;
-	AABBCoordinate.r[3].z = -center.z;
+	AABBCoordinate.r[3] = CVector4( -center.x, -center.y, -center.z, 1 ).m128;
 	return AABBCoordinate;
 }
 

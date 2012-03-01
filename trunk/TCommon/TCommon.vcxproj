@@ -78,6 +78,7 @@
     <ClInclude Include="CQuad.h" />
     <ClInclude Include="CResource.h" />
     <ClInclude Include="CUnitPool.h" />
+    <ClInclude Include="CVector.h" />
     <ClInclude Include="CVertex.h" />
     <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="CTimer.h" />
