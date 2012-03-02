@@ -64,6 +64,9 @@
       <Filter>EntitySystem\EntityProxy</Filter>
     </ClCompile>
     <ClCompile Include="ERenderer.cpp" />
+    <ClCompile Include="ETextureDataProcessor.cpp">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -189,6 +192,9 @@
     </ClInclude>
     <ClInclude Include="Include\ISpaceMgr.h">
       <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="ETextureDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

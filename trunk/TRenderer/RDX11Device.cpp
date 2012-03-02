@@ -255,8 +255,170 @@ ID3D11Buffer* RDX11Device::CreateBuffer(void* pData ,int size, UINT bindFlag, D3
 	return pBuffer;
 }
 
+//--------------------------------------------------------------------------------------
+HRESULT LoadTextureDataFromFile( BYTE* pData, size_t fileSize, DDS_HEADER** ppHeader, BYTE** ppBitData, UINT* pBitSize )
+{
+	// DDS files always start with the same magic number ("DDS ")
+	DWORD dwMagicNumber = *( DWORD* )( pData );
+	if( dwMagicNumber != DDS_MAGIC )
+		return E_FAIL;
 
-CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture)
+	DDS_HEADER* pHeader = reinterpret_cast<DDS_HEADER*>( pData + sizeof( DWORD ) );
+
+	// Verify header to validate DDS file
+	if( pHeader->dwSize != sizeof(DDS_HEADER) || pHeader->ddspf.dwSize != sizeof(DDS_PIXELFORMAT) )
+		return E_FAIL;
+
+	// Check for DX10 extension
+	bool bDXT10Header = false;
+	if ( (pHeader->ddspf.dwFlags & DDS_FOURCC)	&& (MAKEFOURCC( 'D', 'X', '1', '0' ) == pHeader->ddspf.dwFourCC) )
+	{
+		// Must be long enough for both headers and magic value
+		if( fileSize < (sizeof(DDS_HEADER)+sizeof(DWORD)+sizeof(DDS_HEADER_DXT10)) )
+			return E_FAIL;
+
+		bDXT10Header = true;
+	}
+
+	// setup the pointers in the process request
+	*ppHeader = pHeader;
+	INT offset = sizeof( DWORD ) + sizeof( DDS_HEADER )
+		+ (bDXT10Header ? sizeof( DDS_HEADER_DXT10 ) : 0);
+	*ppBitData = pData + offset;
+	*pBitSize = fileSize - offset;
+
+	return S_OK;
+}
+
+
+void RDX11Device::CreateTextureFromMemory(BYTE* pData, size_t size, CResourceTexture* pTexture)
+{
+	DDS_HEADER* pHeader = NULL;
+	BYTE* pBitData = NULL;
+	UINT BitSize = 0;
+
+	HRESULT hr = LoadTextureDataFromFile( pData, size, &pHeader, &pBitData, &BitSize);
+
+	UINT iWidth = pHeader->dwWidth;
+	UINT iHeight = pHeader->dwHeight;
+	UINT iMipCount = pHeader->dwMipMapCount;
+	if( 0 == iMipCount )
+		iMipCount = 1;
+
+	D3D11_TEXTURE2D_DESC desc;
+	if ((  pHeader->ddspf.dwFlags & DDS_FOURCC )
+		&& (MAKEFOURCC( 'D', 'X', '1', '0' ) == pHeader->ddspf.dwFourCC ) )
+	{
+		DDS_HEADER_DXT10* d3d10ext = (DDS_HEADER_DXT10*)( (char*)pHeader + sizeof(DDS_HEADER) );
+
+		if ( d3d10ext->resourceDimension != D3D11_RESOURCE_DIMENSION_TEXTURE2D )
+		{
+			assert(0);
+			return;
+		}
+		desc.ArraySize = d3d10ext->arraySize;
+		desc.Format = d3d10ext->dxgiFormat;
+	}
+	else
+	{
+		desc.ArraySize = 1;
+		desc.Format = GetDXGIFormat( pHeader->ddspf );
+
+		if (pHeader->dwCubemapFlags != 0 || (pHeader->dwHeaderFlags & DDS_HEADER_FLAGS_VOLUME) )
+		{
+			// For now only support 2D textures, not cubemaps or volumes
+			assert(0);
+			return;
+		}
+
+		if( desc.Format == DXGI_FORMAT_UNKNOWN )
+		{
+			D3DFORMAT fmt = GetD3D9Format( pHeader->ddspf );
+
+			// Swizzle some RGB to BGR common formats to be DXGI (1.0) supported
+			switch( fmt )
+			{
+			case D3DFMT_X8R8G8B8:
+			case D3DFMT_A8R8G8B8:
+				{
+					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+					if ( BitSize >= 3 )
+					{
+						for( UINT i = 0; i < BitSize; i += 4 )
+						{
+							BYTE a = pBitData[i];
+							pBitData[i] = pBitData[i + 2];
+							pBitData[i + 2] = a;
+						}
+					}
+				}
+				break;
+
+				// Need more room to try to swizzle 24bpp formats
+				// Could also try to expand 4bpp or 3:3:2 formats
+
+			default:
+				assert(0);
+				return;
+			}
+		}
+	}
+	
+	// Create the texture
+	desc.Width = iWidth;
+	desc.Height = iHeight;
+	desc.MipLevels = iMipCount;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA* pInitData = new D3D11_SUBRESOURCE_DATA[iMipCount * desc.ArraySize];
+
+	UINT NumBytes = 0;
+	UINT RowBytes = 0;
+	UINT NumRows = 0;
+	BYTE* pSrcBits = pBitData;
+
+	UINT index = 0;
+	for( UINT j = 0; j < desc.ArraySize; j++ )
+	{
+		UINT w = iWidth;
+		UINT h = iHeight;
+		for( UINT i = 0; i < iMipCount; i++ )
+		{
+			GetSurfaceInfo( w, h, desc.Format, &NumBytes, &RowBytes, &NumRows );
+			pInitData[index].pSysMem = ( void* )pSrcBits;
+			pInitData[index].SysMemPitch = RowBytes;
+			++index;
+
+			pSrcBits += NumBytes;
+			w = w >> 1;
+			h = h >> 1;
+			if( w == 0 )
+				w = 1;
+			if( h == 0 )
+				h = 1;
+		}
+	}
+
+	ID3D11Texture2D* pTex2D = NULL;
+	hr = GLOBAL::D3DDevice()->CreateTexture2D( &desc, pInitData, &pTex2D );
+
+	SAFE_DELETE_ARRAY( pInitData );
+
+	pTexture->pTextureSource = pTex2D;
+	pTexture->Width = desc.Width;
+	pTexture->height = desc.Height;
+	pTexture->MipLevels = desc.MipLevels;
+	pTexture->Format = eTEXTURE_FORMAT(desc.Format);
+	CreateGraphicBuffer(pTexture);
+}
+
+void RDX11Device::CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture)
 {
 	HRESULT hr = S_OK;
 	ID3D11Resource *pDXTexture = NULL;
@@ -264,7 +426,10 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName, CReso
 	hr = D3DX11CreateTextureFromFileA( GLOBAL::D3DDevice(), fileName, NULL, NULL, &pDXTexture, NULL );
 
 	if( FAILED( hr ) )
-		return NULL;
+	{
+		assert(0);
+		return;
+	}
 
 	ID3D11Texture2D* pRT = (ID3D11Texture2D*)pDXTexture;
 
@@ -278,9 +443,8 @@ CResourceTexture* RDX11Device::CreateTextureFromFile(const char* fileName, CReso
 	pTexture->Format = eTEXTURE_FORMAT(desc.Format);
 
 	CreateGraphicBuffer(pTexture);
-
-	return pTexture;
 }
+
 
 bool RDX11Device::SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName)
 {

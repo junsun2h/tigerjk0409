@@ -12,10 +12,54 @@
 #include "EMeshDataProcessor.h"
 #include "EActorDataProcessor.h"
 #include "EMotionDataProcessor.h"
+#include "ETextureDataProcessor.h"
+
 #include "ELoader.h"
 
 
+struct RESOURCE_REQUEST
+{
+	EWinFileLoader*			pDataLoader;
+	IDataProcessor*			pDataProcessor;
+	CResourceBase*			pResource;
+	CALLBACK_LOAD_COMPLED	pCallBackComplete;
 
+	RESOURCE_REQUEST()
+		: pDataLoader(NULL)
+		, pDataProcessor(NULL)
+		, pResource(NULL)
+		, pCallBackComplete(NULL)
+	{
+	}
+};
+
+CGrowableArray <RESOURCE_REQUEST>	g_IOQueue;
+CGrowableArray <RESOURCE_REQUEST>	g_ProcessQueue;
+CGrowableArray <RESOURCE_REQUEST>	g_MainThreadQueue;
+
+CObjectPool<EWinFileLoader>			g_MemPoolFileLoader(100);
+CObjectPool<EActorDataProcessor>	g_MemPoolActorDataProcessor(100);
+CObjectPool<EMeshDataProcessor>		g_MemPoolMeshDataProcessor(100);
+CObjectPool<EMotionDataProcessor>	g_MemPoolMotionDataProcessor(100);
+CObjectPool<ETextureDataProcessor>	g_MemPoolTextureDataProcessor(100);
+
+void RemoveResourceRquest(RESOURCE_REQUEST& resourceRequest)
+{
+	if( resourceRequest.pDataLoader)
+		g_MemPoolFileLoader.Remove( resourceRequest.pDataLoader );
+
+	if( resourceRequest.pDataProcessor )
+	{
+		eRESOURCE_FILE_TYPE fileType = resourceRequest.pDataProcessor->Type();
+
+		if( fileType == RESOURCE_FILE_ACTOR ) 		g_MemPoolActorDataProcessor.Remove( resourceRequest.pDataProcessor );
+		else if( fileType == RESOURCE_FILE_MESH ) 	g_MemPoolMeshDataProcessor.Remove( resourceRequest.pDataProcessor );
+		else if( fileType == RESOURCE_FILE_MOTION )	g_MemPoolMotionDataProcessor.Remove( resourceRequest.pDataProcessor );
+		else if( fileType == RESOURCE_FILE_TEXTURE ) g_MemPoolTextureDataProcessor.Remove( resourceRequest.pDataProcessor );
+		else
+			assert(0);
+	}
+}
 
 //--------------------------------------------------------------------------------------
 unsigned int WINAPI _FileIOThreadProc( LPVOID lpParameter )
@@ -74,14 +118,13 @@ void ELoader::WaitForAllItems()
 	}
 }
 
+
 //--------------------------------------------------------------------------------------
 unsigned int ELoader::IOT_FileIOThreadProc()
 {
 	WCHAR szMessage[MAX_PATH];
 	HRESULT hr = S_OK;
 	m_bIOThreadDone = false;
-
-	RESOURCE_REQUEST ResourceRequest = {0};
 
 	while( !m_bDone )
 	{
@@ -92,8 +135,8 @@ unsigned int ELoader::IOT_FileIOThreadProc()
 
 		// Pop a request off of the IOQueue
 		EnterCriticalSection( &m_csIOQueue );
-		ResourceRequest = m_IOQueue.GetAt( 0 );
-		m_IOQueue.Remove( 0 );
+		RESOURCE_REQUEST ResourceRequest = g_IOQueue.GetAt( 0 );
+		g_IOQueue.Remove( 0 );
 		LeaveCriticalSection( &m_csIOQueue );
 
 		// Handle a read request
@@ -108,7 +151,7 @@ unsigned int ELoader::IOT_FileIOThreadProc()
 
 		// Add it to the ProcessQueue
 		EnterCriticalSection( &m_csProcessQueue );
-		m_ProcessQueue.Add( ResourceRequest );
+		g_ProcessQueue.Add( ResourceRequest );
 		LeaveCriticalSection( &m_csProcessQueue );
 
 		// Let the process thread know it's got work to do
@@ -117,6 +160,7 @@ unsigned int ELoader::IOT_FileIOThreadProc()
 	m_bIOThreadDone = true;
 	return 0;
 }
+
 
 //--------------------------------------------------------------------------------------
 unsigned int ELoader::PT_ProcessingThreadProc()
@@ -133,8 +177,8 @@ unsigned int ELoader::PT_ProcessingThreadProc()
 
 		// Pop a request off of the ProcessQueue
 		EnterCriticalSection( &m_csProcessQueue );
-		RESOURCE_REQUEST ResourceRequest = m_ProcessQueue.GetAt( 0 );
-		m_ProcessQueue.Remove( 0 );
+		RESOURCE_REQUEST ResourceRequest = g_ProcessQueue.GetAt( 0 );
+		g_ProcessQueue.Remove( 0 );
 		LeaveCriticalSection( &m_csProcessQueue );
 
 		// Decompress the data
@@ -155,12 +199,42 @@ unsigned int ELoader::PT_ProcessingThreadProc()
 
 		// Add it to the RenderThreadQueue
 		EnterCriticalSection( &m_csMainThreadQueue );
-		m_MainThreadQueue.Add( ResourceRequest );
+		g_MainThreadQueue.Add( ResourceRequest );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 	}
 	m_bProcessThreadDone = true;
 	return 0;
 }
+
+
+//--------------------------------------------------------------------------------------
+void ELoader::CompleteWork( UINT completeLimit)
+{
+	HRESULT hr = S_OK;
+
+	EnterCriticalSection( &m_csMainThreadQueue );
+	UINT numJobs = g_MainThreadQueue.GetSize();
+	LeaveCriticalSection( &m_csMainThreadQueue );
+
+	for( UINT i = 0; i < numJobs && i < completeLimit; i++ )
+	{
+		EnterCriticalSection( &m_csMainThreadQueue );
+		RESOURCE_REQUEST resourceRequest = g_MainThreadQueue.GetAt( 0 );
+		g_MainThreadQueue.Remove( 0 );
+		LeaveCriticalSection( &m_csMainThreadQueue );
+
+		resourceRequest.pDataProcessor->CompleteWork();
+
+		if( resourceRequest.pCallBackComplete != NULL )
+			resourceRequest.pCallBackComplete(resourceRequest.pResource );
+
+		RemoveResourceRquest(resourceRequest);
+
+		// Decrement num oustanding resources
+		m_NumOustandingResources --;
+	}
+}
+
 
 //--------------------------------------------------------------------------------------
 bool ELoader::Init( UINT NumProcessingThreads )
@@ -200,6 +274,7 @@ bool ELoader::Init( UINT NumProcessingThreads )
 	return true;
 }
 
+
 //--------------------------------------------------------------------------------------
 void ELoader::DestroyAsyncLoadingThreadObjects()
 {
@@ -221,34 +296,6 @@ void ELoader::DestroyAsyncLoadingThreadObjects()
 	CloseHandle( m_hIOThread );
 }
 
-//--------------------------------------------------------------------------------------
-void ELoader::CompleteWork( UINT CurrentNumResourcesToService)
-{
-	HRESULT hr = S_OK;
-
-	EnterCriticalSection( &m_csMainThreadQueue );
-	UINT numJobs = m_MainThreadQueue.GetSize();
-	LeaveCriticalSection( &m_csMainThreadQueue );
-
-	for( UINT i = 0; i < numJobs && i < CurrentNumResourcesToService; i++ )
-	{
-		EnterCriticalSection( &m_csMainThreadQueue );
-		RESOURCE_REQUEST ResourceRequest = m_MainThreadQueue.GetAt( 0 );
-		m_MainThreadQueue.Remove( 0 );
-		LeaveCriticalSection( &m_csMainThreadQueue );
-
-		ResourceRequest.pDataProcessor->PopData();
-
-		if( ResourceRequest.pCallBackComplete != NULL )
-			ResourceRequest.pCallBackComplete();
-
-		SAFE_DELETE( ResourceRequest.pDataLoader );
-		SAFE_DELETE( ResourceRequest.pDataProcessor );
-
-		// Decrement num oustanding resources
-		m_NumOustandingResources --;
-	}
-}
 
 bool ELoader::IsIOThread()
 {
@@ -256,6 +303,7 @@ bool ELoader::IsIOThread()
 		return true;
 	return false;
 }
+
 
 bool ELoader::IsDataProcThread()
 {
@@ -269,63 +317,9 @@ bool ELoader::IsDataProcThread()
 	return false;
 }
 
-CResourceBase* ELoader::LoadForward(const char* fileName, char* name, eRESOURCE_FILE_TYPE type)
-{
-	if(RESOURCE_FILE_ACTOR == type )
-	{
-		EWinFileLoader loader(fileName);
-		EActorDataProcessor dataProcessor(name);
 
-		void* pData;
-		SIZE_T size;
-
-		loader.Load();
-		loader.GetData(&pData , &size);
-
-		return dataProcessor.Process(pData, size);
-	}
-	else if( RESOURCE_FILE_MESH == type)
-	{
-		EWinFileLoader loader(fileName);
-		EMeshDataProcessor dataProcessor(name);
-
-		void* pData;
-		SIZE_T size;
-
-		loader.Load();
-		loader.GetData(&pData , &size);
-
-		return dataProcessor.Process(pData, size);
-	}
-	else if(RESOURCE_FILE_MOTION == type )
-	{
-		EWinFileLoader loader(fileName);
-		EMotionDataProcessor dataProcessor(name);
-
-		void* pData;
-		SIZE_T size;
-
-		loader.Load();
-		loader.GetData(&pData , &size);
-
-		return dataProcessor.Process(pData, size);
-	}
-	else if(RESOURCE_FILE_TEXTURE == type )
-	{
-		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
-		GLOBAL::RDevice()->CreateTextureFromFile(fileName, pTexture);
-		pTexture->loadState = RESOURCE_LOAD_FINISHED;
-		return pTexture;
-	}
-	else if(RESOURCE_FILE_MATERIAL == type )
-	{
-
-	}
-
-	return NULL;
-}
-
-CResourceBase* ELoader::LoadForward(char* name, eRESOURCE_FILE_TYPE type)
+//--------------------------------------------------------------------------------------
+CResourceBase* ELoader::Load(char* name, eRESOURCE_FILE_TYPE type, bool bForward)
 {
 	std::string fullPath = m_Path;
 	
@@ -335,31 +329,73 @@ CResourceBase* ELoader::LoadForward(char* name, eRESOURCE_FILE_TYPE type)
 	else if(RESOURCE_FILE_TEXTURE == type )		fullPath = fullPath + "\\Data\\texture\\" + name + ".dds";
 	else if(RESOURCE_FILE_MATERIAL == type )	fullPath = fullPath + "\\Data\\material\\" + name + ".mtrl";
 
-	return LoadForward( fullPath.c_str(), name, type );
+	return Load( fullPath.c_str(), name, type, bForward);
 }
 
 
 //--------------------------------------------------------------------------------------
-// Add a work item to the queue of work items
-//--------------------------------------------------------------------------------------
-void ELoader::LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type)
-{/*
+CResourceBase* ELoader::Load(const char* fullpath, char* name, eRESOURCE_FILE_TYPE type, bool bForward)
+{
 	RESOURCE_REQUEST resourceRequest;
+	resourceRequest.pDataLoader = g_MemPoolFileLoader.GetNew();
+	resourceRequest.pDataLoader->SetFile(fullpath);
 
-	if( !resourceRequest.pDataLoader || !resourceRequest.pDataProcessor )
+	if(RESOURCE_FILE_ACTOR == type )
 	{
-		assert(0);
-		return;
+		resourceRequest.pResource = GLOBAL::AssetMgr()->CreateResource(RESOURCE_ACTOR, name);
+		resourceRequest.pDataProcessor = g_MemPoolActorDataProcessor.GetNew();
+	}
+	else if( RESOURCE_FILE_MESH == type)
+	{
+		resourceRequest.pResource  = GLOBAL::AssetMgr()->CreateResource(RESOURCE_MESH, name);
+		resourceRequest.pDataProcessor = g_MemPoolMeshDataProcessor.GetNew();
+	}
+	else if(RESOURCE_FILE_MOTION == type )
+	{
+		resourceRequest.pResource  = GLOBAL::AssetMgr()->CreateResource(RESOURCE_MOTION, name);
+		resourceRequest.pDataProcessor = g_MemPoolMotionDataProcessor.GetNew();
+	}
+	else if(RESOURCE_FILE_TEXTURE == type )
+	{
+		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
+		GLOBAL::RDevice()->CreateTextureFromFile(fullpath, pTexture);
+		pTexture->loadState = RESOURCE_LOAD_FINISHED;
+		RemoveResourceRquest(resourceRequest);
+		return pTexture;
+
+//		resourceRequest.pResource  = GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
+//		resourceRequest.pDataProcessor = g_MemPoolTextureDataProcessor.GetNew();
+	}
+	else if(RESOURCE_FILE_MATERIAL == type )
+	{
+
 	}
 
-	// Add the request to the read queue
-	EnterCriticalSection( &m_csIOQueue );
-	m_IOQueue.Add( resourceRequest );
-	LeaveCriticalSection( &m_csIOQueue );
+	resourceRequest.pDataProcessor->Init(resourceRequest.pResource, bForward);
 
-	// TODO: critsec around this?
-	m_NumOustandingResources ++;
+	if( bForward == true)
+	{
+		void* pData;
+		SIZE_T size;
 
-	// Signal that we have something to read
-	ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );*/
+		resourceRequest.pDataLoader->Load();
+		resourceRequest.pDataLoader->GetData(&pData , &size);
+		resourceRequest.pDataProcessor->Process(pData, size);
+		resourceRequest.pDataProcessor->CompleteWork();
+
+		RemoveResourceRquest(resourceRequest);
+	}
+	else
+	{
+		EnterCriticalSection( &m_csIOQueue );
+		g_IOQueue.Add( resourceRequest );
+		LeaveCriticalSection( &m_csIOQueue );
+
+		m_NumOustandingResources++;
+
+		// Signal that we have something to read
+		ReleaseSemaphore( m_hIOQueueSemaphore, 1, NULL );
+	}
+
+	return resourceRequest.pResource;
 }

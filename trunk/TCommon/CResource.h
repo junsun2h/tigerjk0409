@@ -60,7 +60,9 @@ enum eRESOURCE_LOAD_STATE
 	RESOURCE_LOAD_NONE,
 	RESOURCE_MEMORY_CREATED,
 	RESOURCE_LOAD_STARTED,
-	RESOURCE_LOAD_FINISHED
+	RESOURCE_LOAD_FINISHED,
+	RESOURCE_LOAD_FINISHED_WAIT_FOR_SUB_RSC,
+	RESOURCE_LOAD_FAILED
 };
 
 
@@ -293,18 +295,14 @@ class CResourceMesh : public CResourceBase
 {
 	// only object pool can make&delete this class
 	friend CObjectPool<CResourceMesh>;
-	CResourceMesh()
-		: geometryNum(0)
-	{
-	}
+	CResourceMesh(){}
 	~CResourceMesh(){}
 public:
 
-	uint8			geometryNum;
-	long			goemetries[MAX_GEOMETRY];
-	CVector3		min;
-	CVector3		max;
-	SKIN_BONE_LIST	skinBoneList;
+	std::vector<CResourceGeometry*>	goemetries;
+	CVector3						min;
+	CVector3						max;
+	SKIN_BONE_LIST					skinBoneList;
 
 	eRESOURCE_TYPE	Type() const override { return RESOURCE_MESH; }
 	std::string		strType() override { return ENUMSTR(RESOURCE_MESH); }

@@ -20,8 +20,9 @@ public:
 	HWND				GetHWND() override	{ return m_HWND; }
 	void				CreateGraphicBuffer(CResourceBase* pResource) override;
 	void				RemoveGraphicBuffer(CResourceBase* pResource) override;
-	
-	CResourceTexture*	CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture) override;
+
+	void				CreateTextureFromMemory(BYTE* pData, size_t size, CResourceTexture* pTexture) override;
+	void				CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture) override;
 	bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) override;
 
 	IRenderHelper*		GetRenderHelper() override;

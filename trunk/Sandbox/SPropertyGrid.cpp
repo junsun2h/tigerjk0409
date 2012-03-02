@@ -141,12 +141,12 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 
 	Append( new wxVector3Property( "BoundingBox Min", wxPG_LABEL, pMesh->min) );
 	Append( new wxVector3Property( "BoundingBox Max", wxPG_LABEL, pMesh->max) );
-	Append( new wxIntProperty( "Geometry Count", wxPG_LABEL, pMesh->geometryNum) );
+	Append( new wxIntProperty( "Geometry Count", wxPG_LABEL, pMesh->goemetries.size() ) );
 
 	char buf[32];
-	for(int i=0; i< pMesh->geometryNum; ++i)
+	for(UINT i=0; i< pMesh->goemetries.size(); ++i)
 	{
-		const CResourceGeometry* pGeometry = (const CResourceGeometry*)GLOBAL::Engine()->AssetMgr()->GetResource( RESOURCE_GEOMETRY, pMesh->goemetries[i] );
+		const CResourceGeometry* pGeometry = pMesh->goemetries[i];
 
 		_itoa(i, buf, 10);
 		Append(new wxPropertyCategory( wxString("Geometry") + wxString(buf) ));

@@ -11,8 +11,7 @@
 
 
 
-EMeshDataProcessor::EMeshDataProcessor( std::string name )
-	: m_name(name)
+EMeshDataProcessor::EMeshDataProcessor()
 {
 }
 
@@ -21,13 +20,24 @@ EMeshDataProcessor::~EMeshDataProcessor()
 
 }
 
-bool EMeshDataProcessor::PopData()
+void EMeshDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
+	m_pMesh = (CResourceMesh*)pRsc;
+	m_pMesh->loadState = RESOURCE_LOAD_STARTED;
+	m_bForward = bForward;
+}
+
+bool EMeshDataProcessor::CompleteWork()
+{
+	if( m_bForward )
+		m_pMesh->loadState = RESOURCE_LOAD_FINISHED;
+
 	return true;
 }
 
-CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
+void EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 {
+	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
 	BYTE* pSrcBits = ( BYTE* )pData;
 
 	UINT version;
@@ -36,26 +46,24 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	if( version != MESH_FILE_VERSION )
 	{
 		assert(0);
-		return NULL;
+		m_pMesh->loadState = RESOURCE_LOAD_FAILED;
+		return;
 	}
+	
+	ECopyData( &m_pMesh->min, &pSrcBits,  12 );
+	ECopyData( &m_pMesh->max, &pSrcBits,  12 );
 
-	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
-	CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->CreateResource( RESOURCE_MESH, m_name.c_str() );
-	pMesh->loadState = RESOURCE_LOAD_STARTED;
-
-	ECopyData( &pMesh->min, &pSrcBits,  12 );
-	ECopyData( &pMesh->max, &pSrcBits,  12 );
-	ECopyData( &pMesh->geometryNum, &pSrcBits,  1 );
+	uint8 geometryNum;
+	ECopyData( &geometryNum, &pSrcBits,  1 );
 
 	bool bSkinMesh = false;
 	char buf[64];
-	for(int i=0; i< pMesh->geometryNum; ++i)
+	for(int i=0; i< geometryNum; ++i)
 	{
 		_itoa_s( i, buf, 32);
-		std::string geometryName = m_name + "Geometry" + buf;
+		std::string geometryName = std::string(m_pMesh->name) + "Geometry" + buf;
 
 		CResourceGeometry* pGeometry = (CResourceGeometry*)pAssetMgr->CreateResource( RESOURCE_GEOMETRY, geometryName.c_str() );
-		pMesh->loadState = RESOURCE_LOAD_STARTED;
 
 		ECopyData( &pGeometry->eVertexType, &pSrcBits,  4 );
 		ECopyData( &pGeometry->vertexCount, &pSrcBits,  4 );
@@ -78,14 +86,18 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		}
 
 		ECopyString(pGeometry->mtrlName, &pSrcBits);
+/*
+		CResourceMtrl* pMtrl = (CResourceMtrl*)pAssetMgr->GetResource(RESOURCE_MATERIAL, pGeometry->mtrlName);
+		if( pMtrl == NULL)
+			pMtrl = (CResourceMtrl*)GLOBAL::Loader()->Load( pGeometry->mtrlName, RESOURCE_FILE_MESH, m_bForward );
+		pGeometry->defaultMtrl = pMtrl->RID;*/
 
 		GLOBAL::RDevice()->CreateGraphicBuffer( pGeometry );
-		pGeometry->loadState = RESOURCE_LOAD_FINISHED;
-
 		if( pGeometry->IsSkinedMesh() )
 			bSkinMesh = true;
 
-		pMesh->goemetries[i] = pGeometry->RID;
+		m_pMesh->goemetries.push_back( pGeometry );
+		pGeometry->loadState = RESOURCE_LOAD_FINISHED;
 	}
 
 	if( bSkinMesh )
@@ -95,17 +107,14 @@ CResourceBase* EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		for( UINT bi=0; bi < boneCount; ++bi )
 		{
 			ECopyString(buf, &pSrcBits);
-			pMesh->skinBoneList.push_back(buf);
+			m_pMesh->skinBoneList.push_back(buf);
 		}
 	}
 
-	pMesh->loadState = RESOURCE_LOAD_FINISHED;
-	return pMesh;
+	m_pMesh->loadState = RESOURCE_LOAD_FINISHED_WAIT_FOR_SUB_RSC;
 }
 
 bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 {
-	assert ( GLOBAL::Loader()->IsDataProcThread() );
-			
 	return true;
 }
