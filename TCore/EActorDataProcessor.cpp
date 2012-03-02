@@ -7,8 +7,7 @@
 #include "EActorDataProcessor.h"
 
 
-EActorDataProcessor::EActorDataProcessor( std::string name )
-	: m_name(name)
+EActorDataProcessor::EActorDataProcessor()
 {
 }
 
@@ -18,8 +17,18 @@ EActorDataProcessor::~EActorDataProcessor()
 
 }
 
-bool EActorDataProcessor::PopData()
+void EActorDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
+	m_pActor = (CResourceActor*)pRsc;
+	m_pActor->loadState = RESOURCE_LOAD_STARTED;
+	m_bForward = bForward;
+}
+
+bool EActorDataProcessor::CompleteWork()
+{
+	if( m_bForward )
+		m_pActor->loadState = RESOURCE_LOAD_FINISHED;
+
 	return true;
 }
 
@@ -28,8 +37,10 @@ bool EActorDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	return true;
 }
 
-CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
+void EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 {
+	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
+
 	BYTE* pSrcBits = ( BYTE* )pData;
 
 	UINT version;
@@ -38,12 +49,9 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 	if( version != ACTOR_FILE_VERSION )
 	{
 		assert(0);
-		return NULL;
+		m_pActor->loadState = RESOURCE_LOAD_FAILED;
+		return;
 	}
-
-	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
-	CResourceActor* pActor = (CResourceActor*)pAssetMgr->CreateResource( RESOURCE_ACTOR, m_name.c_str() );
-	pActor->loadState = RESOURCE_LOAD_STARTED;
 
 	// mesh data
 	uint8 meshCount = 0;
@@ -55,11 +63,10 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		ECopyString(strMesh, &pSrcBits);
 		CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, strMesh);
-
 		if( pMesh == NULL)
-			pMesh = (CResourceMesh*)GLOBAL::Loader()->LoadForward( strMesh, RESOURCE_FILE_MESH);
+			pMesh = (CResourceMesh*)GLOBAL::Loader()->Load( strMesh, RESOURCE_FILE_MESH, m_bForward );
 
-		pActor->meshList.push_back(pMesh);
+		m_pActor->meshList.push_back(pMesh);
 	}
 
 	// joint data
@@ -74,7 +81,7 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		ECopyString(joint.name, &pSrcBits);
 		ECopyString(joint.parentName, &pSrcBits);
 
-		pActor->jointList.push_back(joint);
+		m_pActor->jointList.push_back(joint);
 	}
 
 	// motion data
@@ -87,13 +94,11 @@ CResourceBase* EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 
 		ECopyString(strMotion, &pSrcBits);
 		CResourceMotion* motion = (CResourceMotion*)pAssetMgr->GetResource(RESOURCE_MOTION, strMotion);
-		
 		if( motion == NULL)
-			motion = (CResourceMotion*)GLOBAL::Loader()->LoadForward( strMotion, RESOURCE_FILE_MOTION);
+			motion = (CResourceMotion*)GLOBAL::Loader()->Load( strMotion, RESOURCE_FILE_MOTION, m_bForward);
 
-		pActor->motionList.push_back(motion);
+		m_pActor->motionList.push_back(motion);
 	}
 
-	pActor->loadState = RESOURCE_LOAD_FINISHED;
-	return pActor;
+	m_pActor->loadState = RESOURCE_LOAD_FINISHED_WAIT_FOR_SUB_RSC;
 }

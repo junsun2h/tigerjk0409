@@ -25,11 +25,11 @@ bool EEntityProxyRender::CreateRenderElement(long meshID, int indexInActor )
 	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
 	CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, meshID);
 
-	for( int i=0; i < pMesh->geometryNum ; ++i )
+	for( UINT i=0; i < pMesh->goemetries.size() ; ++i )
 	{
 		CRenderElement item;
 		
-		item.pGeometry = (CResourceGeometry*)pAssetMgr->GetResource( RESOURCE_GEOMETRY, pMesh->goemetries[i] );
+		item.pGeometry = pMesh->goemetries[i];
 
 		if( IsRenderGeometry( item.pGeometry->RID ) )
 			continue;

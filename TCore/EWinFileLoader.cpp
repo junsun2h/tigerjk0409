@@ -6,17 +6,22 @@
 
 
 
-EWinFileLoader::EWinFileLoader( const char* szFileName  )
+EWinFileLoader::EWinFileLoader()
 	: m_pData(NULL)
 	, m_cBytes(0)
 {
-    strcpy_s( m_szFileName, szFileName );
+
 }
 
 EWinFileLoader::~EWinFileLoader()
 {
 	SAFE_DELETE_ARRAY( m_pData );
 	m_cBytes = 0;
+}
+
+void EWinFileLoader::SetFile( const char* szFileName )
+{
+    strcpy_s( m_szFileName, szFileName );
 }
 
 bool EWinFileLoader::GetData( void** ppData, SIZE_T* pcBytes )

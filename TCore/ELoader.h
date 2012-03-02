@@ -7,21 +7,17 @@ class ELoader : public ILoader
 public:
 	ELoader();
 	virtual ~ELoader();
-
-	bool                        Init( UINT NumProcessingThreads ) override;
 	bool						IsIOThread() override;
 	bool						IsDataProcThread() override;
 
-public:
-	virtual CResourceBase*		LoadForward(const char* fullPath, char* name, eRESOURCE_FILE_TYPE type) override;
-	virtual CResourceBase*		LoadForward(char* name, eRESOURCE_FILE_TYPE type) override;
-	virtual void				LoadBackword(char* fileName, char* name, eRESOURCE_FILE_TYPE type) override;
-	virtual void				WaitForAllItems() override;
-	virtual void				CompleteWork( UINT CurrentNumResourcesToService ) override;
+	bool                        Init( UINT NumProcessingThreads ) override;
+	CResourceBase*				Load(char* name, eRESOURCE_FILE_TYPE type, bool bWait) override;
+	CResourceBase*				Load(const char* fullpath, char* name, eRESOURCE_FILE_TYPE type, bool bForward) override;
+
+	void						WaitForAllItems() override;
+	void						CompleteWork( UINT completeLimit ) override;
 
 private:
-
-
 	friend unsigned int WINAPI  _FileIOThreadProc( LPVOID lpParameter );
 	friend unsigned int WINAPI  _ProcessingThreadProc( LPVOID lpParameter );
 
@@ -45,10 +41,6 @@ private:
 	static UINT					m_IOThreadID;
 	static UINT					m_ProcessThreadID[MAX_DATA_PROC_THREAD];
 	static UINT					m_NumProcessingThreads;
-
-	CGrowableArray <RESOURCE_REQUEST> m_IOQueue;
-	CGrowableArray <RESOURCE_REQUEST> m_ProcessQueue;
-	CGrowableArray <RESOURCE_REQUEST> m_MainThreadQueue;
 
 	CRITICAL_SECTION			m_csIOQueue;
 	CRITICAL_SECTION			m_csProcessQueue;

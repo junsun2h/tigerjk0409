@@ -1,7 +1,7 @@
 #pragma once
 
 
-class EWinFileLoader : public IDataLoader
+class EWinFileLoader
 {
 private:
 	char				m_szFileName[MAX_PATH];
@@ -9,12 +9,13 @@ private:
 	DWORD				m_cBytes;
 
 public:
-	EWinFileLoader( const char* szFileName );
+	EWinFileLoader();
 	~EWinFileLoader();
 
 	// overrides
 public:
-	virtual bool GetData( void** ppData, SIZE_T* pcBytes ) override;
-	virtual bool IOT_Load() override;
-	virtual bool Load() override;
+	void		SetFile( const char* szFileName );
+	bool		GetData( void** ppData, SIZE_T* pcBytes );
+	bool		IOT_Load();
+	bool		Load();
 };

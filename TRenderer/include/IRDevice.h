@@ -66,7 +66,8 @@ struct IRDevice
 	virtual void				CreateGraphicBuffer(CResourceBase* pResource) = 0;
 	virtual void				RemoveGraphicBuffer(CResourceBase* pResource) =0;
 
-	virtual CResourceTexture*	CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture) = 0;
+	virtual void				CreateTextureFromMemory(BYTE* pData, size_t size, CResourceTexture* pTexture) = 0;
+	virtual void				CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture) = 0;
 	virtual bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) = 0;
 
 	virtual HWND				GetHWND() = 0;

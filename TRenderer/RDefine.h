@@ -45,7 +45,7 @@
 #include <d3dx11.h>
 // HRESULT translation for Direct3D and other APIs 
 #include <dxerr.h>
-
+#include <d3d9types.h>
 
 #if defined(DEBUG) || defined(_DEBUG)
 #ifndef V
@@ -201,5 +201,6 @@ BOOL WINAPI DXUTGetMonitorInfo( HMONITOR hMonitor, LPMONITORINFO lpMonitorInfo )
 UINT WINAPI DXUTGetDXGIColorChannelBits( DXGI_FORMAT fmt );
 DXGI_FORMAT MAKE_SRGB( DXGI_FORMAT format );
 DXGI_FORMAT GetDXGIFormat( const DDS_PIXELFORMAT& ddpf );
+D3DFORMAT GetD3D9Format( const DDS_PIXELFORMAT& ddpf );
 void GetSurfaceInfo( UINT width, UINT height, DXGI_FORMAT fmt, UINT* pNumBytes, UINT* pRowBytes, UINT* pNumRows );
 

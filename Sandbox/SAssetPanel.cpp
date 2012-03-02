@@ -163,7 +163,7 @@ const CResourceBase* SAssetTreeCtrl::LoadResource(wxTreeItemId seletedItem)
 	if( pResource != NULL)
 		return pResource;
 
-	return GLOBAL::Engine()->Loader()->LoadForward( strItem.char_str(), fileType );
+	return GLOBAL::Engine()->Loader()->Load( strItem.char_str(), fileType, true );
 }
 
 void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)

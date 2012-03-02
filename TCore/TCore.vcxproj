@@ -100,6 +100,7 @@
     <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
     <ClCompile Include="ERenderer.cpp" />
+    <ClCompile Include="ETextureDataProcessor.cpp" />
     <ClCompile Include="EWinFileLoader.cpp" />
     <ClCompile Include="ThirdParty\tinyxml\tinystr.cpp" />
     <ClCompile Include="ThirdParty\tinyxml\tinyxml.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="EQuadSpaceTreeMgr.h" />
     <ClInclude Include="EQuadSpaceTreeNode.h" />
     <ClInclude Include="ERenderer.h" />
+    <ClInclude Include="ETextureDataProcessor.h" />
     <ClInclude Include="EWinFileLoader.h" />
     <ClInclude Include="Include\IActorMgr.h" />
     <ClInclude Include="Include\IAssetMgr.h" />

@@ -69,7 +69,7 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 	GLOBAL::g_pRenderer = FuncCreateRenderer();
 	GLOBAL::g_pRenderer->StartUp( pParam );
 
-	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Loader()->LoadForward( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE );
+	CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::Loader()->Load( "Data\\font\\Font.dds", "fontTexture", RESOURCE_FILE_TEXTURE, true);
 
 	GLOBAL::RDevice()->GetRenderHelper()->SetFontTexture( pTexture);
 	GLOBAL::Renderer()->Init();
@@ -106,6 +106,8 @@ void EEngine::UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRe
 {
 	float deltaTime = m_GlobalTimer.GetElapsedTime();
 	m_GlobalTimer.CountFPS(deltaTime);
+
+	GLOBAL::Loader()->CompleteWork(1000);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 1) update Render independent system

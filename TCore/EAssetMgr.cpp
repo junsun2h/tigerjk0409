@@ -105,11 +105,12 @@ void EAssetMgr::Remove(eRESOURCE_TYPE type, long id)
 	if( type == RESOURCE_MESH )
 	{
 		CResourceMesh* pMesh = (CResourceMesh*)m_ResourceMap[type].Lookup( id )->m_value;
-		for(int i=0; i< pMesh->geometryNum; ++i)
+		for(UINT i=0; i< pMesh->goemetries.size(); ++i)
 		{
-			Remove( RESOURCE_GEOMETRY, pMesh->goemetries[i]);
-			pMesh->goemetries[i] = -1;
+			Remove( RESOURCE_GEOMETRY, pMesh->goemetries[i]->RID);
+			pMesh->goemetries[i] = NULL;
 		}
+		pMesh->goemetries.clear();
 	}
 	else if( type == RESOURCE_TEXTURE || type == RESOURCE_GEOMETRY)
 	{
@@ -130,11 +131,11 @@ void EAssetMgr::Reload( eRESOURCE_TYPE type, long id )
 
 	Remove(type, id);
 
-	if( type == RESOURCE_ACTOR ) GLOBAL::Loader()->LoadForward(name, RESOURCE_FILE_ACTOR );
-	else if( type == RESOURCE_MESH ) GLOBAL::Loader()->LoadForward(name, RESOURCE_FILE_MESH );
-	else if( type == RESOURCE_MOTION ) GLOBAL::Loader()->LoadForward(name, RESOURCE_FILE_MOTION );
-	else if( type == RESOURCE_TEXTURE ) GLOBAL::Loader()->LoadForward(name, RESOURCE_FILE_TEXTURE );
-	else if( type == RESOURCE_MATERIAL ) GLOBAL::Loader()->LoadForward(name, RESOURCE_FILE_MATERIAL );
+	if( type == RESOURCE_ACTOR ) GLOBAL::Loader()->Load(name, RESOURCE_FILE_ACTOR, true );
+	else if( type == RESOURCE_MESH ) GLOBAL::Loader()->Load(name, RESOURCE_FILE_MESH, true );
+	else if( type == RESOURCE_MOTION ) GLOBAL::Loader()->Load(name, RESOURCE_FILE_MOTION, true );
+	else if( type == RESOURCE_TEXTURE ) GLOBAL::Loader()->Load(name, RESOURCE_FILE_TEXTURE, true );
+	else if( type == RESOURCE_MATERIAL ) GLOBAL::Loader()->Load(name, RESOURCE_FILE_MATERIAL, true );
 }
 
 

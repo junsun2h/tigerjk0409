@@ -1,6 +1,5 @@
 #include "CResource.h"
 
-#include "IAssetMgr.h"
 #include "ILoader.h"
 
 #include "EGlobal.h"
@@ -8,8 +7,7 @@
 
 
 
-EMotionDataProcessor::EMotionDataProcessor( std::string name )
-	: m_name(name)
+EMotionDataProcessor::EMotionDataProcessor()
 {
 }
 
@@ -19,8 +17,15 @@ EMotionDataProcessor::~EMotionDataProcessor()
 
 }
 
-bool EMotionDataProcessor::PopData()
+void EMotionDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
+	m_pMotion = (CResourceMotion*)pRsc;
+	m_pMotion->loadState = RESOURCE_LOAD_STARTED;
+}
+
+bool EMotionDataProcessor::CompleteWork()
+{
+	m_pMotion->loadState = RESOURCE_LOAD_FINISHED;
 	return true;
 }
 
@@ -29,7 +34,7 @@ bool EMotionDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
 	return true;
 }
 
-CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
+void EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 {
 	BYTE* pSrcBits = ( BYTE* )pData;
 
@@ -39,22 +44,19 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 	if( version != MOTION_FILE_VERSION )
 	{
 		assert(0);
-		return NULL;
+		m_pMotion->loadState = RESOURCE_LOAD_FAILED;
+		return;
 	}
-
-	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
-	CResourceMotion* pMotion = (CResourceMotion*)pAssetMgr->CreateResource( RESOURCE_MOTION, m_name.c_str() );
-	pMotion->loadState = RESOURCE_LOAD_STARTED;
-
-	ECopyData( &pMotion->frameRate, &pSrcBits,  1 );
-	ECopyData( &pMotion->frameInterval, &pSrcBits,  1 );
-	ECopyData( &pMotion->totalFrame, &pSrcBits,  4);
+	
+	ECopyData( &m_pMotion->frameRate, &pSrcBits,  1 );
+	ECopyData( &m_pMotion->frameInterval, &pSrcBits,  1 );
+	ECopyData( &m_pMotion->totalFrame, &pSrcBits,  4);
 
 	uint8 jointCount;
 	ECopyData( &jointCount, &pSrcBits,  1 );
 
-	int keyCount = pMotion->totalFrame/pMotion->frameInterval + 1;
-	if( float(pMotion->totalFrame)/pMotion->frameInterval > pMotion->totalFrame/pMotion->frameInterval )
+	int keyCount = m_pMotion->totalFrame/m_pMotion->frameInterval + 1;
+	if( float(m_pMotion->totalFrame)/m_pMotion->frameInterval > m_pMotion->totalFrame/m_pMotion->frameInterval )
 		keyCount++;
 
 	for(uint8 i=0; i< jointCount; ++i)
@@ -79,9 +81,6 @@ CResourceBase* EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 			joint.keys.push_back( key);
 		}
 
-		pMotion->jointList.push_back(joint);
+		m_pMotion->jointList.push_back(joint);
 	}
-	
-	pMotion->loadState = RESOURCE_LOAD_FINISHED;
-	return pMotion;
 }
