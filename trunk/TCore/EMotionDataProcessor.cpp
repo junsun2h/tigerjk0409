@@ -29,11 +29,6 @@ bool EMotionDataProcessor::CompleteWork()
 	return true;
 }
 
-bool EMotionDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
-{
-	return true;
-}
-
 void EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 {
 	BYTE* pSrcBits = ( BYTE* )pData;

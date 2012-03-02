@@ -37,11 +37,13 @@ CGrowableArray <RESOURCE_REQUEST>	g_IOQueue;
 CGrowableArray <RESOURCE_REQUEST>	g_ProcessQueue;
 CGrowableArray <RESOURCE_REQUEST>	g_MainThreadQueue;
 
+
 CObjectPool<EWinFileLoader>			g_MemPoolFileLoader(100);
 CObjectPool<EActorDataProcessor>	g_MemPoolActorDataProcessor(100);
 CObjectPool<EMeshDataProcessor>		g_MemPoolMeshDataProcessor(100);
 CObjectPool<EMotionDataProcessor>	g_MemPoolMotionDataProcessor(100);
 CObjectPool<ETextureDataProcessor>	g_MemPoolTextureDataProcessor(100);
+
 
 void RemoveResourceRquest(RESOURCE_REQUEST& resourceRequest)
 {
@@ -184,12 +186,8 @@ unsigned int ELoader::PT_ProcessingThreadProc()
 		// Decompress the data
 		void* pData = NULL;
 		SIZE_T cDataSize = 0;
-		hr = ResourceRequest.pDataLoader->GetData( &pData, &cDataSize );
-		if( SUCCEEDED( hr ) )
-		{
-			// Process the data
-			hr = ResourceRequest.pDataProcessor->PT_Process( pData, cDataSize );
-		}
+		ResourceRequest.pDataLoader->GetData( &pData, &cDataSize );
+		ResourceRequest.pDataProcessor->PT_Process( pData, cDataSize );
 
 		if( FAILED( hr ) )
 		{
@@ -197,7 +195,7 @@ unsigned int ELoader::PT_ProcessingThreadProc()
 			OutputDebugString( szMessage );
 		}
 
-		// Add it to the RenderThreadQueue
+		// Add it to the enderThreadQueue
 		EnterCriticalSection( &m_csMainThreadQueue );
 		g_MainThreadQueue.Add( ResourceRequest );
 		LeaveCriticalSection( &m_csMainThreadQueue );
@@ -216,21 +214,31 @@ void ELoader::CompleteWork( UINT completeLimit)
 	UINT numJobs = g_MainThreadQueue.GetSize();
 	LeaveCriticalSection( &m_csMainThreadQueue );
 
+	UINT offset = 0;
+
 	for( UINT i = 0; i < numJobs && i < completeLimit; i++ )
 	{
 		EnterCriticalSection( &m_csMainThreadQueue );
-		RESOURCE_REQUEST resourceRequest = g_MainThreadQueue.GetAt( 0 );
-		g_MainThreadQueue.Remove( 0 );
+		RESOURCE_REQUEST resourceRequest = g_MainThreadQueue.GetAt( offset );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 
-		resourceRequest.pDataProcessor->CompleteWork();
+		if( resourceRequest.pDataProcessor->CompleteWork() == false)
+		{
+			offset++;
+			continue;
+		}
 
 		if( resourceRequest.pCallBackComplete != NULL )
 			resourceRequest.pCallBackComplete(resourceRequest.pResource );
+			
+		EnterCriticalSection( &m_csMainThreadQueue );
+		g_MainThreadQueue.Remove( offset );
+		LeaveCriticalSection( &m_csMainThreadQueue );
 
+				
 		RemoveResourceRquest(resourceRequest);
 
-		// Decrement num oustanding resources
+		// Decrement num outstanding resources
 		m_NumOustandingResources --;
 	}
 }

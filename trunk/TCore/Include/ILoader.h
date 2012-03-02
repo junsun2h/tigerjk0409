@@ -35,7 +35,7 @@ struct IDataProcessor
 {
 	virtual void				Init(CResourceBase* pRsc, bool bForward) = 0;
 	virtual bool				CompleteWork() = 0;
-	virtual bool				PT_Process( void* pData, SIZE_T cBytes ) = 0;
+	virtual void				PT_Process( void* pData, SIZE_T cBytes ) { Process(pData, cBytes); };
 	virtual void				Process( void* pData, SIZE_T cBytes ) = 0;
 	virtual eRESOURCE_FILE_TYPE	Type() = 0;
 };

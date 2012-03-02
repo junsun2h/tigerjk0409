@@ -29,9 +29,7 @@ void EMeshDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 
 bool EMeshDataProcessor::CompleteWork()
 {
-	if( m_bForward )
-		m_pMesh->loadState = RESOURCE_LOAD_FINISHED;
-
+	m_pMesh->loadState = RESOURCE_LOAD_FINISHED;
 	return true;
 }
 
@@ -112,9 +110,4 @@ void EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 	}
 
 	m_pMesh->loadState = RESOURCE_LOAD_FINISHED_WAIT_FOR_SUB_RSC;
-}
-
-bool EMeshDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
-{
-	return true;
 }
