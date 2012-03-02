@@ -27,13 +27,26 @@ void EActorDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 bool EActorDataProcessor::CompleteWork()
 {
 	if( m_bForward )
+	{
 		m_pActor->loadState = RESOURCE_LOAD_FINISHED;
+		return true;
+	}
 
-	return true;
-}
+	UINT meshCount = m_pActor->meshList.size();
+	for( UINT i =0 ; i < meshCount; ++i )
+	{
+		if( m_pActor->meshList[i]->loadState != RESOURCE_LOAD_FINISHED )
+			return false;
+	}
 
-bool EActorDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
-{
+	UINT motionCount = m_pActor->motionList.size();
+	for( UINT i =0 ; i < motionCount; ++i )
+	{
+		if( m_pActor->motionList[i]->loadState != RESOURCE_LOAD_FINISHED )
+			return false;
+	}
+	
+	m_pActor->loadState = RESOURCE_LOAD_FINISHED;
 	return true;
 }
 

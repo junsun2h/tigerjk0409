@@ -71,6 +71,9 @@ void SPropertyPanel::SetObject( IEntity* pEntity )
 
 void SPropertyPanel::SetObject( const CResourceBase* pResource )
 {
+	if( pResource->loadState != RESOURCE_LOAD_FINISHED)
+		return;
+
 	if( pResource->Type() == RESOURCE_ACTOR )			SetObject( (const CResourceActor*)pResource);
 	else if( pResource->Type() == RESOURCE_TEXTURE )	SetObject( (const CResourceTexture*)pResource);
 	else if( pResource->Type() == RESOURCE_MESH )		SetObject( (const CResourceMesh*)pResource);

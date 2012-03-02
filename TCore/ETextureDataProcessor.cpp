@@ -30,11 +30,6 @@ bool ETextureDataProcessor::CompleteWork()
 	return true;
 }
 
-bool ETextureDataProcessor::PT_Process( void* pData, SIZE_T cBytes )
-{
-	return true;
-}
-
 void ETextureDataProcessor::Process( void* pData, SIZE_T cBytes )
 {
 	GLOBAL::RDevice()->CreateTextureFromMemory( ( BYTE* )pData, cBytes, m_pTexture);
