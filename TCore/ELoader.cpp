@@ -357,14 +357,8 @@ CResourceBase* ELoader::Load(const char* fullpath, char* name, eRESOURCE_FILE_TY
 	}
 	else if(RESOURCE_FILE_TEXTURE == type )
 	{
-		CResourceTexture* pTexture = (CResourceTexture*)GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
-		GLOBAL::RDevice()->CreateTextureFromFile(fullpath, pTexture);
-		pTexture->loadState = RESOURCE_LOAD_FINISHED;
-		RemoveResourceRquest(resourceRequest);
-		return pTexture;
-
-//		resourceRequest.pResource  = GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
-//		resourceRequest.pDataProcessor = g_MemPoolTextureDataProcessor.GetNew();
+		resourceRequest.pResource  = GLOBAL::AssetMgr()->CreateResource(RESOURCE_TEXTURE, name);
+		resourceRequest.pDataProcessor = g_MemPoolTextureDataProcessor.GetNew();
 	}
 	else if(RESOURCE_FILE_MATERIAL == type )
 	{
