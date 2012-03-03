@@ -322,6 +322,7 @@ typedef std::vector<CMotionKey>	MOTION_KEY_LIST;
 struct CMotionNode
 {
 	MOTION_KEY_LIST	keys;
+	bool			bStaticNode;
 	char			name[MAX_NAME_LENGTH];
 	char			parentName[MAX_NAME_LENGTH];
 };

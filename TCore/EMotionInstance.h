@@ -2,6 +2,14 @@
 
 
 
+struct MapKeyActorMotion
+{
+	uint8		actorNodeIndex;
+	uint8		motionNodeIndex;
+	CQuat		rot;
+	CVector3	pos;
+};
+
 class EMotionInstance : public IMotionInstance
 {
 	friend CObjectPool<EMotionInstance>;
@@ -22,12 +30,10 @@ public:
 private:
 	void					UpdateBlendWeight(float timeDelta);
 
-
 	CMotionDesc				m_Desc;
 	CMotionState			m_State;
 
-	MOTION_POSE				m_JointMatrix;
-	std::vector<int>		m_MapBetweenActorAndNode;
+	std::vector<MapKeyActorMotion>		m_Map;
 
 	float					m_TimePerFrame;
 };
