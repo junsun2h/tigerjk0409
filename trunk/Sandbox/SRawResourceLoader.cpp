@@ -754,33 +754,60 @@ namespace SRAW_FILE_LOADER
 		for( UINT i= 0; i < pRawMotion->joints.size(); ++i)
 		{
 			CMotionNode joint;
+			joint.bStaticNode = true;
 
 			strcpy_s( joint.name , pRawMotion->joints[i].name.c_str() );
 			strcpy_s( joint.parentName , pRawMotion->joints[i].parentName.c_str() );
 
 			std::vector<RAW_MOTION_KEY>* pKeys = &pRawMotion->keys[i];
 
-			for( UINT iKey =0; iKey < pKeys->size(); ++iKey)
+			// check this node doesn't change whole playing time
+			for( UINT iKey =1; iKey < pKeys->size(); ++iKey)
 			{
-				CMotionKey key;
-				key.pos = (*pKeys)[iKey].pos;
-				key.rot = (*pKeys)[iKey].rot;
-				key.posIndex = iKey;
-				key.rotIndex = iKey;
-				
-				if( iKey > 0 )
+				RAW_MOTION_KEY& key = (*pKeys)[iKey];
+				RAW_MOTION_KEY& formerKey = (*pKeys)[iKey - 1 ];
+
+				if( CVector3::EQual( formerKey.pos , key.pos, 0.1f ) == false ||
+					CQuat::EQual( formerKey.rot, key.rot, 0.001f ) == false )
 				{
-					CMotionKey& formerKey = joint.keys[iKey - 1 ];
-					if( CVector3::EQual( formerKey.pos , key.pos, 0.1f ) )
-						key.posIndex = formerKey.posIndex;
-
-					if( CQuat::EQual( formerKey.rot, key.rot, 0.001f ) )
-						key.rotIndex = formerKey.rotIndex;
+					joint.bStaticNode = false;
+					break;
 				}
-
-				joint.keys.push_back(key);
 			}
 
+			if( joint.bStaticNode )
+			{
+				CMotionKey key;
+				key.pos = (*pKeys)[0].pos;
+				key.rot = (*pKeys)[0].rot;
+				key.posIndex = 0;
+				key.rotIndex = 0;
+				joint.keys.push_back(key);
+			}
+			else
+			{
+				for( UINT iKey =0; iKey < pKeys->size(); ++iKey)
+				{
+					CMotionKey key;
+					key.pos = (*pKeys)[iKey].pos;
+					key.rot = (*pKeys)[iKey].rot;
+					key.posIndex = iKey;
+					key.rotIndex = iKey;
+
+					if( iKey > 0 )
+					{
+						CMotionKey& formerKey = joint.keys[iKey - 1 ];
+						if( CVector3::EQual( formerKey.pos , key.pos, 0.1f ) )
+							key.posIndex = formerKey.posIndex;
+
+						if( CQuat::EQual( formerKey.rot, key.rot, 0.001f ) )
+							key.rotIndex = formerKey.rotIndex;
+					}
+
+					joint.keys.push_back(key);
+				}
+			}
+			
 			jointList.push_back(joint);
 		}
 
@@ -807,6 +834,15 @@ namespace SRAW_FILE_LOADER
 
 			WriteString( &file, joint.name );
 			WriteString( &file, joint.parentName );
+
+			file.write( (char*)&joint.bStaticNode, 1);
+
+			if( joint.bStaticNode )
+			{
+				file.write( (char*)&joint.keys[0].pos, sizeof(CVector3));
+				file.write( (char*)&joint.keys[0].rot, sizeof(CQuat));
+				continue;
+			}
 
 			for( UINT iKey = 0; iKey < joint.keys.size(); ++iKey )
 			{	

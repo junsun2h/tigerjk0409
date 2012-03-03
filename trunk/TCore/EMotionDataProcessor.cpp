@@ -61,21 +61,35 @@ void EMotionDataProcessor::Process( void* pData, SIZE_T cBytes )
 		ECopyString(joint.name, &pSrcBits);
 		ECopyString(joint.parentName, &pSrcBits);
 
-		for( int iKey = 0; iKey < keyCount; ++iKey)
+		ECopyData( &joint.bStaticNode, &pSrcBits,  1 );
+
+		if( joint.bStaticNode )
 		{
 			CMotionKey key;
-
-			ECopyData( &key.posIndex, &pSrcBits, 1 );
-			if( key.posIndex == iKey )
-				ECopyData( &key.pos, &pSrcBits, sizeof(CVector3) );
-
-			ECopyData( &key.rotIndex, &pSrcBits, 1 );
-			if( key.rotIndex == iKey )
-				ECopyData( &key.rot, &pSrcBits, sizeof(CQuat) );
-
+			ECopyData( &key.pos, &pSrcBits, sizeof(CVector3) );
+			ECopyData( &key.rot, &pSrcBits, sizeof(CQuat) );
 			joint.keys.push_back( key);
-		}
 
-		m_pMotion->jointList.push_back(joint);
+			m_pMotion->jointList.push_back(joint);
+		}
+		else
+		{
+			for( int iKey = 0; iKey < keyCount; ++iKey)
+			{
+				CMotionKey key;
+
+				ECopyData( &key.posIndex, &pSrcBits, 1 );
+				if( key.posIndex == iKey )
+					ECopyData( &key.pos, &pSrcBits, sizeof(CVector3) );
+
+				ECopyData( &key.rotIndex, &pSrcBits, 1 );
+				if( key.rotIndex == iKey )
+					ECopyData( &key.rot, &pSrcBits, sizeof(CQuat) );
+
+				joint.keys.push_back( key);
+			}
+
+			m_pMotion->jointList.push_back(joint);
+		}
 	}
 }
