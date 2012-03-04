@@ -2,6 +2,7 @@
 #include "CResource.h"
 #include "CCamera.h"
 #include "RDefine.h"
+#include "CRenderElement.h"
 
 #include "IRDevice.h"
 #include "IShader.h"
@@ -82,32 +83,4 @@ void RDX11RenderStrategeForward::RenderGeometry(CResourceGeometry* pGeometry)
 
 		GLOBAL::D3DContext()->DrawIndexed( pGeometry->primitiveCount * 3, 0, 0 );
 	}
-}
-
-void RDX11RenderStrategeForward::SetMaterial(const CResourceMtrl* pMaterial, const CResourceGeometry* pGeometry)
-{
-	//1. decide Effect
-	//2. set Shader
-	//3. set material params to device
-
-	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
-	if( pMaterial == NULL)
-	{
-		if( pGeometry->IsSkinedMesh() )
-			pShaderMgr->GetShader(GPASS_VS_LAMBERT_WEIGHT)->Begin();
-		else
-			pShaderMgr->GetShader(GPASS_VS_LAMBERT)->Begin();
-
-		pShaderMgr->GetShader(GPASS_PS_LAMBERT)->Begin();
-	}
-}
-
-void RDX11RenderStrategeForward::SetTransform( const XMMATRIX& worldTM )
-{	
-	GLOBAL::ShaderMgr()->GetCurrentVS()->SetShaderContants(worldTM);
-}
-
-void RDX11RenderStrategeForward::SetJointTransforms( XMMATRIX* pJointTM, UINT size )
-{	
-	GLOBAL::ShaderMgr()->GetCurrentVS()->SetShaderContants( pJointTM, size);
 }

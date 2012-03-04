@@ -4,6 +4,7 @@
 
 
 enum eEFFECT_TYPE;
+struct CRenderElement;
 
 enum eSHADER_TYPE
 {
@@ -31,6 +32,8 @@ struct IShader
 
 struct IShaderMgr
 {
+	virtual bool		AssignShader(CRenderElement* pRenderElement) = 0;
+
 	virtual IShader*	GetShader(eEFFECT_TYPE type) = 0;
 	virtual bool		SetCurrentShader(IShader* pShader) =0;
 

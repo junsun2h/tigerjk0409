@@ -20,8 +20,7 @@ enum eRENDER_BUFFER
 enum eRENDER_COMMAND
 {
 	RC_RenderFrame,
-	RC_DRAW_OBJECT,
-	RC_DRAW_OBJECT_SKIN,
+	RC_DRAW_RENDER_ELEMENT,
 
 	RC_DRAW_HELPER_Skeleton,
 	RC_DRAW_HELPER_Axis,
@@ -31,19 +30,6 @@ enum eRENDER_COMMAND
 	RC_DRAW_HELPER_Box,
 	RC_DRAW_HELPER_WorldGrid,
 	RC_DRAW_HELPER_Text
-};
-
-
-struct CRenderParam
-{
-	CResourceGeometry*	pGeometry;
-	XMMATRIX			worldTM;
-	CResourceMtrl*		pMaterial;
-};
-
-struct CRenderParamSkin : public CRenderParam
-{
-	UINT				refSkinTMCount;
 };
 
 

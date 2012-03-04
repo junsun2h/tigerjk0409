@@ -11,6 +11,8 @@ struct SHADER_COMPILE_DESC
 	LPCSTR		szEntrypoint; 
 	LPCSTR		szShaderModel; 
 	UINT		flag;
+
+	D3D10_SHADER_MACRO* shader_Macros;
 	eCVERTEX_TYPE	eVertexyType;
 	
 	LPCSTR		debugName;

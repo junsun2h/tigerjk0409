@@ -9,17 +9,6 @@
 
 
 
-
-
-EMeshDataProcessor::EMeshDataProcessor()
-{
-}
-
-EMeshDataProcessor::~EMeshDataProcessor()
-{
-
-}
-
 void EMeshDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
 	m_pMesh = (CResourceMesh*)pRsc;
@@ -29,6 +18,11 @@ void EMeshDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 
 bool EMeshDataProcessor::CompleteWork()
 {
+	for(UINT i =0; i< m_pMesh->goemetries.size(); ++i)
+	{
+		CResourceGeometry* pGeometry = m_pMesh->goemetries[i];
+	}
+
 	m_pMesh->loadState = RESOURCE_LOAD_FINISHED;
 	return true;
 }
@@ -84,11 +78,8 @@ void EMeshDataProcessor::Process( void* pData, SIZE_T cBytes )
 		}
 
 		ECopyString(pGeometry->mtrlName, &pSrcBits);
-/*
-		CResourceMtrl* pMtrl = (CResourceMtrl*)pAssetMgr->GetResource(RESOURCE_MATERIAL, pGeometry->mtrlName);
-		if( pMtrl == NULL)
-			pMtrl = (CResourceMtrl*)GLOBAL::Loader()->Load( pGeometry->mtrlName, RESOURCE_FILE_MESH, m_bForward );
-		pGeometry->defaultMtrl = pMtrl->RID;*/
+
+		pGeometry->pMaterial = (CResourceMtrl*)GLOBAL::Loader()->Load( pGeometry->mtrlName, RESOURCE_FILE_MATERIAL, m_bForward );
 
 		GLOBAL::RDevice()->CreateGraphicBuffer( pGeometry );
 		if( pGeometry->IsSkinedMesh() )

@@ -67,6 +67,9 @@
     <ClCompile Include="ETextureDataProcessor.cpp">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
+    <ClCompile Include="EMtrlDataProcessor.cpp">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -195,6 +198,12 @@
     </ClInclude>
     <ClInclude Include="ETextureDataProcessor.h">
       <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="EMtrlDataProcessor.h">
+      <Filter>Asset\ResourceDataProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="XmlHelper.h">
+      <Filter>3rdParty\TinyXML</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

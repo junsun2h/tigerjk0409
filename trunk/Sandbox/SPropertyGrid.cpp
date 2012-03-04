@@ -103,20 +103,7 @@ void SPropertyGrid::Set( IEntityProxy* pEntityProxy )
 	else if( type == ENTITY_PROXY_RENDER )
 	{
 		IEntityProxyRender* pRenderer = (IEntityProxyRender*)pEntityProxy;
-		const RENDER_ELEMENT_LIST& vecRenderList = pRenderer->GetRenderElements();
-		
-		char buf[32];
-		for( UINT i=0; i< vecRenderList.size(); ++i )
-		{
-			_itoa(i, buf, 10);
-			Append(new wxPropertyCategory(  wxString("Geometry") + wxString(buf) ));
-			Append( new wxStringProperty( wxString("Name"), wxPG_LABEL, vecRenderList[i].pGeometry->name) );
-
-			if( vecRenderList[i].pMtrl )
-				Append( new wxStringProperty( wxString("Material"), wxPG_LABEL, vecRenderList[i].pMtrl->name) );
-			else
-				Append( new wxStringProperty( wxString("Material"), wxPG_LABEL, "") );
-		}
+		//TODO;
 	}
 }
 
@@ -124,10 +111,10 @@ void SPropertyGrid::Set(const CResourceTexture* pTexture)
 {
 	ClearProperties();
 
-	if( pTexture->usage == TEXTURE_NORMAL )
-		Append( new wxStringProperty( "Usage", wxPG_LABEL, "texture resource") );
-	else
+	if( pTexture->usage == TEXTURE_USAGE_RENDER_TAGET )
 		Append( new wxStringProperty( "Usage", wxPG_LABEL, "Render target") );
+	else
+		Append( new wxStringProperty( "Usage", wxPG_LABEL, "texture resource") );
 
 	Append( new wxStringProperty( "Pixel Format", wxPG_LABEL, PixelFormatToString(pTexture->Format)) );
 	Append( new wxIntProperty( "Width", wxPG_LABEL, pTexture->Width) );
@@ -150,16 +137,16 @@ void SPropertyGrid::Set(const CResourceMesh* pMesh)
 
 		_itoa(i, buf, 10);
 		Append(new wxPropertyCategory( wxString("Geometry") + wxString(buf) ));
-		Append(new wxStringProperty(  "Vertex Type" + wxString(buf), wxPG_LABEL, wxString( VERTEX_TYPE_STRING(pGeometry->eVertexType))) );
-		Append(new wxIntProperty(  "Vertex Count" + wxString(buf), wxPG_LABEL, pGeometry->vertexCount) );
+		Append(new wxStringProperty( wxString(buf) + "_Vertex Type", wxPG_LABEL, wxString( VERTEX_TYPE_STRING(pGeometry->eVertexType))) );
+		Append(new wxIntProperty( wxString(buf) + "_Vertex Count", wxPG_LABEL, pGeometry->vertexCount) );
 
 		if( pGeometry->eIndexType == INDEX_16BIT_TYPE )
-			Append(new wxStringProperty(  "Index Type" + wxString(buf), wxPG_LABEL, wxString("16Bit")) );
+			Append(new wxStringProperty(  wxString(buf) + "_Index Type", wxPG_LABEL, wxString("16Bit")) );
 		else
-			Append(new wxStringProperty(  "Index Type" + wxString(buf), wxPG_LABEL, wxString("16Bit")) );
+			Append(new wxStringProperty(  wxString(buf) + "_Index Type", wxPG_LABEL, wxString("16Bit")) );
 
-		Append(new wxIntProperty(  "Polygon Count" + wxString(buf), wxPG_LABEL, pGeometry->primitiveCount) );
-		Append(new wxFileProperty(  "Default Material" + wxString(buf), wxString(pGeometry->mtrlName)) );
+		Append(new wxIntProperty(  wxString(buf) + "_Polygon Count", wxPG_LABEL, pGeometry->primitiveCount) );
+		Append(new wxFileProperty(  wxString(buf) + "_Default Material", wxString(pGeometry->mtrlName)) );
 	}
 
 	if( pMesh->skinBoneList.size() > 0 )

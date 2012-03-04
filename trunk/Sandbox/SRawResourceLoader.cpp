@@ -264,7 +264,8 @@ namespace SRAW_FILE_LOADER
 				}
 				else
 				{
-					RawMesh.mtrlList.push_back( std::string(buf) );
+					fgets (buf, sizeof (buf), fp);
+					RawMesh.mtrlList.push_back( strtok_s( buf, delimiters , &pContext ) );
 				}
 			}
 			else if( strncmp( buf, "position",  8) == 0 )

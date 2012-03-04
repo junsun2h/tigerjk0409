@@ -6,10 +6,6 @@ class EActorDataProcessor : public IDataProcessor
 	CResourceActor*			m_pActor;
 	bool					m_bForward;
 
-public:
-	EActorDataProcessor();
-	~EActorDataProcessor();
-
 	virtual void			Init(CResourceBase* pRsc, bool bForward) override;
 	virtual bool			CompleteWork() override;
 	virtual void			Process( void* pData, SIZE_T cBytes ) override;

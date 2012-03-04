@@ -97,6 +97,7 @@
     <ClCompile Include="ELoader.cpp" />
     <ClCompile Include="EMeshDataProcessor.cpp" />
     <ClCompile Include="EMotionDataProcessor.cpp" />
+    <ClCompile Include="EMtrlDataProcessor.cpp" />
     <ClCompile Include="EQuadSpaceTreeMgr.cpp" />
     <ClCompile Include="EQuadSpaceTreeNode.cpp" />
     <ClCompile Include="ERenderer.cpp" />
@@ -109,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EActorMgr.h" />
+    <ClInclude Include="EMtrlDataProcessor.h" />
     <ClInclude Include="EMotionInstance.h" />
     <ClInclude Include="EActorDataProcessor.h" />
     <ClInclude Include="EAssetMgr.h" />
@@ -127,6 +129,7 @@
     <ClInclude Include="ERenderer.h" />
     <ClInclude Include="ETextureDataProcessor.h" />
     <ClInclude Include="EWinFileLoader.h" />
+    <ClInclude Include="XmlHelper.h" />
     <ClInclude Include="Include\IActorMgr.h" />
     <ClInclude Include="Include\IAssetMgr.h" />
     <ClInclude Include="Include\IEngine.h" />

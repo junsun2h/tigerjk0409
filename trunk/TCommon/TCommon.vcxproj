@@ -76,6 +76,7 @@
     <ClInclude Include="CLog.h" />
     <ClInclude Include="CPlane.h" />
     <ClInclude Include="CQuad.h" />
+    <ClInclude Include="CRenderElement.h" />
     <ClInclude Include="CResource.h" />
     <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="CVector.h" />

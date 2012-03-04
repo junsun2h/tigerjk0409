@@ -84,7 +84,7 @@ struct CResourceBase
 	char					name[MAX_NAME_LENGTH];
 
 	virtual eRESOURCE_TYPE	Type() const	{ return RESOURCE_INVALID; }
-	virtual std::string		strType()  { return ""; }
+	virtual std::string		strType()		{ return ""; }
 	std::string				strLoadState()	{ return ENUMSTR(eRESOURCE_LOAD_STATE(loadState)); }
 	
 	CResourceBase()
@@ -96,11 +96,13 @@ struct CResourceBase
 	virtual ~CResourceBase(){}
 };
 
+class CResourceMtrl;
+
 //-------------------------------------------------------------------------------------------------
 enum eTEXTURE_USAGE
 {
-	TEXTURE_NORMAL,
-	TEXTURE_RENDER_RAGET,
+	TEXTURE_USAGE_RESOURCE,
+	TEXTURE_USAGE_RENDER_TAGET,
 };
 
 enum eTEXTURE_FORMAT
@@ -216,7 +218,7 @@ public:
 		pShaderResourceView = NULL;
 		pRenderTargetView = NULL;
 		pTextureSource = NULL;
-		usage = TEXTURE_NORMAL;
+		usage = TEXTURE_USAGE_RESOURCE;
 		Format = COLOR_FORMAT_UNKNOWN;
 		bDeleteMemoryAfterLoading = false;
 	}
@@ -249,7 +251,7 @@ public:
 		, pGraphicMemoryVertexBufferOut(NULL)
 		, primitiveCount(0)
 		, vertexCount(0)
-		, defaultMtrl(-1)
+		, pMaterial(NULL)
 		, eIndexType(INDEX_INVALID)
 		, eVertexType(FVF_INVALID)
 	{
@@ -279,7 +281,7 @@ public:
 	void*			pIndexBuffer;
 	void*			pGraphicMemoryIndexBuffer;
 
-	long			defaultMtrl;
+	CResourceMtrl*	pMaterial;
 	
 	char			mtrlName[MAX_NAME_LENGTH];
 
@@ -396,6 +398,7 @@ enum eEFFECT_TYPE
 	GPASS_VS_NORMALMAP_WEIGHT,
 
 	GPASS_PS_LAMBERT,
+	GPASS_PS_NORMALMAP,
 
 	//////////////////////////////////////////////////////////////////////////
 	MPASS_VS_FONT,
@@ -411,27 +414,33 @@ enum eEFFECT_TYPE
 
 enum eTEXTURE_TYPE
 {
-	PARAM_DIFFISE,
-	PARAM_SPECULAR,
-	PARAM_NORMAL,
-	PARAM_TRANSPARENCY,
+	TEXTURE_DIFFISE,
+	TEXTURE_SPECULAR,
+	TEXTURE_BUMP,
+	TEXTURE_TRANSPARENCY,
 
 	NUM_TEXTURE_TYPE
 };
 
 class CResourceMtrl : public CResourceBase
 {
-	// only object pool can make&delete this class
-	friend CObjectPool<CResourceMtrl>;
-	CResourceMtrl(){}
+public:
+	CResourceMtrl()
+	{
+		memset( pTextures, 0, sizeof(pTextures));
+	}
 	~CResourceMtrl(){}
 
-public:
-	long			RID_textures[NUM_TEXTURE_TYPE];
-	eEFFECT_TYPE	effectType;
 
-	eRESOURCE_TYPE	Type() const override		{ return RESOURCE_MATERIAL; }
-	std::string		strType() override	{ return ENUMSTR(RESOURCE_MATERIAL); }
+	const CResourceTexture*	pTextures[NUM_TEXTURE_TYPE];
+	
+	bool			bTwoSided;
+	float			opacity;
+	float			specularLevel;
+	float			glossiness;
+
+	eRESOURCE_TYPE	Type() const override	{ return RESOURCE_MATERIAL; }
+	std::string		strType() override		{ return ENUMSTR(RESOURCE_MATERIAL); }
 };
 
 

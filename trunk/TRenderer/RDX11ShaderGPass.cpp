@@ -66,36 +66,45 @@ RDX11VSGPassLambert::RDX11VSGPassLambert()
 
 RDX11VSGPassLambertWeight::RDX11VSGPassLambertWeight()
 {
+	D3D10_SHADER_MACRO Shader_Macros[2] = { "_SKIN", "0", NULL  };
+
 	SHADER_COMPILE_DESC desc;
 
 	desc.szFileName = "Shader\\GPass.vs";
-	desc.szEntrypoint = "VS_SKIN";
+	desc.szEntrypoint = "VS";
 	desc.szShaderModel = "vs_4_0_level_9_3";
 	desc.eVertexyType = FVF_4HP_4BN_2HT_4BW;
+	desc.shader_Macros = Shader_Macros;
 
 	CreateVS(desc);
 }
 
 RDX11VSGPassNormalMap::RDX11VSGPassNormalMap()
 {
+	D3D10_SHADER_MACRO Shader_Macros[2] = { "_BUMP", "0", NULL  };
+
 	SHADER_COMPILE_DESC desc;
 
 	desc.szFileName = "Shader\\GPass.vs";
 	desc.szEntrypoint = "VS";
 	desc.szShaderModel = "vs_4_0_level_9_3";
-	desc.eVertexyType = FVF_4HP_4BN_2HT;
+	desc.eVertexyType = FVF_4HP_4BN_2HT_4BT;
+	desc.shader_Macros = Shader_Macros;
 
 	CreateVS(desc);
 }
 
 RDX11VSGPassNormalMapWeight::RDX11VSGPassNormalMapWeight()
 {
+	D3D10_SHADER_MACRO Shader_Macros[3] = { "_SKIN", "0", "_BUMP", "0", NULL  };
+
 	SHADER_COMPILE_DESC desc;
 
 	desc.szFileName = "Shader\\GPass.vs";
 	desc.szEntrypoint = "VS";
 	desc.szShaderModel = "vs_4_0_level_9_3";
-	desc.eVertexyType = FVF_4HP_4BN_2HT;
+	desc.eVertexyType = FVF_4HP_4BN_2HT_4BT_4BW;
+	desc.shader_Macros = Shader_Macros;
 
 	CreateVS(desc);
 }
@@ -105,13 +114,34 @@ RDX11VSGPassNormalMapWeight::RDX11VSGPassNormalMapWeight()
 //------------------------------------------------------------------------------------------------------------
 // Pixel Shader
 //------------------------------------------------------------------------------------------------------------
-RDX11PSGPassBase::RDX11PSGPassBase()
+RDX11PSGPass::RDX11PSGPass()
 {
 	SHADER_COMPILE_DESC desc;
 
 	desc.szFileName = "Shader\\GPass.ps";
 	desc.szEntrypoint = "PS";
 	desc.szShaderModel = "ps_4_0_level_9_3";
+
+	CreatePS(desc);
+
+	GRAPHIC_DEVICE_DESC renderDesc;
+	renderDesc.DepthStencil = DEPTH_STENCIL_WRITE;
+	renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
+	renderDesc.BlendState = BLEND_NONE;
+
+	SetRenderState( renderDesc );
+}
+
+RDX11PSGPassBump::RDX11PSGPassBump()
+{
+	D3D10_SHADER_MACRO Shader_Macros[2] = { "_BUMP", "0", NULL  };
+
+	SHADER_COMPILE_DESC desc;
+
+	desc.szFileName = "Shader\\GPass.ps";
+	desc.szEntrypoint = "PS";
+	desc.szShaderModel = "ps_4_0_level_9_3";
+	desc.shader_Macros = Shader_Macros;
 
 	CreatePS(desc);
 

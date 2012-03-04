@@ -7,6 +7,8 @@ struct IEntityProxyRender;
 struct CResourceBase;
 struct CCAMERA_DESC;
 struct CENGINE_INIT_PARAM;
+struct IShaderMgr;
+struct CRenderElement;
 
 class CResourceTexture;
 class CResourceGeometry;
@@ -34,11 +36,6 @@ struct IRenderStrategy
 {
 	virtual	void	RenderFrame(CCAMERA_DESC* pCameraDesc) =0;
 	virtual void	RenderGeometry(CResourceGeometry* pGeometry) =0;
-
-	virtual void	SetMaterial(const CResourceMtrl* pMaterial, const CResourceGeometry* pGeometry) = 0;
-
-	virtual	void	SetTransform( const XMMATRIX& worldTM ) = 0;
-	virtual void	SetJointTransforms( XMMATRIX* pJointTM, UINT size ) = 0;
 };
 
 struct RDeviceDesc
@@ -58,6 +55,7 @@ struct IRDevice
 
 	virtual bool				Resize(int width, int height) = 0;
 
+	virtual	IShaderMgr*			GetShaderMgr() = 0;
 	virtual	IRenderStrategy*	GetRenderStrategy() = 0;
 	virtual IRenderHelper*		GetRenderHelper() = 0;
 	virtual	RDeviceDesc			GetDeviceSetting() = 0;

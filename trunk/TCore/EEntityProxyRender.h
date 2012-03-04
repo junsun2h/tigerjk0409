@@ -1,6 +1,7 @@
 #pragma once
 
 
+
 class EEntityProxyRender : public IEntityProxyRender
 {
 	// only object pool can make&delete this class
@@ -15,12 +16,10 @@ public:
 	IEntity*				GetEntity()	override						{ return m_pEntity;}
 	void					ProcessEvent( EntityEvent &event ) override;
 
-	bool					CreateRenderElement(long meshID, int indexInActor = -1) override;
+	bool					CreateRenderElement(long meshID, int meshSlotInActor = -1) override;
 	void					Remove(long slot) override;
 
-	const RENDER_ELEMENT_LIST&	GetRenderElements() override		{ return m_vecRenderElement; }
-
-	bool					IsRenderGeometry(long geometryID );
+	bool					IsAlreadyInserted(long geometryID );
 	void					Render() override;
 
 private:

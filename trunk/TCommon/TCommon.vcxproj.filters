@@ -27,6 +27,7 @@
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="CVector.h" />
+    <ClInclude Include="CRenderElement.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="3rdParty">

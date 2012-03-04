@@ -27,6 +27,7 @@ public:
 
 	CResourceBase*				CreateResource( eRESOURCE_TYPE type, const char* name) override;
 
+	const CResourceBase*		GetResource( eRESOURCE_FILE_TYPE type, const char* name) override;
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, long id ) override;
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, const char* name ) override	{ return GetResource(type, GET_HASH_KEY(name) ); }
 	const CResourceBase*		GetResource( eRESOURCE_TYPE type, std::string name ) override	{ return GetResource(type, GET_HASH_KEY(name) ); }

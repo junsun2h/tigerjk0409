@@ -3,11 +3,7 @@
 
 class EMotionDataProcessor : public IDataProcessor
 {
-	CResourceMotion*		m_pMotion;
-
-public:
-	EMotionDataProcessor();
-	~EMotionDataProcessor();
+	CResourceMotion*			m_pMotion;
 
 	virtual void				Init(CResourceBase* pRsc, bool bForward) override;
 	virtual bool				CompleteWork() override;

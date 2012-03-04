@@ -24,16 +24,9 @@ RDX11Device::~RDX11Device()
 {
 
 }
-
-IRenderHelper* RDX11Device::GetRenderHelper()
-{
-	return GLOBAL::RenderHelper();
-}
-
-RDeviceDesc	RDX11Device::GetDeviceSetting()
-{
-	return GLOBAL::DeviceInfo();
-}
+IShaderMgr*		RDX11Device::GetShaderMgr()			{ return GLOBAL::ShaderMgr(); }
+IRenderHelper*	RDX11Device::GetRenderHelper()		{ return GLOBAL::RenderHelper(); }
+RDeviceDesc		RDX11Device::GetDeviceSetting()		{ return GLOBAL::DeviceInfo(); }
 
 //----------------------------------------------------------------------------------------------------------
 bool RDX11Device::StartUp(const CENGINE_INIT_PARAM* pParam)
@@ -124,7 +117,7 @@ void RDX11Device::CreateDXTextureBuffer(CResourceTexture* pTexture)
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 
-	if( pTexture->usage == TEXTURE_RENDER_RAGET )
+	if( pTexture->usage == TEXTURE_USAGE_RENDER_TAGET )
 		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	else
 		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -136,7 +129,7 @@ void RDX11Device::CreateDXTextureBuffer(CResourceTexture* pTexture)
 	if( pRT == NULL )
 		GLOBAL::D3DDevice()->CreateTexture2D(&textureDesc, NULL, &pRT);
 
-	if( pTexture->usage == TEXTURE_RENDER_RAGET )
+	if( pTexture->usage == TEXTURE_USAGE_RENDER_TAGET )
 	{
 		ID3D11RenderTargetView*	pRTV;
 

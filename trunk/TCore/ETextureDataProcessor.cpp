@@ -8,16 +8,6 @@
 
 
 
-ETextureDataProcessor::ETextureDataProcessor()
-{
-}
-
-
-ETextureDataProcessor::~ETextureDataProcessor()
-{
-
-}
-
 void ETextureDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
 	m_pTexture = (CResourceTexture*)pRsc;

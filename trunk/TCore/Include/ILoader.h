@@ -43,13 +43,13 @@ struct IDataProcessor
 
 struct ILoader
 {
-	virtual	bool			IsIOThread() = 0;
-	virtual	bool			IsDataProcThread() = 0;
+	virtual	bool					IsIOThread() = 0;
+	virtual	bool					IsDataProcThread() = 0;
 
-	virtual	bool			Init( UINT NumProcessingThreads ) =0;
-	virtual CResourceBase*	Load(char* name, eRESOURCE_FILE_TYPE type, bool bForward) = 0;
-	virtual CResourceBase*	Load(const char* fullpath, char* name, eRESOURCE_FILE_TYPE type, bool bForward) = 0;
+	virtual	bool					Init( UINT NumProcessingThreads ) =0;
+	virtual const CResourceBase*	Load(const char* name, eRESOURCE_FILE_TYPE type, bool bForward) = 0;
+	virtual const CResourceBase*	Load(const char* fullpath, const char* name, eRESOURCE_FILE_TYPE type, bool bForward) = 0;
 
-	virtual void			WaitForAllItems() = 0;
-	virtual void			CompleteWork( UINT completeLimit ) = 0;
+	virtual void					WaitForAllItems() = 0;
+	virtual void					CompleteWork( UINT completeLimit ) = 0;
 };

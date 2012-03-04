@@ -156,7 +156,7 @@ void RDX11RenderTargetMgr::CreateRenderTarget(int width, int height, eTEXTURE_FO
 {
 	m_DefferdRenderTargets[target].height = height;
 	m_DefferdRenderTargets[target].Width = width;
-	m_DefferdRenderTargets[target].usage = TEXTURE_RENDER_RAGET;
+	m_DefferdRenderTargets[target].usage = TEXTURE_USAGE_RENDER_TAGET;
 	m_DefferdRenderTargets[target].Format = format;
 	m_DefferdRenderTargets[target].MipLevels = 1;
 

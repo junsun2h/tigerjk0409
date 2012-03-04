@@ -4,6 +4,7 @@
 #include "CUnitPool.h"
 #include "CAABB.h"
 #include "CCamera.h"
+#include "CRenderElement.h"
 
 #include "IRDevice.h"
 #include "IMotionInstance.h"

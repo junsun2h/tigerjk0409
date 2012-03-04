@@ -1,6 +1,7 @@
 #pragma once
 
 
+
 class RDX11ShaderMgr : public IShaderMgr
 {
 public:
@@ -10,6 +11,7 @@ public:
 	void			init();
 	void			Destroy();
 
+	bool			AssignShader(CRenderElement* pRenderElement) override;
 	IShader*		GetShader(eEFFECT_TYPE type) override;
 	bool			SetCurrentShader(IShader* pShader) override;
 	IShader*		GetCurrentVS() override					{ return m_pCurrentVS; }

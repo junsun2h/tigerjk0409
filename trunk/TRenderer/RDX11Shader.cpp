@@ -17,7 +17,7 @@ HRESULT CompileShaderFromFile(SHADER_COMPILE_DESC& desc, ID3DBlob** ppBlobOut )
 #endif
 
 	ID3DBlob* pErrorBlob;
-	TDXERROR( D3DX11CompileFromFileA( desc.szFileName, NULL, NULL, desc.szEntrypoint, desc.szShaderModel, desc.flag, 0, NULL, ppBlobOut, &pErrorBlob, NULL ) );
+	TDXERROR( D3DX11CompileFromFileA( desc.szFileName, desc.shader_Macros, NULL, desc.szEntrypoint, desc.szShaderModel, desc.flag, 0, NULL, ppBlobOut, &pErrorBlob, NULL ) );
 
 	if( pErrorBlob ) 
 		pErrorBlob->Release();
@@ -34,7 +34,7 @@ HRESULT CompileShader( SHADER_COMPILE_DESC& desc, ID3DBlob** ppBlobOut )
 #endif
 	ID3DBlob* pErrorBlob = NULL;
 
-	V_RETURN( D3DCompile( desc.pSrc, desc.SrcDataSize, "none", NULL, NULL, desc.szEntrypoint, desc.szShaderModel, desc.flag, 0, ppBlobOut, NULL ) );
+	V_RETURN( D3DCompile( desc.pSrc, desc.SrcDataSize, "none", desc.shader_Macros, NULL, desc.szEntrypoint, desc.szShaderModel, desc.flag, 0, ppBlobOut, NULL ) );
 
 	if( pErrorBlob ) 
 		pErrorBlob->Release();

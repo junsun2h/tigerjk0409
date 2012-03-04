@@ -7,16 +7,6 @@
 
 
 
-EMotionDataProcessor::EMotionDataProcessor()
-{
-}
-
-
-EMotionDataProcessor::~EMotionDataProcessor()
-{
-
-}
-
 void EMotionDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
 	m_pMotion = (CResourceMotion*)pRsc;
