@@ -77,23 +77,12 @@ struct IEntityProxyCamera : IEntityProxy
 };
 
 
-struct CRenderElement
-{
-	CResourceGeometry*	pGeometry;
-	CResourceMtrl*		pMtrl;
-	uint8				IndexInActor;
-};
-
-typedef	std::vector<CRenderElement>	RENDER_ELEMENT_LIST;
-
 struct IEntityProxyRender : IEntityProxy
 {
 	virtual eENTITY_PROXY_TYPE		GetType() override				{ return ENTITY_PROXY_RENDER; };
 	virtual const char*				GetTypeString()					{ return "ENTITY_PROXY_RENDER"; }
 
-	virtual const RENDER_ELEMENT_LIST&	GetRenderElements() = 0;
-	
-	virtual	bool					CreateRenderElement( long meshID, int indexInActor = -1) = 0;
+	virtual	bool					CreateRenderElement( long meshID, int meshSlotInActor = -1) = 0;
 	virtual void					Remove(long slot) = 0;
 	virtual void					Render() = 0;
 };

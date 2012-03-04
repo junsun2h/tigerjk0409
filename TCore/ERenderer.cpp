@@ -6,12 +6,14 @@
 #include "CCamera.h"
 #include "CCommandBuffer.h"
 #include "CQuad.h"
+#include "CRenderElement.h"
 
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IRenderer.h"
 #include "ISpaceMgr.h"
+#include "IShader.h"
 
 #include "EGlobal.h"
 #include "ERenderer.h"
@@ -121,25 +123,25 @@ void ERenderer::RT_ProcessCommand()
 				pQueue->PopParam(pParam);
 				pRenderStrategy->RenderFrame(pParam);
 			}break;
-		case RC_DRAW_OBJECT:
+		case RC_DRAW_RENDER_ELEMENT:
 			{
-				CRenderParam* pParam;
-				pQueue->PopParam(pParam);
-				pRenderStrategy->SetMaterial( pParam->pMaterial, pParam->pGeometry);
-				pRenderStrategy->SetTransform( pParam->worldTM );
-				pRenderStrategy->RenderGeometry( pParam->pGeometry);
-			}break;
-		case RC_DRAW_OBJECT_SKIN:
-			{
-				CRenderParamSkin* pParam;
-				XMMATRIX* pMatrix;
-				pQueue->PopParam(pParam);
-				pQueue->PopData( pMatrix );
-								
-				pRenderStrategy->SetMaterial( pParam->pMaterial, pParam->pGeometry);
-				pRenderStrategy->SetTransform( pParam->worldTM );
-				pRenderStrategy->SetJointTransforms( pMatrix, pParam->refSkinTMCount );
-				pRenderStrategy->RenderGeometry( pParam->pGeometry);
+				CRenderElement* pRenderElement;
+				XMMATRIX* pWorldMatrix;
+				pQueue->PopParam(pRenderElement);
+				pQueue->PopParam( pWorldMatrix );
+
+				pRenderElement->pPixelShader->Begin();
+				pRenderElement->pVertexShader->Begin();
+
+				if( pRenderElement->pGeometry->IsSkinedMesh() )
+				{
+					XMMATRIX* pRefMatrix;
+					UINT size = pQueue->PopData( pRefMatrix);
+					pRenderElement->pVertexShader->SetShaderContants( pRefMatrix, size/sizeof(XMMATRIX) );
+				}
+				
+				pRenderElement->pVertexShader->SetShaderContants( *pWorldMatrix );
+				pRenderStrategy->RenderGeometry( pRenderElement->pGeometry);
 			}break;
 		case RC_DRAW_HELPER_Skeleton:
 			{

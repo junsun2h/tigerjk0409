@@ -11,8 +11,8 @@ public:
 	bool						IsDataProcThread() override;
 
 	bool                        Init( UINT NumProcessingThreads ) override;
-	CResourceBase*				Load(char* name, eRESOURCE_FILE_TYPE type, bool bWait) override;
-	CResourceBase*				Load(const char* fullpath, char* name, eRESOURCE_FILE_TYPE type, bool bForward) override;
+	const CResourceBase*		Load(const char* name, eRESOURCE_FILE_TYPE type, bool bWait) override;
+	const CResourceBase*		Load(const char* fullpath, const char* name, eRESOURCE_FILE_TYPE type, bool bForward) override;
 
 	void						WaitForAllItems() override;
 	void						CompleteWork( UINT completeLimit ) override;

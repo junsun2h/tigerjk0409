@@ -65,6 +65,21 @@ CResourceBase* EAssetMgr::UnSafeGetResource( eRESOURCE_TYPE type, long id )
 	return NULL;
 }
 
+const CResourceBase* EAssetMgr::GetResource( eRESOURCE_FILE_TYPE type, const char* name )
+{
+	const CResourceBase* pResource = NULL;
+
+	if( type == RESOURCE_FILE_TEXTURE )			pResource = GetResource(RESOURCE_TEXTURE, name );
+	else if( type == RESOURCE_FILE_MESH )		pResource = GetResource(RESOURCE_MESH, name );
+	else if( type == RESOURCE_FILE_ACTOR )		pResource = GetResource(RESOURCE_ACTOR, name );
+	else if( type == RESOURCE_FILE_MOTION )		pResource = GetResource(RESOURCE_MOTION, name );
+	else if( type == RESOURCE_FILE_MATERIAL)	pResource = GetResource(RESOURCE_MATERIAL, name );
+	else
+		assert(0);
+
+	return pResource;
+}
+
 //-----------------------------------------------------------------------------------------------------------------------
 const CResourceBase* EAssetMgr::GetResource( eRESOURCE_TYPE type, long id )
 {

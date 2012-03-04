@@ -43,7 +43,12 @@ struct RDX11VSGPassNormalMapWeight : public RDX11VSGPassBase
 //------------------------------------------------------------------------------------------------------------
 // Pixel Shader
 //------------------------------------------------------------------------------------------------------------
-struct RDX11PSGPassBase : public RDX11PixelShaderBase
+struct RDX11PSGPass : public RDX11PixelShaderBase
 {
-	RDX11PSGPassBase();
+	RDX11PSGPass();
+};
+
+struct RDX11PSGPassBump : public RDX11PixelShaderBase
+{
+	RDX11PSGPassBump();
 };

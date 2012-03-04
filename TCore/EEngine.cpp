@@ -107,11 +107,9 @@ void EEngine::UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRe
 	float deltaTime = m_GlobalTimer.GetElapsedTime();
 	m_GlobalTimer.CountFPS(deltaTime);
 
-	GLOBAL::Loader()->CompleteWork(1000);
-
 	//////////////////////////////////////////////////////////////////////////
 	// 1) update Render independent system
-
+	GLOBAL::Loader()->CompleteWork(1000);
 
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list

@@ -13,6 +13,7 @@
 #include "EActorDataProcessor.h"
 #include "EMotionDataProcessor.h"
 #include "ETextureDataProcessor.h"
+#include "EMtrlDataProcessor.h"
 
 #include "ELoader.h"
 
@@ -35,7 +36,7 @@ struct RESOURCE_REQUEST
 
 CGrowableArray <RESOURCE_REQUEST>	g_IOQueue;
 CGrowableArray <RESOURCE_REQUEST>	g_ProcessQueue;
-CGrowableArray <RESOURCE_REQUEST>	g_MainThreadQueue;
+CGrowableArray <RESOURCE_REQUEST>	g_CompleteQueue;
 
 
 CObjectPool<EWinFileLoader>			g_MemPoolFileLoader(100);
@@ -43,6 +44,7 @@ CObjectPool<EActorDataProcessor>	g_MemPoolActorDataProcessor(100);
 CObjectPool<EMeshDataProcessor>		g_MemPoolMeshDataProcessor(100);
 CObjectPool<EMotionDataProcessor>	g_MemPoolMotionDataProcessor(100);
 CObjectPool<ETextureDataProcessor>	g_MemPoolTextureDataProcessor(100);
+CObjectPool<EMtrlDataProcessor>		g_MemPoolMtrlDataProcessor(100);
 
 
 void RemoveResourceRquest(RESOURCE_REQUEST& resourceRequest)
@@ -58,6 +60,7 @@ void RemoveResourceRquest(RESOURCE_REQUEST& resourceRequest)
 		else if( fileType == RESOURCE_FILE_MESH ) 	g_MemPoolMeshDataProcessor.Remove( resourceRequest.pDataProcessor );
 		else if( fileType == RESOURCE_FILE_MOTION )	g_MemPoolMotionDataProcessor.Remove( resourceRequest.pDataProcessor );
 		else if( fileType == RESOURCE_FILE_TEXTURE ) g_MemPoolTextureDataProcessor.Remove( resourceRequest.pDataProcessor );
+		else if( fileType == RESOURCE_FILE_MATERIAL ) g_MemPoolMtrlDataProcessor.Remove( resourceRequest.pDataProcessor );
 		else
 			assert(0);
 	}
@@ -197,7 +200,7 @@ unsigned int ELoader::PT_ProcessingThreadProc()
 
 		// Add it to the enderThreadQueue
 		EnterCriticalSection( &m_csMainThreadQueue );
-		g_MainThreadQueue.Add( ResourceRequest );
+		g_CompleteQueue.Add( ResourceRequest );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 	}
 	m_bProcessThreadDone = true;
@@ -211,7 +214,7 @@ void ELoader::CompleteWork( UINT completeLimit)
 	HRESULT hr = S_OK;
 
 	EnterCriticalSection( &m_csMainThreadQueue );
-	UINT numJobs = g_MainThreadQueue.GetSize();
+	UINT numJobs = g_CompleteQueue.GetSize();
 	LeaveCriticalSection( &m_csMainThreadQueue );
 
 	UINT offset = 0;
@@ -219,7 +222,7 @@ void ELoader::CompleteWork( UINT completeLimit)
 	for( UINT i = 0; i < numJobs && i < completeLimit; i++ )
 	{
 		EnterCriticalSection( &m_csMainThreadQueue );
-		RESOURCE_REQUEST resourceRequest = g_MainThreadQueue.GetAt( offset );
+		RESOURCE_REQUEST resourceRequest = g_CompleteQueue.GetAt( offset );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 
 		if( resourceRequest.pDataProcessor->CompleteWork() == false)
@@ -232,7 +235,7 @@ void ELoader::CompleteWork( UINT completeLimit)
 			resourceRequest.pCallBackComplete(resourceRequest.pResource );
 			
 		EnterCriticalSection( &m_csMainThreadQueue );
-		g_MainThreadQueue.Remove( offset );
+		g_CompleteQueue.Remove( offset );
 		LeaveCriticalSection( &m_csMainThreadQueue );
 
 				
@@ -327,7 +330,7 @@ bool ELoader::IsDataProcThread()
 
 
 //--------------------------------------------------------------------------------------
-CResourceBase* ELoader::Load(char* name, eRESOURCE_FILE_TYPE type, bool bForward)
+const CResourceBase* ELoader::Load(const char* name, eRESOURCE_FILE_TYPE type, bool bForward)
 {
 	std::string fullPath = m_Path;
 	
@@ -335,15 +338,19 @@ CResourceBase* ELoader::Load(char* name, eRESOURCE_FILE_TYPE type, bool bForward
 	else if( RESOURCE_FILE_MESH == type)		fullPath = fullPath + "\\Data\\mesh\\" + name + ".tmesh";
 	else if(RESOURCE_FILE_MOTION == type )		fullPath = fullPath + "\\Data\\motion\\" + name + ".tmo";
 	else if(RESOURCE_FILE_TEXTURE == type )		fullPath = fullPath + "\\Data\\texture\\" + name + ".dds";
-	else if(RESOURCE_FILE_MATERIAL == type )	fullPath = fullPath + "\\Data\\material\\" + name + ".mtrl";
+	else if(RESOURCE_FILE_MATERIAL == type )	fullPath = fullPath + "\\Data\\material\\" + name + ".xml";
 
 	return Load( fullPath.c_str(), name, type, bForward);
 }
 
 
 //--------------------------------------------------------------------------------------
-CResourceBase* ELoader::Load(const char* fullpath, char* name, eRESOURCE_FILE_TYPE type, bool bForward)
+const CResourceBase* ELoader::Load(const char* fullpath, const char* name, eRESOURCE_FILE_TYPE type, bool bForward)
 {
+	const CResourceBase* pResource = GLOBAL::AssetMgr()->GetResource( type, name);
+	if( pResource != NULL)
+		return pResource;
+
 	RESOURCE_REQUEST resourceRequest;
 	resourceRequest.pDataLoader = g_MemPoolFileLoader.GetNew();
 	resourceRequest.pDataLoader->SetFile(fullpath);
@@ -370,7 +377,8 @@ CResourceBase* ELoader::Load(const char* fullpath, char* name, eRESOURCE_FILE_TY
 	}
 	else if(RESOURCE_FILE_MATERIAL == type )
 	{
-
+		resourceRequest.pResource  = GLOBAL::AssetMgr()->CreateResource(RESOURCE_MATERIAL, name);
+		resourceRequest.pDataProcessor = g_MemPoolMtrlDataProcessor.GetNew();
 	}
 
 	resourceRequest.pDataProcessor->Init(resourceRequest.pResource, bForward);

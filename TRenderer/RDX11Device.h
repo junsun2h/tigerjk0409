@@ -25,6 +25,7 @@ public:
 	void				CreateTextureFromFile(const char* fileName, CResourceTexture* pTexture) override;
 	bool				SaveTextureToFile(const CResourceTexture* pTexture, eIMAGE_FILE_FORMAT format, const char* fileName) override;
 
+	IShaderMgr*			GetShaderMgr() override;
 	IRenderHelper*		GetRenderHelper() override;
 	IRenderStrategy*	GetRenderStrategy() override				{ return m_pCurrentRenderStrategy; }
 

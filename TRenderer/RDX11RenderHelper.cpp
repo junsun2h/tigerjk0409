@@ -190,7 +190,6 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
-	pRenderer->SetTransform(tm);
 	pRenderer->RenderGeometry(&m_BoxX);
 	pRenderer->RenderGeometry(&m_BoxY);
 	pRenderer->RenderGeometry(&m_BoxZ);
@@ -277,7 +276,6 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
-	pRenderer->SetTransform(tm);
 	pRenderer->RenderGeometry( &m_ConeX);
 	pRenderer->RenderGeometry( &m_ConeY);
 	pRenderer->RenderGeometry( &m_ConeZ);

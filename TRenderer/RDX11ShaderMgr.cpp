@@ -1,6 +1,7 @@
 #include <atlcoll.h>
 #include "RDefine.h"
 #include "CResource.h"
+#include "CRenderElement.h"
 
 #include "IShader.h"
 #include "IRDevice.h"
@@ -36,7 +37,8 @@ void RDX11ShaderMgr::init()
 	m_ShaderMap.SetAt( GPASS_VS_NORMALMAP, new RDX11VSGPassNormalMap);
 	m_ShaderMap.SetAt( GPASS_VS_NORMALMAP_WEIGHT, new RDX11VSGPassNormalMapWeight);
 
-	m_ShaderMap.SetAt( GPASS_PS_LAMBERT, new RDX11PSGPassBase);
+	m_ShaderMap.SetAt( GPASS_PS_LAMBERT, new RDX11PSGPass);
+	m_ShaderMap.SetAt( GPASS_PS_NORMALMAP, new RDX11PSGPassBump);
 
 	// Material Pass
 	m_ShaderMap.SetAt( MPASS_VS_COLOR, new RDX11VSMPassColor);
@@ -199,4 +201,29 @@ void RDX11ShaderMgr::UpdateTexture(CResourceTexture* pTexture, UINT slot)
 	}
 	else
 		GLOBAL::D3DContext()->PSSetShaderResources( slot, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
+}
+
+bool RDX11ShaderMgr::AssignShader(CRenderElement* pRenderElement)
+{
+	if( pRenderElement->pGeometry->IsSkinedMesh() )
+	{
+//		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+//			pRenderElement->pVertexShader = GetShader(GPASS_VS_NORMALMAP_WEIGHT);
+//		else
+			pRenderElement->pVertexShader = GetShader(GPASS_VS_LAMBERT_WEIGHT);
+	}
+	else
+	{
+//		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+//			pRenderElement->pVertexShader = GetShader(GPASS_VS_LAMBERT);
+//		else
+			pRenderElement->pVertexShader = GetShader(GPASS_VS_NORMALMAP);
+	}
+
+//	if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+//		pRenderElement->pPixelShader = GetShader(GPASS_PS_NORMALMAP);
+//	else
+		pRenderElement->pPixelShader = GetShader(GPASS_PS_LAMBERT);
+
+	return true;
 }

@@ -152,18 +152,7 @@ const CResourceBase* SAssetTreeCtrl::LoadResource(wxTreeItemId seletedItem)
 		return NULL;
 
 	wxString strItem = GetItemText(seletedItem);
-
-	const CResourceBase* pResource = NULL;
-
-	if( fileType == RESOURCE_FILE_TEXTURE )		pResource = pAssetMgr->GetResource(RESOURCE_TEXTURE, strItem.c_str().AsChar() );
-	else if( fileType == RESOURCE_FILE_MESH )	pResource = pAssetMgr->GetResource(RESOURCE_MESH, strItem.c_str().AsChar() );
-	else if( fileType == RESOURCE_FILE_ACTOR )	pResource = pAssetMgr->GetResource(RESOURCE_ACTOR, strItem.c_str().AsChar() );
-	else if( fileType == RESOURCE_FILE_MOTION )	pResource = pAssetMgr->GetResource(RESOURCE_MOTION, strItem.c_str().AsChar() );
-
-	if( pResource != NULL)
-		return pResource;
-
-	return GLOBAL::Engine()->Loader()->Load( strItem.char_str(), fileType, false );
+	return GLOBAL::Engine()->Loader()->Load( strItem.char_str(), fileType, true );
 }
 
 void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
@@ -197,6 +186,11 @@ void SAssetTreeCtrl::OnDelete(wxCommandEvent& event)
 	{
 		fullPath = wxString(m_Path) + wxString("\\Data\\motion\\") + strItem + wxString(".tmo");
 		pAssetMgr->Remove( RESOURCE_MOTION, (char*)strItem.char_str() );
+	}
+	else if( fileType == RESOURCE_FILE_MATERIAL )
+	{
+		fullPath = wxString(m_Path) + wxString("\\Data\\material\\") + strItem + wxString(".xml");
+		pAssetMgr->Remove( RESOURCE_MATERIAL, (char*)strItem.char_str() );
 	}
 
 	if ( !DeleteFile( fullPath ) )
@@ -251,7 +245,7 @@ void SAssetTreeCtrl::Reload()
 		else if( i == RESOURCE_FILE_ACTOR )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\actor");
 		else if( i == RESOURCE_FILE_MESH )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\mesh");
 		else if( i == RESOURCE_FILE_MOTION )	swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\motion");
-		else if( i == RESOURCE_FILE_MATERIAL )		swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\material");
+		else if( i == RESOURCE_FILE_MATERIAL )	swprintf_s( pathBuf, MAX_PATH, _T("%s%s"), m_Path, L"\\Data\\material");
 		else
 			assert(0);
 

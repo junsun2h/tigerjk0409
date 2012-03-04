@@ -7,15 +7,6 @@
 #include "EActorDataProcessor.h"
 
 
-EActorDataProcessor::EActorDataProcessor()
-{
-}
-
-
-EActorDataProcessor::~EActorDataProcessor()
-{
-
-}
 
 void EActorDataProcessor::Init(CResourceBase* pRsc, bool bForward)
 {
@@ -75,9 +66,7 @@ void EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		char strMesh[64];
 
 		ECopyString(strMesh, &pSrcBits);
-		CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, strMesh);
-		if( pMesh == NULL)
-			pMesh = (CResourceMesh*)GLOBAL::Loader()->Load( strMesh, RESOURCE_FILE_MESH, m_bForward );
+		CResourceMesh* pMesh = (CResourceMesh*)GLOBAL::Loader()->Load( strMesh, RESOURCE_FILE_MESH, m_bForward );
 
 		m_pActor->meshList.push_back(pMesh);
 	}
@@ -106,9 +95,7 @@ void EActorDataProcessor::Process( void* pData, SIZE_T cBytes )
 		char strMotion[64];
 
 		ECopyString(strMotion, &pSrcBits);
-		CResourceMotion* motion = (CResourceMotion*)pAssetMgr->GetResource(RESOURCE_MOTION, strMotion);
-		if( motion == NULL)
-			motion = (CResourceMotion*)GLOBAL::Loader()->Load( strMotion, RESOURCE_FILE_MOTION, m_bForward);
+		CResourceMotion* motion = (CResourceMotion*)GLOBAL::Loader()->Load( strMotion, RESOURCE_FILE_MOTION, m_bForward);
 
 		m_pActor->motionList.push_back(motion);
 	}

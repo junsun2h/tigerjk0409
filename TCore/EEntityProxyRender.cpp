@@ -1,12 +1,16 @@
 #include "CResource.h"
+#include "CRenderElement.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
 #include "IAssetMgr.h"
 #include "IRenderer.h"
+#include "IRDevice.h"
+#include "IShader.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
+
 
 
 void EEntityProxyRender::Init(IEntity* pEntity)
@@ -20,24 +24,23 @@ void EEntityProxyRender::ProcessEvent( EntityEvent &event )
 
 }
 
-bool EEntityProxyRender::CreateRenderElement(long meshID, int indexInActor )
+bool EEntityProxyRender::CreateRenderElement(long meshID, int meshSlotInActor )
 {
 	IAssetMgr* pAssetMgr = GLOBAL::AssetMgr();
+	IShaderMgr* pShaderMgr = GLOBAL::RDevice()->GetShaderMgr();
 	CResourceMesh* pMesh = (CResourceMesh*)pAssetMgr->GetResource(RESOURCE_MESH, meshID);
 
 	for( UINT i=0; i < pMesh->goemetries.size() ; ++i )
 	{
-		CRenderElement item;
-		
-		item.pGeometry = pMesh->goemetries[i];
-
-		if( IsRenderGeometry( item.pGeometry->RID ) )
+		if( IsAlreadyInserted( pMesh->goemetries[i]->RID ) )
 			continue;
 
-		item.pMtrl = (CResourceMtrl*)pAssetMgr->GetResource( RESOURCE_MATERIAL, item.pGeometry->defaultMtrl);
+		CRenderElement item;
+		item.pGeometry = pMesh->goemetries[i];
+		item.meshSlotInActor = meshSlotInActor;
+		memcpy( &item.material, pMesh->goemetries[i]->pMaterial, sizeof(CResourceMtrl) );
 
-		if( indexInActor != -1)
-			item.IndexInActor = indexInActor;
+		pShaderMgr->AssignShader( &item );
 
 		m_vecRenderElement.push_back( item );
 	}
@@ -51,7 +54,7 @@ void EEntityProxyRender::Remove(long slot)
 {
 }
 
-bool EEntityProxyRender::IsRenderGeometry(long geometryID )
+bool EEntityProxyRender::IsAlreadyInserted(long geometryID )
 {
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
@@ -64,18 +67,26 @@ bool EEntityProxyRender::IsRenderGeometry(long geometryID )
 
 void EEntityProxyRender::Render()
 {
-	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::Renderer()->GetFillCommandQueue();
 	long currentFrame = GLOBAL::Engine()->GetCurrentFrame();
 
 	if( m_RenderedFrame == currentFrame )
 		return;
 
 	m_RenderedFrame = currentFrame; 
+	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::Renderer()->GetFillCommandQueue();
 	XMMATRIX matrixBuf[100]; 
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
-		if( m_vecRenderElement[i].pGeometry->IsSkinedMesh() )
+		CRenderElement& renderElement = m_vecRenderElement[i];
+
+		pCommandQueue->AddCommandStart(RC_DRAW_RENDER_ELEMENT);
+
+		pCommandQueue->AddParam( renderElement );
+		pCommandQueue->AddParam( GetEntity()->GetWorldTM() );
+
+		// additional information
+		if( renderElement.pGeometry->IsSkinedMesh() )
 		{
 			IEntityProxyActor* pActor = (IEntityProxyActor*)GetEntity()->GetProxy(ENTITY_PROXY_ACTOR);
 			if( pActor == NULL )
@@ -84,33 +95,15 @@ void EEntityProxyRender::Render()
 				return;
 			}
 
-			SKIN_REF_MATRIX* pSkinRefMatrix = pActor->GetSkinReferenceMatrix( m_vecRenderElement[i].IndexInActor );
+			SKIN_REF_MATRIX* pSkinRefMatrix = pActor->GetSkinReferenceMatrix( renderElement.meshSlotInActor );
 	
 			UINT size = pSkinRefMatrix->size();
 			for( UINT si = 0; si < size; ++si)
 				memcpy( &matrixBuf[si], (*pSkinRefMatrix)[si], sizeof(XMMATRIX) );
 
-			CRenderParamSkin param;
-			param.pGeometry = m_vecRenderElement[i].pGeometry;
-			param.pMaterial = m_vecRenderElement[i].pMtrl;
-			param.worldTM = GetEntity()->GetWorldTM();
-			param.refSkinTMCount = size;
-
-			pCommandQueue->AddCommandStart(RC_DRAW_OBJECT_SKIN);
-			pCommandQueue->AddParam( param);
 			pCommandQueue->AddData(matrixBuf, sizeof(XMMATRIX) * size );
-			pCommandQueue->AddCommandEnd();
 		}
-		else
-		{
-			CRenderParam param;
-			param.pGeometry = m_vecRenderElement[i].pGeometry;
-			param.pMaterial = m_vecRenderElement[i].pMtrl;
-			param.worldTM = GetEntity()->GetWorldTM();
 
-			pCommandQueue->AddCommandStart(RC_DRAW_OBJECT);
-			pCommandQueue->AddParam( param);
-			pCommandQueue->AddCommandEnd();
-		}
+		pCommandQueue->AddCommandEnd();
 	}
 }

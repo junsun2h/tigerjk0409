@@ -175,12 +175,12 @@ public:
 	}
 
 	template<class T>
-	void	PopData(T*& pData)
+	UINT PopData(T*& pData)
 	{
 		if( m_pSafty == 0)
 		{
 			assert(0);
-			return;
+			return 0;
 		}
 
 		// pop size
@@ -190,6 +190,7 @@ public:
 		// pop data
 		pData = (T*)m_pBottom;
 		m_pBottom += size;
+		return size;
 	}
 
 	bool	IsEmpty()

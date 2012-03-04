@@ -4,6 +4,7 @@
 #include <string>
 
 enum eRESOURCE_TYPE;
+enum eRESOURCE_FILE_TYPE;
 struct CResourceBase;
 
 typedef	ATL::CAtlMap<long, CResourceBase*>	TYPE_RESOURCE_MAP;
@@ -24,6 +25,7 @@ struct IAssetMgr
 
 	virtual void				Reload( eRESOURCE_TYPE type, long id ) = 0;
 
+	virtual const CResourceBase*		GetResource( eRESOURCE_FILE_TYPE type, const char* name ) =0;
 	virtual const CResourceBase*		GetResource( eRESOURCE_TYPE type, long id ) = 0;
 	virtual const CResourceBase*		GetResource( eRESOURCE_TYPE type, const char* name ) = 0;
 	virtual const CResourceBase*		GetResource( eRESOURCE_TYPE type, std::string name ) = 0;
