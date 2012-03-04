@@ -28,41 +28,47 @@ void ProcessWeight(inout float4 pos, inout float3 normal, in uint4 Bones, in uin
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
+#ifdef _BUMP
 
+#ifdef _SKIN
+PsIn_Bump VS( VsIn_Bump_Skin In )
+#else
+PsIn_Bump VS( VsIn_Bump In )
+#endif
+{	
+	PsIn_Bump OUT = (PsIn_Bump)0;
+	
+#else
 
-PSIN_4P2T3N VS( VSIN_4P4N2T In )
-{
-    PSIN_4P2T3N OUT = (PSIN_4P2T3N)0;
+#ifdef _SKIN
+PsIn VS( VsIn_Skin In )
+#else
+PsIn VS( VsIn In )
+#endif
+{	
+	PsIn OUT = (PsIn)0;
+
+#endif
 
 	float3 normal = In.Normal/127.f;
 	normal = normalize(normal);
 	
-	//------------------------------------------------
-	// set ps input
-    OUT.Pos = mul( In.Pos, m_WVP );
-	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;
-	OUT.ViewNormal = mul( normal, m_WV);
-	OUT.Tex = In.Tex;
-	
-    return OUT;
-}
-
-//--------------------------------------------------------------------------------------
-PSIN_4P2T3N VS_SKIN( VSIN_4P4N2T4W In )
-{
-    PSIN_4P2T3N OUT = (PSIN_4P2T3N)0;
-
-	float3 normal = In.Normal/127.f;
-	normal = normalize(normal);
-
+#ifdef _SKIN
 	ProcessWeight( In.Pos, normal, In.Bones, In.Weights);
+#endif
 
-	//------------------------------------------------
-	// set ps input
-    OUT.Pos = mul( In.Pos, m_WVP );
+	OUT.Pos = mul( In.Pos, m_WVP );
 	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;
 	OUT.ViewNormal = mul( normal, m_WV);
 	OUT.Tex = In.Tex;
-		
+
+#ifdef _BUMP
+	float3 tangent = In.Tangent/127.f;
+	tangent = normalize(tangent);
+	
+	OUT.ViewTangent = mul(tangent, m_WV);
+	OUT.ViewBinormal = mul( cross(OUT.ViewNormal, OUT.ViewTangent), m_WV);
+#endif
+
     return OUT;
 }
