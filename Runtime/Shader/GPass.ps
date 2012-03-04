@@ -1,10 +1,15 @@
 #include "GlobalInput.sh"
 #include "GlobalPSConstant.sh"
 
+
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS( PSIN_4P2T3N In) : SV_Target
+#ifdef _BUMP
+float4 PS( PsIn_Bump In) : SV_Target
+#else
+float4 PS( PsIn In) : SV_Target
+#endif
 {
 	float3 diffuse = 1;
 	
