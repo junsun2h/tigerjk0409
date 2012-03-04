@@ -355,6 +355,34 @@ void RDX11RenderStateMgr::CreateInputLayout( eCVERTEX_TYPE eVertexyType, ID3DBlo
 
 		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
 	}
+	else if( eVertexyType == FVF_4HP_4BN_2HT_4BT)
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+	else if( eVertexyType == FVF_4HP_4BN_2HT_4BT_4BW )
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R16G16B16A16_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R16G16_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R8G8B8A8_SINT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BONES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "WEIGHTS", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+	else
+		assert(0);
 
 	m_InputLayoutMap.SetAt( eVertexyType, pD3DLayout);
 }
