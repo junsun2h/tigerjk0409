@@ -57,15 +57,15 @@ struct CVertexHPNT
 {
 	XMHALF4		vPos;
 	XMBYTE4		vNormal;
-	XMHALF2		vTex;
+	HALF		vTex;
 };
 
 struct CVertexHPNTT
 {
 	XMHALF4		vPos;
 	XMBYTE4		vNormal;
-	XMHALF2		vTex;
 	XMBYTE4		vTangent;
+	HALF		vTex;
 };
 
 struct CVertexPNTW
@@ -81,19 +81,19 @@ struct CVertexHPNTW
 {
 	XMHALF4		vPos;
 	XMBYTE4		vNormal;
-	XMHALF2		vTex;
 	XMUBYTE4	boneIDs;
 	XMUBYTE4	fWeight;
+	HALF		vTex;
 };
 
 struct CVertexHPNTTW
 {
 	XMHALF4		vPos;
 	XMBYTE4		vNormal;
-	XMHALF2		vTex;
 	XMBYTE4		vTangent;
 	XMUBYTE4	boneIDs;
 	XMUBYTE4	fWeight;
+	HALF		vTex;
 };
 
 inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)
@@ -125,17 +125,17 @@ inline size_t VERTEX_STRIDE(eCVERTEX_TYPE type)
 {
 	switch(type)
 	{
-	case FVF_3FP:					return 12;
-	case FVF_3FP_1DC:				return 16;
-	case FVF_3FP_1DC_2HT:			return 20;
-	case FVF_3FP_4BN_2HT:			return 20;
-	case FVF_3FP_4BN_2HT_4BW:		return 28;
+	case FVF_3FP:					return sizeof(CVertexP);
+	case FVF_3FP_1DC:				return sizeof(CVertexPC);
+	case FVF_3FP_1DC_2HT:			return sizeof(CVertexPCT);
+	case FVF_3FP_4BN_2HT:			return sizeof(CVertexPNT);
+	case FVF_3FP_4BN_2HT_4BW:		return sizeof(CVertexPNTW);
 
-	case FVF_4HP:					return 8;
-	case FVF_4HP_4BN_2HT:			return 16;
-	case FVF_4HP_4BN_2HT_4BW:		return 24;
-	case FVF_4HP_4BN_2HT_4BT:		return 20;
-	case FVF_4HP_4BN_2HT_4BT_4BW:	return 28;
+	case FVF_4HP:					return sizeof(CVertexHP);
+	case FVF_4HP_4BN_2HT:			return sizeof(CVertexHPNT);
+	case FVF_4HP_4BN_2HT_4BW:		return sizeof(CVertexHPNTW);
+	case FVF_4HP_4BN_2HT_4BT:		return sizeof(CVertexHPNTT);
+	case FVF_4HP_4BN_2HT_4BT_4BW:	return sizeof(CVertexHPNTTW);
 	default:
 		assert(0);
 	}
