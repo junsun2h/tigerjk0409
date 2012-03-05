@@ -154,7 +154,7 @@ void CreateConstantBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT b
 }
 
 //------------------------------------------------------------------------------------------------------------
-void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type)
+void RDX11ShaderMgr::SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type)
 {
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
@@ -187,12 +187,7 @@ void RDX11ShaderMgr::UpdateShaderConstant(void* pScr, size_t size, UINT slot, eS
 		pContext->PSSetConstantBuffers( slot, 1, &m_ConstBuffer[type][slot] );
 }
 
-
-void RDX11ShaderMgr::UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYPE textureType)
-{
-}
-
-void RDX11ShaderMgr::UpdateTexture(CResourceTexture* pTexture, UINT slot)
+void RDX11ShaderMgr::SetTexture(const CResourceTexture* pTexture, UINT slot)
 {
 	if( pTexture == NULL)
 	{
@@ -205,25 +200,20 @@ void RDX11ShaderMgr::UpdateTexture(CResourceTexture* pTexture, UINT slot)
 
 bool RDX11ShaderMgr::AssignShader(CRenderElement* pRenderElement)
 {
-	if( pRenderElement->pGeometry->IsSkinedMesh() )
+	if( pRenderElement->pGeometry->IsSkinMesh() )
 	{
-//		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
-//			pRenderElement->pVertexShader = GetShader(GPASS_VS_NORMALMAP_WEIGHT);
-//		else
+		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+			pRenderElement->pVertexShader = GetShader(GPASS_VS_NORMALMAP_WEIGHT);
+		else
 			pRenderElement->pVertexShader = GetShader(GPASS_VS_LAMBERT_WEIGHT);
 	}
 	else
 	{
-//		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
-//			pRenderElement->pVertexShader = GetShader(GPASS_VS_LAMBERT);
-//		else
+		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+			pRenderElement->pVertexShader = GetShader(GPASS_VS_LAMBERT);
+		else
 			pRenderElement->pVertexShader = GetShader(GPASS_VS_NORMALMAP);
 	}
-
-//	if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
-//		pRenderElement->pPixelShader = GetShader(GPASS_PS_NORMALMAP);
-//	else
-		pRenderElement->pPixelShader = GetShader(GPASS_PS_LAMBERT);
 
 	return true;
 }

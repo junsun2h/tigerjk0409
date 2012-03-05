@@ -35,6 +35,7 @@ enum eRENDER_PASS
 struct IRenderStrategy
 {
 	virtual	void	RenderFrame(CCAMERA_DESC* pCameraDesc) =0;
+	virtual void	Render(CRenderElement* pRenderElement) = 0;
 	virtual void	RenderGeometry(CResourceGeometry* pGeometry) =0;
 };
 

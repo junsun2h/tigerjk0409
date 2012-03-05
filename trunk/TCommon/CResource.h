@@ -263,9 +263,11 @@ public:
 		SAFE_DELETE_ARRAY(pIndexBuffer);
 	}
 
-	bool			IsSkinedMesh() const
+	bool			IsSkinMesh() const
 	{
-		if( eVertexType == FVF_3FP_4BN_2HT_4BW || eVertexType == FVF_4HP_4BN_2HT_4BW )
+		if( eVertexType == FVF_3FP_4BN_2HT_4BW ||
+			eVertexType == FVF_4HP_4BN_2HT_4BW ||
+			eVertexType == FVF_4HP_4BN_2HT_4BT_4BW )
 			return true;
 		return false;
 	}

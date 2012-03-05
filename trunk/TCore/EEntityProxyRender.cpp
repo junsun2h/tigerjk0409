@@ -79,14 +79,13 @@ void EEntityProxyRender::Render()
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
 		CRenderElement& renderElement = m_vecRenderElement[i];
+		renderElement.worldMatrix =  GetEntity()->GetWorldTM();
 
 		pCommandQueue->AddCommandStart(RC_DRAW_RENDER_ELEMENT);
-
 		pCommandQueue->AddParam( renderElement );
-		pCommandQueue->AddParam( GetEntity()->GetWorldTM() );
 
 		// additional information
-		if( renderElement.pGeometry->IsSkinedMesh() )
+		if( renderElement.pGeometry->IsSkinMesh() )
 		{
 			IEntityProxyActor* pActor = (IEntityProxyActor*)GetEntity()->GetProxy(ENTITY_PROXY_ACTOR);
 			if( pActor == NULL )

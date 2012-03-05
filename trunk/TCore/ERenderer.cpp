@@ -126,22 +126,16 @@ void ERenderer::RT_ProcessCommand()
 		case RC_DRAW_RENDER_ELEMENT:
 			{
 				CRenderElement* pRenderElement;
-				XMMATRIX* pWorldMatrix;
 				pQueue->PopParam(pRenderElement);
-				pQueue->PopParam( pWorldMatrix );
 
-				pRenderElement->pPixelShader->Begin();
-				pRenderElement->pVertexShader->Begin();
-
-				if( pRenderElement->pGeometry->IsSkinedMesh() )
+				if( pRenderElement->pGeometry->IsSkinMesh() )
 				{
 					XMMATRIX* pRefMatrix;
 					UINT size = pQueue->PopData( pRefMatrix);
 					pRenderElement->pVertexShader->SetShaderContants( pRefMatrix, size/sizeof(XMMATRIX) );
 				}
 				
-				pRenderElement->pVertexShader->SetShaderContants( *pWorldMatrix );
-				pRenderStrategy->RenderGeometry( pRenderElement->pGeometry);
+				pRenderStrategy->Render( pRenderElement );
 			}break;
 		case RC_DRAW_HELPER_Skeleton:
 			{
