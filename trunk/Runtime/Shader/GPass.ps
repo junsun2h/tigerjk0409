@@ -11,9 +11,14 @@ float4 PS( PsIn_Bump In) : SV_Target
 float4 PS( PsIn In) : SV_Target
 #endif
 {
-	float3 diffuse = 1;
-	
-	// Calculate diffuse Light
+	float3 diffuse = txDiffuse.Sample( samLinear, In.Tex).rgb;
+
+#ifdef _BUMP
+    float3 bump = 1.5f * ( txNormal.Sample( samLinear, In.Tex).rgb - float3(0.5,0.5,0.5) );
+	In.ViewNormal = In.ViewNormal + bump.x*In.ViewTangent + bump.y*In.ViewBinormal;
+    In.ViewNormal = normalize(In.ViewNormal);
+#endif
+
 	float NL = saturate( dot(In.ViewNormal, g_SunDirection) ); 
 
 	float3 finalColor = diffuse * NL + g_ambientColor; 

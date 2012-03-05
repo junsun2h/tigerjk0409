@@ -4,23 +4,20 @@
 struct VsIn
 {
 	float4 Pos : POSITION;	
-	int4 Normal : NORMAL;
-	float2 Tex : TEXCOORD0;
+	float4 Normal : NORMAL;
 };
 
 struct VsIn_Bump
 {
 	float4 Pos : POSITION;	
-	int4 Normal : NORMAL;
-	float2 Tex : TEXCOORD0;
-	int4 Tangent : TANGENT;	
+	float4 Normal : NORMAL;
+	float4 Tangent : TANGENT;
 };
 
 struct VsIn_Skin
 {
 	float4 Pos : POSITION;	
-	int4 Normal : NORMAL;
-	float2 Tex : TEXCOORD0;
+	float4 Normal : NORMAL;
     uint4 Bones : BONES;		
     uint4 Weights : WEIGHTS;
 };
@@ -28,9 +25,8 @@ struct VsIn_Skin
 struct VsIn_Bump_Skin
 {
 	float4 Pos : POSITION;	
-	int4 Normal : NORMAL;
-	float2 Tex : TEXCOORD0;
-	int4 Tangent : TANGENT;	
+	float4 Normal : NORMAL;
+	float4 Tangent : TANGENT;	
     uint4 Bones : BONES;		
     uint4 Weights : WEIGHTS;
 };
