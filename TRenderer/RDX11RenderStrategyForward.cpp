@@ -30,7 +30,7 @@ void RDX11RenderStrategeForward::RenderFrame(CCAMERA_DESC* pCameraDesc)
 	CCAMERA_DESC cameraConstant = desc;
 	cameraConstant.ViewTM = XMMatrixTranspose( desc.ViewTM );
 	cameraConstant.ProjTM = XMMatrixTranspose( desc.ProjTM );
-	GLOBAL::ShaderMgr()->UpdateShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), 12, PIXEL_SHADER );
+	GLOBAL::ShaderMgr()->SetShaderConstant( &cameraConstant, sizeof( CCAMERA_DESC), 12, PIXEL_SHADER );
 
 	// update global sun light info
 	struct SunBuffer
@@ -43,10 +43,28 @@ void RDX11RenderStrategeForward::RenderFrame(CCAMERA_DESC* pCameraDesc)
 
 	sunDesc.direction = CVector3::TransformNormal( CVector3(1,1,1), pCameraDesc->ViewTM );
 	sunDesc.direction = CVector3::Normalize(sunDesc.direction);
-	sunDesc.ambientColor = CVector3(0.1f, 0.f, 0.f);
-	GLOBAL::ShaderMgr()->UpdateShaderConstant( &sunDesc, sizeof( SunBuffer), 11, PIXEL_SHADER );
+	sunDesc.ambientColor = CVector3(0.1f, 0.1f, 0.1f);
+	GLOBAL::ShaderMgr()->SetShaderConstant( &sunDesc, sizeof( SunBuffer), 11, PIXEL_SHADER );
 
 	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
+}
+
+void RDX11RenderStrategeForward::Render(CRenderElement* pRenderElement)
+{
+	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
+
+	pRenderElement->pPixelShader->Begin();
+	pRenderElement->pVertexShader->Begin();
+
+	pRenderElement->pVertexShader->SetShaderContants( pRenderElement->worldMatrix );
+
+	if( pRenderElement->material.pTextures[TEXTURE_DIFFISE] != NULL )
+		pShaderMgr->SetTexture( pRenderElement->material.pTextures[TEXTURE_DIFFISE], 0);
+
+	if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+		pShaderMgr->SetTexture( pRenderElement->material.pTextures[TEXTURE_BUMP], 1);
+
+	RenderGeometry(pRenderElement->pGeometry);
 }
 
 void RDX11RenderStrategeForward::RenderGeometry(CResourceGeometry* pGeometry)

@@ -479,7 +479,7 @@ void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD* pText)
 
 	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 
-	pShaderMgr->UpdateTexture( m_pFontTexture, 0);
+	pShaderMgr->SetTexture( m_pFontTexture, 0);
 	pShaderMgr->GetShader(MPASS_VS_FONT)->Begin();
 	pShaderMgr->GetShader(MPASS_PS_FONT)->Begin();
 

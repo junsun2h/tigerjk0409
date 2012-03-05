@@ -18,9 +18,8 @@ public:
 	IShader*		GetCurrentPS() override					{ return m_pCurrentPS; }
 	IShader*		GetCurrentGS() override					{ return m_pCurrentGS; }
 	
-	void			UpdateShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) override;
-	void			UpdateShaderResourceView(CResourceMtrl* pMtrl, eTEXTURE_TYPE textureType);
-	void			UpdateTexture(CResourceTexture* pTexture, UINT slot) override;
+	void			SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) override;
+	void			SetTexture(const CResourceTexture* pTexture, UINT slot) override;
 	
 	ID3D11Buffer*	m_ConstBuffer[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
 	UINT			m_ConstBufferSize[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];

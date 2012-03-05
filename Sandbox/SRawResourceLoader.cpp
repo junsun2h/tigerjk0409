@@ -474,14 +474,10 @@ namespace SRAW_FILE_LOADER
 
 				CVector3& vec3 = pRawMesh->posList[itrVertex->first.p];
 				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
+				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
 
 				pVertex->vPos = XMHALF4( vec3.x, vec3.y, vec3.z, uv.x);
-				pVertex->vTex = XMConvertFloatToHalf(uv.y);
-
-				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
-				pVertex->vNormal.x = normal.x * 127;
-				pVertex->vNormal.y = normal.y * 127;
-				pVertex->vNormal.z = normal.z * 127;
+				pVertex->vNormal = XMHALF4( normal.x, normal.y, normal.z, uv.y);
 
 				RAW_WEIGHT& w = pRawMesh->weightList[itrVertex->first.p];
 
@@ -505,14 +501,10 @@ namespace SRAW_FILE_LOADER
 
 				CVector3& vec3 = pRawMesh->posList[itrVertex->first.p];
 				CVector2 uv = pRawMesh->uvList[itrVertex->first.t];
+				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
 
 				pVertex->vPos = XMHALF4( vec3.x, vec3.y, vec3.z, uv.x);
-				pVertex->vTex = XMConvertFloatToHalf(uv.y);
-
-				CVector3 normal = pRawMesh->normalList[itrVertex->first.n];
-				pVertex->vNormal.x = normal.x * 127;
-				pVertex->vNormal.y = normal.y * 127;
-				pVertex->vNormal.z = normal.z * 127;
+				pVertex->vNormal = XMHALF4( normal.x, normal.y, normal.z, uv.y);
 			}
 
 			pGeometry->pVertexBuffer = pVertexBuf;

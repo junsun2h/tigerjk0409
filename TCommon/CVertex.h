@@ -56,16 +56,14 @@ struct CVertexPNT
 struct CVertexHPNT
 {
 	XMHALF4		vPos;
-	XMBYTE4		vNormal;
-	HALF		vTex;
+	XMHALF4		vNormal;
 };
 
 struct CVertexHPNTT
 {
 	XMHALF4		vPos;
-	XMBYTE4		vNormal;
-	XMBYTE4		vTangent;
-	HALF		vTex;
+	XMHALF4		vNormal;
+	XMHALF4		vTangent;
 };
 
 struct CVertexPNTW
@@ -80,20 +78,18 @@ struct CVertexPNTW
 struct CVertexHPNTW
 {
 	XMHALF4		vPos;
-	XMBYTE4		vNormal;
+	XMHALF4		vNormal;
 	XMUBYTE4	boneIDs;
 	XMUBYTE4	fWeight;
-	HALF		vTex;
 };
 
 struct CVertexHPNTTW
 {
 	XMHALF4		vPos;
-	XMBYTE4		vNormal;
-	XMBYTE4		vTangent;
+	XMHALF4		vNormal;
+	XMHALF4		vTangent;
 	XMUBYTE4	boneIDs;
 	XMUBYTE4	fWeight;
-	HALF		vTex;
 };
 
 inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)

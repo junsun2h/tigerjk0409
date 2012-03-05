@@ -19,6 +19,7 @@ struct CRenderElement
 	CResourceMtrl		material;
 	bool				bMaterialChanged;
 	CResourceGeometry*	pGeometry;
+	XMMATRIX			worldMatrix;
 
 	int8				meshSlotInActor;	// for skinned geometries
 

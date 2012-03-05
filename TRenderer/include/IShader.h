@@ -41,6 +41,6 @@ struct IShaderMgr
 	virtual IShader*	GetCurrentPS() =0;
 	virtual IShader*	GetCurrentGS() =0;
 
-	virtual void		UpdateShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) = 0;
-	virtual void		UpdateTexture(CResourceTexture* pTexture, UINT slot) =0;
+	virtual void		SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) = 0;
+	virtual void		SetTexture(const CResourceTexture* pTexture, UINT slot) =0;
 };
