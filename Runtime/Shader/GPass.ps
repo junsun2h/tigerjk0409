@@ -2,6 +2,22 @@
 #include "GlobalPSConstant.sh"
 
 
+/*
+void ProcessLight
+{
+	/// 픽셀 셰이더에서의 계산은 여기서!!!
+	float4 PointLightColor = 0;
+	
+	const float _INTERTHRESHOLD = 1.0f;
+
+	float3 PointLightVec = Input.lightPos - Input.localPos.xyz;
+	float3 PointLightDir = length(PointLightVec) < _INTERTHRESHOLD ? PointLightVec : normalize(PointLightVec);
+
+	PointLightColor = Input.lightColor * saturate(dot(normal, PointLightDir));
+	lightColor += PointLightColor;
+}*/
+
+
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------

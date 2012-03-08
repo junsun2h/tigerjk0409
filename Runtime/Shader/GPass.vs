@@ -1,7 +1,6 @@
 #include "GlobalInput.sh"
 #include "GlobalVSConstant.sh"
 
-#define _BUMP
 
 //--------------------------------------------------------------------------------------
 // functions
@@ -38,32 +37,62 @@ void ProcessWeight(inout float4 pos, inout float3 normal, in uint4 Bones, in uin
 #endif		
 }
 
+void ProcessLight(in float4 vertexPos, in float3 vertexNormal, out float3 AvgLightPos, out float4 AvgLightColor)
+{
+	float totalWeight = 0.0f;
+	float3 totalLightVector = 0.0f;
+
+	int i;
+	for(i=0; i< g_lightCount; i++)
+	{
+		const float3 lightVector = g_lightDesc[i].pos - vertexPos;
+		const float3 lightDir = normalize(lightVector);
+		const float len = length(lightVector);
+
+		float falloff = 0.25f * pow( cos( max(1, g_lightDesc[i].range / len) * _PI )+1, 2);
+		float weight = (1.0f / len) * saturate(dot(vertexNormal, lightDir)) * falloff * g_lightDesc[i].intensity;
+		totalLightVector += weight * lightDir;;
+		totalWeight += weight/len;
+	}
+
+	AvgLightPos = (totalLightVector / totalWeight) + vertexPos.xyz;
+	
+	float3 AvgLightDir = AvgLightPos - vertexPos.xyz;
+
+	for(i=0; i< g_lightCount; i++)
+	{
+		float3 lightVector = g_lightDesc[i].pos - vertexPos;
+		AvgLightColor.xyz += saturate(dot(lightVector, AvgLightDir)) * g_lightDesc[i].color * g_lightDesc[i].intensity;
+	}
+}
 
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
+
+/////////////////////////////////
+// Start: input assembly
+/////////////////////////////////
 #ifdef _BUMP
-
 #ifdef _SKIN
-PsIn_Bump VS( VsIn_Bump_Skin In )
+PsIn_Bump VS( VsIn_Bump_Skin In ){
 #else
-PsIn_Bump VS( VsIn_Bump In )
+PsIn_Bump VS( VsIn_Bump In ){	
 #endif
-{	
 	PsIn_Bump OUT = (PsIn_Bump)0;
-	
 #else
-
 #ifdef _SKIN
-PsIn VS( VsIn_Skin In )
+PsIn VS( VsIn_Skin In ){
 #else
-PsIn VS( VsIn In )
+PsIn VS( VsIn In ){
 #endif
-{	
 	PsIn OUT = (PsIn)0;
-
 #endif
+/////////////////////////////////
+// End: input assembly
+/////////////////////////////////
+
 	OUT.Tex.x = In.Pos.w;
 	OUT.Tex.y = In.Normal.w;
 	In.Pos.w = 1;
@@ -81,13 +110,13 @@ PsIn VS( VsIn In )
 #endif
 #endif
 
-	OUT.Pos = mul( In.Pos, m_WVP );
+	OUT.Pos = mul( In.Pos, g_WVP );
 	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;
-	OUT.ViewNormal = mul( normal, m_WV);
+	OUT.ViewNormal = mul( normal, g_WV);
 
 #ifdef _BUMP	
-	OUT.ViewTangent = mul(tangent, m_WV);
-	OUT.ViewBinormal = mul( cross(OUT.ViewNormal, OUT.ViewTangent), m_WV);
+	OUT.ViewTangent = mul(tangent, g_WV);
+	OUT.ViewBinormal = mul( cross(OUT.ViewNormal, OUT.ViewTangent), g_WV);
 #endif
 
     return OUT;
