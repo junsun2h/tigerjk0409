@@ -1,5 +1,5 @@
 #define MAX_BONE_MATRICES 55
-#define MAX_LIGHT_PER_MESH 10
+#define MAX_LIGHT_PER_MESH 5
 #define _PI 3.14159265f
 
 struct LightDesc
@@ -15,7 +15,7 @@ struct LightDesc
 //--------------------------------------------------------------------------------------
 cbuffer CB_Light : register( b10 )
 {
-	int			g_lightCount;
+	float		g_lightCount;
 	float3		lightdummy;
 	LightDesc	g_lightDesc[MAX_LIGHT_PER_MESH];
 };

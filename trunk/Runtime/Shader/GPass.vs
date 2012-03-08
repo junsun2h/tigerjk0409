@@ -1,3 +1,4 @@
+
 #include "GlobalInput.sh"
 #include "GlobalVSConstant.sh"
 
@@ -37,14 +38,19 @@ void ProcessWeight(inout float4 pos, inout float3 normal, in uint4 Bones, in uin
 #endif		
 }
 
-void ProcessLight(in float4 vertexPos, in float3 vertexNormal, out float3 AvgLightPos, out float4 AvgLightColor)
+
+
+void ProcessLight(in float3 vertexPos, in float3 vertexNormal, inout float3 AvgLightPos, inout float3 AvgLightColor)
 {
 	float totalWeight = 0.0f;
 	float3 totalLightVector = 0.0f;
 
 	int i;
-	for(i=0; i< g_lightCount; i++)
-	{
+	for(i=0; i< MAX_LIGHT_PER_MESH; i++)
+	{	
+		if( g_lightCount == i )
+			break;
+			
 		const float3 lightVector = g_lightDesc[i].pos - vertexPos;
 		const float3 lightDir = normalize(lightVector);
 		const float len = length(lightVector);
@@ -55,14 +61,20 @@ void ProcessLight(in float4 vertexPos, in float3 vertexNormal, out float3 AvgLig
 		totalWeight += weight/len;
 	}
 
-	AvgLightPos = (totalLightVector / totalWeight) + vertexPos.xyz;
+	if( totalWeight <= 0)
+		return;
+		
+	AvgLightPos = (totalLightVector / totalWeight) + vertexPos;
 	
-	float3 AvgLightDir = AvgLightPos - vertexPos.xyz;
+	float3 AvgLightDir = AvgLightPos - vertexPos;
 
-	for(i=0; i< g_lightCount; i++)
+	for(i=0; i< MAX_LIGHT_PER_MESH; i++)
 	{
+		if( g_lightCount == i )
+			break;
+	
 		float3 lightVector = g_lightDesc[i].pos - vertexPos;
-		AvgLightColor.xyz += saturate(dot(lightVector, AvgLightDir)) * g_lightDesc[i].color * g_lightDesc[i].intensity;
+		AvgLightColor += saturate(dot(lightVector, AvgLightDir)) * g_lightDesc[i].color * g_lightDesc[i].intensity;
 	}
 }
 
@@ -71,27 +83,8 @@ void ProcessLight(in float4 vertexPos, in float3 vertexNormal, out float3 AvgLig
 // Vertex Shader
 //--------------------------------------------------------------------------------------
 
-/////////////////////////////////
-// Start: input assembly
-/////////////////////////////////
-#ifdef _BUMP
-#ifdef _SKIN
-PsIn_Bump VS( VsIn_Bump_Skin In ){
-#else
-PsIn_Bump VS( VsIn_Bump In ){	
-#endif
-	PsIn_Bump OUT = (PsIn_Bump)0;
-#else
-#ifdef _SKIN
-PsIn VS( VsIn_Skin In ){
-#else
 PsIn VS( VsIn In ){
-#endif
 	PsIn OUT = (PsIn)0;
-#endif
-/////////////////////////////////
-// End: input assembly
-/////////////////////////////////
 
 	OUT.Tex.x = In.Pos.w;
 	OUT.Tex.y = In.Normal.w;
@@ -109,10 +102,17 @@ PsIn VS( VsIn In ){
 	ProcessWeight( In.Pos, normal, In.Bones, In.Weights);
 #endif
 #endif
+	
+	OUT.ViewNormal = mul( normal, g_WV);
+	
+#ifdef _LIGHT	
+	OUT.ViewPos = mul( In.Pos, g_WV);
+	ProcessLight( OUT.ViewPos, OUT.ViewNormal, OUT.lightViewPos, OUT.lightColor);
+#endif
 
 	OUT.Pos = mul( In.Pos, g_WVP );
 	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;
-	OUT.ViewNormal = mul( normal, g_WV);
+
 
 #ifdef _BUMP	
 	OUT.ViewTangent = mul(tangent, g_WV);

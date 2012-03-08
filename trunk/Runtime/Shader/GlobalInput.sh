@@ -5,30 +5,15 @@ struct VsIn
 {
 	float4 Pos : POSITION;	
 	float4 Normal : NORMAL;
-};
-
-struct VsIn_Bump
-{
-	float4 Pos : POSITION;	
-	float4 Normal : NORMAL;
+	
+#ifdef _BUMP
 	float4 Tangent : TANGENT;
-};
+#endif 
 
-struct VsIn_Skin
-{
-	float4 Pos : POSITION;	
-	float4 Normal : NORMAL;
+#ifdef _SKIN
     uint4 Bones : BONES;		
     uint4 Weights : WEIGHTS;
-};
-
-struct VsIn_Bump_Skin
-{
-	float4 Pos : POSITION;	
-	float4 Normal : NORMAL;
-	float4 Tangent : TANGENT;	
-    uint4 Bones : BONES;		
-    uint4 Weights : WEIGHTS;
+#endif
 };
 
 
@@ -59,15 +44,17 @@ struct PsIn
     float4 Pos : SV_POSITION;
 	float2 Tex : TEXCOORD0; 
     float3 ViewNormal : TEXCOORD1;
-};
-
-struct PsIn_Bump
-{
-    float4 Pos : SV_POSITION;
-	float2 Tex : TEXCOORD0; 
-    float3 ViewNormal : TEXCOORD1;
+	
+#ifdef _BUMP
     float3 ViewTangent : TEXCOORD2;
     float3 ViewBinormal : TEXCOORD3;
+#endif
+
+#ifdef _LIGHT
+    float3 ViewPos : TEXCOORD4;
+    float3 lightViewPos : TEXCOORD5;
+    float3 lightColor : TEXCOORD6;
+#endif
 };
 
 struct PSIN_4P4C
