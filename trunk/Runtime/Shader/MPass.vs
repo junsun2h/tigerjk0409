@@ -8,7 +8,7 @@ PSIN_4P4C VS_COLOR( VSIN_4P4C In )
 {
     PSIN_4P4C OUT = (PSIN_4P4C)0;
 	
-    OUT.Pos = mul( In.Pos, m_WVP );
+    OUT.Pos = mul( In.Pos, g_WVP );
 	OUT.Pos.z = OUT.Pos.z * OUT.Pos.w;
 
 	OUT.Color = In.Color/255.f;
