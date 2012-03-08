@@ -28,6 +28,7 @@
     <ClInclude Include="CUnitPool.h" />
     <ClInclude Include="CVector.h" />
     <ClInclude Include="CRenderElement.h" />
+    <ClInclude Include="CCrashDump.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="3rdParty">

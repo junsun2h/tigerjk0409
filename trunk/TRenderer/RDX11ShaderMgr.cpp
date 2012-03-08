@@ -200,6 +200,22 @@ void RDX11ShaderMgr::SetTexture(const CResourceTexture* pTexture, UINT slot)
 
 bool RDX11ShaderMgr::AssignShader(CRenderElement* pRenderElement)
 {
+	SetVertexShader(pRenderElement);
+	SetPixelShader(pRenderElement);
+
+	if( pRenderElement->pVertexShader == NULL ||
+		pRenderElement->pPixelShader == NULL )
+	{
+		assert(0);
+		return false;
+	}
+
+	return true;
+}
+
+void RDX11ShaderMgr::SetVertexShader(CRenderElement* pRenderElement)
+{
+	// vertex shader
 	if( pRenderElement->pGeometry->IsSkinMesh() )
 	{
 		if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
@@ -214,6 +230,12 @@ bool RDX11ShaderMgr::AssignShader(CRenderElement* pRenderElement)
 		else
 			pRenderElement->pVertexShader = GetShader(GPASS_VS_NORMALMAP);
 	}
+}
 
-	return true;
+void RDX11ShaderMgr::SetPixelShader(CRenderElement* pRenderElement)
+{
+	if(  pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
+		pRenderElement->pPixelShader = GetShader(GPASS_PS_NORMALMAP);
+	else
+		pRenderElement->pPixelShader = GetShader(GPASS_PS_LAMBERT);
 }

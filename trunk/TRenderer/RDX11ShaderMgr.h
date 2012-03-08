@@ -20,7 +20,9 @@ public:
 	
 	void			SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) override;
 	void			SetTexture(const CResourceTexture* pTexture, UINT slot) override;
-	
+	void			SetVertexShader(CRenderElement* pRenderElement);
+	void			SetPixelShader(CRenderElement* pRenderElement);
+
 	ID3D11Buffer*	m_ConstBuffer[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
 	UINT			m_ConstBufferSize[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
 
