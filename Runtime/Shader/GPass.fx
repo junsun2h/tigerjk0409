@@ -55,7 +55,7 @@ void ProcessLight(in float3 vertexPos, in float3 vertexNormal, inout float3 AvgL
 		const float len = length(lightVector);
 
 		float falloff = 0.25f * pow( cos( max(1, g_lightDesc[i].range / len) * _PI )+1, 2);
-		float weight = (1.0f / len) * saturate(dot(vertexNormal, lightDir)) * falloff * g_lightDesc[i].intensity;
+		float weight = (1.0f / len) * pow( dot(vertexNormal, lightDir), 2) * falloff * g_lightDesc[i].intensity;
 		totalLightVector += weight * lightDir;
 		totalWeight += weight/len;
 	}
@@ -132,7 +132,8 @@ float4 PS( PsIn In) : SV_Target
 {
 	float3 diffuse = txDiffuse.Sample( samLinear, In.Tex).rgb;
 	float3 lightColor = 0;
-	
+	float3 specColor = 0;
+	float NL = 0;
 #ifdef _BUMP
     float3 bump = 1.5f * ( txNormal.Sample( samLinear, In.Tex).rgb - float3(0.5,0.5,0.5) );
 	In.ViewNormal = In.ViewNormal + bump.x*In.ViewTangent + bump.y*In.ViewBinormal;
@@ -144,17 +145,17 @@ float4 PS( PsIn In) : SV_Target
 
 	float3 PointLightVec = In.lightViewPos - In.ViewPos;
 	float3 PointLightDir = length(PointLightVec) < _INTERTHRESHOLD ? PointLightVec : normalize(PointLightVec);
-
 	float3 PointLightColor = In.lightColor * saturate(dot(In.ViewNormal, PointLightDir));
-	lightColor += PointLightColor;
+	lightColor += PointLightColor;	
+	NL = saturate( dot(In.ViewNormal, PointLightDir) ); 
 
-	float NL = saturate( dot(In.ViewNormal, PointLightDir) ); 
 #else
 	float NL = saturate( dot(In.ViewNormal, g_SunDirection) ); 
 #endif
 
+
 	lightColor = lightColor * NL + g_ambientColor;
 
-	float3 finalColor = diffuse * lightColor; 
+	float3 finalColor = specColor + diffuse * lightColor; 
 	return float4(finalColor, 1);
 }
