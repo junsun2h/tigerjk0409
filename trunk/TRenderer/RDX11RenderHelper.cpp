@@ -2,6 +2,8 @@
 #include "CGrowableArray.h"
 #include "CColor.h"
 #include "CQuad.h"
+#include "CCamera.h"
+#include "CRenderElement.h"
 
 #include "RDefine.h"
 
@@ -129,6 +131,8 @@ void RDX11RenderHelper::Destroy()
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 {
+	SetWorldTM( XMMatrixIdentity() );
+
 	CVertexPC v1;
 	v1.color = COLOR_RED;
 
@@ -136,10 +140,7 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 		m_LineVertices.Add( pVetex[i]);
 
 	// Set Line Shader
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants( XMMatrixIdentity() );
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
-
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 	
 	DrawLine();
@@ -149,10 +150,10 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 {
+	SetWorldTM(tm);
+
 	// Set Line Shader
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
 
 	CVertexPC v1;
 
@@ -184,9 +185,10 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 {
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	SetWorldTM(tm);
+
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
@@ -201,9 +203,9 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 {
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	SetWorldTM(tm);
+
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
@@ -270,9 +272,9 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 {
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(tm);
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	SetWorldTM(tm);
+
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
@@ -287,6 +289,8 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color)
 {
+	SetWorldTM(mtWorld);
+
 	BOX_MAKE_PARAM param;
 	param.min = min;
 	param.max = max;
@@ -302,9 +306,7 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(mtWorld);
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_ON);
 	DrawLine();
 }
@@ -312,6 +314,8 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCount)
 {
+	SetWorldTM(mtWorld);
+
 	float halfWidth = size/2.f;
 	float lineWidth = size/50.f;
 
@@ -394,9 +398,7 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->Begin();
-	GLOBAL::ShaderMgr()->GetShader(MPASS_VS_COLOR)->SetShaderContants(mtWorld);
-	GLOBAL::ShaderMgr()->GetShader(MPASS_PS_COLOR)->Begin();
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
 	DrawLine();
 }
 
@@ -480,8 +482,7 @@ void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD* pText)
 	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 
 	pShaderMgr->SetTexture( m_pFontTexture, 0);
-	pShaderMgr->GetShader(MPASS_VS_FONT)->Begin();
-	pShaderMgr->GetShader(MPASS_PS_FONT)->Begin();
+	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_FONT);
 
 	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC_2HT);
@@ -584,4 +585,21 @@ void RDX11RenderHelper::FillFontVertex( RENDER_TEXT_QUAD* pText)
 
 		fRectLeft += fGlyphSizeX;
 	}
+}
+
+
+void RDX11RenderHelper::SetWorldTM(XMMATRIX& pWorld)
+{
+	struct TModelVS
+	{
+		XMMATRIX wvp;
+	}modelVS;
+
+	const CCAMERA_DESC* pCamera = GLOBAL::CameraDesc();
+
+	modelVS.wvp = XMMatrixMultiply( pWorld, pCamera->ViewTM ); 
+	modelVS.wvp = XMMatrixMultiply( modelVS.wvp, pCamera->ProjTM ); 
+	modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
+
+	GLOBAL::ShaderMgr()->SetShaderConstant( &modelVS, sizeof( TModelVS), 11, VERTEX_SHADER );
 }

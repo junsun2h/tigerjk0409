@@ -11,25 +11,22 @@ public:
 	void			init();
 	void			Destroy();
 
-	bool			AssignShader(CRenderElement* pRenderElement) override;
-	IShader*		GetShader(eEFFECT_TYPE type) override;
-	bool			SetCurrentShader(IShader* pShader) override;
-	IShader*		GetCurrentVS() override					{ return m_pCurrentVS; }
-	IShader*		GetCurrentPS() override					{ return m_pCurrentPS; }
-	IShader*		GetCurrentGS() override					{ return m_pCurrentGS; }
+	bool			CheckShader(CRenderElement* pRenderElement) override;
+	
+	IShader*		GetShader(UINT flag, eSHADER_TYPE shaderType) override;
+	IShader*		CreateShader(UINT flag, eSHADER_TYPE shaderType);
+	void			Begin(UINT flag) override;
+
+	bool			CheckAndSet(IShader* pShader) override;
+	IShader*		GetCurrentShader(eSHADER_TYPE type) override		{ return m_pCurrentShader[type]; }
 	
 	void			SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) override;
 	void			SetTexture(const CResourceTexture* pTexture, UINT slot) override;
-	void			SetVertexShader(CRenderElement* pRenderElement);
-	void			SetPixelShader(CRenderElement* pRenderElement);
+
+	typedef ATL::CAtlMap<UINT, IShader*>	SHADER_MAP;	
+	SHADER_MAP		m_Shaders[NUM_SHADER_TYPE];
 
 	ID3D11Buffer*	m_ConstBuffer[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
 	UINT			m_ConstBufferSize[NUM_SHADER_TYPE][MAX_SHADER_CONSTANT_SLOT];
-
-	typedef ATL::CAtlMap<long, IShader*>	SHADER_MAP;
-
-	SHADER_MAP		m_ShaderMap;
-	IShader*		m_pCurrentVS;
-	IShader*		m_pCurrentPS;
-	IShader*		m_pCurrentGS;
+	IShader*		m_pCurrentShader[NUM_SHADER_TYPE];
 };

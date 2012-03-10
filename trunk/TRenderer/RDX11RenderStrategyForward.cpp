@@ -3,6 +3,7 @@
 #include "CCamera.h"
 #include "RDefine.h"
 #include "CRenderElement.h"
+#include "CLight.h"
 
 #include "IRDevice.h"
 #include "IShader.h"
@@ -43,7 +44,7 @@ void RDX11RenderStrategeForward::RenderFrame(CCAMERA_DESC* pCameraDesc)
 
 	sunDesc.direction = CVector3::TransformNormal( CVector3(1,1,1), pCameraDesc->ViewTM );
 	sunDesc.direction = CVector3::Normalize(sunDesc.direction);
-	sunDesc.ambientColor = CVector3(0.1f, 0.1f, 0.1f);
+	sunDesc.ambientColor = CVector3(0.4f, 0.4f, 0.4f);
 	GLOBAL::ShaderMgr()->SetShaderConstant( &sunDesc, sizeof( SunBuffer), 11, PIXEL_SHADER );
 
 	GLOBAL::RenderTargetMgr()->ClearAndSetMaineFrame();
@@ -56,13 +57,60 @@ void RDX11RenderStrategeForward::Render(CRenderElement* pRenderElement)
 	pRenderElement->pPixelShader->Begin();
 	pRenderElement->pVertexShader->Begin();
 
-	pRenderElement->pVertexShader->SetShaderContants( pRenderElement->worldMatrix );
+	{
+		struct TModelVS
+		{
+			XMMATRIX wvp;
+			XMMATRIX wv;
+		}modelVS;
+
+		const CCAMERA_DESC* pCamera = GLOBAL::CameraDesc();
+
+		modelVS.wv = XMMatrixMultiply( pRenderElement->worldMatrix, pCamera->ViewTM ); 
+		modelVS.wvp = XMMatrixMultiply( modelVS.wv, pCamera->ProjTM ); 
+
+		modelVS.wv = XMMatrixTranspose( modelVS.wv );
+		modelVS.wvp = XMMatrixTranspose( modelVS.wvp );
+
+		pShaderMgr->SetShaderConstant( &modelVS, sizeof( TModelVS), 11, VERTEX_SHADER );
+	}
 
 	if( pRenderElement->material.pTextures[TEXTURE_DIFFISE] != NULL )
 		pShaderMgr->SetTexture( pRenderElement->material.pTextures[TEXTURE_DIFFISE], 0);
 
 	if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
 		pShaderMgr->SetTexture( pRenderElement->material.pTextures[TEXTURE_BUMP], 1);
+
+	if( pRenderElement->pRefMatrix )
+	{
+		for(UINT i =0; i< pRenderElement->refMatrixCount; ++i)
+			pRenderElement->pRefMatrix[i] = XMMatrixTranspose( pRenderElement->pRefMatrix[i] );
+
+		GLOBAL::ShaderMgr()->SetShaderConstant( pRenderElement->pRefMatrix, 
+												sizeof(XMMATRIX) * pRenderElement->refMatrixCount, 
+												12, VERTEX_SHADER );
+	}
+
+	float buf[1024];
+	buf[0] = float(pRenderElement->lightCount);
+	UINT lightBufSize = 4;
+	XMMATRIX wv = XMMatrixMultiply( pRenderElement->worldMatrix, GLOBAL::CameraDesc()->ViewTM ); 
+
+	for( UINT i=0; i < pRenderElement->lightCount; ++i)
+	{
+		CVector3 lightViewPos = CVector3::Transform( pRenderElement->pLights[i].pos, wv);
+		buf[lightBufSize++] = lightViewPos.x;
+		buf[lightBufSize++] = lightViewPos.y;
+		buf[lightBufSize++] = lightViewPos.z;
+		buf[lightBufSize++] = pRenderElement->pLights[i].range;
+		buf[lightBufSize++] = pRenderElement->pLights[i].color.x;
+		buf[lightBufSize++] = pRenderElement->pLights[i].color.y;
+		buf[lightBufSize++] = pRenderElement->pLights[i].color.z;
+		buf[lightBufSize++] = pRenderElement->pLights[i].intensity;
+	}
+
+	pShaderMgr->SetShaderConstant( buf, 4 * lightBufSize, 10, VERTEX_SHADER);
+
 
 	RenderGeometry(pRenderElement->pGeometry);
 }

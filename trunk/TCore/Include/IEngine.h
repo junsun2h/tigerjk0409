@@ -13,6 +13,7 @@ struct IRenderingCallback;
 struct CENGINE_INIT_PARAM;
 struct CCAMERA_DESC;
 struct IRenderer;
+struct ILightMgr;
 
 class CTimer;
 
@@ -25,6 +26,7 @@ struct IEngine
 	virtual IAssetMgr*			AssetMgr() = 0;
 	virtual IEntityMgr*			EntityMgr() =0;
 	virtual IRenderer*			Renderer() = 0;
+	virtual ILightMgr*			LightMgr() = 0;
 
 	virtual CTimer*				GlobalTimer() = 0;
 	virtual ILoader*			Loader() = 0;

@@ -93,9 +93,7 @@
     <ClCompile Include="RDX11RenderStrategyForward.cpp" />
     <ClCompile Include="RDX11RenderTargetMgr.cpp" />
     <ClCompile Include="RDX11Shader.cpp" />
-    <ClCompile Include="RDX11ShaderGPass.cpp" />
     <ClCompile Include="RDX11ShaderMgr.cpp" />
-    <ClCompile Include="RDX11ShaderMPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\IRDevice.h" />
@@ -111,10 +109,8 @@
     <ClInclude Include="RDX11RenderStrategyForward.h" />
     <ClInclude Include="RDX11RenderTargetMgr.h" />
     <ClInclude Include="RDX11Shader.h" />
-    <ClInclude Include="RDX11ShaderGPass.h" />
     <ClInclude Include="RDX11ShaderMgr.h" />
     <ClInclude Include="RDefine.h" />
-    <ClInclude Include="RDX11ShaderMPass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

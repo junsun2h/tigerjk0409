@@ -27,4 +27,5 @@ private:
 	IEntity*				m_pEntity;
 	RENDER_ELEMENT_LIST		m_vecRenderElement;
 	long					m_RenderedFrame;
+	LIGHT_LIST				m_pLightList;
 };

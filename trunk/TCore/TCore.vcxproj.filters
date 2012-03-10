@@ -70,6 +70,9 @@
     <ClCompile Include="EMtrlDataProcessor.cpp">
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
+    <ClCompile Include="ELightMgr.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Asset">
@@ -107,6 +110,9 @@
     </Filter>
     <Filter Include="Interface">
       <UniqueIdentifier>{8b527078-c3a4-4fce-88fe-2c87c3a706d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{9935375a-66a7-4f1c-8f50-214f904b5963}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +210,12 @@
     </ClInclude>
     <ClInclude Include="XmlHelper.h">
       <Filter>3rdParty\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="ELightMgr.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ILightMgr.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
