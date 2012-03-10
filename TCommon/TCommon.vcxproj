@@ -73,6 +73,7 @@
     <ClInclude Include="CDefine.h" />
     <ClInclude Include="CFrustrum.h" />
     <ClInclude Include="CGrowableArray.h" />
+    <ClInclude Include="CLight.h" />
     <ClInclude Include="CLine.h" />
     <ClInclude Include="CLog.h" />
     <ClInclude Include="CPlane.h" />

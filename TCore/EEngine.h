@@ -13,7 +13,7 @@ public:
 	IAssetMgr*			AssetMgr() override;
 	IEntityMgr*			EntityMgr() override;
 	IRenderer*			Renderer() override;
-
+	ILightMgr*			LightMgr() override;
 	CTimer*				GlobalTimer() override;
 	ILoader*			Loader() override;
 	ISpaceMgr*			SpaceMgr() override;

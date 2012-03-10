@@ -6,6 +6,7 @@
 #include "CEngineParam.h"
 #include "CCamera.h"
 #include "CResource.h"
+#include "CLight.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -17,6 +18,7 @@
 #include "IActorMgr.h"
 #include "IRenderer.h"
 #include "IRenderHelper.h"
+#include "ILightMgr.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -42,6 +44,7 @@ ILoader*			EEngine::Loader()			{ return GLOBAL::Loader(); }
 ISpaceMgr*			EEngine::SpaceMgr()			{ return GLOBAL::SpaceMgr(); }
 long				EEngine::GetCurrentFrame()	{ return m_CurrentFrame; }
 IRenderer*			EEngine::Renderer()			{ return GLOBAL::Renderer(); }
+ILightMgr*			EEngine::LightMgr()			{ return GLOBAL::LightMgr(); }
 
 
 bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
@@ -79,7 +82,7 @@ bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 	GLOBAL::Loader()->Init( pParam->numOfProcessThread );
 	GLOBAL::SpaceMgr()->Init( 10000, 10);
 	CLOG::InitLogSystem();
-
+	
 	return true;
 }
 
@@ -88,6 +91,7 @@ bool EEngine::ShutDown()
 	GLOBAL::Renderer()->Destroy();
 
 	// make sure deleting order
+	GLOBAL::LightMgr()->Destroy();
 	GLOBAL::AssetMgr()->Clear();
 	GLOBAL::RDevice()->ShutDown();
 	GLOBAL::EntityMgr()->Destroy();

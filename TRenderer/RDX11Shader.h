@@ -24,11 +24,11 @@ struct SHADER_COMPILE_DESC
 };
 
 //---------------------------------------------------------------------------------------------------------------
-class RDX11VertexShaderBase : public IShader
+class RDX11VertexShader : public IShader
 {
 public:
-	RDX11VertexShaderBase()	: m_pVertexShader(NULL)	{}
-	virtual ~RDX11VertexShaderBase()	{ Destroy();}
+	RDX11VertexShader()	: m_pVertexShader(NULL)	{}
+	virtual ~RDX11VertexShader()	{ Destroy();}
 
 	virtual void		Begin() override;
 	void				CreateVS( SHADER_COMPILE_DESC& desc);
@@ -42,11 +42,11 @@ private:
 
 
 //---------------------------------------------------------------------------------------------------------------
-class RDX11PixelShaderBase : public IShader
+class RDX11PixelShader : public IShader
 {
 public:
-	RDX11PixelShaderBase()	: m_pPixelShader(NULL)	{}
-	virtual ~RDX11PixelShaderBase()	{ Destroy();}
+	RDX11PixelShader()	: m_pPixelShader(NULL)	{}
+	virtual ~RDX11PixelShader()	{ Destroy();}
 
 	virtual void		Begin() override;
 	void				CreatePS( SHADER_COMPILE_DESC& desc);
@@ -62,11 +62,11 @@ private:
 
 
 //---------------------------------------------------------------------------------------------------------------
-class RDX11GeometryShaderBase : public IShader
+class RDX11GeometryShader : public IShader
 {
 public:
-	RDX11GeometryShaderBase()	: m_pGeometryShader(NULL)	{}
-	virtual ~RDX11GeometryShaderBase()	{ Destroy();}
+	RDX11GeometryShader()	: m_pGeometryShader(NULL)	{}
+	virtual ~RDX11GeometryShader()	{ Destroy();}
 
 	virtual void		Begin() override;
 	void				CreateGS( SHADER_COMPILE_DESC& desc);

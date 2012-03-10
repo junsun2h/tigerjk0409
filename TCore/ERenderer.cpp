@@ -7,13 +7,13 @@
 #include "CCommandBuffer.h"
 #include "CQuad.h"
 #include "CRenderElement.h"
+#include "CLight.h"
 
 #include "IRenderHelper.h"
 #include "IEntityProxy.h"
 #include "IRDevice.h"
 #include "IRenderer.h"
 #include "ISpaceMgr.h"
-#include "IShader.h"
 
 #include "EGlobal.h"
 #include "ERenderer.h"
@@ -128,13 +128,15 @@ void ERenderer::RT_ProcessCommand()
 				CRenderElement* pRenderElement;
 				pQueue->PopParam(pRenderElement);
 
+				if( pRenderElement->lightCount > 0)
+					pQueue->PopData( pRenderElement->pLights );
+
 				if( pRenderElement->pGeometry->IsSkinMesh() )
 				{
-					XMMATRIX* pRefMatrix;
-					UINT size = pQueue->PopData( pRefMatrix);
-					pRenderElement->pVertexShader->SetShaderContants( pRefMatrix, size/sizeof(XMMATRIX) );
+					UINT size = pQueue->PopData( pRenderElement->pRefMatrix);
+					pRenderElement->refMatrixCount = size/sizeof(XMMATRIX);
 				}
-				
+
 				pRenderStrategy->Render( pRenderElement );
 			}break;
 		case RC_DRAW_HELPER_Skeleton:

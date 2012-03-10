@@ -34,6 +34,7 @@ private:
 	// Font
 private:
 	void	FillFontVertex( RENDER_TEXT_QUAD* pText );
+	void	SetWorldTM(XMMATRIX& pWorld);
 
 	ID3D11Buffer*				m_pFontBuffer;
 	UINT						m_FontBufferBytes;

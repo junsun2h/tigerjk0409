@@ -12,12 +12,6 @@
       <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="RDX11RenderTargetMgr.cpp" />
-    <ClCompile Include="RDX11ShaderGPass.cpp">
-      <Filter>Shader\fx</Filter>
-    </ClCompile>
-    <ClCompile Include="RDX11ShaderMPass.cpp">
-      <Filter>Shader\fx</Filter>
-    </ClCompile>
     <ClCompile Include="RDX11RenderStrategyForward.cpp" />
     <ClCompile Include="RDX11Global.cpp" />
     <ClCompile Include="RDefine.cpp" />
@@ -35,12 +29,6 @@
     </ClInclude>
     <ClInclude Include="RDX11RenderStateMgr.h" />
     <ClInclude Include="RDX11RenderTargetMgr.h" />
-    <ClInclude Include="RDX11ShaderGPass.h">
-      <Filter>Shader\fx</Filter>
-    </ClInclude>
-    <ClInclude Include="RDX11ShaderMPass.h">
-      <Filter>Shader\fx</Filter>
-    </ClInclude>
     <ClInclude Include="RDX11RenderStrategyForward.h" />
     <ClInclude Include="RDX11Global.h" />
     <ClInclude Include="include\IRDevice.h">
@@ -62,9 +50,6 @@
   <ItemGroup>
     <Filter Include="Shader">
       <UniqueIdentifier>{77a49b5e-393a-412d-8f7a-682c17733f69}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\fx">
-      <UniqueIdentifier>{a2f6e5e9-d821-49da-998e-374b27394ce9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interface">
       <UniqueIdentifier>{731828e1-5ea0-4c12-8a36-cb191aa4f508}</UniqueIdentifier>

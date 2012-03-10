@@ -3,7 +3,6 @@
 #include "CVertex.h"
 
 
-enum eEFFECT_TYPE;
 struct CRenderElement;
 
 enum eSHADER_TYPE
@@ -23,23 +22,19 @@ struct IShader
 
 	virtual void			Begin() = 0;
 	virtual eSHADER_TYPE	ShaderType() = 0;
-	virtual	eEFFECT_TYPE	EffectType() { return INVAILD_EFFECT; };
-
-	virtual void			SetShaderContants(const XMMATRIX& tm) {}
-	virtual void			SetShaderContants(XMMATRIX* tm, UINT size) { assert(0); }
 };
 
 
 struct IShaderMgr
 {
-	virtual bool		AssignShader(CRenderElement* pRenderElement) = 0;
+	virtual bool		CheckShader(CRenderElement* pRenderElement) = 0;
 
-	virtual IShader*	GetShader(eEFFECT_TYPE type) = 0;
-	virtual bool		SetCurrentShader(IShader* pShader) =0;
+	virtual IShader*	GetShader(UINT flag, eSHADER_TYPE shaderType) = 0;
+	virtual void		Begin(UINT flag) = 0;
 
-	virtual IShader*	GetCurrentVS() =0;
-	virtual IShader*	GetCurrentPS() =0;
-	virtual IShader*	GetCurrentGS() =0;
+	virtual bool		CheckAndSet(IShader* pShader) =0;
+
+	virtual IShader*	GetCurrentShader(eSHADER_TYPE type) =0;
 
 	virtual void		SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) = 0;
 	virtual void		SetTexture(const CResourceTexture* pTexture, UINT slot) =0;

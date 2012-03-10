@@ -27,8 +27,9 @@ public:
 	{
 		if( m_nUsingCount > 0 )
 			assert(0);
-
-		free(m_pData);	
+		
+		if( m_pData )
+			free(m_pData);	
 	}
 
 	T*					GetNew()
@@ -60,6 +61,20 @@ public:
 	UINT				GetUsingCount() const		{ return m_nUsingCount; }
 	UINT				GetCapacity() const			{ return m_nReservedCount; }
 	void				Remove(void* pItem)			{ Remove( GetHandle(pItem) );	}
+	void				Remove(UINT nHandle)
+	{
+		assert(IsUsed(nHandle));
+
+		m_vecInfo[nHandle].m_bUsed = false;
+		m_UsingList.erase( m_vecInfo[nHandle].m_position );
+
+		m_nUsingCount--;
+		m_UnusingList.push_front(nHandle);
+
+		// call destructor
+		m_pData[nHandle].~T();
+	}
+
 	bool				Reserve(UINT newCapacity)
 	{
 		assert( newCapacity >= m_nReservedCount );
@@ -84,8 +99,22 @@ public:
 		return true;
 	}
 
-	const OBJ_HANDLE_LIST*	UsingHandleList()		{ return &m_UsingList; }
+	void Destroy()
+	{
+		m_nUsingCount = 0;
+		m_nReservedCount = 0;
 
+		if( m_pData )
+		{
+			free(m_pData);
+			m_pData = NULL;
+		}
+
+		m_vecInfo.clear();
+	}
+
+	const OBJ_HANDLE_LIST*	UsingHandleList()		{ return &m_UsingList; }
+	
 private:
 	UINT				GetHandle(void* pItem)
 	{
@@ -97,21 +126,7 @@ private:
 
 		return handle;
 	}
-
-	void				Remove(UINT nHandle)
-	{
-		assert(IsUsed(nHandle));
-
-		m_vecInfo[nHandle].m_bUsed = false;
-		m_UsingList.erase( m_vecInfo[nHandle].m_position );
-
-		m_nUsingCount--;
-		m_UnusingList.push_front(nHandle);
-
-		// call destructor
-		m_pData[nHandle].~T();
-	}
-
+	
 	struct CHandleInfo
 	{
 		bool						m_bUsed;

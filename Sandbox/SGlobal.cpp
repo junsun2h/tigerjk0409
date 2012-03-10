@@ -5,6 +5,7 @@
 
 #include "CDefine.h"
 #include "CEngineParam.h"
+#include "CLight.h"
 
 #include "IEntityProxy.h"
 #include "IEntityMgr.h"
@@ -12,6 +13,7 @@
 #include "ILoader.h"
 #include "IEntity.h"
 #include "ISpaceMgr.h"
+#include "ILightMgr.h"
 
 #include "SGlobal.h"
 #include "SSceneHierarchyPanel.h"
@@ -58,6 +60,21 @@ namespace GLOBAL
 		pCamera->SetViewParam( CVector3(500.0f, 500.0f, 500.0f), CVector3(0, 0, 0), CVector3(0.0f, 0.0f, 1.0f) );
 
 		g_Observer = pCamera;
+
+		CLightDesc* pLight = GLOBAL::Engine()->LightMgr()->Create();
+
+		pLight->pos = CVector3(-1000, 1000, 1000);
+		pLight->range = 2000;
+		pLight->color = CVector3(1,0,0);
+		pLight->intensity = 1;
+
+		CLightDesc* pLight2 = GLOBAL::Engine()->LightMgr()->Create();
+
+		pLight2->pos = CVector3(1000, 1000, 1000);
+		pLight2->range = 2000;
+		pLight2->color = CVector3(0,1,0);
+		pLight2->intensity = 1;
+
 
 		g_SceneHierarchyPanel->Reload();
 		wxCommandEvent e;

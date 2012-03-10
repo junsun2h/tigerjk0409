@@ -29,6 +29,7 @@
     <ClInclude Include="CVector.h" />
     <ClInclude Include="CRenderElement.h" />
     <ClInclude Include="CCrashDump.h" />
+    <ClInclude Include="CLight.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="3rdParty">

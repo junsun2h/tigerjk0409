@@ -44,9 +44,9 @@ HRESULT CompileShader( SHADER_COMPILE_DESC& desc, ID3DBlob** ppBlobOut )
 
 
 //--------------------------------------------------------------------------------------------------------
-// Vertext Shader
+// Vertex Shader
 //--------------------------------------------------------------------------------------------------------
-void RDX11VertexShaderBase::CreateVS( SHADER_COMPILE_DESC& desc)
+void RDX11VertexShader::CreateVS( SHADER_COMPILE_DESC& desc)
 {
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
@@ -68,9 +68,9 @@ void RDX11VertexShaderBase::CreateVS( SHADER_COMPILE_DESC& desc)
 	SAFE_RELEASE( pBlob );
 }
 
-void RDX11VertexShaderBase::Begin()
+void RDX11VertexShader::Begin()
 {
-	if( GLOBAL::ShaderMgr()->SetCurrentShader(this) == false)
+	if( GLOBAL::ShaderMgr()->CheckAndSet(this) == false)
 		return;
 
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
@@ -85,7 +85,7 @@ void RDX11VertexShaderBase::Begin()
 //--------------------------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------------------------
-void RDX11PixelShaderBase::CreatePS( SHADER_COMPILE_DESC& desc )
+void RDX11PixelShader::CreatePS( SHADER_COMPILE_DESC& desc )
 {
 	HRESULT hr = S_OK;
 	ID3DBlob* pBlob = NULL;
@@ -104,14 +104,14 @@ void RDX11PixelShaderBase::CreatePS( SHADER_COMPILE_DESC& desc )
 	SAFE_RELEASE( pBlob );
 }
 
-void RDX11PixelShaderBase::SetRenderState(const GRAPHIC_DEVICE_DESC desc)
+void RDX11PixelShader::SetRenderState(const GRAPHIC_DEVICE_DESC desc)
 {
 	m_RenderState = desc;
 }
 
-void RDX11PixelShaderBase::Begin()
+void RDX11PixelShader::Begin()
 {
-	if( GLOBAL::ShaderMgr()->SetCurrentShader(this) == false)
+	if( GLOBAL::ShaderMgr()->CheckAndSet(this) == false)
 		return;
 
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
@@ -127,7 +127,7 @@ void RDX11PixelShaderBase::Begin()
 //--------------------------------------------------------------------------------------------------------
 // Geometry Shader
 //--------------------------------------------------------------------------------------------------------
-void RDX11GeometryShaderBase::CreateGS( SHADER_COMPILE_DESC& desc)
+void RDX11GeometryShader::CreateGS( SHADER_COMPILE_DESC& desc)
 {
 	assert(0);
 	/*
@@ -159,9 +159,9 @@ void RDX11GeometryShaderBase::CreateGS( SHADER_COMPILE_DESC& desc)
 	*/
 }
 
-void RDX11GeometryShaderBase::Begin()
+void RDX11GeometryShader::Begin()
 {
-	if( GLOBAL::ShaderMgr()->SetCurrentShader(this) == false)
+	if( GLOBAL::ShaderMgr()->CheckAndSet(this) == false)
 		return;
 
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();

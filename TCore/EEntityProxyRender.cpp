@@ -1,5 +1,6 @@
 #include "CResource.h"
 #include "CRenderElement.h"
+#include "CLight.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -7,6 +8,7 @@
 #include "IRenderer.h"
 #include "IRDevice.h"
 #include "IShader.h"
+#include "ILightMgr.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
@@ -37,11 +39,12 @@ bool EEntityProxyRender::CreateRenderElement(long meshID, int meshSlotInActor )
 
 		CRenderElement item;
 		item.pGeometry = pMesh->goemetries[i];
-		item.meshSlotInActor = meshSlotInActor;
+		item.meshSlot = meshSlotInActor;
+
 		memcpy( &item.material, pMesh->goemetries[i]->pMaterial, sizeof(CResourceMtrl) );
+		item.InitFlag();
 
-		pShaderMgr->AssignShader( &item );
-
+		pShaderMgr->CheckShader( &item );
 		m_vecRenderElement.push_back( item );
 	}
 
@@ -72,17 +75,29 @@ void EEntityProxyRender::Render()
 	if( m_RenderedFrame == currentFrame )
 		return;
 
+	m_pLightList.clear();
+	GLOBAL::LightMgr()->GetAffectLight(m_pEntity, &m_pLightList);
+
 	m_RenderedFrame = currentFrame; 
 	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::Renderer()->GetFillCommandQueue();
-	XMMATRIX matrixBuf[100]; 
+	
+	XMMATRIX matrixBuf[100];
+	CLightDesc lightBuf[10];
+
+	for( UINT i =0; i < m_pLightList.size(); ++i)
+		lightBuf[i] = *m_pLightList[i];
 
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
 		CRenderElement& renderElement = m_vecRenderElement[i];
 		renderElement.worldMatrix =  GetEntity()->GetWorldTM();
+		renderElement.lightCount = m_pLightList.size();
 
 		pCommandQueue->AddCommandStart(RC_DRAW_RENDER_ELEMENT);
 		pCommandQueue->AddParam( renderElement );
+
+		if( renderElement.lightCount > 0)
+			pCommandQueue->AddData( lightBuf, sizeof(CLightDesc) * renderElement.lightCount );
 
 		// additional information
 		if( renderElement.pGeometry->IsSkinMesh() )
@@ -94,13 +109,13 @@ void EEntityProxyRender::Render()
 				return;
 			}
 
-			SKIN_REF_MATRIX* pSkinRefMatrix = pActor->GetSkinReferenceMatrix( renderElement.meshSlotInActor );
+			SKIN_REF_MATRIX* pSkinRefMatrix = pActor->GetSkinReferenceMatrix( renderElement.meshSlot );
 	
 			UINT size = pSkinRefMatrix->size();
 			for( UINT si = 0; si < size; ++si)
 				memcpy( &matrixBuf[si], (*pSkinRefMatrix)[si], sizeof(XMMATRIX) );
 
-			pCommandQueue->AddData(matrixBuf, sizeof(XMMATRIX) * size );
+			pCommandQueue->AddData( matrixBuf, sizeof(XMMATRIX) * size );
 		}
 
 		pCommandQueue->AddCommandEnd();

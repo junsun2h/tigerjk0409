@@ -392,28 +392,6 @@ public:
 };
 
 //-------------------------------------------------------------------------------------------------
-enum eEFFECT_TYPE
-{
-	GPASS_VS_LAMBERT,
-	GPASS_VS_LAMBERT_WEIGHT,
-	GPASS_VS_NORMALMAP,
-	GPASS_VS_NORMALMAP_WEIGHT,
-
-	GPASS_PS_LAMBERT,
-	GPASS_PS_NORMALMAP,
-
-	//////////////////////////////////////////////////////////////////////////
-	MPASS_VS_FONT,
-	MPASS_VS_COLOR,
-
-	MPASS_PS_FONT,
-	MPASS_PS_COLOR,
-
-	NUM_EFFECT_TYPE,
-
-	INVAILD_EFFECT,
-};
-
 enum eTEXTURE_TYPE
 {
 	TEXTURE_DIFFISE,
