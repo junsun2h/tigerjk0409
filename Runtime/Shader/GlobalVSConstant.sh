@@ -15,11 +15,8 @@ struct LightDesc
 //--------------------------------------------------------------------------------------
 cbuffer CB_Light : register( b10 )
 {
-// sun
 	float		g_lightCount;
-	
-// point light
-
+	float3		dummy;
 	LightDesc	g_lightDesc[MAX_LIGHT_PER_MESH];
 };
 
