@@ -131,11 +131,9 @@ PsIn VS( VsIn In ){
 float4 PS( PsIn In) : SV_Target
 {
 	float3 diffuse = txDiffuse.Sample( samLinear, In.Tex).rgb;
-	float3 lightColor = 0;
-	float3 specColor = 0;
-	float NL = 0;
+
 #ifdef _BUMP
-    float3 bump = 1.5f * ( txNormal.Sample( samLinear, In.Tex).rgb - float3(0.5,0.5,0.5) );
+    float3 bump = 2.0f * ( txNormal.Sample( samLinear, In.Tex).rgb - float3(0.5,0.5,0.5) );
 	In.ViewNormal = In.ViewNormal + bump.x*In.ViewTangent + bump.y*In.ViewBinormal;
     In.ViewNormal = normalize(In.ViewNormal);
 #endif
@@ -145,17 +143,22 @@ float4 PS( PsIn In) : SV_Target
 
 	float3 PointLightVec = In.lightViewPos - In.ViewPos;
 	float3 PointLightDir = length(PointLightVec) < _INTERTHRESHOLD ? PointLightVec : normalize(PointLightVec);
-	float3 PointLightColor = In.lightColor * saturate(dot(In.ViewNormal, PointLightDir));
-	lightColor += PointLightColor;	
-	NL = saturate( dot(In.ViewNormal, PointLightDir) ); 
-
-#else
-	float NL = saturate( dot(In.ViewNormal, g_SunDirection) ); 
-#endif
-
+	float3 lightColor = In.lightColor * saturate(dot(In.ViewNormal, PointLightDir));
+	float NL = saturate( dot(In.ViewNormal, PointLightDir) );
 
 	lightColor = lightColor * NL + g_ambientColor;
+	diffuse *= lightColor; 
+	
+#ifdef _SPECULA_MAP
+	float3 camDir = -normalize(In.ViewPos);	
+	float3 Hn = normalize(In.ViewNormal + camDir);
+	float spec = pow( saturate( dot(In.ViewNormal, Hn) ), 9.0f);
+	diffuse += txSpecular.Sample( samLinear, In.Tex).rgb * spec;
+#endif
 
-	float3 finalColor = specColor + diffuse * lightColor; 
-	return float4(finalColor, 1);
+#endif //_LIGHT
+
+
+
+	return float4(diffuse, 1);
 }
