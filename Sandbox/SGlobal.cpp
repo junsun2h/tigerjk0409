@@ -5,7 +5,7 @@
 
 #include "CDefine.h"
 #include "CEngineParam.h"
-#include "CLight.h"
+
 
 #include "IEntityProxy.h"
 #include "IEntityMgr.h"
@@ -13,7 +13,7 @@
 #include "ILoader.h"
 #include "IEntity.h"
 #include "ISpaceMgr.h"
-#include "ILightMgr.h"
+
 
 #include "SGlobal.h"
 #include "SSceneHierarchyPanel.h"
@@ -44,6 +44,7 @@ namespace GLOBAL
 	SSelectionMgr*			SelectionMgr()			{ return &g_SelectionMgr; }
 
 
+	//////////////////////////////////////////////////////////////////////////
 	void SetupScene(int nWidth, int nHeight)
 	{
 		IEntityMgr* entityMgr = g_Eng->EntityMgr();
@@ -61,25 +62,11 @@ namespace GLOBAL
 
 		g_Observer = pCamera;
 
-		CLightDesc* pLight = GLOBAL::Engine()->LightMgr()->Create();
-
-		pLight->pos = CVector3(-1000, 1000, 1000);
-		pLight->range = 2000;
-		pLight->color = CVector3(1,0,0);
-		pLight->intensity = 1;
-
-		CLightDesc* pLight2 = GLOBAL::Engine()->LightMgr()->Create();
-
-		pLight2->pos = CVector3(1000, 1000, 1000);
-		pLight2->range = 2000;
-		pLight2->color = CVector3(0,1,0);
-		pLight2->intensity = 1;
-
-
 		g_SceneHierarchyPanel->Reload();
 		wxCommandEvent e;
 		GLOBAL::AssetPanel()->OnReload(e);
 	}
+
 
 	bool InitDevice(CENGINE_INIT_PARAM& engineParam)
 	{

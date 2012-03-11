@@ -3,13 +3,70 @@
 #include "CResource.h"
 #include "CRenderElement.h"
 
+#include "IRenderStateMgr.h"
 #include "IShader.h"
 #include "IRDevice.h"
 
 #include "RDX11Global.h"
-#include "RDX11Shader.h"
 
 #include "RDX11ShaderMgr.h"
+
+
+void Compile( RDX11Shader* pShader)
+{
+	HRESULT hr = S_OK;
+	ID3DBlob* pBlob = NULL;
+
+#if defined( DEBUG ) || defined( _DEBUG )
+	pShader->m_Desc.compileFlag1 |= D3DCOMPILE_DEBUG;
+	pShader->m_Desc.compileFlag1 |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	ID3DBlob* pErrorBlob = NULL;
+	if( pShader->m_Desc.szFileName == NULL)
+	{
+		V( D3DCompile( pShader->m_Desc.pSrc, 
+						pShader->m_Desc.SrcDataSize, 
+						"none", 
+						(D3D10_SHADER_MACRO*)pShader->m_Desc.shader_Macros, 
+						NULL, 
+						pShader->m_Desc.szEntrypoint, 
+						pShader->m_Desc.szShaderModel, 
+						pShader->m_Desc.compileFlag1, 0, &pBlob, &pErrorBlob ) );
+	}
+	else
+	{
+		V( D3DX11CompileFromFileA( pShader->m_Desc.szFileName, 
+									(D3D10_SHADER_MACRO*)pShader->m_Desc.shader_Macros, 
+									NULL, 
+									pShader->m_Desc.szEntrypoint, 
+									pShader->m_Desc.szShaderModel, 
+									pShader->m_Desc.compileFlag1, 0, NULL, &pBlob, &pErrorBlob, NULL ) );
+	}
+	if( pErrorBlob ) 
+		pErrorBlob->Release();
+
+	if( pShader->m_Desc.shaderType == VERTEX_SHADER)
+	{
+		V( GLOBAL::D3DDevice()->CreateVertexShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &pShader->m_pVertexShader ) );
+#if defined( DEBUG ) || defined( _DEBUG )
+		if( pShader->m_Desc.debugName != 0)
+			DXUT_SetDebugName( pShader->m_pVertexShader, pShader->m_Desc.debugName );
+#endif
+		GLOBAL::RenderStateMgr()->CreateInputLayout(pShader->m_Desc.eVertexyType, pBlob);
+	}
+	else
+	{
+		V( GLOBAL::D3DDevice()->CreatePixelShader( pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &pShader->m_pPixelShader ) );
+#if defined( DEBUG ) || defined( _DEBUG )
+		if( pShader->m_Desc.debugName != 0)
+			DXUT_SetDebugName( pShader->m_pVertexShader, pShader->m_Desc.debugName );
+#endif
+	}
+
+	SAFE_RELEASE( pBlob );
+}
+
 
 //------------------------------------------------------------------------------------------------------------
 void MakeShaderMacro(UINT flag, D3D10_SHADER_MACRO macroBuf[])
@@ -23,9 +80,16 @@ void MakeShaderMacro(UINT flag, D3D10_SHADER_MACRO macroBuf[])
 		bufIndex++;
 	}
 
-	if( flag & RENDER_FLAG_BUMP )
+	if( flag & RENDER_FLAG_BUMP_MAP )
 	{
 		macroBuf[bufIndex].Name = "_BUMP";
+		macroBuf[bufIndex].Definition = "0";
+		bufIndex++;
+	}
+
+	if( flag & RENDER_FLAG_SPECULAR_MAP )
+	{
+		macroBuf[bufIndex].Name = "_SPECULA_MAP";
 		macroBuf[bufIndex].Definition = "0";
 		bufIndex++;
 	}
@@ -41,11 +105,10 @@ void MakeShaderMacro(UINT flag, D3D10_SHADER_MACRO macroBuf[])
 	macroBuf[bufIndex].Definition = NULL;
 }
 
-
 //------------------------------------------------------------------------------------------------------------
 void GetVertexFormat(UINT flag, SHADER_COMPILE_DESC& desc)
 {
-	if( ( flag & RENDER_FLAG_SKIN ) &&	( flag &RENDER_FLAG_BUMP ) )
+	if( ( flag & RENDER_FLAG_SKIN ) &&	( flag &RENDER_FLAG_BUMP_MAP ) )
 	{
 		desc.eVertexyType = FVF_4HP_4BN_2HT_4BT_4BW;
 	}
@@ -53,7 +116,7 @@ void GetVertexFormat(UINT flag, SHADER_COMPILE_DESC& desc)
 	{
 		desc.eVertexyType = FVF_4HP_4BN_2HT_4BW;
 	}
-	else if( flag & RENDER_FLAG_BUMP )
+	else if( flag & RENDER_FLAG_BUMP_MAP )
 	{
 		desc.eVertexyType = FVF_4HP_4BN_2HT_4BT;
 	}
@@ -61,21 +124,26 @@ void GetVertexFormat(UINT flag, SHADER_COMPILE_DESC& desc)
 	{
 		desc.eVertexyType = FVF_4HP_4BN_2HT;
 	}
-
 }
 
 //------------------------------------------------------------------------------------------------------------
-void MakeRenderState(UINT flag, RDX11PixelShader* pShader)
+void MakeRenderState(UINT flag, RDX11Shader* pShader)
 {
-	GRAPHIC_DEVICE_DESC renderDesc;
+	if( flag & RENDER_FLAG_DEPTH_TEST_OFF )
+		pShader->m_RenderState.DepthStencil = DEPTH_STENCIL_OFF;
+	else if( flag & RENDER_FLAG_DEPTH_TEST_OFF )
+		pShader->m_RenderState.DepthStencil = DEPTH_STENCIL_ON;
+	else
+		pShader->m_RenderState.DepthStencil = DEPTH_STENCIL_WRITE;
 
-	renderDesc.DepthStencil = DEPTH_STENCIL_WRITE;
-	renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
+	pShader->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
 
-	if( flag & RENDER_FLAG_TRANSPARENT )	renderDesc.BlendState = BLEND_ADD_BY_ALPHA;
-	else									renderDesc.BlendState = BLEND_NONE;
-
-	pShader->SetRenderState( renderDesc );
+	if( flag & RENDER_FLAG_BLEND_CONSTANT)
+		pShader->m_RenderState.BlendState = BLEND_ADD_BY_COLOR;
+	else if( flag & RENDER_FLAG_BLEND_ALPHA )	
+		pShader->m_RenderState.BlendState = BLEND_ADD_BY_ALPHA;
+	else
+		pShader->m_RenderState.BlendState = BLEND_NONE;
 }
 
 
@@ -97,72 +165,57 @@ RDX11ShaderMgr::~RDX11ShaderMgr()
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::init()
 {
-	SHADER_COMPILE_DESC desc;
-	GRAPHIC_DEVICE_DESC renderDesc;
-	desc.szFileName = "Shader\\SpacialShaders.fx";
+	const char* szFileName = "Shader\\SpacialShaders.fx";
 
 	{// font shader
-		RDX11VertexShader* pVS = new RDX11VertexShader;
-		RDX11PixelShader* pPS = new RDX11PixelShader;
+		RDX11Shader* pVS = new RDX11Shader;
+		RDX11Shader* pPS = new RDX11Shader;
 
-		desc.szEntrypoint = "VS_FONT";
-		desc.szShaderModel = "vs_4_0_level_9_3";
-		desc.eVertexyType = FVF_3FP_1DC_2HT;
+		pVS->m_Desc.szEntrypoint = "VS_FONT";
+		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
+		pVS->m_Desc.eVertexyType = FVF_3FP_1DC_2HT;
+		pVS->m_Desc.shaderType = VERTEX_SHADER;
+		pVS->m_Desc.szFileName = szFileName;
+		Compile(pVS);
 
-		pVS->CreateVS(desc);
-		m_Shaders[VERTEX_SHADER].SetAt( RENDER_FLAG_FONT, pVS);
+		m_Shaders[VERTEX_SHADER].SetAt( FONT_SHADER, pVS);
 
-		desc.szEntrypoint = "PS_FONT";
-		desc.szShaderModel = "ps_4_0_level_9_3";
+		pPS->m_Desc.szEntrypoint = "PS_FONT";
+		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
+		pPS->m_Desc.shaderType = PIXEL_SHADER;
+		pPS->m_Desc.szFileName = szFileName;
+		pPS->m_RenderState.DepthStencil = DEPTH_STENCIL_OFF;
+		pPS->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
+		pPS->m_RenderState.BlendState = BLEND_ADD_BY_ALPHA;
+		Compile(pPS);
 
-		pPS->CreatePS(desc);
-
-		renderDesc.DepthStencil = DEPTH_STENCIL_OFF;
-		renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
-		renderDesc.BlendState = BLEND_ADD_BY_ALPHA;
-
-		pPS->SetRenderState(renderDesc);
-		m_Shaders[PIXEL_SHADER].SetAt( RENDER_FLAG_FONT, pPS);
+		m_Shaders[PIXEL_SHADER].SetAt( FONT_SHADER, pPS);
 	}
 
 	{// color helper mesh shader
-		RDX11VertexShader* pVS = new RDX11VertexShader;
-		RDX11PixelShader* pPS = new RDX11PixelShader;
+		RDX11Shader* pVS = new RDX11Shader;
+		RDX11Shader* pPS = new RDX11Shader;
 
-		desc.szEntrypoint = "VS_COLOR";
-		desc.szShaderModel = "vs_4_0_level_9_3";
-		desc.eVertexyType = FVF_3FP_1DC;
+		pVS->m_Desc.szEntrypoint = "VS_COLOR";
+		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
+		pVS->m_Desc.eVertexyType = FVF_3FP_1DC;
+		pVS->m_Desc.shaderType = VERTEX_SHADER;
+		pVS->m_Desc.szFileName = szFileName;
+		Compile(pVS);
 
-		pVS->CreateVS(desc);
-		m_Shaders[VERTEX_SHADER].SetAt( RENDER_FLAG_COLOR, pVS);
+		m_Shaders[VERTEX_SHADER].SetAt( COLOR_MESH_SHADER, pVS);
 
-		desc.szEntrypoint = "PS_COLOR";
-		desc.szShaderModel = "ps_4_0_level_9_3";
+		pPS->m_Desc.szEntrypoint = "PS_COLOR";
+		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
+		pPS->m_Desc.shaderType = PIXEL_SHADER;
+		pPS->m_Desc.szFileName = szFileName;
+		pPS->m_RenderState.DepthStencil = DEPTH_STENCIL_ON;
+		pPS->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
+		pPS->m_RenderState.BlendState = BLEND_NONE;
+		Compile(pPS);
 
-		pPS->CreatePS(desc);
-
-		renderDesc.DepthStencil = DEPTH_STENCIL_ON;
-		renderDesc.RasterizerState = RASTERIZER_CULL_BACK;
-		renderDesc.BlendState = BLEND_NONE;
-
-		pPS->SetRenderState(renderDesc);
-		m_Shaders[PIXEL_SHADER].SetAt( RENDER_FLAG_COLOR, pPS);
+		m_Shaders[PIXEL_SHADER].SetAt( COLOR_MESH_SHADER, pPS);
 	}
-}
-
-bool RDX11ShaderMgr::CheckAndSet(IShader* pShader)
-{
-	if( pShader == NULL)
-	{
-		assert(0);
-		return false;
-	}
-
-	if( m_pCurrentShader[pShader->ShaderType()] == pShader )
-		return false;
-
-	m_pCurrentShader[pShader->ShaderType()] = pShader;
-	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -201,12 +254,45 @@ void RDX11ShaderMgr::Destroy()
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::Begin(UINT flag)
 {
-	GetShader( flag , VERTEX_SHADER )->Begin();
-	GetShader( flag , PIXEL_SHADER )->Begin();
+	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
+
+	IShader* pVS = GetShader( flag , VERTEX_SHADER );
+	IShader* pPS = GetShader( flag , PIXEL_SHADER );
+	
+	Begin(pVS, pPS);
+}
+
+void RDX11ShaderMgr::Begin(IShader* pVS, IShader* pPS)
+{
+	if( pVS->GetDesc().shaderType != VERTEX_SHADER ||
+		pPS->GetDesc().shaderType != PIXEL_SHADER)
+	{
+		assert(0);
+		return;
+	}
+	
+	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
+
+	if( m_pCurrentShader[VERTEX_SHADER] != pVS )
+	{
+		RDX11Shader* pRDX11VS = (RDX11Shader*)pVS;
+		pContext->VSSetShader( pRDX11VS->m_pVertexShader, NULL, 0 );
+
+		m_pCurrentShader[VERTEX_SHADER] = pRDX11VS;
+	}
+
+	if( m_pCurrentShader[PIXEL_SHADER] != pPS )
+	{
+		RDX11Shader* pRDX11PS = (RDX11Shader*)pPS;
+		pContext->PSSetShader( pRDX11PS->m_pPixelShader, NULL, 0 );
+		GLOBAL::RenderStateMgr()->ApplyRenderState(pRDX11PS->m_RenderState);
+
+		m_pCurrentShader[PIXEL_SHADER] = pRDX11PS;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------
-IShader* RDX11ShaderMgr::GetShader(UINT flag, eSHADER_TYPE type)
+RDX11Shader* RDX11ShaderMgr::GetShader(UINT flag, eSHADER_TYPE type)
 {
 	SHADER_MAP::CPair* pShader = m_Shaders[type].Lookup( flag );
 	if( pShader != NULL )
@@ -217,43 +303,33 @@ IShader* RDX11ShaderMgr::GetShader(UINT flag, eSHADER_TYPE type)
 
 
 //------------------------------------------------------------------------------------------------------------
-IShader* RDX11ShaderMgr::CreateShader(UINT flag, eSHADER_TYPE shaderType)
+RDX11Shader* RDX11ShaderMgr::CreateShader(UINT flag, eSHADER_TYPE shaderType )
 {
 	D3D10_SHADER_MACRO macroBuf[10];
-	SHADER_COMPILE_DESC desc;
+	RDX11Shader* pShader = new RDX11Shader;
 
 	MakeShaderMacro( flag, macroBuf);
-	GetVertexFormat( flag, desc);
-	desc.shader_Macros = macroBuf;
-	desc.szFileName = "Shader\\GPass.fx";
-	
+	GetVertexFormat( flag, pShader->m_Desc);
+	pShader->m_Desc.shader_Macros = macroBuf;
+	pShader->m_Desc.szFileName = "Shader\\GPass.fx";
+	pShader->m_Desc.uberFlag = flag;
+	pShader->m_Desc.shaderType = shaderType;
+
 	if( shaderType == PIXEL_SHADER )
 	{
-		RDX11PixelShader* pShader = new RDX11PixelShader;
-
-		desc.szEntrypoint = "PS";
-		desc.szShaderModel = "ps_4_0_level_9_3";
-
-		pShader->CreatePS(desc);
+		pShader->m_Desc.szEntrypoint = "PS";
+		pShader->m_Desc.szShaderModel = "ps_4_0_level_9_3";
 		MakeRenderState(flag, pShader);
-
-		m_Shaders[PIXEL_SHADER].SetAt( flag, pShader);
-		return pShader;
 	}
 	else if( shaderType == VERTEX_SHADER )
 	{
-		RDX11VertexShader* pShader = new RDX11VertexShader;
-
-		desc.szEntrypoint = "VS";
-		desc.szShaderModel = "vs_4_0_level_9_3";
-
-		pShader->CreateVS(desc);
-
-		m_Shaders[VERTEX_SHADER].SetAt( flag, pShader);
-		return pShader;
+		pShader->m_Desc.szEntrypoint = "VS";
+		pShader->m_Desc.szShaderModel = "vs_4_0_level_9_3";
 	}
 
-	return NULL;
+	Compile( pShader );
+	m_Shaders[shaderType].SetAt( flag, pShader);
+	return pShader;
 }
 
 
@@ -347,4 +423,46 @@ bool RDX11ShaderMgr::CheckShader(CRenderElement* pRenderElement)
 	}
 
 	return true;
+}
+
+void RDX11ShaderMgr::Reload(UINT flag)
+{
+	D3D10_SHADER_MACRO macroBuf[10];
+	if( flag == 0) // reload all
+	{
+		for( UINT i=0; i < NUM_SHADER_TYPE; ++i)
+		{
+			POSITION pos = m_Shaders[i].GetStartPosition();
+			SHADER_MAP::CPair* itr = NULL;
+
+			while (pos)
+			{
+				itr = m_Shaders[i].GetNext(pos);
+				RDX11Shader* pShader = itr->m_value;
+				pShader->Release();
+				
+				MakeShaderMacro( pShader->m_Desc.uberFlag, macroBuf);
+				pShader->m_Desc.shader_Macros = macroBuf;
+
+				Compile( pShader );
+			}
+		}
+	}
+	else
+	{
+		RDX11Shader* pShader = GetShader(flag, PIXEL_SHADER);
+
+		MakeShaderMacro( pShader->m_Desc.uberFlag, macroBuf);
+		pShader->m_Desc.shader_Macros = macroBuf;
+
+		pShader->Release();
+		Compile( pShader );
+
+		pShader = GetShader(flag, VERTEX_SHADER);
+		MakeShaderMacro( pShader->m_Desc.uberFlag, macroBuf);
+		pShader->m_Desc.shader_Macros = macroBuf;
+
+		pShader->Release();
+		Compile( pShader );
+	}
 }

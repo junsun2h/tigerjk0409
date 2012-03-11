@@ -140,7 +140,7 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 		m_LineVertices.Add( pVetex[i]);
 
 	// Set Line Shader
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 	
 	DrawLine();
@@ -153,7 +153,7 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 	SetWorldTM(tm);
 
 	// Set Line Shader
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 
 	CVertexPC v1;
 
@@ -187,7 +187,7 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
@@ -205,7 +205,7 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
@@ -274,7 +274,7 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
@@ -306,7 +306,7 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_ON);
 	DrawLine();
 }
@@ -398,7 +398,7 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_COLOR);
+	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
 	DrawLine();
 }
 
@@ -482,7 +482,7 @@ void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD* pText)
 	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 
 	pShaderMgr->SetTexture( m_pFontTexture, 0);
-	GLOBAL::ShaderMgr()->Begin(RENDER_FLAG_FONT);
+	GLOBAL::ShaderMgr()->Begin(FONT_SHADER);
 
 	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC_2HT);
