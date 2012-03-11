@@ -19,6 +19,7 @@
 #include "IRenderer.h"
 #include "IRenderHelper.h"
 #include "ILightMgr.h"
+#include "IShader.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -105,9 +106,17 @@ void EEngine::Resize(UINT width, UINT height)
 	GLOBAL::RDevice()->Resize(width, height);
 }
 
+void DebugUpdate()
+{
+#define IsKeyDown(key) ((GetAsyncKeyState(key) & 0x8000)!=0)
+
+	if(IsKeyDown('R'))	GLOBAL::RDevice()->GetShaderMgr()->Reload(0);
+}
 
 void EEngine::UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRenderCallback)
 {
+	DebugUpdate();
+
 	float deltaTime = m_GlobalTimer.GetElapsedTime();
 	m_GlobalTimer.CountFPS(deltaTime);
 

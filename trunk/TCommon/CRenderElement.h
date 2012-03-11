@@ -7,13 +7,20 @@ struct CLightDesc;
 
 enum eRENDER_FLAG
 {
-	RENDER_FLAG_TRANSPARENT	= BIT(1),
-	RENDER_FLAG_SKIN		= BIT(2),
-	RENDER_FLAG_BUMP		= BIT(3),
-	RENDER_FLAG_LIGHT		= BIT(4),
+	RENDER_FLAG_SKIN					= BIT(1),
+	RENDER_FLAG_BUMP_MAP				= BIT(2),
+	RENDER_FLAG_SPECULAR_MAP			= BIT(3),
+	RENDER_FLAG_LIGHT					= BIT(4),
 
-	RENDER_FLAG_FONT		= BIT(5),
-	RENDER_FLAG_COLOR		= BIT(6),
+	RENDER_FLAG_DEPTH_TEST_OFF			= BIT(5),
+	RENDER_FLAG_DEPTH_TEST_WRITE_OFF	= BIT(6),
+
+	RENDER_FLAG_BLEND_ALPHA				= BIT(7),
+	RENDER_FLAG_BLEND_CONSTANT			= BIT(8),
+
+// special shader, don't use uber-system
+	FONT_SHADER							= BIT(30),
+	COLOR_MESH_SHADER					= BIT(31),
 };
 
 struct CRenderElement
@@ -43,7 +50,10 @@ struct CRenderElement
 			flag |= RENDER_FLAG_SKIN;
 
 		if( material.pTextures[TEXTURE_BUMP] != NULL )
-			flag |= RENDER_FLAG_BUMP;
+			flag |= RENDER_FLAG_BUMP_MAP;
+
+		if( material.pTextures[TEXTURE_SPECULAR] != NULL )
+			flag |= RENDER_FLAG_SPECULAR_MAP;
 	}
 
 	CRenderElement()
@@ -52,6 +62,7 @@ struct CRenderElement
 		, flag(0)
 		, pGeometry(NULL)
 		, meshSlot(-1)
+		, pRefMatrix(NULL)
 	{
 	}
 };

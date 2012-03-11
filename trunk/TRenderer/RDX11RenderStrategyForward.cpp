@@ -53,9 +53,7 @@ void RDX11RenderStrategeForward::RenderFrame(CCAMERA_DESC* pCameraDesc)
 void RDX11RenderStrategeForward::Render(CRenderElement* pRenderElement)
 {
 	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
-
-	pRenderElement->pPixelShader->Begin();
-	pRenderElement->pVertexShader->Begin();
+	pShaderMgr->Begin( pRenderElement->pVertexShader, pRenderElement->pPixelShader);
 
 	{
 		struct TModelVS
@@ -80,6 +78,9 @@ void RDX11RenderStrategeForward::Render(CRenderElement* pRenderElement)
 
 	if( pRenderElement->material.pTextures[TEXTURE_BUMP] != NULL )
 		pShaderMgr->SetTexture( pRenderElement->material.pTextures[TEXTURE_BUMP], 1);
+
+	if( pRenderElement->material.pTextures[TEXTURE_SPECULAR] != NULL )
+		pShaderMgr->SetTexture( pRenderElement->material.pTextures[TEXTURE_SPECULAR], 2);
 
 	if( pRenderElement->pRefMatrix )
 	{

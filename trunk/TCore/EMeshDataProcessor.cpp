@@ -10,7 +10,91 @@
 
 void CalculateTangent(CResourceGeometry* pGeometry)
 {
-	if( pGeometry->eVertexType == FVF_4HP_4BN_2HT_4BW )
+	if( pGeometry->eVertexType == FVF_4HP_4BN_2HT )
+	{
+		CVertexHPNT* pOriginal = (CVertexHPNT*)pGeometry->pVertexBuffer;
+		CVertexHPNTT* pVertexBuf = new CVertexHPNTT[pGeometry->vertexCount];
+		CVector3* pTangent1 = new CVector3[pGeometry->vertexCount * 2];
+		CVector3* pTangent2 = pTangent1 + pGeometry->vertexCount;
+
+		memset(pTangent1, 0 , sizeof(CVector3) * pGeometry->vertexCount* 2);
+
+		for( UINT i=0; i < pGeometry->vertexCount ; ++i)
+		{
+			pVertexBuf[i].vPos = pOriginal[i].vPos;
+			pVertexBuf[i].vNormal = pOriginal[i].vNormal;
+		}
+
+		uint16* pTriangle = (uint16*)pGeometry->pIndexBuffer;
+
+		for (UINT i=0; i < pGeometry->primitiveCount*3;	i+=3)
+		{
+			uint16 i1 = pTriangle[i];
+			uint16 i2 = pTriangle[i+1];
+			uint16 i3 = pTriangle[i+2];
+
+			float x1 = XMConvertHalfToFloat(pVertexBuf[i2].vPos.x) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.x);
+			float y1 = XMConvertHalfToFloat(pVertexBuf[i2].vPos.y) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.y);
+			float z1 = XMConvertHalfToFloat(pVertexBuf[i2].vPos.z) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.z);
+			float x2 = XMConvertHalfToFloat(pVertexBuf[i3].vPos.x) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.x);
+			float y2 = XMConvertHalfToFloat(pVertexBuf[i3].vPos.y) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.y);
+			float z2 = XMConvertHalfToFloat(pVertexBuf[i3].vPos.z) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.z);
+
+			float s1 = XMConvertHalfToFloat(pVertexBuf[i2].vPos.x) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.x);
+			float t1 = XMConvertHalfToFloat(pVertexBuf[i2].vNormal.w) - XMConvertHalfToFloat(pVertexBuf[i1].vNormal.w);
+			float s2 = XMConvertHalfToFloat(pVertexBuf[i3].vPos.x) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.x);
+			float t2 = XMConvertHalfToFloat(pVertexBuf[i3].vNormal.w) - XMConvertHalfToFloat(pVertexBuf[i1].vNormal.w);
+
+			float d = s1 * t2 - s2 * t1;
+			float r;
+
+			if( d == 0)
+				r = 0;
+			else
+				r = 1.0f /d;
+
+			CVector3 sdir( (t2 * x1 - t1 * x2) * r,
+				(t2 * y1 - t1 * y2) * r,
+				(t2 * z1 - t1 * z2) * r);
+
+			CVector3 tdir( (s1 * x2 - s2 * x1) * r,
+				(s1 * y2 - s2 * y1) * r,
+				(s1 * z2 - s2 * z1) * r);
+
+			pTangent1[i1] += sdir;
+			pTangent1[i2] += sdir;
+			pTangent1[i3] += sdir;
+
+			pTangent2[i1] += tdir;
+			pTangent2[i2] += tdir;
+			pTangent2[i3] += tdir;
+		}
+
+		for (UINT i = 0; i < pGeometry->vertexCount; ++i)
+		{
+			CVector3 n;
+			n.x = XMConvertHalfToFloat( pVertexBuf[i].vNormal.x );
+			n.y = XMConvertHalfToFloat( pVertexBuf[i].vNormal.y );
+			n.z = XMConvertHalfToFloat( pVertexBuf[i].vNormal.z );
+
+			CVector3& t = pTangent1[i];
+			
+			// Gram-Schmidt orthogonalization
+			pTangent1[i] = CVector3::Normalize(t - n * CVector3::Dot(n, t)  );
+
+			if( CVector3::Dot( CVector3::Cross(n, t), pTangent2[i]) < 0.0f )
+				pVertexBuf[i].vTangent = XMHALF4(pTangent1[i].x, pTangent1[i].y, pTangent1[i].z, -1.0f);
+			else
+				pVertexBuf[i].vTangent = XMHALF4(pTangent1[i].x, pTangent1[i].y, pTangent1[i].z, 1.0f);
+		}
+
+		SAFE_DELETE(pGeometry->pVertexBuffer);
+		SAFE_DELETE(pTangent1);
+		pGeometry->pVertexBuffer = pVertexBuf;
+
+		pGeometry->eVertexType = FVF_4HP_4BN_2HT_4BT;
+	}
+	else if( pGeometry->eVertexType == FVF_4HP_4BN_2HT_4BW )
 	{
 		CVertexHPNTW* pOriginal = (CVertexHPNTW*)pGeometry->pVertexBuffer;
 		CVertexHPNTTW* pVertexBuf = new CVertexHPNTTW[pGeometry->vertexCount];
@@ -47,7 +131,13 @@ void CalculateTangent(CResourceGeometry* pGeometry)
 			float s2 = XMConvertHalfToFloat(pVertexBuf[i3].vPos.x) - XMConvertHalfToFloat(pVertexBuf[i1].vPos.x);
 			float t2 = XMConvertHalfToFloat(pVertexBuf[i3].vNormal.w) - XMConvertHalfToFloat(pVertexBuf[i1].vNormal.w);
 
-			float r = 1.0f / (s1 * t2 - s2 * t1);
+			float d = s1 * t2 - s2 * t1;
+			float r;
+
+			if( d == 0)
+				r = 0;
+			else
+				r = 1.0f /d;
 
 			CVector3 sdir( (t2 * x1 - t1 * x2) * r,
 							(t2 * y1 - t1 * y2) * r,
@@ -77,6 +167,7 @@ void CalculateTangent(CResourceGeometry* pGeometry)
 
 			// Gram-Schmidt orthogonalization
 			pTangent1[i] = CVector3::Normalize(t - n * CVector3::Dot(n, t)  );
+
 			if( CVector3::Dot( CVector3::Cross(n, t), pTangent2[i]) < 0.0f )
 				pVertexBuf[i].vTangent = XMHALF4(pTangent1[i].x, pTangent1[i].y, pTangent1[i].z, -1.0f);
 			else
