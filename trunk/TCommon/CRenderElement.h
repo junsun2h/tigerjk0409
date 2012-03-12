@@ -19,9 +19,16 @@ enum eRENDER_FLAG
 	RENDER_FLAG_BLEND_CONSTANT			= BIT(8),
 
 // special shader, don't use uber-system
-	FONT_SHADER							= BIT(30),
-	COLOR_MESH_SHADER					= BIT(31),
+	SHADER_FONT_VS						= BIT(25),
+	SHADER_COLOR_VS						= BIT(26),
+	SHADER_QUAD_VS						= BIT(27),
+	SHADER_POS_VS						= BIT(28),
+
+	SHADER_FONT_PS						= BIT(29),
+	SHADER_COLOR_PS						= BIT(30),
+	SHADER_TEXURE_PS					= BIT(31)
 };
+
 
 struct CRenderElement
 {

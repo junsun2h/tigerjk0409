@@ -29,6 +29,8 @@ private:
 	eRESOURCE_FILE_TYPE		GetAssetType(wxTreeItemId seletedItem);
 
 	wchar_t					m_Path[MAX_PATH];
+		
+	virtual void adw( wxTreeEvent& event ) { event.Skip(); }
 
 	DECLARE_DYNAMIC_CLASS(SAssetTreeCtrl)
 	DECLARE_EVENT_TABLE()

@@ -21,7 +21,7 @@
 
 
 void GeometryIntersect(CVector3& lineStart, CVector3& lineDir,
-						CVertexPC* pVertex, int vertexCount, 
+						CVector3* pVertex, int vertexCount, 
 						uint16* pIndex, int primitiveCount, 
 						eDIRECTION& grabDirection,
 						float& fDistance, float& fClosestDistance,
@@ -34,7 +34,7 @@ void GeometryIntersect(CVector3& lineStart, CVector3& lineDir,
 		int c = pIndex[i*3 + 2];
 
 		if( COLLISION_UTIL::LineTriangleIntersect( lineStart, lineDir,	
-			pVertex[a].vPos, pVertex[b].vPos, pVertex[c].vPos, 
+			pVertex[a], pVertex[b], pVertex[c], 
 			&fDistance) )
 		{
 			if( fDistance < fClosestDistance)
@@ -48,7 +48,7 @@ void GeometryIntersect(CVector3& lineStart, CVector3& lineDir,
 
 
 float TransformHelperCollision(CVector3& lineStart, CVector3& lineDir,
-								CVertexPC* pVertex, int vertexCount, 
+								CVector3* pVertex, int vertexCount, 
 								uint16* pIndex, int primitiveCount, 
 								eDIRECTION& grabDirection)
 {
@@ -62,12 +62,12 @@ float TransformHelperCollision(CVector3& lineStart, CVector3& lineDir,
 		if( iAxis == 1)
 		{
 			for( int i =0 ; i < vertexCount; ++i)
-				TSWAP( pVertex[i].vPos.x, pVertex[i].vPos.y);
+				TSWAP( pVertex[i].x, pVertex[i].y);
 		}
 		else
 		{
 			for( int i =0 ; i < vertexCount; ++i)
-				TSWAP( pVertex[i].vPos.y, pVertex[i].vPos.z);
+				TSWAP( pVertex[i].y, pVertex[i].z);
 		}
 
 		GeometryIntersect( lineStart, lineDir,
@@ -96,9 +96,9 @@ bool GrabRotator(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& gr
 	param.direction = X_AXIS;
 	param.segment = 10;
 
-	CVertexPC* pVertex = NULL;
+	CVector3* pVertex = NULL;
 	uint16* pIndex = NULL;
-	CGEOMETRY_CONSTRUCTOR::CreateCircle(param, &pVertex, &pIndex);
+	CGEOMETRY_CONSTRUCTOR::CreateCircle(param, pVertex, &pIndex);
 
 	fDistance = TransformHelperCollision(lineStart, lineDir, 
 											pVertex, param.segment, 
@@ -130,9 +130,9 @@ bool GrabMover(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& grab
 	param.offset = CVector3(TRANSFORM_HELPER_EXTENT, 0, 0);
 	param.segment = 10;
 
-	CVertexPC* pVertex = NULL;
+	CVector3* pVertex = NULL;
 	uint16* pIndex = NULL;
-	CGEOMETRY_CONSTRUCTOR::CreateCone(param, &pVertex, &pIndex);
+	CGEOMETRY_CONSTRUCTOR::CreateCone(param, pVertex, &pIndex);
 
 	float fDistance = TransformHelperCollision(lineStart, lineDir, 
 												pVertex, param.segment +1, 
@@ -164,9 +164,9 @@ bool GrabScaler(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& gra
 	param.max = CVector3(5.f,5.f,5.f);
 	param.offset = CVector3(TRANSFORM_HELPER_EXTENT, 0, 0);
 
-	CVertexPC* pVertex = NULL;
+	CVector3* pVertex = NULL;
 	uint16* pIndex = NULL;
-	CGEOMETRY_CONSTRUCTOR::CreateBox(param, &pVertex, &pIndex);
+	CGEOMETRY_CONSTRUCTOR::CreateBox(param, pVertex, &pIndex);
 
 	float fDistance = TransformHelperCollision(lineStart, lineDir, 
 												pVertex, 8, 
@@ -175,7 +175,7 @@ bool GrabScaler(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& gra
 
 	float fCenterDistance = MAX_COLLISION_DISTANCE;
 	for( int i =0 ; i < 8; ++i)
-		pVertex[i].vPos.z -= TRANSFORM_HELPER_EXTENT;
+		pVertex[i].z -= TRANSFORM_HELPER_EXTENT;
 
 	GeometryIntersect(lineStart, lineDir, 
 						pVertex, 8, 

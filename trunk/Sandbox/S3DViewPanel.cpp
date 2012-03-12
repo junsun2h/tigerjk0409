@@ -6,6 +6,7 @@
 #include "CTimer.h"
 #include "CAABB.h"
 #include "CCamera.h"
+#include "CLight.h"
 
 #include "IEntityProxy.h"
 #include "IEntity.h"
@@ -13,9 +14,26 @@
 #include "SGlobal.h"
 #include "SSelectionMgr.h"
 #include "SPropertyPanel.h"
+#include "ILightMgr.h"
 
 #include "S3DViewPanel.h"
 
+CLightDesc* g_pLight = NULL;
+CLightDesc* g_pLight2 = NULL;
+
+void TestLogicUpdate()
+{
+	static CTimer timer;
+	static float angle = 0;
+
+	XMMATRIX rot = XMMatrixRotationZ( angle );
+	g_pLight->pos = CVector3::Transform( g_pLight->pos, rot);
+	g_pLight2->pos = CVector3::Transform( g_pLight2->pos, rot);
+
+	static double formerTime = timer.GetAbsoluteTime();
+
+	angle += timer.GetElapsedTime() * 0.0000001f;
+}
 
 class PostRenderer : public IRenderingCallback
 {
@@ -139,8 +157,26 @@ void S3DViewPanel::OnIdle(wxIdleEvent& event)
 		engineParam.resourceFolder = L"\\Data";
 
 		GLOBAL::InitDevice( engineParam );
+
+		g_pLight = GLOBAL::Engine()->LightMgr()->Create();
+
+		g_pLight->pos = CVector3(-1000, 1000, 1000);
+		g_pLight->range = 2000;
+		g_pLight->color = CVector3(1,0,0);
+		g_pLight->intensity = 1;
+
+		g_pLight2 = GLOBAL::Engine()->LightMgr()->Create();
+
+		g_pLight2->pos = CVector3(1000, 1000, 1000);
+		g_pLight2->range = 2000;
+		g_pLight2->color = CVector3(0,1,0);
+		g_pLight2->intensity = 1;
+
+
 		m_bSetup = true;
 	}
+
+	TestLogicUpdate();
 
 	if( GLOBAL::ObserverCamera() != NULL)
 	{
@@ -148,7 +184,7 @@ void S3DViewPanel::OnIdle(wxIdleEvent& event)
 		GLOBAL::ObserverCamera()->CopyDesc(&cameraDesc);
 		GLOBAL::Engine()->UpdateAndRender( &cameraDesc, &g_PostRenderer);
 	}
-
+	
 	event.RequestMore();
 }
 
@@ -330,3 +366,5 @@ void S3DViewPanel::PickFromScreen(TYPE_ENTITY_LIST& list, long x, long y)
 
 	GLOBAL::SceneRoot()->Pick( origin, to, list);
 }
+
+

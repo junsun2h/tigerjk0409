@@ -301,7 +301,7 @@ void RDX11RenderStateMgr::SetDepthStancil(DEPTH_STENCIL_TYPE depthStencil, UINT 
 
 void RDX11RenderStateMgr::CreateInputLayout( eCVERTEX_TYPE eVertexyType, ID3DBlob* pBlob)
 {
-	if( pBlob == NULL )
+	if( pBlob == NULL || eVertexyType == FVF_QUAD)
 		return;
 
 	ID3D11Device* pD3Device = GLOBAL::D3DDevice();
@@ -310,7 +310,16 @@ void RDX11RenderStateMgr::CreateInputLayout( eCVERTEX_TYPE eVertexyType, ID3DBlo
 	if( m_InputLayoutMap.Lookup(eVertexyType) != NULL )
 		return;
 
-	if( eVertexyType == FVF_3FP_1DC )
+	if( eVertexyType == FVF_3FP )
+	{
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		pD3Device->CreateInputLayout( layout, ARRAYSIZE( layout ), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pD3DLayout );
+	}
+	else if( eVertexyType == FVF_3FP_1DC )
 	{
 		D3D11_INPUT_ELEMENT_DESC layout[] =
 		{
@@ -388,6 +397,13 @@ void RDX11RenderStateMgr::SetVertexInput(eCVERTEX_TYPE type)
 	if( type == m_currentVertexType )
 		return;
 
+	if( type == FVF_QUAD )
+	{
+		m_currentVertexType = type;
+		GLOBAL::D3DContext()->IASetInputLayout( NULL );
+		return;
+	}
+
 	INPUT_LAYOUT_MAP::CPair* pInputLayout = m_InputLayoutMap.Lookup( type );
 
 	if( pInputLayout == NULL )
@@ -396,6 +412,7 @@ void RDX11RenderStateMgr::SetVertexInput(eCVERTEX_TYPE type)
 		return;
 	}
 
+	m_currentVertexType = type;
 	GLOBAL::D3DContext()->IASetInputLayout( pInputLayout->m_value );
 }
 

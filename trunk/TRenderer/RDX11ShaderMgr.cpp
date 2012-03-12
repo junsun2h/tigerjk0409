@@ -52,7 +52,7 @@ void Compile( RDX11Shader* pShader)
 #if defined( DEBUG ) || defined( _DEBUG )
 		if( pShader->m_Desc.debugName != 0)
 			DXUT_SetDebugName( pShader->m_pVertexShader, pShader->m_Desc.debugName );
-#endif
+#endif)
 		GLOBAL::RenderStateMgr()->CreateInputLayout(pShader->m_Desc.eVertexyType, pBlob);
 	}
 	else
@@ -167,9 +167,10 @@ void RDX11ShaderMgr::init()
 {
 	const char* szFileName = "Shader\\SpacialShaders.fx";
 
-	{// font shader
+	//////////////////////////////////////////////////////////////////////////
+	// Vertex shaders
+	{
 		RDX11Shader* pVS = new RDX11Shader;
-		RDX11Shader* pPS = new RDX11Shader;
 
 		pVS->m_Desc.szEntrypoint = "VS_FONT";
 		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
@@ -178,7 +179,53 @@ void RDX11ShaderMgr::init()
 		pVS->m_Desc.szFileName = szFileName;
 		Compile(pVS);
 
-		m_Shaders[VERTEX_SHADER].SetAt( FONT_SHADER, pVS);
+		m_Shaders[VERTEX_SHADER].SetAt( SHADER_FONT_VS, pVS);
+	}
+
+	{
+		RDX11Shader* pVS = new RDX11Shader;
+
+		pVS->m_Desc.szEntrypoint = "VS_POS";
+		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
+		pVS->m_Desc.eVertexyType = FVF_3FP;
+		pVS->m_Desc.shaderType = VERTEX_SHADER;
+		pVS->m_Desc.szFileName = szFileName;
+		Compile(pVS);
+
+		m_Shaders[VERTEX_SHADER].SetAt( SHADER_POS_VS, pVS);		
+	}
+
+	{
+		RDX11Shader* pVS = new RDX11Shader;
+
+		pVS->m_Desc.szEntrypoint = "VS_QUAD";
+		pVS->m_Desc.szShaderModel = "vs_4_0";
+		pVS->m_Desc.eVertexyType = FVF_QUAD;
+		pVS->m_Desc.shaderType = VERTEX_SHADER;
+		pVS->m_Desc.szFileName = szFileName;
+		Compile(pVS);
+
+		m_Shaders[VERTEX_SHADER].SetAt( SHADER_QUAD_VS, pVS);
+	}
+
+	{
+		RDX11Shader* pVS = new RDX11Shader;
+
+		pVS->m_Desc.szEntrypoint = "VS_COLOR";
+		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
+		pVS->m_Desc.eVertexyType = FVF_3FP_1DC;
+		pVS->m_Desc.shaderType = VERTEX_SHADER;
+		pVS->m_Desc.szFileName = szFileName;
+		Compile(pVS);
+
+		m_Shaders[VERTEX_SHADER].SetAt( SHADER_COLOR_VS, pVS);
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////
+	// Pixel shaders
+	{
+		RDX11Shader* pPS = new RDX11Shader;
 
 		pPS->m_Desc.szEntrypoint = "PS_FONT";
 		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
@@ -189,21 +236,11 @@ void RDX11ShaderMgr::init()
 		pPS->m_RenderState.BlendState = BLEND_ADD_BY_ALPHA;
 		Compile(pPS);
 
-		m_Shaders[PIXEL_SHADER].SetAt( FONT_SHADER, pPS);
+		m_Shaders[PIXEL_SHADER].SetAt( SHADER_FONT_PS, pPS);
 	}
 
-	{// color helper mesh shader
-		RDX11Shader* pVS = new RDX11Shader;
+	{
 		RDX11Shader* pPS = new RDX11Shader;
-
-		pVS->m_Desc.szEntrypoint = "VS_COLOR";
-		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
-		pVS->m_Desc.eVertexyType = FVF_3FP_1DC;
-		pVS->m_Desc.shaderType = VERTEX_SHADER;
-		pVS->m_Desc.szFileName = szFileName;
-		Compile(pVS);
-
-		m_Shaders[VERTEX_SHADER].SetAt( COLOR_MESH_SHADER, pVS);
 
 		pPS->m_Desc.szEntrypoint = "PS_COLOR";
 		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
@@ -214,7 +251,22 @@ void RDX11ShaderMgr::init()
 		pPS->m_RenderState.BlendState = BLEND_NONE;
 		Compile(pPS);
 
-		m_Shaders[PIXEL_SHADER].SetAt( COLOR_MESH_SHADER, pPS);
+		m_Shaders[PIXEL_SHADER].SetAt( SHADER_COLOR_PS, pPS);
+	}
+
+	{
+		RDX11Shader* pPS = new RDX11Shader;
+
+		pPS->m_Desc.szEntrypoint = "PS_TEXTURE";
+		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
+		pPS->m_Desc.shaderType = PIXEL_SHADER;
+		pPS->m_Desc.szFileName = szFileName;
+		pPS->m_RenderState.DepthStencil = DEPTH_STENCIL_WRITE;
+		pPS->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
+		pPS->m_RenderState.BlendState = BLEND_NONE;
+		Compile(pPS);
+
+		m_Shaders[PIXEL_SHADER].SetAt( SHADER_TEXURE_PS, pPS);
 	}
 }
 
@@ -252,16 +304,6 @@ void RDX11ShaderMgr::Destroy()
 }
 
 //------------------------------------------------------------------------------------------------------------
-void RDX11ShaderMgr::Begin(UINT flag)
-{
-	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
-
-	IShader* pVS = GetShader( flag , VERTEX_SHADER );
-	IShader* pPS = GetShader( flag , PIXEL_SHADER );
-	
-	Begin(pVS, pPS);
-}
-
 void RDX11ShaderMgr::Begin(IShader* pVS, IShader* pPS)
 {
 	if( pVS->GetDesc().shaderType != VERTEX_SHADER ||
@@ -289,6 +331,16 @@ void RDX11ShaderMgr::Begin(IShader* pVS, IShader* pPS)
 
 		m_pCurrentShader[PIXEL_SHADER] = pRDX11PS;
 	}
+}
+
+void RDX11ShaderMgr::Begin(UINT vsFlag, UINT psFlag)
+{
+	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
+
+	IShader* pVS = GetShader( vsFlag , VERTEX_SHADER );
+	IShader* pPS = GetShader( psFlag , PIXEL_SHADER );
+
+	Begin(pVS, pPS);
 }
 
 //------------------------------------------------------------------------------------------------------------

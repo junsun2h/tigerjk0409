@@ -60,7 +60,7 @@ bool RDX11RenderTargetMgr::CreateMainFrameTarget()
 	descDepth.Height = swapChainDesc.BufferDesc.Height;
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_R32_TYPELESS;
+	descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS; // DXGI_FORMAT_R24G8_TYPELESS, DXGI_FORMAT_R32_TYPELESS
 	descDepth.SampleDesc = swapChainDesc.SampleDesc;
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
@@ -78,7 +78,7 @@ bool RDX11RenderTargetMgr::CreateMainFrameTarget()
 	*/
 	D3D11_DEPTH_STENCIL_VIEW_DESC	depthStencilViewDesc;
 	// Create the depth stencil view
-	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // DXGI_FORMAT_D24_UNORM_S8_UINT, DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.Flags = 0;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
@@ -86,7 +86,7 @@ bool RDX11RenderTargetMgr::CreateMainFrameTarget()
 	TDXERROR( pD3Device->CreateDepthStencilView( pDepthTexture, &depthStencilViewDesc, &pDSV ) );
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;; // DXGI_FORMAT_R24_UNORM_X8_TYPELESS, DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;

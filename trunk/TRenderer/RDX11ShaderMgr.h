@@ -48,8 +48,9 @@ public:
 
 	bool			CheckShader(CRenderElement* pRenderElement) override;
 
-	void			Begin(UINT flag) override;
+	void			Begin(UINT flag) override			{	Begin(flag, flag);	}
 	void			Begin(IShader* pVS, IShader* pPS) override;
+	void			Begin(UINT vsFlag, UINT psFlag) override;
 
 	void			SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) override;
 	void			SetTexture(const CResourceTexture* pTexture, UINT slot) override;
