@@ -19,13 +19,9 @@ enum eCVERTEX_TYPE
 	FVF_4HP_4BN_2HT_4BT,
 	FVF_4HP_4BN_2HT_4BT_4BW,
 
+	FVF_QUAD,
+
 	FVF_INVALID
-};
-
-
-struct CVertexP 
-{
-	CVector3		vPos;
 };
 
 struct CVertexHP 
@@ -96,7 +92,7 @@ inline void* NEW_VERTEX(eCVERTEX_TYPE type, int size)
 {
 	switch(type)
 	{
-	case FVF_3FP:					return new CVertexP[size];
+	case FVF_3FP:					return new CVector3[size];
 	case FVF_3FP_1DC:				return new CVertexPC[size];
 	case FVF_3FP_1DC_2HT:			return new CVertexPCT[size];
 	case FVF_3FP_4BN_2HT:			return new CVertexPNT[size];
@@ -121,7 +117,7 @@ inline size_t VERTEX_STRIDE(eCVERTEX_TYPE type)
 {
 	switch(type)
 	{
-	case FVF_3FP:					return sizeof(CVertexP);
+	case FVF_3FP:					return sizeof(CVector3);
 	case FVF_3FP_1DC:				return sizeof(CVertexPC);
 	case FVF_3FP_1DC_2HT:			return sizeof(CVertexPCT);
 	case FVF_3FP_4BN_2HT:			return sizeof(CVertexPNT);

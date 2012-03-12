@@ -71,6 +71,20 @@ void RDX11RenderHelper::CreateHelperObjects()
 	}
 
 	//////////////////////////////////////////////////////////////////////////
+	// Create sphere
+	{
+		SPHERE_MAKE_PARAM param;
+		param.radius = 1;
+		param.dividingLevel = 3;
+
+		CGEOMETRY_CONSTRUCTOR::CreateSphereGeometry( &m_Sphere, param);
+
+		GLOBAL::RDevice()->CreateGraphicBuffer( &m_Sphere);
+
+		m_Sphere.loadState = RESOURCE_LOAD_FINISHED;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
 	// Create mover Geometry
 	{
 		CONE_MAKE_PARAM param;
@@ -125,6 +139,8 @@ void RDX11RenderHelper::Destroy()
 	pDevice->RemoveGraphicBuffer( &m_ConeX);
 	pDevice->RemoveGraphicBuffer( &m_ConeY);
 	pDevice->RemoveGraphicBuffer( &m_ConeZ);
+
+	pDevice->RemoveGraphicBuffer( &m_Sphere);
 }
 
 
@@ -140,7 +156,7 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 		m_LineVertices.Add( pVetex[i]);
 
 	// Set Line Shader
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 	
 	DrawLine();
@@ -153,7 +169,7 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 	SetWorldTM(tm);
 
 	// Set Line Shader
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 
 	CVertexPC v1;
 
@@ -187,7 +203,7 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
@@ -205,7 +221,7 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
@@ -274,7 +290,7 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
@@ -306,14 +322,42 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_ON);
 	DrawLine();
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------
+void RDX11RenderHelper::RenderSphere(XMMATRIX& tm, float radius)
+{
+	XMMATRIX mtWorld = XMMatrixMultiply( tm, XMMatrixScaling(radius, radius, radius) );
+
+	SetWorldTM(mtWorld);
+
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	GLOBAL::RDevice()->GetRenderStrategy()->RenderGeometry(&m_Sphere);
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------
+void RDX11RenderHelper::RenderPlane(XMMATRIX& tm, CVector2 size)
+{
+	XMMATRIX mtWorld = XMMatrixMultiply( tm, XMMatrixScaling(size.x, size.y, 1) );
+
+	SetWorldTM(mtWorld);
+
+	GLOBAL::ShaderMgr()->Begin(SHADER_QUAD_VS, SHADER_TEXURE_PS);
+	
+	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_QUAD);
+	GLOBAL::D3DContext()->Draw(4, 0);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCount)
 {
+	RenderPlane(mtWorld, CVector2(100,100));
 	SetWorldTM(mtWorld);
 
 	float halfWidth = size/2.f;
@@ -398,7 +442,7 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::ShaderMgr()->Begin(COLOR_MESH_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 	DrawLine();
 }
 
@@ -482,7 +526,7 @@ void RDX11RenderHelper::RenderText(RENDER_TEXT_QUAD* pText)
 	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 
 	pShaderMgr->SetTexture( m_pFontTexture, 0);
-	GLOBAL::ShaderMgr()->Begin(FONT_SHADER);
+	GLOBAL::ShaderMgr()->Begin(SHADER_FONT_VS, SHADER_FONT_PS);
 
 	GLOBAL::RenderStateMgr()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	GLOBAL::RenderStateMgr()->SetVertexInput(FVF_3FP_1DC_2HT);

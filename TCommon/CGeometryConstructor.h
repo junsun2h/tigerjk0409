@@ -55,6 +55,19 @@ struct BOX_MAKE_PARAM
 	}
 };
 
+struct SPHERE_MAKE_PARAM
+{
+	float		radius; 
+	int			dividingLevel;
+	CVector3	offset; 
+	DWORD		color;
+
+	SPHERE_MAKE_PARAM()
+	{
+		memset( this, 0, sizeof(SPHERE_MAKE_PARAM) );
+	}
+};
+
 namespace CGEOMETRY_CONSTRUCTOR
 {
 	void CreateCircle(CIRCLE_MAKE_PARAM& param, CVertexPC** ppVertex, uint16** ppIndex);
@@ -129,61 +142,56 @@ namespace CGEOMETRY_CONSTRUCTOR
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
-	inline void CreateCircle(CIRCLE_MAKE_PARAM& param, CVertexPC** ppVertex, uint16** ppIndex)
+	inline void CreateCircle(CIRCLE_MAKE_PARAM& param, CVector3*& pVertex, uint16** ppIndex)
 	{
 		if( param.segment < 3)
 		{
 			assert(0);
 			return;
 		}
-		
-		CVertexPC* pVertex = new CVertexPC[param.segment];
 
 		if( param.direction == Z_AXIS )
 		{
-			pVertex[0].vPos = param.offset + CVector3(param.radius, 0, 0);
+			pVertex[0] = param.offset + CVector3(param.radius, 0, 0);
 
 			for( UINT i=1; i < param.segment ; ++i)
 			{
 				float angle = XM_2PI * i/float(param.segment);
-				pVertex[i].vPos.x = param.radius * cos( angle);
-				pVertex[i].vPos.y = param.radius * sin( angle);
-				pVertex[i].vPos.z = 0.0f;
+				pVertex[i].x = param.radius * cos( angle);
+				pVertex[i].y = param.radius * sin( angle);
+				pVertex[i].z = 0.0f;
 
-				pVertex[i].vPos += param.offset;
+				pVertex[i] += param.offset;
 			}
 		}
 		else if( param.direction == X_AXIS)
 		{
-			pVertex[0].vPos = param.offset + CVector3(0, param.radius, 0);
+			pVertex[0] = param.offset + CVector3(0, param.radius, 0);
 
 			for( UINT i=1; i < param.segment ; ++i)
 			{
 				float angle = XM_2PI * i/float(param.segment);
-				pVertex[i].vPos.y = param.radius * cos( angle);
-				pVertex[i].vPos.z = param.radius * sin( angle);
-				pVertex[i].vPos.x = 0.0f;
+				pVertex[i].y = param.radius * cos( angle);
+				pVertex[i].z = param.radius * sin( angle);
+				pVertex[i].x = 0.0f;
 
-				pVertex[i].vPos += param.offset;
+				pVertex[i] += param.offset;
 			}
 		}
 		else if( param.direction == Y_AXIS )
 		{
-			pVertex[0].vPos = param.offset + CVector3(0, 0, param.radius);
+			pVertex[0] = param.offset + CVector3(0, 0, param.radius);
 
 			for( UINT i=1; i < param.segment ; ++i)
 			{
 				float angle = XM_2PI * i/float(param.segment);
-				pVertex[i].vPos.z = param.radius * cos( angle);
-				pVertex[i].vPos.x = param.radius * sin( angle);
-				pVertex[i].vPos.y = 0.0f;
+				pVertex[i].z = param.radius * cos( angle);
+				pVertex[i].x = param.radius * sin( angle);
+				pVertex[i].y = 0.0f;
 
-				pVertex[i].vPos += param.offset;
+				pVertex[i] += param.offset;
 			}
 		}
-
-
-		*ppVertex = pVertex;
 
 		uint16* pIndex = new uint16[ (param.segment - 2)* 3];
 		// bottom
@@ -207,17 +215,12 @@ namespace CGEOMETRY_CONSTRUCTOR
 			return;
 		}
 
-		CVertexPC* pVertex = NULL;
+		CVector3* pVertex = new CVector3[param.segment];
 		uint16* pIndex = NULL;
 
-		CreateCircle( param, &pVertex, &pIndex);
-		
-		for( UINT i=0; i< param.segment ; ++i)
-		{
-			pVertex[i].color = param.color;
-		}
-
-		pGeometry->eVertexType = FVF_3FP_1DC;
+		CreateCircle( param, pVertex, &pIndex);
+	
+		pGeometry->eVertexType = FVF_3FP;
 		pGeometry->vertexCount = param.segment;
 		pGeometry->pVertexBuffer = pVertex;
 
@@ -227,58 +230,54 @@ namespace CGEOMETRY_CONSTRUCTOR
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
-	inline void CreateCone(CONE_MAKE_PARAM& param, CVertexPC** ppVertex, uint16** ppIndex)
+	inline void CreateCone(CONE_MAKE_PARAM& param, CVector3*& pVertex, uint16** ppIndex)
 	{
-		CVertexPC* pVertex = new CVertexPC[param.segment+1];
-
 		if( param.direction == Z_AXIS )
 		{
-			pVertex[0].vPos = param.offset + CVector3(param.radius, 0, 0);
-			pVertex[param.segment].vPos = param.offset + CVector3(0, 0, param.height);
+			pVertex[0] = param.offset + CVector3(param.radius, 0, 0);
+			pVertex[param.segment] = param.offset + CVector3(0, 0, param.height);
 
 			for( UINT i=1; i < param.segment ; ++i)
 			{
 				float angle = XM_2PI * i/float(param.segment);
-				pVertex[i].vPos.x = param.radius * cos( angle);
-				pVertex[i].vPos.y = param.radius * sin( angle);
-				pVertex[i].vPos.z = 0.0f;
+				pVertex[i].x = param.radius * cos( angle);
+				pVertex[i].y = param.radius * sin( angle);
+				pVertex[i].z = 0.0f;
 
-				pVertex[i].vPos += param.offset;
+				pVertex[i] += param.offset;
 			}
 		}
 		else if( param.direction == X_AXIS)
 		{
-			pVertex[0].vPos = param.offset + CVector3(0, param.radius, 0);
-			pVertex[param.segment].vPos = param.offset + CVector3( param.height, 0, 0);
+			pVertex[0] = param.offset + CVector3(0, param.radius, 0);
+			pVertex[param.segment] = param.offset + CVector3( param.height, 0, 0);
 
 			for( UINT i=1; i < param.segment ; ++i)
 			{
 				float angle = XM_2PI * i/float(param.segment);
-				pVertex[i].vPos.y = param.radius * cos( angle);
-				pVertex[i].vPos.z = param.radius * sin( angle);
-				pVertex[i].vPos.x = 0.0f;
+				pVertex[i].y = param.radius * cos( angle);
+				pVertex[i].z = param.radius * sin( angle);
+				pVertex[i].x = 0.0f;
 
-				pVertex[i].vPos += param.offset;
+				pVertex[i] += param.offset;
 			}
 		}
 		else if( param.direction == Y_AXIS )
 		{
-			pVertex[0].vPos = param.offset + CVector3(0, 0, param.radius);
-			pVertex[param.segment].vPos = param.offset + CVector3(0, param.height, 0);
+			pVertex[0] = param.offset + CVector3(0, 0, param.radius);
+			pVertex[param.segment] = param.offset + CVector3(0, param.height, 0);
 
 			for( UINT i=1; i < param.segment ; ++i)
 			{
 				float angle = XM_2PI * i/float(param.segment);
-				pVertex[i].vPos.z = param.radius * cos( angle);
-				pVertex[i].vPos.x = param.radius * sin( angle);
-				pVertex[i].vPos.y = 0.0f;
+				pVertex[i].z = param.radius * cos( angle);
+				pVertex[i].x = param.radius * sin( angle);
+				pVertex[i].y = 0.0f;
 
-				pVertex[i].vPos += param.offset;
+				pVertex[i] += param.offset;
 			}
 		}
-
-		*ppVertex = pVertex;
-
+		
 		uint16* pIndex = new uint16[ (param.segment * 2 - 1)* 3];
 		// bottom
 		for( UINT i=0; i < param.segment - 1; i++ )
@@ -304,17 +303,12 @@ namespace CGEOMETRY_CONSTRUCTOR
 	//-----------------------------------------------------------------------------------------------------------
 	inline void CreateConeGeometry(CResourceGeometry* pGeometry, CONE_MAKE_PARAM& param)
 	{
-		CVertexPC* pVertex = NULL;
+		CVector3* pVertex = new CVector3[param.segment+1];
 		uint16* pIndex = NULL;
 
-		CreateCone( param, &pVertex, &pIndex);
-
-		for( UINT i=0; i< param.segment +1 ; ++i)
-		{
-			pVertex[i].color = param.color;
-		}
+		CreateCone( param, pVertex, &pIndex);
 		
-		pGeometry->eVertexType = FVF_3FP_1DC;
+		pGeometry->eVertexType = FVF_3FP;
 		pGeometry->vertexCount = param.segment +1;
 		pGeometry->pVertexBuffer = pVertex;
 
@@ -324,41 +318,31 @@ namespace CGEOMETRY_CONSTRUCTOR
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
-	inline void CreateBox(BOX_MAKE_PARAM& param, CVertexPC** ppVertex, uint16** ppIndex)
+	inline void CreateBox(BOX_MAKE_PARAM& param, CVector3*& pVertex, uint16** ppIndex)
 	{
-		CVector3 tmpVertex[8];
+		pVertex[0] = param.min;
 
-		tmpVertex[0] = param.min;
+		pVertex[1] = pVertex[0];
+		pVertex[1].x = param.max.x;
 
-		tmpVertex[1] = tmpVertex[0];
-		tmpVertex[1].x = param.max.x;
+		pVertex[2] = param.max;
+		pVertex[2].y = param.min.y;
 
-		tmpVertex[2] = param.max;
-		tmpVertex[2].y = param.min.y;
+		pVertex[3] = param.min;
+		pVertex[3].z = param.max.z;
 
-		tmpVertex[3] = param.min;
-		tmpVertex[3].z = param.max.z;
+		pVertex[4] = pVertex[0];
+		pVertex[4].y = param.max.y;
 
-		tmpVertex[4] = tmpVertex[0];
-		tmpVertex[4].y = param.max.y;
+		pVertex[5] = pVertex[1];
+		pVertex[5].y = param.max.y;
 
-		tmpVertex[5] = tmpVertex[1];
-		tmpVertex[5].y = param.max.y;
+		pVertex[6] = pVertex[2];
+		pVertex[6].y = param.max.y;
 
-		tmpVertex[6] = tmpVertex[2];
-		tmpVertex[6].y = param.max.y;
+		pVertex[7] = pVertex[3];
+		pVertex[7].y = param.max.y;
 
-		tmpVertex[7] = tmpVertex[3];
-		tmpVertex[7].y = param.max.y;
-
-		CVertexPC* pVertex = new CVertexPC[8];
-		
-		for( int i=0; i < 8 ; ++i)
-		{
-			pVertex[i].vPos = param.offset + tmpVertex[i];
-		}
-
-		*ppVertex = pVertex;
 
 		uint16 index[36] = 
 		{
@@ -391,22 +375,89 @@ namespace CGEOMETRY_CONSTRUCTOR
 	//-----------------------------------------------------------------------------------------------------------
 	inline void CreateBoxGeometry(CResourceGeometry* pGeometry, BOX_MAKE_PARAM& param)
 	{
-		CVertexPC* pVertex = NULL;
+		CVector3* pVertex = new CVector3[8];
 		uint16* pIndex = NULL;
 
-		CreateBox( param, &pVertex, &pIndex);
+		CreateBox( param, pVertex, &pIndex);
 
-		for( UINT i=0; i< 8 ; ++i)
-		{
-			pVertex[i].color = param.color;
-		}
-
-		pGeometry->eVertexType = FVF_3FP_1DC;
+		pGeometry->eVertexType = FVF_3FP;
 		pGeometry->vertexCount = 8;
 		pGeometry->pVertexBuffer = pVertex;
 
 		pGeometry->eIndexType = INDEX_16BIT_TYPE;
 		pGeometry->primitiveCount = 12;
 		pGeometry->pIndexBuffer = pIndex;
+	}
+
+	//-----------------------------------------------------------------------------------------------------------
+	inline void CreateSphere(SPHERE_MAKE_PARAM& param, std::vector<CVector3>& vertices, std::vector<uint16>& indices)
+	{
+		int e;
+		float segmentRad = XM_PI / 2 / (param.dividingLevel + 1);
+		int numberOfSeparators = 4 * param.dividingLevel + 4;
+
+		for (e = -param.dividingLevel; e <= param.dividingLevel; e++)
+		{
+			float r_e = param.radius * cos(segmentRad*e);
+			float y_e = param.radius * sin(segmentRad*e);
+
+			for (int s = 0; s <= (numberOfSeparators-1); s++)
+			{
+				float z_s = r_e * sin(segmentRad*s) * (-1);
+				float x_s = r_e * cos(segmentRad*s);
+
+				vertices.push_back( CVector3(x_s, y_e, z_s) );
+			}
+		}
+
+		vertices.push_back(CVector3(0, param.radius, 0));
+		vertices.push_back(CVector3(0, -1*param.radius, 0));
+
+		for (e = 0; e < 2 * param.dividingLevel; e++)
+		{
+			for (int i = 0; i < numberOfSeparators; i++)
+			{
+				indices.push_back(e * numberOfSeparators + i);
+				indices.push_back(e * numberOfSeparators + i + 	numberOfSeparators);
+				indices.push_back(e * numberOfSeparators + (i + 1) % numberOfSeparators + numberOfSeparators);
+
+				indices.push_back(e * numberOfSeparators + (i + 1) % numberOfSeparators + numberOfSeparators);
+				indices.push_back(e * numberOfSeparators + (i + 1) % numberOfSeparators);
+				indices.push_back(e * numberOfSeparators + i);
+			}
+		}
+
+		for (int i = 0; i < numberOfSeparators; i++)
+		{
+			indices.push_back(e * numberOfSeparators + i);
+			indices.push_back(e * numberOfSeparators + (i + 1) % numberOfSeparators);
+			indices.push_back(numberOfSeparators * (2 * param.dividingLevel + 1));
+		}
+
+		for (int i = 0; i < numberOfSeparators; i++)
+		{
+			indices.push_back(i);
+			indices.push_back((i + 1) % numberOfSeparators);
+			indices.push_back(numberOfSeparators * (2 * param.dividingLevel + 1) + 1);
+		}
+	}
+
+	//-----------------------------------------------------------------------------------------------------------
+	inline void CreateSphereGeometry(CResourceGeometry* pGeometry, SPHERE_MAKE_PARAM& param)
+	{
+		std::vector<CVector3> vertices;
+		std::vector<uint16> indices;
+
+		CreateSphere( param, vertices, indices);
+
+		pGeometry->eVertexType = FVF_3FP;
+		pGeometry->vertexCount = vertices.size();
+		pGeometry->pVertexBuffer = new CVector3[pGeometry->vertexCount];
+		memcpy( pGeometry->pVertexBuffer , &vertices[0], sizeof(CVector3) * vertices.size() );
+
+		pGeometry->eIndexType = INDEX_16BIT_TYPE;
+		pGeometry->primitiveCount = indices.size()/3;
+		pGeometry->pIndexBuffer = new uint16[indices.size()];
+		memcpy( pGeometry->pIndexBuffer , &indices[0], sizeof(uint16) * indices.size() );
 	}
 }

@@ -109,6 +109,8 @@ SAssetTreeCtrl::SAssetTreeCtrl(wxWindow *parent, const wxWindowID id)
 	: wxTreeCtrl(parent, id)
 {
 	GetCurrentDirectory( MAX_PATH, m_Path);
+
+	Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( SAssetTreeCtrl::adw ), NULL, this );
 }
 
 void SAssetTreeCtrl::OnItemMenu(wxTreeEvent& event)

@@ -57,6 +57,7 @@ struct IShaderMgr
 
 	virtual void		Begin(UINT flag) = 0;
 	virtual void		Begin(IShader* pVS, IShader* pPS) = 0;
+	virtual void		Begin(UINT vsFlag, UINT psFlag) = 0;
 
 	virtual void		SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type) = 0;
 	virtual void		SetTexture(const CResourceTexture* pTexture, UINT slot) =0;
