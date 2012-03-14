@@ -96,7 +96,7 @@ bool GrabRotator(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& gr
 	param.direction = X_AXIS;
 	param.segment = 10;
 
-	CVector3* pVertex = NULL;
+	CVector3* pVertex = new CVector3[param.segment];
 	uint16* pIndex = NULL;
 	CGEOMETRY_CONSTRUCTOR::CreateCircle(param, pVertex, &pIndex);
 
@@ -130,8 +130,9 @@ bool GrabMover(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& grab
 	param.offset = CVector3(TRANSFORM_HELPER_EXTENT, 0, 0);
 	param.segment = 10;
 
-	CVector3* pVertex = NULL;
+	CVector3* pVertex = new CVector3[param.segment+1];
 	uint16* pIndex = NULL;
+
 	CGEOMETRY_CONSTRUCTOR::CreateCone(param, pVertex, &pIndex);
 
 	float fDistance = TransformHelperCollision(lineStart, lineDir, 
@@ -159,12 +160,11 @@ bool GrabScaler(XMMATRIX& worldTM, CVector3& from, CVector3& to, eDIRECTION& gra
 	CVector3 lineDir = lineEnd - lineStart;
 
 	BOX_MAKE_PARAM param;
-	param.color = COLOR_RED;
 	param.min = CVector3(-5.f,-5.f,-5.f);
 	param.max = CVector3(5.f,5.f,5.f);
 	param.offset = CVector3(TRANSFORM_HELPER_EXTENT, 0, 0);
 
-	CVector3* pVertex = NULL;
+	CVector3* pVertex = new CVector3[8];
 	uint16* pIndex = NULL;
 	CGEOMETRY_CONSTRUCTOR::CreateBox(param, pVertex, &pIndex);
 

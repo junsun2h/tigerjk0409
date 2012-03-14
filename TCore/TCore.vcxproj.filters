@@ -71,7 +71,10 @@
       <Filter>Asset\ResourceDataProcessor</Filter>
     </ClCompile>
     <ClCompile Include="ELightMgr.cpp">
-      <Filter>Light</Filter>
+      <Filter>RenderElement\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="EDecalMgr.cpp">
+      <Filter>RenderElement\Decal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,8 +114,14 @@
     <Filter Include="Interface">
       <UniqueIdentifier>{8b527078-c3a4-4fce-88fe-2c87c3a706d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Light">
+    <Filter Include="RenderElement">
+      <UniqueIdentifier>{e6ea88a6-1b92-4d81-9a3b-c45af7f27f0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderElement\Light">
       <UniqueIdentifier>{9935375a-66a7-4f1c-8f50-214f904b5963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderElement\Decal">
+      <UniqueIdentifier>{5df6fd00-60b4-4c44-aad4-84580a0cb1b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -212,9 +221,15 @@
       <Filter>3rdParty\TinyXML</Filter>
     </ClInclude>
     <ClInclude Include="ELightMgr.h">
-      <Filter>Light</Filter>
+      <Filter>RenderElement\Light</Filter>
     </ClInclude>
     <ClInclude Include="Include\ILightMgr.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="EDecalMgr.h">
+      <Filter>RenderElement\Decal</Filter>
+    </ClInclude>
+    <ClInclude Include="IDecalMgr.h">
       <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	IRenderer
 private:	
+	void			RenderSphere(CVector3* pos, float radius) override;
 	void			RenderLine(CVertexPC* pVertex,int count) override;
 	void			RenderAxis(XMMATRIX& tm) override;
 	void			RenderScaler(XMMATRIX& tm) override;

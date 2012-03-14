@@ -7,6 +7,7 @@ struct IRenderer;
 struct IEngineRenderer;
 struct IRDevice;
 struct ILightMgr;
+struct IDecalMgr;
 
 
 namespace GLOBAL
@@ -20,4 +21,5 @@ namespace GLOBAL
 	IActorMgr*			ActorMgr();
 	IEngineRenderer*	Renderer();
 	ILightMgr*			LightMgr();
+	IDecalMgr*			DecalMgr();
 }

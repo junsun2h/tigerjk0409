@@ -7,6 +7,7 @@
 #include "CCamera.h"
 #include "CResource.h"
 #include "CLight.h"
+#include "CDecal.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -19,6 +20,7 @@
 #include "IRenderer.h"
 #include "IRenderHelper.h"
 #include "ILightMgr.h"
+#include "IDecalMgr.h"
 #include "IShader.h"
 
 #include "EGlobal.h"
@@ -46,7 +48,7 @@ ISpaceMgr*			EEngine::SpaceMgr()			{ return GLOBAL::SpaceMgr(); }
 long				EEngine::GetCurrentFrame()	{ return m_CurrentFrame; }
 IRenderer*			EEngine::Renderer()			{ return GLOBAL::Renderer(); }
 ILightMgr*			EEngine::LightMgr()			{ return GLOBAL::LightMgr(); }
-
+IDecalMgr*			EEngine::DecalMgr()			{ return GLOBAL::DecalMgr(); }
 
 bool EEngine::StartUp(const CENGINE_INIT_PARAM* pParam)
 {
@@ -92,6 +94,7 @@ bool EEngine::ShutDown()
 	GLOBAL::Renderer()->Destroy();
 
 	// make sure deleting order
+	GLOBAL::DecalMgr()->Destroy();
 	GLOBAL::LightMgr()->Destroy();
 	GLOBAL::AssetMgr()->Clear();
 	GLOBAL::RDevice()->ShutDown();
@@ -127,6 +130,8 @@ void EEngine::UpdateAndRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRe
 	//////////////////////////////////////////////////////////////////////////
 	// 2) update culled space list
 	GLOBAL::SpaceMgr()->UpdateVisibleSpaceList( pCameraDesc );
+	GLOBAL::LightMgr()->UpdateVisible();
+	// update visible decal
 
 	//////////////////////////////////////////////////////////////////////////
 	// 3) update render dependent system

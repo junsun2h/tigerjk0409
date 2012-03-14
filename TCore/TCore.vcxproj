@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EActorMgr.cpp" />
+    <ClCompile Include="EDecalMgr.cpp" />
     <ClCompile Include="ELightMgr.cpp" />
     <ClCompile Include="EMotionInstance.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EActorMgr.h" />
+    <ClInclude Include="EDecalMgr.h" />
     <ClInclude Include="ELightMgr.h" />
     <ClInclude Include="EMtrlDataProcessor.h" />
     <ClInclude Include="EMotionInstance.h" />
@@ -131,6 +133,7 @@
     <ClInclude Include="ERenderer.h" />
     <ClInclude Include="ETextureDataProcessor.h" />
     <ClInclude Include="EWinFileLoader.h" />
+    <ClInclude Include="IDecalMgr.h" />
     <ClInclude Include="Include\ILightMgr.h" />
     <ClInclude Include="XmlHelper.h" />
     <ClInclude Include="Include\IActorMgr.h" />

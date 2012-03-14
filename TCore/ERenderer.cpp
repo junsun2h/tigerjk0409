@@ -139,6 +139,14 @@ void ERenderer::RT_ProcessCommand()
 
 				pRenderStrategy->Render( pRenderElement );
 			}break;
+		case RC_DRAW_HELPER_Sphere:
+			{
+				CVector3* pos;
+				float* radius;
+				pQueue->PopParam(pos);
+				pQueue->PopParam(radius);
+				pRenderHelper->RenderSphere(pos, *radius);
+			}break;
 		case RC_DRAW_HELPER_Skeleton:
 			{
 				CVertexPC* pVertex;
@@ -295,6 +303,13 @@ void ERenderer::AsyncRender(CCAMERA_DESC* pCameraDesc, IRenderingCallback* pRend
 		pRenderCallback->PostRender();
 }
 
+void ERenderer::RenderSphere(CVector3* pos, float radius)
+{
+	m_CommandQueue[m_FillBufferID].AddCommandStart(RC_DRAW_HELPER_Sphere);
+	m_CommandQueue[m_FillBufferID].AddParam(*pos);
+	m_CommandQueue[m_FillBufferID].AddParam(radius);
+	m_CommandQueue[m_FillBufferID].AddCommandEnd();
+}
 
 void ERenderer::RenderLine(CVertexPC* pVertex,int count)
 {

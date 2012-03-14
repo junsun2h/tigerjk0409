@@ -15,7 +15,7 @@ public:
 	void	RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& max, DWORD color) override;
 	void	RenderWorldGrid(XMMATRIX& mtWorld, int size, int segmentCount) override;
 	void	RenderText(RENDER_TEXT_QUAD* pText) override;
-	void	RenderSphere(XMMATRIX& tm, float radius) override;
+	void	RenderSphere(CVector3* pos, float radius) override;
 	void	RenderPlane(XMMATRIX& tm, CVector2 size) override;
 
 	void	SetFontTexture( CResourceTexture* pTexture) override	{	m_pFontTexture = pTexture;	}

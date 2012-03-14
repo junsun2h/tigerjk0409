@@ -115,6 +115,15 @@ public:
 				pRenderer->RenderLine( buff, vertIndex );
 			}
 		}
+
+		{
+			const LIGHT_LIST* pLightList = GLOBAL::Engine()->LightMgr()->GetVisibleLights();
+			for( UINT i =0; i < pLightList->size(); ++i )
+			{
+				CLightDesc* pLightDesc = (*pLightList)[i];
+				pRenderer->RenderSphere( &pLightDesc->pos, pLightDesc->range );
+			}
+		}
 	}
 }g_PostRenderer;
 
@@ -160,15 +169,15 @@ void S3DViewPanel::OnIdle(wxIdleEvent& event)
 
 		g_pLight = GLOBAL::Engine()->LightMgr()->Create();
 
-		g_pLight->pos = CVector3(-1000, 1000, 1000);
-		g_pLight->range = 2000;
+		g_pLight->pos = CVector3(-100, 100, 100);
+		g_pLight->range = 300;
 		g_pLight->color = CVector3(1,0,0);
 		g_pLight->intensity = 1;
 
 		g_pLight2 = GLOBAL::Engine()->LightMgr()->Create();
 
-		g_pLight2->pos = CVector3(1000, 1000, 1000);
-		g_pLight2->range = 2000;
+		g_pLight2->pos = CVector3(100, 100, 100);
+		g_pLight2->range = 300;
 		g_pLight2->color = CVector3(0,1,0);
 		g_pLight2->intensity = 1;
 
@@ -176,7 +185,7 @@ void S3DViewPanel::OnIdle(wxIdleEvent& event)
 		m_bSetup = true;
 	}
 
-	TestLogicUpdate();
+//	TestLogicUpdate();
 
 	if( GLOBAL::ObserverCamera() != NULL)
 	{
