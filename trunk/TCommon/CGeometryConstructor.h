@@ -20,7 +20,6 @@ struct CONE_MAKE_PARAM
 	UINT segment;
 	CVector3 offset; 
 	eDIRECTION direction;
-	DWORD color;
 	
 	CONE_MAKE_PARAM()
 	{
@@ -34,7 +33,6 @@ struct CIRCLE_MAKE_PARAM
 	UINT segment;
 	CVector3 offset; 
 	eDIRECTION direction;
-	DWORD color;
 
 	CIRCLE_MAKE_PARAM()
 	{
@@ -46,8 +44,7 @@ struct BOX_MAKE_PARAM
 {
 	CVector3 min;
 	CVector3 max;
-	CVector3 offset; 
-	DWORD color;
+	CVector3 offset;
 
 	BOX_MAKE_PARAM()
 	{
@@ -60,7 +57,6 @@ struct SPHERE_MAKE_PARAM
 	float		radius; 
 	int			dividingLevel;
 	CVector3	offset; 
-	DWORD		color;
 
 	SPHERE_MAKE_PARAM()
 	{
@@ -343,6 +339,8 @@ namespace CGEOMETRY_CONSTRUCTOR
 		pVertex[7] = pVertex[3];
 		pVertex[7].y = param.max.y;
 
+		for( int i=0; i < 8; ++i )
+			pVertex[i] += param.offset;
 
 		uint16 index[36] = 
 		{

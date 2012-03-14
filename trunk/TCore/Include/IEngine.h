@@ -14,6 +14,8 @@ struct CENGINE_INIT_PARAM;
 struct CCAMERA_DESC;
 struct IRenderer;
 struct ILightMgr;
+struct IDecalMgr;
+
 
 class CTimer;
 
@@ -27,6 +29,7 @@ struct IEngine
 	virtual IEntityMgr*			EntityMgr() =0;
 	virtual IRenderer*			Renderer() = 0;
 	virtual ILightMgr*			LightMgr() = 0;
+	virtual IDecalMgr*			DecalMgr() = 0;
 
 	virtual CTimer*				GlobalTimer() = 0;
 	virtual ILoader*			Loader() = 0;

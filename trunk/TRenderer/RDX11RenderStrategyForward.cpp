@@ -95,11 +95,10 @@ void RDX11RenderStrategeForward::Render(CRenderElement* pRenderElement)
 	float buf[1024];
 	buf[0] = float(pRenderElement->lightCount);
 	UINT lightBufSize = 4;
-	XMMATRIX wv = XMMatrixMultiply( pRenderElement->worldMatrix, GLOBAL::CameraDesc()->ViewTM ); 
 
 	for( UINT i=0; i < pRenderElement->lightCount; ++i)
 	{
-		CVector3 lightViewPos = CVector3::Transform( pRenderElement->pLights[i].pos, wv);
+		CVector3 lightViewPos = CVector3::Transform( pRenderElement->pLights[i].pos, GLOBAL::CameraDesc()->ViewTM);
 		buf[lightBufSize++] = lightViewPos.x;
 		buf[lightBufSize++] = lightViewPos.y;
 		buf[lightBufSize++] = lightViewPos.z;

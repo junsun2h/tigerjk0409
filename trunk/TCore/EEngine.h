@@ -14,6 +14,7 @@ public:
 	IEntityMgr*			EntityMgr() override;
 	IRenderer*			Renderer() override;
 	ILightMgr*			LightMgr() override;
+	IDecalMgr*			DecalMgr() override;
 	CTimer*				GlobalTimer() override;
 	ILoader*			Loader() override;
 	ISpaceMgr*			SpaceMgr() override;

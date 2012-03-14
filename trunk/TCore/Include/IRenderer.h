@@ -22,6 +22,7 @@ enum eRENDER_COMMAND
 	RC_RenderFrame,
 	RC_DRAW_RENDER_ELEMENT,
 
+	RC_DRAW_HELPER_Sphere,
 	RC_DRAW_HELPER_Skeleton,
 	RC_DRAW_HELPER_Axis,
 	RC_DRAW_HELPER_Scaler,
@@ -42,6 +43,7 @@ struct IRenderingCallback
 struct IRenderer
 {
 	virtual void	RenderLine(CVertexPC* pVertex,int count) = 0;
+	virtual void	RenderSphere(CVector3* pos, float radius) = 0;
 	virtual void	RenderAxis(XMMATRIX& tm) = 0;
 	virtual void	RenderScaler(XMMATRIX& tm) = 0;
 	virtual void	RenderRotator(XMMATRIX& tm) =0;

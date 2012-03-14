@@ -4,6 +4,7 @@
 #include "CTimer.h"
 #include "CQuad.h"
 #include "CCommandBuffer.h"
+#include "CDecal.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -15,6 +16,7 @@
 #include "IRDevice.h"
 #include "IRenderer.h"
 #include "ILightMgr.h"
+#include "IDecalMgr.h"
 
 #include "EEntity.h"
 #include "EEntityMgr.h"
@@ -25,6 +27,7 @@
 #include "EActorMgr.h"
 #include "ERenderer.h"
 #include "ELightMgr.h"
+#include "EDecalMgr.h"
 
 #include "EGlobal.h"
 #include "EEngine.h"
@@ -41,6 +44,7 @@ namespace GLOBAL
 	EActorMgr			g_ActorMgr;
 	ERenderer			g_Renderer;
 	ELightMgr			g_LightMgr;
+	EDecalMgr			g_DecalMgr;
 	IRDevice*			g_pRenderer = NULL;
 	
 	IRDevice*			RDevice()			{ return g_pRenderer; }
@@ -52,6 +56,7 @@ namespace GLOBAL
 	IActorMgr*			ActorMgr()			{ return &g_ActorMgr; }
 	IEngineRenderer*	Renderer()			{ return &g_Renderer;}
 	ILightMgr*			LightMgr()			{ return &g_LightMgr; }
+	IDecalMgr*			DecalMgr()			{ return &g_DecalMgr; }
 }
 
 

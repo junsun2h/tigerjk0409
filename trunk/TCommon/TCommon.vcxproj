@@ -67,6 +67,7 @@
     <ClInclude Include="CColor.h" />
     <ClInclude Include="CCommandBuffer.h" />
     <ClInclude Include="CCrashDump.h" />
+    <ClInclude Include="CDecal.h" />
     <ClInclude Include="CEngineParam.h" />
     <ClInclude Include="CFileUtility.h" />
     <ClInclude Include="CGeometryConstructor.h" />

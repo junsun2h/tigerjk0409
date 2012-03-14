@@ -37,24 +37,20 @@ void RDX11RenderHelper::CreateHelperObjects()
 	// Create scaler Geometry
 	{
 		BOX_MAKE_PARAM param;
-		param.color = COLOR_RED;
 		param.min = CVector3(-5.f,-5.f,-5.f);
 		param.max = CVector3(5.f,5.f,5.f);
 		param.offset = CVector3(HELPER_OBJ_SCALE, 0, 0);
 
 		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxX, param);
 
-		param.color = COLOR_GREEN;
 		param.offset = CVector3(0, HELPER_OBJ_SCALE, 0);
 
 		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxY, param);
 
-		param.color = COLOR_BLUE;
 		param.offset = CVector3(0, 0, HELPER_OBJ_SCALE);
 
 		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxZ, param);
 
-		param.color = COLOR_GRAY;
 		param.offset = CVector3(0, 0, 0);
 
 		CGEOMETRY_CONSTRUCTOR::CreateBoxGeometry( &m_BoxCenter, param);
@@ -88,7 +84,6 @@ void RDX11RenderHelper::CreateHelperObjects()
 	// Create mover Geometry
 	{
 		CONE_MAKE_PARAM param;
-		param.color = COLOR_RED;
 		param.radius = 5;
 		param.height = 15;
 		param.direction = X_AXIS;
@@ -97,13 +92,11 @@ void RDX11RenderHelper::CreateHelperObjects()
 
 		CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &m_ConeX, param);
 
-		param.color = COLOR_GREEN;
 		param.direction = Y_AXIS;
 		param.offset = CVector3(0, HELPER_OBJ_SCALE, 0);
 
 		CGEOMETRY_CONSTRUCTOR::CreateConeGeometry( &m_ConeY, param);
 
-		param.color = COLOR_BLUE;
 		param.direction = Z_AXIS;
 		param.offset = CVector3(0, 0, HELPER_OBJ_SCALE);
 
@@ -157,6 +150,8 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 
 	// Set Line Shader
 	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	CVector4 color = CVector4(0,1,1,1);
+	GLOBAL::ShaderMgr()->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 	
 	DrawLine();
@@ -203,14 +198,25 @@ void RDX11RenderHelper::RenderScaler(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
-
-
+	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
+	pShaderMgr->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+
+	CVector4 color = CVector4(0,0,0,1);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	pRenderer->RenderGeometry(&m_BoxX);
+
+	color = CVector4(0,0,1,0);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);	
 	pRenderer->RenderGeometry(&m_BoxY);
+
+	color = CVector4(0,1,0,0);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	pRenderer->RenderGeometry(&m_BoxZ);
+	
+	color = CVector4(0,0.5f, 0.5f, 0.5f);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	pRenderer->RenderGeometry(&m_BoxCenter);
 
 	RenderAxis(tm);
@@ -221,7 +227,7 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	GLOBAL::ShaderMgr()->Begin(SHADER_COLOR_VS, SHADER_COLOR_PS);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
 
 	CVertexPC v1;
@@ -290,12 +296,22 @@ void RDX11RenderHelper::RenderMover(XMMATRIX& tm)
 {
 	SetWorldTM(tm);
 
-	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	IShaderMgr* pShaderMgr = GLOBAL::ShaderMgr();
+	
+	pShaderMgr->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 
 	IRenderStrategy* pRenderer = GLOBAL::RDevice()->GetRenderStrategy();
 
+	CVector4 color = CVector4(0,0,0,1);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	pRenderer->RenderGeometry( &m_ConeX);
+
+	color = CVector4(0,0,1,0);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	pRenderer->RenderGeometry( &m_ConeY);
+
+	color = CVector4(0,1,0,0);
+	pShaderMgr->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
 	pRenderer->RenderGeometry( &m_ConeZ);
 
 	RenderAxis(tm);
@@ -322,20 +338,28 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	}
 	SAFE_DELETE_ARRAY(pVertices);
 
-	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	GLOBAL::ShaderMgr()->Begin(SHADER_COLOR_VS, SHADER_COLOR_PS);
 	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_ON);
 	DrawLine();
 }
 
 
 //--------------------------------------------------------------------------------------------------------------------
-void RDX11RenderHelper::RenderSphere(XMMATRIX& tm, float radius)
+void RDX11RenderHelper::RenderSphere(CVector3* pos, float radius)
 {
-	XMMATRIX mtWorld = XMMatrixMultiply( tm, XMMatrixScaling(radius, radius, radius) );
+	
+	XMMATRIX mtWorld = XMMatrixIdentity();
+
+	mtWorld	= XMMatrixMultiply( mtWorld, XMMatrixScaling(radius, radius, radius) );
+	mtWorld.r[3].x = pos->x;
+	mtWorld.r[3].y = pos->y;
+	mtWorld.r[3].z = pos->z;
+
 
 	SetWorldTM(mtWorld);
 
 	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	GLOBAL::RenderStateMgr()->SetRasterizer(RASTERIZER_WIRE);
 	GLOBAL::RDevice()->GetRenderStrategy()->RenderGeometry(&m_Sphere);
 }
 
@@ -442,7 +466,7 @@ void RDX11RenderHelper::RenderWorldGrid(XMMATRIX& mtWorld, int size, int lineCou
 	v1.color = COLOR_GREEN;
 	m_LineVertices.Add(v1);
 
-	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
+	GLOBAL::ShaderMgr()->Begin(SHADER_COLOR_VS, SHADER_COLOR_PS);
 	DrawLine();
 }
 

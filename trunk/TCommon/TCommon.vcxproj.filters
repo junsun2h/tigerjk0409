@@ -30,6 +30,7 @@
     <ClInclude Include="CRenderElement.h" />
     <ClInclude Include="CCrashDump.h" />
     <ClInclude Include="CLight.h" />
+    <ClInclude Include="CDecal.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="3rdParty">

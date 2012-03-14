@@ -10,6 +10,7 @@
 
 CObjectPool<CLightDesc>	g_Lights(100);
 
+
 void ELightMgr::Destroy()
 {
 	g_Lights.Destroy();
@@ -44,5 +45,17 @@ void ELightMgr::GetAffectLight(IEntity* pEntity, LIGHT_LIST* pLightList)
 
 		if( pAABB->IsSphereInBox( pLightDesc->pos, pLightDesc->range ) )
 			pLightList->push_back(pLightDesc);
+	}
+}
+
+void ELightMgr::UpdateVisible()
+{
+	m_VisibleList.clear();
+	const OBJ_HANDLE_LIST* pHandleList = g_Lights.UsingHandleList();
+
+	OBJ_HANDLE_LIST::const_iterator itr = pHandleList->begin();
+	for(; itr != pHandleList->end(); ++itr)
+	{
+		m_VisibleList.push_back( g_Lights.Get( *itr) );
 	}
 }
