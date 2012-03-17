@@ -11,6 +11,9 @@
 
 #include "RDX11ShaderMgr.h"
 
+#define SHADER_FILE	"Shader\\TShader.fx"
+
+
 
 void Compile( RDX11Shader* pShader)
 {
@@ -93,14 +96,7 @@ void MakeShaderMacro(UINT flag, D3D10_SHADER_MACRO macroBuf[])
 		macroBuf[bufIndex].Definition = "0";
 		bufIndex++;
 	}
-
-	if( flag & RENDER_FLAG_LIGHT )
-	{
-		macroBuf[bufIndex].Name = "_LIGHT";
-		macroBuf[bufIndex].Definition = "0";
-		bufIndex++;
-	}
-
+	
 	macroBuf[bufIndex].Name = NULL;
 	macroBuf[bufIndex].Definition = NULL;
 }
@@ -130,11 +126,11 @@ void GetVertexFormat(UINT flag, SHADER_COMPILE_DESC& desc)
 void MakeRenderState(UINT flag, RDX11Shader* pShader)
 {
 	if( flag & RENDER_FLAG_DEPTH_TEST_OFF )
-		pShader->m_RenderState.DepthStencil = DEPTH_STENCIL_OFF;
+		pShader->m_RenderState.DepthStencil = DEPTH_OFF_STENCIL_OFF;
 	else if( flag & RENDER_FLAG_DEPTH_TEST_OFF )
-		pShader->m_RenderState.DepthStencil = DEPTH_STENCIL_ON;
+		pShader->m_RenderState.DepthStencil = DEPTH_ON_STENCIL_OFF;
 	else
-		pShader->m_RenderState.DepthStencil = DEPTH_STENCIL_WRITE;
+		pShader->m_RenderState.DepthStencil = DEPTH_WRITE_STENCIL_OFF;
 
 	pShader->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
 
@@ -162,11 +158,10 @@ RDX11ShaderMgr::~RDX11ShaderMgr()
 {
 }
 
+
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::init()
 {
-	const char* szFileName = "Shader\\SpacialShaders.fx";
-
 	//////////////////////////////////////////////////////////////////////////
 	// Vertex shaders
 	{
@@ -176,7 +171,7 @@ void RDX11ShaderMgr::init()
 		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
 		pVS->m_Desc.eVertexyType = FVF_3FP_1DC_2HT;
 		pVS->m_Desc.shaderType = VERTEX_SHADER;
-		pVS->m_Desc.szFileName = szFileName;
+		pVS->m_Desc.szFileName = SHADER_FILE;
 		Compile(pVS);
 
 		m_Shaders[VERTEX_SHADER].SetAt( SHADER_FONT_VS, pVS);
@@ -189,7 +184,7 @@ void RDX11ShaderMgr::init()
 		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
 		pVS->m_Desc.eVertexyType = FVF_3FP;
 		pVS->m_Desc.shaderType = VERTEX_SHADER;
-		pVS->m_Desc.szFileName = szFileName;
+		pVS->m_Desc.szFileName = SHADER_FILE;
 		Compile(pVS);
 
 		m_Shaders[VERTEX_SHADER].SetAt( SHADER_POS_VS, pVS);		
@@ -202,7 +197,7 @@ void RDX11ShaderMgr::init()
 		pVS->m_Desc.szShaderModel = "vs_4_0";
 		pVS->m_Desc.eVertexyType = FVF_QUAD;
 		pVS->m_Desc.shaderType = VERTEX_SHADER;
-		pVS->m_Desc.szFileName = szFileName;
+		pVS->m_Desc.szFileName = SHADER_FILE;
 		Compile(pVS);
 
 		m_Shaders[VERTEX_SHADER].SetAt( SHADER_QUAD_VS, pVS);
@@ -215,7 +210,7 @@ void RDX11ShaderMgr::init()
 		pVS->m_Desc.szShaderModel = "vs_4_0_level_9_3";
 		pVS->m_Desc.eVertexyType = FVF_3FP_1DC;
 		pVS->m_Desc.shaderType = VERTEX_SHADER;
-		pVS->m_Desc.szFileName = szFileName;
+		pVS->m_Desc.szFileName = SHADER_FILE;
 		Compile(pVS);
 
 		m_Shaders[VERTEX_SHADER].SetAt( SHADER_COLOR_VS, pVS);
@@ -230,8 +225,8 @@ void RDX11ShaderMgr::init()
 		pPS->m_Desc.szEntrypoint = "PS_FONT";
 		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
 		pPS->m_Desc.shaderType = PIXEL_SHADER;
-		pPS->m_Desc.szFileName = szFileName;
-		pPS->m_RenderState.DepthStencil = DEPTH_STENCIL_OFF;
+		pPS->m_Desc.szFileName = SHADER_FILE;
+		pPS->m_RenderState.DepthStencil = DEPTH_OFF_STENCIL_OFF;
 		pPS->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
 		pPS->m_RenderState.BlendState = BLEND_ADD_BY_ALPHA;
 		Compile(pPS);
@@ -245,8 +240,8 @@ void RDX11ShaderMgr::init()
 		pPS->m_Desc.szEntrypoint = "PS_COLOR";
 		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
 		pPS->m_Desc.shaderType = PIXEL_SHADER;
-		pPS->m_Desc.szFileName = szFileName;
-		pPS->m_RenderState.DepthStencil = DEPTH_STENCIL_ON;
+		pPS->m_Desc.szFileName = SHADER_FILE;
+		pPS->m_RenderState.DepthStencil = DEPTH_ON_STENCIL_OFF;
 		pPS->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
 		pPS->m_RenderState.BlendState = BLEND_NONE;
 		Compile(pPS);
@@ -260,8 +255,8 @@ void RDX11ShaderMgr::init()
 		pPS->m_Desc.szEntrypoint = "PS_TEXTURE";
 		pPS->m_Desc.szShaderModel = "ps_4_0_level_9_3";
 		pPS->m_Desc.shaderType = PIXEL_SHADER;
-		pPS->m_Desc.szFileName = szFileName;
-		pPS->m_RenderState.DepthStencil = DEPTH_STENCIL_WRITE;
+		pPS->m_Desc.szFileName = SHADER_FILE;
+		pPS->m_RenderState.DepthStencil = DEPTH_WRITE_STENCIL_OFF;
 		pPS->m_RenderState.RasterizerState = RASTERIZER_CULL_BACK;
 		pPS->m_RenderState.BlendState = BLEND_NONE;
 		Compile(pPS);
@@ -363,7 +358,7 @@ RDX11Shader* RDX11ShaderMgr::CreateShader(UINT flag, eSHADER_TYPE shaderType )
 	MakeShaderMacro( flag, macroBuf);
 	GetVertexFormat( flag, pShader->m_Desc);
 	pShader->m_Desc.shader_Macros = macroBuf;
-	pShader->m_Desc.szFileName = "Shader\\GPass.fx";
+	pShader->m_Desc.szFileName = SHADER_FILE;
 	pShader->m_Desc.uberFlag = flag;
 	pShader->m_Desc.shaderType = shaderType;
 
@@ -416,6 +411,9 @@ void CreateConstantBuffer(ID3D11Buffer** ppBuffer, void* pData ,int size, UINT b
 //------------------------------------------------------------------------------------------------------------
 void RDX11ShaderMgr::SetShaderConstant(void* pScr, size_t size, UINT slot, eSHADER_TYPE type)
 {
+	if( (size % 16) != 0 )	// data should be aligned by 16
+		assert(0);
+
 	ID3D11DeviceContext* pContext = GLOBAL::D3DContext();
 
 	if( m_ConstBuffer[type][slot] == NULL )
@@ -459,7 +457,6 @@ void RDX11ShaderMgr::SetTexture(const CResourceTexture* pTexture, UINT slot)
 	else
 		GLOBAL::D3DContext()->PSSetShaderResources( slot, 1, (ID3D11ShaderResourceView**)&pTexture->pShaderResourceView );
 }
-
 
 //------------------------------------------------------------------------------------------------------------
 bool RDX11ShaderMgr::CheckShader(CRenderElement* pRenderElement)

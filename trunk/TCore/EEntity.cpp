@@ -5,7 +5,7 @@
 #include "CAABB.h"
 #include "CCamera.h"
 #include "CRenderElement.h"
-#include "CLight.h"
+
 
 #include "IRDevice.h"
 #include "IMotionInstance.h"

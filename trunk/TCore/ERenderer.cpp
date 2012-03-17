@@ -127,10 +127,6 @@ void ERenderer::RT_ProcessCommand()
 			{
 				CRenderElement* pRenderElement;
 				pQueue->PopParam(pRenderElement);
-
-				if( pRenderElement->lightCount > 0)
-					pQueue->PopData( pRenderElement->pLights );
-
 				if( pRenderElement->pGeometry->IsSkinMesh() )
 				{
 					UINT size = pQueue->PopData( pRenderElement->pRefMatrix);

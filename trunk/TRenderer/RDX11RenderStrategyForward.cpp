@@ -3,7 +3,6 @@
 #include "CCamera.h"
 #include "RDefine.h"
 #include "CRenderElement.h"
-#include "CLight.h"
 
 #include "IRDevice.h"
 #include "IShader.h"
@@ -91,26 +90,6 @@ void RDX11RenderStrategeForward::Render(CRenderElement* pRenderElement)
 												sizeof(XMMATRIX) * pRenderElement->refMatrixCount, 
 												12, VERTEX_SHADER );
 	}
-
-	float buf[1024];
-	buf[0] = float(pRenderElement->lightCount);
-	UINT lightBufSize = 4;
-
-	for( UINT i=0; i < pRenderElement->lightCount; ++i)
-	{
-		CVector3 lightViewPos = CVector3::Transform( pRenderElement->pLights[i].pos, GLOBAL::CameraDesc()->ViewTM);
-		buf[lightBufSize++] = lightViewPos.x;
-		buf[lightBufSize++] = lightViewPos.y;
-		buf[lightBufSize++] = lightViewPos.z;
-		buf[lightBufSize++] = pRenderElement->pLights[i].range;
-		buf[lightBufSize++] = pRenderElement->pLights[i].color.x;
-		buf[lightBufSize++] = pRenderElement->pLights[i].color.y;
-		buf[lightBufSize++] = pRenderElement->pLights[i].color.z;
-		buf[lightBufSize++] = pRenderElement->pLights[i].intensity;
-	}
-
-	pShaderMgr->SetShaderConstant( buf, 4 * lightBufSize, 10, VERTEX_SHADER);
-
 
 	RenderGeometry(pRenderElement->pGeometry);
 }

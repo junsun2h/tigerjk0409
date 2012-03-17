@@ -1,6 +1,5 @@
 #include "CResource.h"
 #include "CRenderElement.h"
-#include "CLight.h"
 
 #include "IEntity.h"
 #include "IEntityProxy.h"
@@ -8,7 +7,6 @@
 #include "IRenderer.h"
 #include "IRDevice.h"
 #include "IShader.h"
-#include "ILightMgr.h"
 
 #include "EGlobal.h"
 #include "EEntityProxyRender.h"
@@ -75,29 +73,18 @@ void EEntityProxyRender::Render()
 	if( m_RenderedFrame == currentFrame )
 		return;
 
-	m_pLightList.clear();
-	GLOBAL::LightMgr()->GetAffectLight(m_pEntity, &m_pLightList);
-
 	m_RenderedFrame = currentFrame; 
 	CCommandBuffer<eRENDER_COMMAND>* pCommandQueue = GLOBAL::Renderer()->GetFillCommandQueue();
 	
 	XMMATRIX matrixBuf[100];
-	CLightDesc lightBuf[10];
-
-	for( UINT i =0; i < m_pLightList.size(); ++i)
-		lightBuf[i] = *m_pLightList[i];
-
+	
 	for( UINT i=0; i < m_vecRenderElement.size(); ++i)
 	{
 		CRenderElement& renderElement = m_vecRenderElement[i];
 		renderElement.worldMatrix =  GetEntity()->GetWorldTM();
-		renderElement.lightCount = m_pLightList.size();
 
 		pCommandQueue->AddCommandStart(RC_DRAW_RENDER_ELEMENT);
 		pCommandQueue->AddParam( renderElement );
-
-		if( renderElement.lightCount > 0)
-			pCommandQueue->AddData( lightBuf, sizeof(CLightDesc) * renderElement.lightCount );
 
 		// additional information
 		if( renderElement.pGeometry->IsSkinMesh() )

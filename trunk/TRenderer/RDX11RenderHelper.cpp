@@ -152,7 +152,7 @@ void RDX11RenderHelper::RenderLine( CVertexPC* pVetex, int count)
 	GLOBAL::ShaderMgr()->Begin(SHADER_POS_VS, SHADER_COLOR_PS);
 	CVector4 color = CVector4(0,1,1,1);
 	GLOBAL::ShaderMgr()->SetShaderConstant( &color, sizeof(color), 9, VERTEX_SHADER);
-	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_OFF_STENCIL_OFF);
 	
 	DrawLine();
 }
@@ -189,7 +189,7 @@ void RDX11RenderHelper::RenderAxis(XMMATRIX& tm)
 	v1.vPos = CVector3(0.0f, HELPER_OBJ_SCALE, 0.0f);
 	m_LineVertices.Add(v1);
 
-	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_OFF_STENCIL_OFF);
 	DrawLine();
 }
 
@@ -228,7 +228,7 @@ void RDX11RenderHelper::RenderRotator(XMMATRIX& tm)
 	SetWorldTM(tm);
 
 	GLOBAL::ShaderMgr()->Begin(SHADER_COLOR_VS, SHADER_COLOR_PS);
-	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_OFF);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_OFF_STENCIL_OFF);
 
 	CVertexPC v1;
 
@@ -339,15 +339,14 @@ void RDX11RenderHelper::RenderBox(XMMATRIX& mtWorld, CVector3& min, CVector3& ma
 	SAFE_DELETE_ARRAY(pVertices);
 
 	GLOBAL::ShaderMgr()->Begin(SHADER_COLOR_VS, SHADER_COLOR_PS);
-	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_STENCIL_ON);
+	GLOBAL::RenderStateMgr()->SetDepthStancil(DEPTH_ON_STENCIL_OFF);
 	DrawLine();
 }
 
 
 //--------------------------------------------------------------------------------------------------------------------
 void RDX11RenderHelper::RenderSphere(CVector3* pos, float radius)
-{
-	
+{	
 	XMMATRIX mtWorld = XMMatrixIdentity();
 
 	mtWorld	= XMMatrixMultiply( mtWorld, XMMatrixScaling(radius, radius, radius) );
