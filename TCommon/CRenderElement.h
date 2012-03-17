@@ -3,14 +3,12 @@
 #include <CResource.h>
 
 struct IShader;
-struct CLightDesc;
 
 enum eRENDER_FLAG
 {
 	RENDER_FLAG_SKIN					= BIT(1),
 	RENDER_FLAG_BUMP_MAP				= BIT(2),
 	RENDER_FLAG_SPECULAR_MAP			= BIT(3),
-	RENDER_FLAG_LIGHT					= BIT(4),
 
 	RENDER_FLAG_DEPTH_TEST_OFF			= BIT(5),
 	RENDER_FLAG_DEPTH_TEST_WRITE_OFF	= BIT(6),
@@ -45,14 +43,8 @@ struct CRenderElement
 	UINT				refMatrixCount;
 	XMMATRIX*			pRefMatrix;
 
-	UINT				lightCount;
-	CLightDesc*			pLights;
-
-	void				InitFlag(bool bLight = true)
+	void				InitFlag()
 	{
-		if( bLight )
-			flag |= RENDER_FLAG_LIGHT;
-
 		if( pGeometry->IsSkinMesh() )
 			flag |= RENDER_FLAG_SKIN;
 

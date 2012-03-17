@@ -14,7 +14,5 @@ class ELightMgr : public ILightMgr
 	void				UpdateVisible() override;
 	const LIGHT_LIST*	GetVisibleLights() override				{ return &m_VisibleList;}
 
-	void				GetAffectLight(IEntity* pEntity, LIGHT_LIST* pLightList) override;
-
 	LIGHT_LIST			m_VisibleList;
 };

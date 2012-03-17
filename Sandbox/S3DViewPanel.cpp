@@ -117,12 +117,13 @@ public:
 		}
 
 		{
+			/*
 			const LIGHT_LIST* pLightList = GLOBAL::Engine()->LightMgr()->GetVisibleLights();
 			for( UINT i =0; i < pLightList->size(); ++i )
 			{
 				CLightDesc* pLightDesc = (*pLightList)[i];
 				pRenderer->RenderSphere( &pLightDesc->pos, pLightDesc->range );
-			}
+			}*/
 		}
 	}
 }g_PostRenderer;

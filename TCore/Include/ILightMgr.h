@@ -13,6 +13,5 @@ struct ILightMgr
 	virtual void				Remove(UINT handle) = 0;
 	virtual	void				UpdateVisible() = 0;
 	virtual const LIGHT_LIST*	GetVisibleLights() = 0;
-	virtual void				GetAffectLight(IEntity* pEntity, LIGHT_LIST* pLightList) = 0;
 };
 

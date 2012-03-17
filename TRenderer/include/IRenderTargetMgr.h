@@ -15,4 +15,5 @@ enum eDEFFERED_RENDER_TARGET
 struct IRenderTargetMgr
 {
 	virtual void	ClearAndSetMaineFrame() = 0;
+	virtual void	SetDepthToResource() = 0;
 };
